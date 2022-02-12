@@ -53,10 +53,10 @@ namespace caen_nscldaq {
         void SetDeviceValue(const char* devParName, double value);
         void SetDeviceValue(const char* devParName, bool value);
         
-        void setChanValue(unsigned chan, const char* chanParName const char* value);
-        void setChanValue(unsigned chan, const char* chanParName, int value);
-        void setChanValue(unsigned chan, const char* chanParName, double value);
-        void setChanValue(unsigned chan, const char* chanParName, bool value);
+        void SetChanValue(unsigned chan, const char* chanParName const char* value);
+        void SetChanValue(unsigned chan, const char* chanParName, int value);
+        void SetChanValue(unsigned chan, const char* chanParName, double value);
+        void SetChanValue(unsigned chan, const char* chanParName, bool value);
         
         
         // Sadly we can't do the overload trick for getValue since
@@ -90,7 +90,7 @@ namespace caen_nscldaq {
         void ReadDataV(int timeout, va_list args);
     private:
         std::string devPath(const char* devParName);
-        std::string chanPath(unsigned int chan, const char* chanParName);
+        std::string chanPath(unsigned chan, const char* chanParName);
         std::string lastError();
     };
 }

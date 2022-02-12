@@ -79,6 +79,7 @@ namespace caen_nscldaq {
      *  @param parameterName - full path to parameter.  See as well
      *                         SetDeviceValue as well as SetChan Value
      *  @param value         - Value to set.
+     *  @todo - Can refactor in terms of a template function!.
      */
     void
     Dig2Device::SetValue(const char* parameterName, const char* value)
@@ -98,5 +99,134 @@ namespace caen_nscldaq {
         vstream << value;
         std::string strValue = vstream.str();
         SetValue(parameterName, strValue.c_str());
+    }
+    void
+    Dig2Device::SetValue(const char* parameterName, double value)
+    {
+        std::stringstream vstream;
+        vstream << value;
+        std::string strValue = vstream.str();
+        SetValue(parameterName, strValue.c_str());
+    }
+    void
+    Dig2Device::SetValue(const char* parameterName, bool value)
+    {
+        std::stringstream vstream;
+        vstream << value;
+        std::string strValue = vstream.str();
+        SetValue(parameterName, strValue.c_str());
+    }
+    /**
+     * SetDeviceValue
+     *     Device values have names like /par/ParameterName.
+     *     This overloaded set of functions takes the terminal part of
+     *     the parameter name and a value, creates the full path and
+     *     sets the value.
+     * @param devParName - a device parameter name.
+     * @param value      - Value to set.
+     * @todo - can think about this being a templated function.
+     */
+    void
+    Dig2Device::SetDeviceValue(const char* devParName, const char* value)
+    {
+        std::string devPath = devPath(devParName);
+        SetValue(devPath.c_str(), value);
+    }
+    Dig2Device::SetDeviceValue(const char* devParName, int* value)
+    {
+        std::string devPath = devPath(devParName);
+        SetValue(devPath.c_str(), value);
+    }
+    Dig2Device::SetDeviceValue(const char* devParName, doubld value)
+    {
+        std::string devPath = devPath(devParName);
+        SetValue(devPath.c_str(), value);
+    }
+    Dig2Device::SetDeviceValue(const char* devParName, bool value)
+    {
+        std::string devPath = devPath(devParName);
+        SetValue(devPath.c_str(), value);
+    }
+    /**
+     * SetChanValue
+     *    Per channel values have paths of the form:
+     *       /ch/n/par/ParameterName where n is a channel number.
+     *    These overloaded functions construct the path and then uses SetValue
+     *    to set a per channel parameter given the terminal part of its path.
+     * @param chan  Channel number.
+     * @param parameterName - name of the parameter.
+     * @param value  Channel value.
+     * @todo - there is an opportunity for factoring into a templated
+     *         method
+     */
+    
+    void
+    Dig2Device::SetChanValue(unsigned  chan, const char* chanParName, const char* value)
+    {
+        std::string parPath = chanPath(chan, chanParName);
+        SetValue(parPath.c_str(), value);
+    }
+    void
+    Dig2Device::SetChanValue(unsigned  chan, const char* chanParName, int value)
+    {
+        std::string parPath = chanPath(chan, chanParName);
+        SetValue(parPath.c_str(), value);
+    }
+    void
+    Dig2Device::SetChanValue(unsigned  chan, const char* chanParName, double value)
+    {
+        std::string parPath = chanPath(chan, chanParName);
+        SetValue(parPath.c_str(), value);
+    }
+    void
+    Dig2Device::SetChanValue(unsigned  chan, const char* chanParName, bool value)
+    {
+        std::string parPath = chanPath(chan, chanParName);
+        SetValue(parPath.c_str(), value);
+    }
+    /**
+     * getValueGet<type>Value
+     *    Gets the value of a parameter.
+     *   @todo using a templated function could get around the problem that
+     *         overloadsd cannot vary solely in return type.
+     *  @param parameterName - Full path to the parameter.
+     *  @return value
+     */
+    std::string
+    Dig2Device::GetValue(const char* parameterName)
+    {
+        char buffer[256];           // Max value according to lib docs.
+        if (CAEN_FELib_GetValue(m_deviceHandle, parameterName, buffer) != CAEN_FELib_Success) {
+            std::stringstream strMessage;
+            strMessage << "GetValue failed for " << parameterName <<
+                <<" : "    << lastError;
+            std::string msg = strMessage.str();
+            throw std::runtime_error(msg.c_str());
+        }
+        return std::string(buffer);
+    }
+    int GetInteger(const char* parameterName)
+    {
+        int value;
+        std::string strValue = GetValue(parameterName);
+        std::stringstream sValue(strValue);
+        sValue >> value;
+        return value;
+    }
+    int GetReal(const char* parameterName)
+    {
+        double value;
+        std::string strValue = GetValue(parameterName);
+        std::stringstream sValue(strValue);
+        sValue >> value;
+        return value;
+    }
+    int GetBool(const char* parameterName)
+    {
+        bool value;
+        std::string strValue = GetValue(parameterName);
+        std::stringstream sValue(strValue);
+        sValue >> value;
+        return value;
     }
 }
