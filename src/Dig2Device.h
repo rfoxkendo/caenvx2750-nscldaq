@@ -79,15 +79,15 @@ namespace caen_nscldaq {
         
         // Digitizer commands:
         
-        void Command();
+        void Command(const char* command);
         
         // Acquistion -- these need a higher level of abstraction
         // than offered by felib IMHO.
         
-        void setActiveEndpoint(const char* ep);
-        void setReadDataFormat(const char* json);   // Can we hide JSON generation?
+        void SetActiveEndpoint(const char* ep);
+        void SetReadDataFormat(const char* json);   // Can we hide JSON generation?
+        
         void ReadData(int timeout, ...);
-        void ReadDataV(int timeout, va_list args);
     private:
         std::string devPath(const char* devParName);
         std::string chanPath(unsigned chan, const char* chanParName);

@@ -205,7 +205,7 @@ namespace caen_nscldaq {
         }
         return std::string(buffer);
     }
-    int GetInteger(const char* parameterName)
+    int Dig2Device::GetInteger(const char* parameterName)
     {
         int value;
         std::string strValue = GetValue(parameterName);
@@ -213,7 +213,7 @@ namespace caen_nscldaq {
         sValue >> value;
         return value;
     }
-    int GetReal(const char* parameterName)
+    int Dig2Device::GetReal(const char* parameterName)
     {
         double value;
         std::string strValue = GetValue(parameterName);
@@ -221,12 +221,109 @@ namespace caen_nscldaq {
         sValue >> value;
         return value;
     }
-    int GetBool(const char* parameterName)
+    int Dig2Device::GetBool(const char* parameterName)
     {
         bool value;
         std::string strValue = GetValue(parameterName);
         std::stringstream sValue(strValue);
         sValue >> value;
         return value;
+    }
+    /**
+     * GetDeviceValue/GetDevicexxx
+     *     Get a device parameter value.  These have paths like
+     *     /par/parametername.
+     * @param parameterName - the terminal node of the parameter path.
+     * @return parameter value.
+     * @todo - again there's a refactoring opportunity here in terms of a
+     *         template method.
+     */
+    std::string
+    Dig2Device::GetDeviceValue(const char* parameterName)
+    {
+        std::string fullPath = devPath(parameterName)
+        return GetValue(fullPath.c_str());        
+    }
+    int
+    Dig2Device::GetDeviceInteger(const char* parameterName)
+    {
+        std::string fullPath = devPath(parameterName);
+        return GetInteger(fullPath.c_str());
+    }
+    double
+    Dig2Device::GetDeviceReal(const char* parameterName)
+    {
+        std::string fullPath = devPath(parameterName);
+        return GetReal(fullPath.c_str());
+    }
+    bool
+    Dig2Device::GetDeviceBool(const char* parameterName)
+    {
+        std::string fullPath = devPath(parameterName);
+        return GetBool(fullPath.c_str());
+    }
+    /**
+     * GetChanValue/GetChanxxx
+     *    Channel parameters have paths like /ch/n/par/name
+     *    where n is the channel number.
+     * @param chan          - CHannel number.
+     * @param parameterName - Terminnal part of the parameter name path.
+     * @return Value of that channel's parameter.
+     * 
+     */
+    std::string
+    Dig2Device::GetChanValue(unsigned chan, const char* parameterName)
+    {
+        std::string fullPath = chanPath(chan, parameterName);
+        return GetValue(fullPath.c_str());
+    }
+    int
+    Dig2Device::GetChanInteger(unsigned chan, const char* parameterName)
+    {
+        std::string fullPath = chanPath(chan, parameterName);
+        return GetInteger(fullPath.c_str());
+    }
+    doubld
+    Dig2Device::GetChanReal(unsigned chan, const char* parameterName)
+    {
+        std::string fullPath = chanPath(chan, parameterName);
+        return GetReal(fullPath.c_str());
+    }
+    bool
+    Dig2Device::GetChanBool(unsigned chan, const char* parameterName)
+    {
+        std::string fullPath = chanPath(chan, parameterName);
+        return GetBool(fullPath.c_str());
+    }
+    /**
+     * Command
+     *    Send a command to the digitizer.
+     * @param command - this is the terminal node of the command path string.
+     */
+    void
+    Dig2Device::Command(const char* command)
+    {
+        std::string fullPath = "cmd/";
+        fullPath += command;
+        
+        if (CAEN_FELib_SendCommand(m_deviceHandle, fullPath.c_str()) != CAEN_FELib_Success)
+        {
+            std::stringstream strMessage;
+            strMessage << " Failed to send digitizer " << commmand
+                       << " operation : " << lastError();
+            std::string msg = strMessage.str();
+            throw std::runtime_error(msg);
+        }
+    }
+    /**
+     * setActiveEndpoint
+     *    Construct the end point path name and set it as active.
+     *    
+     *    @param ep = name of the endpoint
+     */
+    void
+    Dig2Device::SetActiveEndpoint(const char* ep)
+    {
+        SetValue("/endpoint/par/activeendpoint", ep);
     }
 }
