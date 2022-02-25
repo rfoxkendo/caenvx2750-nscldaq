@@ -1,3 +1,5 @@
 *.tar.gz
 *dig2*
 *felib*
+*.a
+*~
