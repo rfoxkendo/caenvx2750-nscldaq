@@ -23,7 +23,7 @@
 */
 #ifndef DIG2DEVICE_H
 #define DIG2DEVICE_H
-#include <stdint>
+#include <cstdint>
 #include <string>
 #include <cstdarg>
 
@@ -53,7 +53,7 @@ namespace caen_nscldaq {
         void SetDeviceValue(const char* devParName, double value);
         void SetDeviceValue(const char* devParName, bool value);
         
-        void SetChanValue(unsigned chan, const char* chanParName const char* value);
+        void SetChanValue(unsigned chan, const char* chanParName, const char* value);
         void SetChanValue(unsigned chan, const char* chanParName, int value);
         void SetChanValue(unsigned chan, const char* chanParName, double value);
         void SetChanValue(unsigned chan, const char* chanParName, bool value);
@@ -87,7 +87,7 @@ namespace caen_nscldaq {
         void SetActiveEndpoint(const char* ep);
         void SetReadDataFormat(const char* json);   // Can we hide JSON generation?
         
-        void ReadData(int timeout, ...);
+        bool ReadData(int timeout, int argc, void** argv);
     private:
         std::string devPath(const char* devParName);
         std::string chanPath(unsigned chan, const char* chanParName);

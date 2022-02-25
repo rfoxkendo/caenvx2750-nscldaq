@@ -25,6 +25,8 @@
 #include <CAEN_FELib.h>
 #include <stdexcept>
 #include <sstream>
+#include <assert.h>
+#include <string.h>
 
 static const char* scheme="dig2";
 static const char* usbhost="usb:";
@@ -84,7 +86,7 @@ namespace caen_nscldaq {
     void
     Dig2Device::SetValue(const char* parameterName, const char* value)
     {
-        if (CAEN_FELib_SetValue(m_deviceHandke, parameterName, value) != CAEN_FELib_Success) {
+        if (CAEN_FELib_SetValue(m_deviceHandle, parameterName, value) != CAEN_FELib_Success) {
             std::stringstream failmsg;
             failmsg << " Failed to set value: " << parameterName
                 << " to : " <<  value << " : " << lastError();
@@ -129,23 +131,26 @@ namespace caen_nscldaq {
     void
     Dig2Device::SetDeviceValue(const char* devParName, const char* value)
     {
-        std::string devPath = devPath(devParName);
-        SetValue(devPath.c_str(), value);
+        std::string fullDevPath = devPath(devParName);
+        SetValue(fullDevPath.c_str(), value);
     }
-    Dig2Device::SetDeviceValue(const char* devParName, int* value)
+    void
+    Dig2Device::SetDeviceValue(const char* devParName, int value)
     {
-        std::string devPath = devPath(devParName);
-        SetValue(devPath.c_str(), value);
+        std::string fullDevPath = devPath(devParName);
+        SetValue(fullDevPath.c_str(), value);
     }
-    Dig2Device::SetDeviceValue(const char* devParName, doubld value)
+    void
+    Dig2Device::SetDeviceValue(const char* devParName, double value)
     {
-        std::string devPath = devPath(devParName);
-        SetValue(devPath.c_str(), value);
+        std::string fullDevPath = devPath(devParName);
+        SetValue(fullDevPath.c_str(), value);
     }
+    void
     Dig2Device::SetDeviceValue(const char* devParName, bool value)
     {
-        std::string devPath = devPath(devParName);
-        SetValue(devPath.c_str(), value);
+        std::string fullDevPath = devPath(devParName);
+        SetValue(fullDevPath.c_str(), value);
     }
     /**
      * SetChanValue
@@ -198,8 +203,8 @@ namespace caen_nscldaq {
         char buffer[256];           // Max value according to lib docs.
         if (CAEN_FELib_GetValue(m_deviceHandle, parameterName, buffer) != CAEN_FELib_Success) {
             std::stringstream strMessage;
-            strMessage << "GetValue failed for " << parameterName <<
-                <<" : "    << lastError;
+            strMessage << "GetValue failed for " << parameterName 
+                << " : "    << lastError();
             std::string msg = strMessage.str();
             throw std::runtime_error(msg.c_str());
         }
@@ -213,7 +218,7 @@ namespace caen_nscldaq {
         sValue >> value;
         return value;
     }
-    int Dig2Device::GetReal(const char* parameterName)
+    double Dig2Device::GetReal(const char* parameterName)
     {
         double value;
         std::string strValue = GetValue(parameterName);
@@ -221,7 +226,7 @@ namespace caen_nscldaq {
         sValue >> value;
         return value;
     }
-    int Dig2Device::GetBool(const char* parameterName)
+    bool Dig2Device::GetBool(const char* parameterName)
     {
         bool value;
         std::string strValue = GetValue(parameterName);
@@ -241,7 +246,7 @@ namespace caen_nscldaq {
     std::string
     Dig2Device::GetDeviceValue(const char* parameterName)
     {
-        std::string fullPath = devPath(parameterName)
+        std::string fullPath = devPath(parameterName);
         return GetValue(fullPath.c_str());        
     }
     int
@@ -283,7 +288,7 @@ namespace caen_nscldaq {
         std::string fullPath = chanPath(chan, parameterName);
         return GetInteger(fullPath.c_str());
     }
-    doubld
+    double
     Dig2Device::GetChanReal(unsigned chan, const char* parameterName)
     {
         std::string fullPath = chanPath(chan, parameterName);
@@ -309,7 +314,7 @@ namespace caen_nscldaq {
         if (CAEN_FELib_SendCommand(m_deviceHandle, fullPath.c_str()) != CAEN_FELib_Success)
         {
             std::stringstream strMessage;
-            strMessage << " Failed to send digitizer " << commmand
+            strMessage << " Failed to send digitizer " << command
                        << " operation : " << lastError();
             std::string msg = strMessage.str();
             throw std::runtime_error(msg);
@@ -326,4 +331,133 @@ namespace caen_nscldaq {
     {
         SetValue("/endpoint/par/activeendpoint", ep);
     }
+    /**
+     * setReadDataFormat
+     *   The actual stuff returned from a read is determined by this
+     *   function.  We pass some JSON stuff to it to describe what we want
+     *   to get out of the digitizer and then ReadData must pass an appropriately
+     *   crafted parameter list. See ReadData.
+     * @param json   - The JSON that descsribes what we want from the device.
+     */
+    void
+    Dig2Device::SetReadDataFormat(const char* json)
+    {
+        if (CAEN_FELib_SetReadDataFormat(m_deviceHandle, json) != CAEN_FELib_Success) {
+            std::stringstream strMessage;
+            strMessage << "Failed to set the data fromat "
+            << lastError();
+            std::string msg = strMessage.str();
+            throw std::runtime_error(msg);
+        }
+    }
+    /**
+     * ReadData
+     *    This method is a bit of nonsense.  The CAEN_FELib read methods
+     *    use variable argument lists.  The C/C++ standards don't provide
+     *    a recognized working method to jacket a variadic function with another
+     *    variadic function.  Yes there are bits and pieces on forums but
+     *    none of them are standard compliant in the sense that they are
+     *    guaranteed to work as compilers change.
+     *
+     *    In CAEN Support ticket #TT154304 I asked for a version of ReadData
+     *    that allowed an argc, argv parameter list and that was turned down
+     *    with the suggestion that I do the kludge in this method.
+     *
+     *    If somoeone ever actually decides to validate the argument count
+     *    this will blow up spectacularly.  The claim in that ticket is that:
+     *    "Additional arguments not defined in the
+     *    CAEN_FELib_SetReadDataFormat() will be ignored by the
+     *    CAEN_FELib_ReadData()."
+     *
+     *    Note this ticket also requests a check for data function which
+     *    the software folks said they will implement.
+     *
+     *    Note that this kludge also assumes that scaler types (not pointed to)
+     *    can fit in a void*  This also not assured.  We can't do a compile
+     *    time check for this, alas.  We can do a run-time check and, if this
+     *    all fails, we can document that uint64_t must be received via pointers.
+     *
+     *    @param timeout - # ms timeout.
+     *    @param argc    - Number of arguments.
+     *    @param argv    - Arguments themselves.
+     *    @return bool   - true if data were read, false if timeout.
+     */
+    bool
+    Dig2Device::ReadData(int timeout, int argc, void** argv)
+    {
+        // No point in making a constant size since we'll have to list the
+        // elements explicitly in the call to ReadData.
+        void* args[20];                // hopefully enough.
+        assert(sizeof(std::uint64_t) <= sizeof(void*));
+        if (argc > (sizeof(args)/sizeof(void*))) {
+            throw std::out_of_range("argc in Dig2Device:: too big maximum 20");
+        }
+        memcpy(args, argv, argc*sizeof(void*));
+        auto status = CAEN_FELib_ReadData(m_deviceHandle, timeout,
+            args[0], args[1], args[2], args[3], args[4],
+            args[5], args[6], args[7], args[8], args[9],
+            args[10], args[11], args[12], args[13], args[14],
+            args[15], args[16], args[17], args[18], args[19]
+        );
+        if (status == CAEN_FELib_Timeout) return false;
+        if(status != CAEN_FELib_Success) {
+            std::stringstream strMessage;
+            strMessage << "ReadData failed: " << lastError();
+            std::string msg = strMessage.str();
+            throw std::runtime_error(msg);
+        }
+        return true;
+    }
+    ///////////////////////////////////////////////////////////////
+    // Utlity methods.
+    
+    /**
+     * devPath
+     *    Given a device parameter name returns the full path to the
+     *    parameter.
+     * @param devParName - device parameter name.
+     * @return std::string - the full path.
+     */
+    std::string
+    Dig2Device::devPath(const char* devParName)
+    {
+        std::string result = "/par/";
+        result += devParName;
+        return result;
+    }
+    /**
+     * chanPath
+     *    Given a channel number and a channel parameter name
+     *    returns the full path to that parameter.
+     * @param chan - Channel number.
+     * @param chanParName - name of a parameter for that channel.
+     * @return std::string Full path.
+     */
+    std::string
+    Dig2Device::chanPath(unsigned chan, const char* chanParName)
+    {
+        std::stringstream strPath;
+        strPath << "/ch/" << chan << "/par/" << chanParName;
+        
+        std::string result = strPath.str();
+        return result;
+    }
+    /**
+     * lastError
+     *    Wrapper for CAEN_FELib_GetLastError.
+     * @return std::string
+     */
+    std::string
+    Dig2Device::lastError()
+    {
+        char msg[1024];                    // According to the API.
+        if(CAEN_FELib_GetLastError(msg) != CAEN_FELib_Success) {
+            // not sure what could go wrong but:
+            
+            throw std::runtime_error("Failed to get last error message!");
+        }
+        std::string result(msg);
+        return result;
+    }
+    
 }
