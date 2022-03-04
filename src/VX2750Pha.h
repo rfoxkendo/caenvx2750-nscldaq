@@ -201,6 +201,40 @@ public
     typedef enum _PairTriggerLogic {
         AND, OR, NONE
     } PairTriggerLogic;
+    
+    typedef enum _LVDSMode {
+        SelfTriggers, Sync, IORegister
+    } LVDSMode;
+    typedef enum _LVDSDirection {
+        Input, Output
+    } LVDSDirection;
+    
+    typedef enum _DACOutputMode {
+        Static, IPE, ChInput, MemOccupancy, CHSum, OverThrSum,
+        Ramp, Sin5MHz, Square
+    } DACOutputMode;
+    
+    static const std::uint32_t CHST_DelayInitdone = 1;
+    static const std::uint32_t CHST_TFInitDone    = 2;
+    static const std::uint32_t CHST_EFInitDone    = 4;
+    static const std::uint32_t CHST_FullInitDone  = 8;
+    static const std::uint32_t CHST_Unused1       = 0x10;
+    static const std::uint32_t CHST_AcqEnabled    = 0x20;
+    static const std::uint32_t CHST_InnerActive   = 0x40;
+    static const std::uint32_t CHST_CanWriteTE    = 0x80;
+    static const std::uint32_t CHST_CanWriteWF    = 0x100;
+    
+    typedef enum _Polarity {
+        Positive, Negative
+    } Polarity;
+    
+    typdef enum _EventSelection {
+        All, Pileup, EnergySkim
+    } EventSelection;
+    
+    typedef _CoincidenceMask {
+        Disabled, Ch64Trigger, TRGIn, GlobalTriggerSource, ITLA, ITLB
+    } CoincidenceMask;
 public:
     VX2750Pha(const char* hostOrPid, bool isUsb = false);
     virtual ~VX2750Pha();
@@ -359,7 +393,73 @@ public:
     PairTriggerLogic getITLBPairLogic();
     void         setITLAPairLogic(PairTriggerLogic sel);
     void         setITLBPairLogic(PairTriggerLogic sel);
+    std::uint64_t getITLAMask();
+    std::uint64_t getITLBMask();
+    void          setITLAMask(std::uint64_t mask);
+    void          setITLBMask(std::uint64_t mask);
+    std::uint64_t getITLAGateWidth();
+    std::uint64_t getITLBGateWidth();
+    void          setITLAGateWidth(std::uint32_t ns);
+    void          setITLBGateWidth(std::uint32_t ns);
     
+    LVDSMode      getLVDSMode(unsigned quartet);
+    void          setLVDSMode(unsigned quartet, LVDSMode mode);
+    LVDSDirection getLVDSDirection(unsigned quartet);
+    void          setLVDSDirection(unsigned quartet, LVDSDirection direction);
+    std::uint16_t getLVDSIOReg(unsigned quartet);
+    void          setLVDSIOReg(unsigned quartet, std::uint16_t mask);
+    
+    std::uint64_t getLVDSTriggerMask(unsigned inputNum);
+    void          setLVDSTriggerMask(unsigned inputNum, std::uint64_t mask);
+    
+    double        getVGAGain(unsigned group);
+    void          setVGAGain(unsigned group, double value);
+    
+    bool          isOffsetCalibrationEnabled(unsigned chan);
+    void          setOffsetCalibrationEnable(unsigned chan, bool enable);
+    bool          isChannelEnabled(unsigned chan);
+    void          enableChannel(unsigned chan, bool enable);
+    int           getSelfTriggerRate(unsigned chan);
+    std::uint32_t getChannelStatus(unsigned chan);
+    double        getDCOffset(unsigned chan);
+    void          setDCOffset(unsigned chan, double pct);
+    double        getGainFactor(unsigned chan);
+    std::uint32_t getTriggerThreshold(unsigned chan);
+    void          setTriggerThreshold(unsigned chan, std::uint32_t threshold);
+    Polarity      getPulsePolarity(unsigned chan);
+    void          setPulsePolarity(unsigned chan, Polarity pol);
+    
+    std::uint16_t getEnergySkimLowDiscriminator(unsigned chan);
+    void          setEnergySkimLowDiscriminator(unsigned chan, std::uint16_t value);
+    std::uint16_t getEnergySkimHighDiscriminator(unsigned chan);
+    void          setEnergySkimHighDiscriminator(unsigned chan, std::uint16_t value);
+    
+    EventSelection getEventSelector(unsigned chan);
+    void           setEventSelector(unsigned chan, EventSelection sel);
+    EventSelection getWaveformSelector(unsigned chan);
+    void           setWaveformSelector(unsigned chan, EventSelection sel);
+    CoincidenceMask getCoincidenceMask(unsigned chan);
+    void           setCoincidenceMask(unsigned chan, CoincidenceMask sel);
+    CoincidenceMask getAntiCoincidenceMask(unsigned chan);
+    void           setAntiCoincidenceMask(unsigned chan, CoincidenceMask sel);
+    
+    std::uint32_t  getCoincidenceSamples(unsigned chan);
+    void           setCoincidenceSamples(unsigned chan, std::uint32_t samples);
+    std::uint32_t  getCoincidenceNs(unsigned chan);
+    void           setCoincidenceNs(unsigned chan, std::uint32_t ns);
+    
+    std::uint32_t  getTimeFilterRiseTime(unsigned chan);
+    std::uint32_t  getTimeFilterRiseSamples(unsigned chan);
+    void           setTimeFilterRiseTime(unsigned chan, std::uint32_t ns);
+    void           setTimeFilterRiseSamples(unsigned chan, std::uint32_t samples);
+    std::uint32_t  getTimeFilterRetriggerGuardTime(unsigned chan);
+    std::uint32_t  getTimeFilterReetriggerGuardSamples(unsigned chan);
+    void           setTimeFilterRetriggerGuardTime(unsigned chan, std::uint32_t ns);
+    void           setTimeFilterRetriggerGuardSamples(unsigned chan, std::uint32_t samples);
+    std::uint32_t  getEnergyFilterRiseTime(unsigned chan);
+    std::uint32_t  getEnergyFilterRiseSamples(unsigned chan);
+    void           setEnergyFilterRiseTime(unsigned chan, std::uint32_t ns);
+    void           setEnergyFilterRiseSamples(unsigned chan, std::uint32_t samples);
 private:
     std::string  getNetworkInfo();
     std::int32_t     intFromString(const char* str);
