@@ -39,11 +39,10 @@ class VX2750Pha : public Dig2Device
 {
 public
     typedef enum _FwType {
-        DPP_PHA, DPP_ZLE, DPP_PSD, DPP_DAQ, DPP_OPEN, Scope,
-        Unknown
+        DPP_PHA, DPP_ZLE, DPP_PSD, DPP_DAQ, DPP_OPEN, Scope
     } FwType;
     typedef enum _FormFactor {
-        VME, VME64X, DT, Unknown
+        VME, VME64X, DT
     } FormFactor;
     
     typedef enum _ClockSource {
@@ -281,14 +280,21 @@ public:
     VX2750Pha(const char* hostOrPid, bool isUsb = false);
     virtual ~VX2750Pha();
     
-    std::string  getCupVersion();
-    std::string  getFpgaFWVersion();
-    FWType       getFirmwareType();
+private:
+    VX2750Pha(const VX2750Pha&);
+    VX2750Pha& operator=(const VX2750PHA& );
+    int operator==(const VX2750PHA&);
+    int operator!=(constVX2750PHA&);
+public:
+    
+    std::string  getCupVersion();     // Get the CUP version
+    std::string  getFpgaFWVersion();  // Get the firmware Version
+    FWType       getFirmwareType();   // Get the type of the firmware.
     std::string  getModelCode();
     std::string  getPiggyBackCode();
     std::string  getModelName();
     FormFactor   getFormFactor();
-    std::string  getFamilyCode();
+    int          getFamilyCode();
     std::string  getSerialNumber();
     int          getMotherboardRev();
     int          getPiggyBackRev();
@@ -578,7 +584,7 @@ public:
 private:
     std::string  getNetworkInfo();
     template<T> std::string enumToString(std::map<T, std::string>& map, T value);
-    template<T> T StringToEnum(std::map<std::string, T>& map, std::string value);
+    template<T> T stringToEnum(std::map<std::string, T>& map, std::string value);
 };
 }
 
