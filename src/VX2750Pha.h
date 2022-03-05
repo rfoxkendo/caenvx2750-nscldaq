@@ -25,6 +25,7 @@
 #define VX2750PHA_H
 #include "Dig2Device.h"
 #include <string>
+#include <map>
 #include <cstdint>
 
 caen_nscldaq {
@@ -235,6 +236,47 @@ public
     typedef _CoincidenceMask {
         Disabled, Ch64Trigger, TRGIn, GlobalTriggerSource, ITLA, ITLB
     } CoincidenceMask;
+    
+    typedef _EnergyPeakingAverage {
+        OneShot, LowAvg, MedumAvg, HighAvg
+    } EnergyPeakingAvergage;
+    
+    typedef _EnergyFilterBaselineAverage {
+        Fixed, VeryLow, Low, MediumLow, Medium, MediumHigh, High
+    } EnergyFiterBaselineAverage;
+    
+    typedef _Endpoints {
+        raw, dpppha
+    } Endpoints;
+    
+    // Struct to hold decoded data. The user can select which fields are filled in:
+    
+    typedef struct _DecodedEvent {
+        std::uint8_t   s_channel;
+        std::uint64_t  s_rawTimestamp;
+        std::uint64_t  s_nsTimestamp;
+        std::uint16_t  s_fineTimestamp;
+        std::uint16_t  s_energy;
+        std::uint16_t  s_lowPriorityFlags;
+        std::uint16_t  s_highPriorityFlags;
+        std::uint8_t   s_timeDownSampling;
+        std::int32_t*  s_pAnalogProbe1;
+        std::uint8_t   s_analogProbe1Type;
+        std::int32_t*  s_pAnalogProbe2;
+        std::uint8_t   s_analogProbe2Type;
+        std::uint8_t*  s_pDigitalProbe1;
+        std::uint8_t   s_digitalProbe1Type;
+        std::uint8_t*  s_pDigitalProbe2;
+        std;:uint8_t   s_digitalProbe3Type;
+        std::uint8_t*  s_pDigitalProbe2;
+        std;:uint8_t   s_digitalProbe3Type;
+        std::uint8_t*  s_pDigitalProbe4;
+        std::uint8_t   s_digitalProbe4Type;
+        size_t         s_samples;
+        bool           s_fail;
+        size_t         s_eventSize;
+        
+    } DecodedEvent, *pDecodedEvent;
 public:
     VX2750Pha(const char* hostOrPid, bool isUsb = false);
     virtual ~VX2750Pha();
@@ -460,11 +502,83 @@ public:
     std::uint32_t  getEnergyFilterRiseSamples(unsigned chan);
     void           setEnergyFilterRiseTime(unsigned chan, std::uint32_t ns);
     void           setEnergyFilterRiseSamples(unsigned chan, std::uint32_t samples);
+    std::uint32_t  getEnergyFilterFlatTopTime(unsigned chan);
+    std::uint32_t  getEnergyFilterFlatTimeSamples(unsigned chan);
+    void           setEnergyFilterFlatTopTime(unsigned chan, std::uint32_t ns);
+    void           setEnergyFilterFlatTopSamples(unsigned chan, std::uint32_t samples);
+    std::uint32_t  getEnergyFilterPeakingPosition(unsigned chan);
+    void           setEnergyFilterPeakingPosition(unsigned chan, std::uint32_t pct);
+    EnergyPeakingAverage getEnergyFilterPeakingAverage(unsigned chan);
+    void          setEnergyFilterPeakingAverage(unsigned chan, EnergyPeakingAverage sel);
+    std::uint32_t getEnergyFilterPoleZerotTime(unsigned chan);
+    std::uint32_t getEnergyFilterPoleZeroSamples(unsigned chan);
+    void          setEnergyFiterPoleZeroTime(unsigned chan, std::uint32_t ns);
+    void          setEnergyFilterPoleZeroTime(unsigned chan, std::uint32_t samples);
+    double        getEnergyFilterFineGain(unsigned chan);
+    void          setEnergyFilterFineGain(unsigned chan, double gain);
+    bool          isEnergyFilterFLimitationEnabled(unsigned chan);
+    void          enableEnerygFilterFLimitation(unsigned chan, bool enable);
+    EnergyFilterBaselineAverage getEnergyFilterBaselineAverage(unsigned chan);
+    void          getEnergyFilterBaselineAverage(unsigned chan, EnergyFileterBaselineAverage sel);
+    std::uint32_t getEnergyFilterBaselineGuardTime(unsigned chan);
+    std::uint32_t getEnergyFilterBaselineGuardSamples(unsigned chan);
+    void          getEnergyFitlerBaselineGuardTime(unsigned chan, std::uint32_t ns);
+    void          setEnergyFilterBaslineGuardSamples(unsigned chan, std::uint32_t samples);
+    std::uint32_t getEnergyFilterPileupGuardTime(unsigned chan);
+    std::uint32_t getEnergyFilterPileupGuardSamples(unsigned chan);
+    void          setEnergyFilterPileupGuardTime(unsigned chan, std::uint32_t ns);
+    void          setEnergyFilterPileupGuardSamples(unsigned chan, std::uint32_t samples);
+    
+    std::uint8_t  getEnergeyBits(unsigned chan);
+    std::uint32_t getRealtime(unsigned chan);
+    std::uint32_t getDeadtime(unsigned chan);
+    
+    // Commands:
+    
+    void          Reset();
+    void          Clear();
+    void          Arm();
+    void          Disarm();
+    void          Start();
+    void          Stop();
+    void          Trigger();
+    void          ReloadCalibration();
+    
+    // Endpoint management:
+    
+    Endpoint      getActiveEndpoint();
+    void          setActiveEndpoint(Endpoint selection);
+    
+    // Raw endpoint - note that when reading raw waveforms we always read
+    // both the size and data fields.
+    
+    size_t readRawEndpoint(void* pBuffer);
+    
+    // We're going to try to hide that awful JSON crap inside our class
+    // Some items will be mandatory, others not and are off by default
+    // but can be turned on/off programatically
+    // Mandatory:  channel, nsTimestamp, energy, fail
+    //
+    void setDefaultFormat();
+    void enableRawTimestamp(bool enable);
+    void enableFineTimestamp(bool enable);
+    void enableFlags(bool enable);
+    void enableDownsampling(bool enable);
+    void enableAnalogProbes(bool probe1, bool probe2);
+    void enableDigitalProbes(bool probe1, bool probe2, bool probe3, bool probe4);
+    void enableSamples(bool enable);
+    bool enableEventSize(bool enable);
+    
+    // This sends the JSON:
+    
+    void initializeDPPPHAReadout();
+    void readDPPPHAEndpoint(pDecodedEvent);
+    
+    
 private:
     std::string  getNetworkInfo();
-    std::int32_t     intFromString(const char* str);
-    std::uint32_t    unsignedFromString(const char* str);
-    double           floatFromString(const char* str);
+    template<T> std::string enumToString(std::map<T, std::string>& map, T value);
+    template<T> T StringToEnum(std::map<std::string, T>& map, std::string value);
 };
 }
 
