@@ -54,7 +54,7 @@ public
     } StartSource;
     
     typedef enum _GlobalTriggerSource {
-        TriggerIn, P0, Software, LFDS, InternalA, InternalB, InternalAandB,
+        TriggerIn, P0, Software, LVDS, InternalA, InternalB, InternalAandB,
         InternalAorB, EncodedClockIn, GPIO, TestPulse
     } GlobalTriggerSource;
     
@@ -297,7 +297,7 @@ public:
     int          getFamilyCode();
     std::string  getSerialNumber();
     int          getMotherboardRev();
-    int          getPiggyBackRev();
+    int          getPiggybackRev();
     std::string  getLicense();
     bool         isLicesnsed();
     int          remainingUnlicensedTime();
@@ -582,9 +582,11 @@ public:
     
     
 private:
-    std::string  getNetworkInfo();
-    template<T> std::string enumToString(std::map<T, std::string>& map, T value);
-    template<T> T stringToEnum(std::map<std::string, T>& map, std::string value);
+    int    dottedToInt(const std::string& dotted);
+    template<T> std::string enumToString(const std::map<T, std::string>& map, T value);
+    template<T> T stringToEnum(const std::map<std::string, T>& map, const std::string& value);
+    bool textToBool(const std::string& str);
+  
 };
 }
 
