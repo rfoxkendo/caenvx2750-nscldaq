@@ -60,7 +60,7 @@ public
     
     typedef enum _WaveTriggerSource {
         InternalA, InternalB, GlobalTriggerSource, TRGIN, ExternalInhibit,
-        ADCUnderSaturation, ADCOverSaturation, Software, CHannelSelfTrigger,
+        ADCUnderSaturation, ADCOverSaturation, Software, ChannelSelfTrigger,
         AnyChannelSelfTrigger, Disabled
     } WaveTriggerSource;
     
@@ -79,13 +79,13 @@ public
     
     typedef enum _TRGOUTMode {
         TRGIN, P0, Software, LVDS, InternalA, InternalB, InternalAandInternalB,
-        INternalAorInternalB, EncodedClockIn, Run, ReferenceClock, TestPuse,
-        Busy, Zero, One, SynchIn, SIN, GPIO, AcceptedTrigger TriggerClock
+        InternalAorInternalB, EncodedClockIn, Run, ReferenceClock, TestPuse,
+        Busy, Zero, One, SynchIn, SIN, GPIO, AcceptedTrigger, TriggerClock
     } TRGOUTMode;
     
     typedef enum _GPIOMode {
-        Disabled, TriggerIn, P0, SIN LVDS, IntarnalA, InternalB, InternalAandInternalB,
-        InternalAorInternalB, EncodedClockIn, Software, Run, ReferenceClock,
+        Disabled, TriggerIn, P0, SIN LVDS, InternalA, InternalB, InternalAandInternalB,
+        InternalAorInternalB, EncodedClockIn, SoftwareTrigger, Run, ReferenceClock,
         TestPulse, Busy, Zero, One
     } GPIOMode;
     
@@ -101,12 +101,13 @@ public
         SIN, LVDS, GPIO, P0, EncodedClock, Disabled
     } VetoSource;
     
+    
     typedef enum _VetoPolarity {
         ActiveHigh, ActiveLow
     } VetoPolarity;
     
     typedef enum _ChannelVetoSource {
-        OverSaturation, UnderSaturation, Disabled
+        BoardVeto, OverSaturation, UnderSaturation, Disabled
     } ChannelVetoSource;
     
     typedef enum _PauseTimestampHandling {
@@ -322,8 +323,10 @@ public:
     void         setStartSource(StartSource src);
     GlobalTriggerSource getGlobalTriggerSource();
     void         setGlobalTriggerSource(GlobalTriggerSource src);
-    WaveTriggerSource getWaveTriggerSource();
-    void         setWaveTriggerSource(WaveTriggerSource src):
+    WaveTriggerSource getWaveTriggerSource(unsigned ch);
+    void         setWaveTriggerSource(unsigned ch, WaveTriggerSource src);
+    EventTriggerSource getEventTriggerSource(unsigned ch);
+    void         setEventTriggerSource(unsigned ch, EventTriggerSource src);
     TimestampResetSource getTimestampResetSource();
     void setTimestampResetSource(TimestampResetSource);
     std::uint64_t getChannelTriggerMask();
@@ -344,25 +347,18 @@ public:
     void          setBoardVetoWidth(std::uint64_t ns);
     VetoPolarity  getBoardVetoPolarity();
     void          setBoardVetoPolarity(VetoPolarity pol);
-    std::unit32_t getRunDelay();
-    void          setRunDelay(std::uint32_t ns);
-    bool          isAutoDisarmEnabled();
-    void          setAutoDisarm(bool enable);
-    bool          isMultiWindowRunEnabled();
-    void          setMultiWindowRunEnable(bool enable);
-    bool          isPauseTimestampHoldEnabled();
-    void          setPauseTimestampHold(bool enable);
-    
     ChannelVetoSource getChannelVetoSource(unsigned chan);
     void          setChannelVetoSource(unsigned chan, ChannelVetoSource, src);
     std::unit32_t getChannelVetoWidth(unsigned chan);
     void          setChannelVetoWidth(unsigned chan, std::uint32_t ns);
-    int          getRunDelay()
-    void         setRunDelay(uint32_t ns);
+    std::uint32_t getRunDelay()
+    void         setRunDelay(std::uint32_t ns);
     bool         isAutoDisarmEnabled();
     void         setAutoDisarmEnabled(bool state);
     bool         isMultiWindowRunEnabled();
     void         setMultiWindowRunEnable(bool state);
+    bool          isPauseTimestampHoldEnabled();
+    void          setPauseTimestampHold(bool enable);
     PauseTimestampHandling
                   getPauseTimestampHandling();
     void          setPauseTimestampHandling(PauseTimestampHandling how);
