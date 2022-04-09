@@ -1,4 +1,4 @@
-/*
+ /*
 *-------------------------------------------------------------
  
  CAEN SpA 
@@ -47,18 +47,18 @@ static const std::map<std::string, VX2750Pha::FormFactors> stringToFormFactor = 
 }
 
 static const std::map<std::string, VX2750Pha::ClockSource> stringToClockSource = {
-    {"Internal", VX2750::Internal},
-    {"FPClkIn", VX2750::FrontPanel},
-    {"P0ClkIn",   VX2750::P0},
-    {"Link",   VX2750::Link},
-    {"DIPswitchSel", VX2750::DIPSelected}
+    {"Internal", VX2750Pha::Internal},
+    {"FPClkIn", VX2750Pha::FrontPanel},
+    {"P0ClkIn",   VX2750Pha::P0},
+    {"Link",   VX2750Pha::Link},
+    {"DIPswitchSel", VX2750Pha::DIPSelected}
 };
 static const std::map<VX2750Pha::ClockSource, std::string> clockSourceToString = {
-    {VX2750::Internal, "Internal"},
-    {VX2750::FrontPanel, "FPClkIn"},
-    {VX2750::P0, "P0ClkIn"},
-    {VX2750::Link, "Link"},
-    {VX2750::DIPSelected, "DIPswitchSel"}
+    {VX2750Pha::Internal, "Internal"},
+    {VX2750Pha::FrontPanel, "FPClkIn"},
+    {VX2750Pha::P0, "P0ClkIn"},
+    {VX2750Pha::Link, "Link"},
+    {VX2750Pha::DIPSelected, "DIPswitchSel"}
 };
 
 static const std::map<std::string, VX2750Pha::StartSource> stringToStartSource = {
@@ -328,6 +328,210 @@ static const std::map<VX2750Pha::ChannelVetoSource, std::string> channelVetoToSt
     {VX2750Pha::Disabled, "Disabled"}
 };
 
+static const std::map<std::string, VX2750Pha::WaveDataSource> stringToWaveDataSource = {
+    {"ADC_DATA", VX2750Pha::ADC_DATA},
+    {"ADC_TEST_TOGGLE", VX2750Pha::ADC_TEST_TOGGLE},
+    {"ADC_TEST_RAMP", VX2750Pha::ADC_TEST_RAMP},
+    {"ADC_TEST_SIN", VX2750Pha::ADC_SIN},
+    {"IPE", VX2750Pha::IPE},
+    {"Ramp", VX2750Pha::Ramp},
+    {"SquareWave", VX2750Pha::SquareWave},
+    {"ADC_TEST_PRBS", VX2750Pha::ADC_TEST_PRBS}
+};
+static const std::map<VX2750Pha::WaveDataSource, std::string> waveDataSourceToString = {
+    {VX2750Pha::ADC_DATA, "ADC_DATA"},
+    {VX2750Pha::ADC_TEST_TOGGLE, "ADC_TEST_TOGGLE"},
+    {VX2750Pha::ADC_TEST_RAMP, "ADC_TEST_RAMP"},
+    {VX2750Pha::ADC_SIN, "ADC_TEST_SIN"},
+    {VX2750Pha::IPE, "IPE"},
+    {VX2750Pha::Ramp, "Ramp"},
+    {VX2750Pha::SquareWave, "SquareWave"},
+    {VX2750Pha::ADC_TEST_PRBS, "ADC_TEST_PRBS"}
+};
+
+static const std::map<std::string, VX2750Pha::WaveResolution> stringToWaveResolution = {
+    {"Res8", VX2750Pha::Res8},
+    {"Res16", VX2750Pha::Res16},
+    {"Res32", VX2750Pha::Res32},
+    {"Res64", VX2750Pha::Res64} 
+};
+static const std::map<VX2750Pha::WaveResolution, std::string> waveResolutionToSTring = {
+    {VX2750Pha::Res8, "Res8",},
+    {VX2750Pha::Res16, "Res16"},
+    {VX2750Pha::Res32, "Res32"},
+    {VX2750Pha::Res64, "Res64"} 
+};
+
+static const std::map<std::string, VX2750Pha::AnalogProbe> stringToAnalogProbe = {
+    {"ADCInput", VX2750Pha::ADCInput},
+    {"TimeFilter", VX2750Pha::TimeFilter},
+    { "EnergyFilter", VX2750Pha::EnergyFilter},
+    {"EnergyFilterBaseline", VX2750Pha::EnergyFilterBaseline},
+    {"EnergyFilterMinusBaseline", VX2750Pha::EnergyFilterMinusBaseline}
+};
+static const std::map<VX2750Pha::AnalogProbe, std::string> analogProbeToString = {
+    {VX2750Pha::ADCInput, "ADCInput"},
+    {VX2750Pha::TimeFilter,"TimeFilter"},
+    {VX2750Pha::EnergyFilter, "EnergyFilter"},
+    {VX2750Pha::EnergyFilterBaseline, "EnergyFilterBaseline"},
+    {VX2750Pha::EnergyFilterMinusBaseline, "EnergyFilterMinusBaseline"} 
+};
+
+static const std::map<std::string, VX2750Pha::DigitalProbe> stringToDigitalProbe = {
+    {"Trigger", VX2750Pha::Trigger},
+    {"TimeFilterArmed", VX2750Pha::TimeFilterArmed},
+    {"ReTriggerGuard", VX2750Pha::ReTriggerGuard},
+    {"EnergyFilterBaslineFreeze", VX2750Pha::EneryFilterBaselineFreeze},
+    {"EnergyFilterPeaking", VX2750Pha::EnergyFilterPeaking},
+    {"EnergyFilterPeakReady", VX2750Pha::EnergyFilterPeakReady},
+    {"EnergyFilterPileUpGuard", VX2750Pha::EnergyFilterPileupGuard},
+    {"EventPileup", VX2750Pha::EventEventPileup},
+    {"ADCSaturation", VX2750Pha::ADCSaturation},
+    {"ADCSaturationProtection", VX2750Pha::ADCSaturationProtection},
+    {"PostSaturationEvent", VX2750Pha::PostSaturationEvent},
+    {"EnergyFilterSaturation" VX2750Pha::EnergyFilterSaturation},
+    {"AcquisitionInhibit", VX2750Pha::AcquisitionInhibit}
+};
+static const std::map<VX2750Pha::DigitalProbe, std::string> digitalProbeToString = {
+    {VX2750Pha::Trigger, "Trigger"},
+    {VX2750Pha::TimeFilterArmed, "TimeFilterArmed"},
+    {VX2750Pha::ReTriggerGuard, "ReTriggerGuard"},
+    {VX2750Pha::EneryFilterBaselineFreeze, "EnergyFilterBaslineFreeze"},
+    {"VX2750Pha::EnergyFilterPeaking, EnergyFilterPeaking"},
+    {"EnergyFilterPeakReady", VX2750Pha::EnergyFilterPeakReady},
+    {"EnergyFilterPileUpGuard", VX2750Pha::EnergyFilterPileupGuard},
+    {"EventPileup", VX2750Pha::EventEventPileup},
+    {"ADCSaturation", VX2750Pha::ADCSaturation},
+    {"ADCSaturationProtection", VX2750Pha::ADCSaturationProtection},
+    {"PostSaturationEvent", VX2750Pha::PostSaturationEvent},
+    {"EnergyFilterSaturation" VX2750Pha::EnergyFilterSaturation},
+    {"AcquisitionInhibit", VX2750Pha::AcquisitionInhibit}
+};
+
+static const std::map<std::string, VX2750Pha::IOLevel> stringToIOLevel = {
+    {"TTL", VX2750Pha::TTL},
+    {"NIM", VX2750Pha::NIM}
+};
+static const std::map<VX2750Pha::IOLevel, std::string> ioLevelToString = {
+    {VX2750Pha::NIM, "NIM"},
+    {VX2750Pha::TTL, "TTL"}
+};
+
+static const std::map<std::string, VX2750Pha::IndividualTriggerLogic> stringToIndividualTriggerLogic = {
+    {"OR", VX2750Pha::OR},
+    {"AND", VX2750Pha::AND},
+    {"Majority", VX2750Pha::Majority}
+};
+static const std::map<VX2750Pha::IndividualTriggerLogic> individualTriggerLogicToString = {
+    {VX2750Pha::OR, "OR"},
+    {VX2750Pha::AND, "AND"},
+    {VX2750Pha::Majority, "Majority"}
+};
+
+static const std::map<std::string, VX2750Pha::PairTriggerLogic> stringToPairLogic = {
+    {"AND", VX2750Pha::AND},
+    {"OR", VX2750Pha::OR},
+    {"NONE", VX2750Pha::NONE}
+};
+static const std::map<VX2750Pha::PairTriggerLogic, std::string> pairLogicToString = {
+    {VX2750Pha::AND, "AND"},
+    {VX2750Pha::OR, "OR"},
+    {VX2750Pha::NONE, "NONE"}
+};
+
+static const std::map<std::string, VX2750Pha::ITLConnect> stringToITLConnect = {
+    {"Disabled", VX2750Pha::Disabled},
+    {"ITLA", VX2750Pha::ITLA},
+    {"ITLB", VX2750Pha::ITLB}
+};
+static const std::map<VX2750Pha::ITLConnect, std::string> ITLConnectToString = {
+    {VX2750Pha::Disabled, "Disabled"},
+    {VX2750Pha::ITLA, "ITLA"},
+    {VX2750Pha::ITLB, "ITLB"}
+};
+
+static const std::map<std::string, VX2750Pha::LVDSMode> stringToLVDSMode = {
+     {"SelfTriggers", VX2750Pha::SelfTriggers},
+     {"Sync", VX2750Pha::Sync},
+     {"IORegister", VX2750Pha::IORegister}
+};
+static const std::map<VX27850::LVDSMode, std::string> LVDSModeToString = {
+     {VX2750Pha::SelfTriggers, "SelfTriggers"},
+     {VX2750Pha::Sync, "Sync"},
+     {VX2750Pha::IORegister, "IORegister"}    
+};
+
+static const std::map<std::string, VX2750Pha::LVDSDirection> stringToLVDSDirection = {
+    {"Input", VX2750Pha::Input},
+    {"Output", VX2750Pha::Output}
+};
+static const std::map<VX2750Pha::LVDSDirection, std::string> LVDSDirectionToString = {
+    {VX2750Pha::Input, "Input"},
+    {VX2750Pha::Output, "Output"}    
+};
+
+static const std::map<std::string, VX2750Pha::DACOutMode> stringToDACOutMode = {
+    {"Static", VX2750Pha::Static},
+    {"IPE", VX2750Pha::IPE},
+    {"ChInput", VX2750Pha::ChInput},
+    {"MemOccupancy", VX2750Pha::MemOccupancy},
+    {"ChSum", VX2750Pha::ChSum},
+    {"OverThrSum", VX2750Pha::OverThrSum},
+    {"Ramp", VX2750Pha::Ramp},
+    {"Sin5MHz", VX2750Pha::Sine},
+    {"Square", VX2750Pha::Square}
+};
+static const std::map<VX2750Pha::DACOutMode, std::string> DACOutModeToString = {
+    {VX2750Pha::Static, "Static"},
+    {VX2750Pha::IPE, "IPE"},
+    {VX2750Pha::ChInput, "ChInput"},
+    {VX2750Pha::MemOccupancy, "MemOccupancy"},
+    {VX2750Pha::ChSum, "ChSum"},
+    {VX2750Pha::OverThrSum, "OverThrSum"},
+    {VX2750Pha::Ramp, "Ramp"},
+    {VX2750Pha::Sine, "Sin5MHz"},
+    {VX2750Pha::Square, "Square"}
+};
+
+static const std::map<std::string, VX2750Pha::Polarity> stringToPolarity = {
+    {"Positive", VX2750Pha::Positive},
+    {"Negative", VX2750Pha::Negative}
+};
+static const std::map<VX2750Pha::Polarity, std::string> polarityToString = {
+    {VX2750Pha::Positive, "Positive"},
+    {VX2750Pha::Negative, "Negative"}
+};
+
+static const std::map<std::string, VX2750Pha::EventSelection> stringtoEventSelection = {
+    {"All", VX2750Pha::All},
+    {"Pileup", VX2750Pha::Pileup},
+    {"EnergySkim", VX2750Pha::EnergySkim}
+};
+static const std::map<VX2750Pha::EventSelection, std::string> eventSelectionToString = {
+    {VX2750Pha::All, "All"},
+    {VX2750Pha::Pileup, "Pileup"},
+    {VX2750Pha::EnergySkim, "EnergySkim"}
+};
+
+static const std::map<std::string, VX2750Pha::CoincidenceMask> stringToCoincidenceMask = {
+    {"Disabled", VX2750Pha::Disabled},
+    {"Ch64Trigger", VX2750Pha::Ch64Trigger},
+    {"TRGIN", VX2750Pha::TRGIn},
+    {"GlobalTriggerSource", VX2750Pha::GlobalTriggerSource},
+    {"ITLA", VX2750Pha::ITLA},
+    {"ITLB", VX2750Pha::ITLB}
+};
+static const std::map<VX2750Pha::CoincidenceMask, std::string> coincidenceMaskToString = {
+    {VX2750Pha::Disabled, "Disabled"},
+    {VX2750Pha::Ch64Trigger, "Ch64Trigger"},
+    {VX2750Pha::TRGIn, "TRGIN"},
+    {VX2750Pha::GlobalTriggerSource}, "GlobalTriggerSource",
+    {VX2750Pha::ITLA, "ITLA"},
+    {VX2750Pha::ITLB, "ITLB"}
+};
+////////////////////////////////////////////////////////////////////////////////
+// Public methods
+
     /**
      * constructor
      *    @param hostOrPid - Host or PID specification
@@ -369,7 +573,7 @@ static const std::map<VX2750Pha::ChannelVetoSource, std::string> channelVetoToSt
      *
      * @return FWType
      */
-    VX2750::FWType
+    VX2750Pha::FWType
     VX2750Pha::getFirmwareType()
     {
         std::string strFwType = getDeviceValue("FwType");
@@ -700,7 +904,7 @@ static const std::map<VX2750Pha::ChannelVetoSource, std::string> channelVetoToSt
      *     @param ch  - A digitizer channel number
      *     @return VX2750Pha::WaveTriggerSource - the wave trigger source of ch.
      */
-    VX2750::WaveTriggerSource
+    VX2750Pha::WaveTriggerSource
     VX2750Pha::getWaveTriggerSource(unsigned ch)
     {
         std::string strValue GetChanValue(ch, "WaveTriggerSource");
@@ -814,7 +1018,7 @@ static const std::map<VX2750Pha::ChannelVetoSource, std::string> channelVetoToSt
      *    Get what's selected to be output on the TRGOUT connector.
      * @return TRGOUTMode
      */
-    VX2750::TRGOUTMode
+    VX2750Pha::TRGOUTMode
     VX2750Pha::getTRGOUTMode()
     {
         std::string strMode = GetDeviceValue("TrgOutMode");
@@ -872,7 +1076,7 @@ static const std::map<VX2750Pha::ChannelVetoSource, std::string> channelVetoToSt
     }
     /**
      *  getSyncOutMode
-     *     @return VX2750::SyncOutMode - the current selection of the CLKOUT connector
+     *     @return VX2750Pha::SyncOutMode - the current selection of the CLKOUT connector
      */
     vx2750pHA::SyncOutMode
     VX2750Pha::SyncOutMode()
@@ -895,7 +1099,7 @@ static const std::map<VX2750Pha::ChannelVetoSource, std::string> channelVetoToSt
      * getBoardVetoSource
      *    @return V2750::VetoSource - condition used to veto acquisitiontriggers.
      */
-    VX2750::VetoSource
+    VX2750Pha::VetoSource
     VX2750Pha::getBoardVeto()
     {
         std::string src = GetDeviceValue("BoardVetoSource");
@@ -1081,6 +1285,1474 @@ static const std::map<VX2750Pha::ChannelVetoSource, std::string> channelVetoToSt
     VX2750Pha::setMultiWindowRunEnable(bool state) {
         std::string strValue = state ? "True" : "False";
         SetDeviceValue("EnMultiWindowRun", strValue.c_str());
+    }
+    /**
+     * isTimestampHoldEnabled
+     *    @bool - True if timestamp increments are suspended when the run is paused
+     */
+    bool
+    VX2750Pha::isTimestampHoldEnabled()
+    {
+        std::string value = GetDeviceValue("PauseTimeStamp");
+        // Hold -> true, Run -> False.
+        
+        if (value == "Hold") {
+            return true;
+        } elseif (value == "Run") {
+            return false;
+        } else {
+            std::sstream strError;
+            strError << "isTimestampHoldEnabled got an unrecognized value: '"
+                << value << "'";
+            std::string msg = strError::str();
+            throw std::runtime_error(msg);
+        }
+    }
+    /**
+     * setPauseTimestampHold
+     *    @param bool - true if the timestamp should not increment (Hold)
+     *                  when runs are paused.
+     */
+    void
+    VX2750Pha::setPauseTimestampHold(bool enable)
+    {
+        std::string value = enable ? "Hold" : "Run";
+        SetDeviceValue("PauseTimestamp", value.c_str());
+    }
+    /**
+     * getLEDStatus
+     *    Return a 32 bit value bit bits set indicating the LED
+     *    status.  Symbolic bitmask definitions are in VX2750Pha::LED_*
+     * @return std::uint32
+     */
+    std::uint32_t
+    VX2750Pha::getLedStatus()
+    {
+        return GetDeviceInteger("LedStatus");
+        
+    }
+    /**
+     * getAcquisitionStatus
+     *   @return std::uint32_t - bit mask indicating acquisition status.
+     *          The VX2750Pha::ACQ_* symbols provide symbolic definitions for the
+     *          bit masks for each git in the response
+     */
+    std::uint32_t
+    VX2750Pha::getAcquisitionStatus()
+    {
+        return GetDeviceInteger("AcquisitionStatus");
+    }
+    /**
+     * getMaxRawDataSize
+     *    @return std::uint32_t The largest number of bytes of data that can be
+     *                          returned in reads from the raw endpoint.
+     */
+    std::uint32_t
+    VX2750Pha::getMaxRawDataSize()
+    {
+        return GetDeviceInteger("MaxRawDataSize");
+    }
+    /**
+     *  getVolatileClockDelay
+     *       Gets the current delay in clock output relative to the input reference
+     *       clock.
+     * @return double
+     */
+    double
+    VX2750Pha::getVolatileCLockDelay()
+    {
+        return GetDeviceReal("VolatileClockOutDelay");
+    }
+    /**
+     *  setVolatileClockDelay
+     *     @param ps - picoseconds of delay between input and output clock.
+     */
+    void
+    VX2750Pha::setVolatileCLockDelay(double ps)
+    {
+        SetDeviceValue("VolatileClockOutDelay", ps);
+    }
+    /**
+     * getPermanentClockOutDelay
+     *    @return double -ps - clock delay loaded into the hardware on power
+     *                         up.
+     */
+    double
+    VX2750Pha::getPermanentClockDelay()
+    {
+        return GetDeviceReal("PermanentClockOutDelay");
+    }
+    /**
+     * setPermanentCLockDelay
+     *     @param double ps - picoseconds delay loaded on power up into the clock
+     *                        delay.
+     */
+    void
+    VX2750Pha::setPermanentClockDelay(double ps)
+    {
+        SetDeviceValue("PermanentClockOutDelay", ps);
+    }
+    /**
+     * getWaveDataSource
+     *     @param ch - channelnumber.
+     *     @return VX2750Pha::WaveDataSource - enumerated value that describes
+     *              the source of waveform data sent to pulse processing
+     *              for that channel.
+     */
+    VX2750Pha::WaveDataSource
+    VX2750Pha::getWaveDataSource(unsigned ch)
+    {
+        return stringToEnum(stringToWaveDataSource, GetChannelValue(ch, "WaveDataSource"));
+    }
+    /**
+     * setWaveDataSource
+     *    @param ch - channel to set.
+     *    @param selection - select the waveform data source sent to DPP
+     */
+    void
+    VX2750Pha::setWaveDataSource(unsigned chan, WaveDataSource, selection)
+    {
+        std::string value = enumToString(waveDataSourcToString, selection);
+        SetChannelValue(ch, "WaveDataSource", value.c_str());
+    }
+    /**
+     * getRecordSamples
+     *    @param ch - channel number.
+     *    @return int - number of samples of waveform that will be acquired.
+     */
+    std::uint32_t
+    VX2750Pha::getRecordSamples(unsigned ch)
+    {
+        return GetChanInteger(ch, "ChRecordLengthS");
+    }
+    /**
+     * setRecorcdSamples
+     *    @param ch - channel number
+     *    @param samples - number of samples to acquire.
+     */
+    void
+    VX2750Pha::setRecordSamples(unsigned ch, std::uint32_t samples)
+    {
+        SetChanValue(ch, "ChRecordLengthS", samples);
+    }
+    /**
+     * getRecordNs
+     *   @param ch - channel number.
+     *   @return std::uint32_t - number of nanoseconds of waveform that will be recorded.
+     */
+    std::uint32_t
+    VX2750Pha::getRecordNs(unsigned ch)
+    {
+        GetChanInteger(ch, "ChRecordLengthT");
+    }
+    /**
+     * setRecordNs
+     *    @param ch - channel number.
+     *    @param ns - Desired of captured waveform.  Note that the actual
+     *                set value may differ if ns is not an exact number of samples
+     */
+    void
+    VX2750Pha::setRecordNs(unsigned ch, std::uint32_t ns)
+    {
+        SetChanValue(ch, "ChRecordLengthT", ns);
+    }
+    /**
+     * getWaveResolution
+     *     Return the actual time covered by a waveform sample.
+     *     This supports saveform decimation.
+     * @param ch - channel.
+     * @return WaveResolution - Enum indication the selected resolution.
+     */
+    VX2750Pha::WaveResolution
+    VX2750Pha::getWaveResolution(unsigned ch)
+    {
+        std::string value = GetChanValue(ch, "WaveResolution");
+        return stringToEnum(stringToWaveResolution, value);
+    }
+    /**
+     * setWaveResolution
+     *    @param ch - channel to set.
+     *    @param sel - selector.
+     */
+    void
+    VX2750Pha::setWaveResolution(unsigned ch, WaveResolution sel)
+    {
+        std::string value = enumToString(waveResolutionToString, sel);
+        SetChaneValue(ch, "WaveResolution", value.c_str());
+    }
+    /**
+     * getAnalogProbe
+     *   @param ch  - channel number.
+     *   @param probeNum - probe number , 0 or 1.
+     *   @return VX2750Pha::AnalogProbe.
+     */
+    VX2750Pha::AnalogProbe
+    VX2750Pha::getAnalogProbe(unsigned ch, unsigned probeNum)
+    {
+        checkInclusiveRange(0, 1, probeNum);         // Good probe number.
+        std::string param = appendNumber("WaveAnalogProbes", probeNum);
+        
+        std::string value = GetChanValue(ch, param.c_str());
+        return stringToEnum(stringToWaveResolution, value);
+    }
+    /**
+     * setAnalogProbe
+     *   @param ch - channel number,
+     *   @param probeNum -probe number.
+     *   @param selection - selected prob3e.
+     */
+    void
+    VX2750Pha::setAnalogProbe(unsigned ch, unsigned probeNum, AnalogProbe selection)
+    {
+        checkInclusiveRange(0, 1, probeNum);
+        std::string param = appendNumber("WaveAnalogProbes", probeNum);
+        
+        std::stringValue = enumToString(analogProbeToString, selection);
+        SetChanValue(ch, param.c_str(), stringValue.c_str());
+    }
+    /**
+     * getDigitalProbe
+     *   @param ch - channel
+     *   @param probe - number of the probe to get.
+     *   @return VX2750Pha::DigitalProbe
+     */
+    VX2750Pha::DigitalProbe
+    VX2750Pha::getDigitalProbe(unsigned ch, unsigned probe)
+    {
+        checkInclusiveRange(0, 3, probe);
+        std::string param = appendNumber("WaveDigitalProbe", probe);
+        std::string value = GetChanValue(ch, param.c_str());
+        return stringToEnum(stringToDigitalProbe, value);
+    }
+    /**
+     * setDigitalProbe
+     *   @param ch - channel to set.
+     *   @param probe - number of probe to set [0-3]
+     *   @param selection  - The probe to select
+     */
+    void
+    VX2750Pha::setDigitalProbe(unsigned ch, unsigned probe, DigitalProbe selection)
+    {
+        checkInclusiveRange(0, 3, probe);
+        std::string param ("WaveDigitalProbe", probe);
+        std::string value = enumToString(digitalProbeToString, probe);
+        SetChanValue(ch, param.c_str(), value.c_str());
+    }
+    /**
+     * getPreTriggerSamples
+     *    @param chan  - channel numbger.
+     *    @return std::uint32_t nsamples -samples in the pretrigger for that channel.
+     */
+    std::uint32_t
+    VX2750Pha::getPreTriggerSamples(unsigned chan)
+    {
+        return GetChanInteger(chan, "ChPreTriggerS");
+    }
+    /**
+     * setPreTriggerSamples
+     *    @param ch - channel number.
+     *    @param samples - number of samples to have in the channels' pretrigger window.
+     */
+    void
+    VX2750Pha::setPreTriggerSamples(unsigned ch, std::uint32_t samples)
+    {
+        SetChanValue(ch, "ChPreTriggerS", samples);
+    }
+    /**
+     * getPreTriggerNs
+     *    Get the pretrigger time window in nanoseconds.
+     *  @param ch - channel
+     *  @return std::uint32_t - nanoseconds.
+     */
+    std::uint32_t
+    VX2750Pha::getPreTriggerNs(unsigned chan)
+    {
+        return GetChanInteger(chan, "ChPreTriggerT");
+    }
+    /**
+     * setPreTriggerNs
+     *    Set the pretrigger time window in nanoseconds.
+     *  @param ch - channel
+     *  @param ns -desired pretrigger window.
+     */
+    void
+    VX2750Pha::setPreTriggerNs(unsigned chan, std::uint32_t ns)
+    {
+        SetChanValue(chan, "ChPreTriggerT", ns);
+    }
+    
+    /**
+     * getTestPulsePeriod
+     *    @return std::uint32_t = nanoseconds betwee repetitions of the test pulse.
+     */
+    std::uint32_t
+    VX2750Pha::getTestPulsePeriod()
+    {
+        return GetDeviceInteger("TestPulsePeriod");
+    }
+    /**
+     * setTestPulsePeriod.
+     * @param ns - desired nanoseconds between repetitions of the test pulse.
+     */
+    void
+    VX2750Pha::setTestPulsePeriod(std::uint32_t ns)
+    {
+        SetDeviceValue("TestPulsePeriod", ns);
+    }
+    /**
+     * getTestPulseWidth
+     *    @return std::uint32_t test pulse width in ns.
+     */
+    std::uint32_t
+    VX2750Pha::getTestPulseWidth()
+    {
+        return GetDeviceInteger("TestPulseWidth");
+    }
+    /**
+     * setTestPulseWidth
+     *    @param ns - desired nanonseconds for which the test pulse is high.
+     */
+    void
+    VX2750Pha::setTestPulseWidth(std::uint32_t ns)
+    {
+        SetDeviceValue("TestPulseWidth", ns);
+    }
+    /**
+     * getTestPulseLowLevel
+     * @return std::uint32_t  ADC Counts for the low value of the test pulse.
+     */
+    std::uint32_t
+    VX2750Pha::getTestPulseLowLevel()
+    {
+        return GetDeviceInteger("TestPulseLowLevel");
+    }
+    /**
+     * setTestPulseLowLevel
+     *   @param counts - adc counts for the test pulse low level.
+     */
+    void
+    VX2750Pha::setTestPulseLowLeve(std::uint32_t counts)
+    {
+        SetDeviceValue("TestPulseLowLevel", counts);
+    }
+    /**
+     * getTestPulseHigHlevel
+     *    @return std::uint32_t  - adc counts when the test pulser is high
+     */
+    std::uint32_t
+    VX2750Pha::getTestPulseHighLevel()
+    {
+        return GetDeviceInteger("TestPulseHighLevel");
+    }
+    /**
+     * setTestPulseHighLevel
+     *    @param counts - Desired ADC counts fo the high level of the test pulser.
+     */
+    void
+    VX2750Pha::setTestPulseHighLevel(std::uint32_t counts)
+    {
+         SetDeviceValue("TestPulseHighLevel", counts);
+    }
+    /**
+     * getIOLevel
+     *   @return VX2750Pha::IOLevel - I/O signalling level for the TRGIN, SIN, TRGOUT
+     *                                 I/Os.
+     */
+    VX2750Pha::IOLevel
+    VX2750Pha::getIOLevel()
+    {
+        return stringToEnum(stringToIOlevel, GetDeviceValue("IOLevel"));
+    }
+    /**
+     * setIOLevel
+     *   @param level - desired I/O signalling level.
+     */
+    void
+    VX2750Pha::setIOLevel(IOLevel level)
+    {
+        std::string value = enumToString(ioLevelToString, level);
+        SetDeviceValue("IOLevel", value.c_str());
+    }
+    /**
+     * getAirInTemp
+     *    @return double - the temperature in C at the air intakes
+     */
+    double
+    VX2750Pha::getAirInTemp()
+    {
+        return GetDeviceReal("TempSensAirIn");
+    }
+    /**
+     * getAirOutTemp
+     *    Get the temperature of the board exhaust
+     * @return double
+     */
+    double
+    VX2750Pha::getAirOutTemp()
+    {
+        return GetDeviceReal("TempSensAirOut");
+    }
+    /**
+     * getCoreTemp
+     *    Get the temperature at the FPGA (board core).
+     * @return double
+     */
+    double
+    VX2750Pha::getCoreTemp()
+    {
+        return GetDeviceReal("TempSensCore");
+    }
+    /**
+     * getFirstADCTemp
+     *   @return double the temp in C at the first ADC sensor.
+     */
+    double
+    VX2750Pha::getFirstADCTemp()
+    {
+        return GetDeviceReal("TempSensFirstADC");
+    }
+    /**
+     * getLastADCTemp
+     *  @return double the temp in C at the last ADC sensor.
+     */
+    double
+    VX2750Pha::getLastADCTemp()
+    {
+        return GetDeviceReal("TempSensLastADC");
+    }
+    /**
+     * getHottestADCTemp
+     *    @return double - The temp in C at the hottest ADC.
+     */
+    double
+    VX2750Pha::getHottestADCTemp()
+    {
+        return GetDeviceReal("TempSensHottestADC");
+    }
+    /**
+     * getADCTemp
+     *    Get the temperature at a specific adc chip temperature sensor.
+     *  @param chip - ADC number [0-7].
+     *  @return double - Temperature in C at that chip's sensor.
+     */
+    double
+    VX2750Pha::getADCTemp(unsigned chip)
+    {
+        checkInclusiveRange(0,7, chip);
+        std::string paramName = appendNumber("TempSensADC", chip);
+        
+        return GetDeviceReal(paramName.c_str());
+    }
+    /**
+     * getDCDCConverterTemp
+     *    @return double - Temperature in C at the DC DC voltage converter.
+     */
+    double
+    VX2750Pha::getDCDCConverterTemp()
+    {
+        return GetDeviceReal("TempSensDCDC");
+    }
+    /**
+     * getDCDCConverterInputVoltage
+     *   @return double - Volts at the input sensor to the DC-DC converter.
+     */
+    double
+    VX2750Pha::getDCDCConverterInputVoltage()
+    {
+        return GetDeviceReal("VInSensDCDC");
+    }
+    /*
+     * getDCDCConverterOutputVoltage
+     *  @return double - volts at the output sensor of the DC-DC converter.
+     */
+    double
+    VX2750Pha::getDCDCConverterOutputVoltage()
+    {
+        return GetDeviceReal("VOutSensDCDC");
+    }
+    /**
+     * getDCDCConverterAmps
+     *     @return double - DCDC converter current in amps.
+     */
+    double
+    VX2750Pha::getDCDCCONverterAmps()
+    {
+        return GetDeviceReal("IOutSensDCDC");
+    }
+    /**
+     * getDCDCCOnverterHz
+     *    @return double - frequence of the DCDC Coverter in Hz.
+     */
+    double
+    VX2750Pha::getDCDCConverterHz()
+    {
+        return GetDeviceReal("FreqSensCore");
+    }
+    /**
+     * getDCDCConverterDutyCycle
+     *   @return double - percentage duty cycle of the DCDC converter.
+     */
+    double
+    VX2750Pha::getDCDCConverterDutyCycle()
+    {
+        return GetDeviceReal("DutyCycleSensDCDC");
+    
+    }
+    /**
+     * getFanSpeed
+     *    @param fan - Fan whose speed we want in the range [0,1].
+     *    @return std::uint32_t - RPMs of the specified fan.
+     *    @note this is only supported for the desktop form factor devices.
+     */
+    std::uint32_t
+    VX2750Pha::getFanSpeed(unsigned fan)
+    {
+        checkInclusiveRange(0,1, fan);
+        std::string paramName = appendNumber("SpeedSensFan", fan);
+        return GetDeviceInteger(paramName.c_str());
+    }
+    /**
+     * getErrorFlagMask
+     *    Fetches the error bits that drive the LEDS on the device front panel.
+     *    @return std::uint32_t - Bit encoded see VX2750Pha::ERR_* definitions.
+     */
+    std::uint32_t
+    VX2750Pha::getErrorFlagMask()
+    {
+        return GetDeviceInteger("ErrorFlagMask");
+    }
+    /**
+     * setErrorFlagMask
+     *    Not sure why we're allowed to set this but the manual says this is
+     *    a writable parameter.
+     * @param mask - desired error flag mask.
+     */
+    void
+    VX2750Pha::setErrorFlagMask(std::uint32_t mask)
+    {
+        SetDeviceValue("ErrorFlagMask", mask);
+    }
+    /**
+     * getErrorFlagDataMask
+     *    @return std::uint32_t the bit encoded error mask that will be included
+     *               in the data.
+     */
+    std::uint32_t
+    VX2750Pha::getErrorDataMask()
+    {
+        return GetDeviceInteger("ErrorFlagDataMask");
+    }
+    /**
+     * setErrorFlagDataMask
+     *    Again this, for reasons uknown to me is somehow writable.
+     * @param mask - the Desired error data mask.
+     */
+    void
+    VX2750Pha::setErrorDataMask(std::uint32_t mask)
+    {
+        SetDeviceValue("ErrorFlagDataMask", mask);
+    }
+    /**
+     * getErrorFlags
+     *    @return std::uint32_t - the error flags.  These are also, I think,
+     *         encoded via the VX2750Pha::ERR_ bitmasks.
+     */
+    std::uint32_t
+    VX2750Pha::getErrorFlags()
+    {
+        return GetDeviceInteger("ErrorFlags");
+    }
+    /**
+     * isBoardReady
+     *    @return bool - True if there are no error flags set else false
+     */
+    bool
+    VX2750Pha::isBoardReady()
+    {
+        return textToBool(GetDeviceValue("BoardReady"));
+    }
+    /**
+     * getITLAMainLogic
+     *     See the figure in 2.5.1 - Returns the main logic selected for individual
+     *     trigger A:
+     *  @return VX2750Pha::IndividualTriggerLogic - the selection
+    */
+    VX2750Pha::IndividualTriggerLogic
+    VX2750Pha::getITLAMainLogic()
+    {
+        std::string value = GetDeviceVazlue("ITLAMainLogic");
+        return stringToEnum(stringToIndividualTriggerLogic, value);
+    }
+    /*v*
+     * getITLBMainLogic.
+     *   @return VX2750Pha::IndividualTriggerLogic - same as above but for trigger B.
+     */
+    VX2750Pha::IndividualTriggerLogic
+    VX2750Pha::getITLBMainLogic()
+    {
+        std::string value = GetDeviceValue("ITLBMainLogic");
+        return stringToEnum(stringToIndividualTriggerLogic, value);
+    }
+    /**
+     * setITLAMainLogic
+     *    Select the desired condition for the A logic trigger.
+     * @param selection - The desired logic selection.
+     */
+    void
+    VX2750Pha::setITLAMainLogic(IndividualTriggerLogic selection)
+    {
+        std::string value = enumToString(individualTriggerLogicToString, selection);
+        SetDeviceValue("ITLAMainLogic", value.c_str());
+    }
+    /**
+     * setITLBMainLogic
+     *    Select the desired condition for the A logic trigger.
+     * @param selection - The desired logic selection.
+     */
+    void
+    VX2750Pha::setITLBMainLogic(IndividualTriggerLogic selection)
+    {
+        std::string value = enumToString(individualTriggerLogicToString, selection);
+        SetDeviceValue("ITLBMainLogic", value.c_str());
+    }
+    /**
+     * getITLAMajorityLevel
+     *   @return unsigned - Majority level for trigger logic A. only meaningful if
+     *                      ITLB's main logic has been set to majority.
+     */
+    unsigned
+    VX2750Pha::getITLAMajorityLevel()
+    {
+        return GetDeviceInteger("ITLAMajorityLev");
+    }
+    /**
+     * getITLBMajorityLevel
+     *   @return unsigned - same as above but for trigger logic B.
+     */
+    unsigned
+    VX2750Pha::getITLBMajorityLevel()
+    {
+        return GetDeviceInteger("ITLBMajorityLev");
+    }
+    /**
+     * setITLAMajoritylevel
+     *   @param level - the number of channels that must be triggering in coincidence
+     *                  to make ITLA trigger fire if it is in majority mode.
+     */
+    void
+    VX2750Pha::setITLAMajorityLevel(unsigned level)
+    {
+        SetDeviceValue("ITLAMajorityLev", level);
+    }
+    /**
+     *  setITLBMajorityLevel
+     *    @param level - same as above but for ITLB
+     */
+    void
+    VX2750Pha::setITLBMajorityLevel(unsigned level)
+    {
+        SetDeviceValue("ITLBMajorityLev", level);
+    }
+    /**
+     * getITLAPairLogic
+     *    Returns how channel pairs are combined and fed into the trigger logic
+     *    blocks.
+     * @return PairTriggerLogic - see 2.5.3 of the PHA Parameter manual for
+     *        a full description of this part of the trigger logic but note that
+     *        None and OR have not so subtle differences.
+     */
+    VX2750Pha::PairTriggerLogic
+    VX2750Pha::getITLAPairLogic()
+    {
+        return stringToEnum(stringToPairLogc, GetDeviceValue("ITLAPairLogic"));
+    }
+    /**
+     * getITLBPairLogic
+     *    @return PairTriggerLogic - same as above but for the B trigger block.
+     */
+    VX2750Pha::PairTriggerLogic
+    VX2750Pha::getITLBPairLogic()
+    {
+        return stringToEnum(stringToPairLogc, GetDeviceValue("ITLBPairLogic"));
+    }
+    /**
+     * setITLAPairLogic
+     *    Selects the logic fed to the ITLA trigger logic by channel self triggers
+     *    for adjacent pairs.
+     *  @param sel - the pair logic selection
+     */
+    void
+    VX2750Pha::setITLAPairLogic(PairTriggerLogic sel)
+    {
+        std::string value = enumToString(pairLogicToString, sel);
+        SetDeviceValue("ITLAPairLogic", value.c_str());
+    }
+    /**
+     * setITLBPairLogic
+     *    Same as above but for the B trigger logic logic block.
+     */
+    void
+    VX2750Pha::setITLBPairLogic(PairTriggerLogic sel)
+    {
+        std::string value = enumToString(pairLogicToString, sel);
+        SetDeviceValue("ITLBPairLogic", value.c_str());
+    }
+    /**
+     * isITLAInverted
+     *    @bool - true if the output of ITLA is inverted.
+     */
+    bool
+    VX2750Pha::isITLAInverted()
+    {
+        std::string value = GetDeviceValue("ITLAPolarity");
+        if (value == "Direct") return false;
+        if (value == "Inverted") return true;
+        std::stringstream msg;
+        msg << "VX2750Pha::isITLAInverted - unrecognized return string : ";
+        msg << value;
+        throw std::runtime_error(msg);
+    }
+    bool
+    VX2750Pha::isITLBInverted()
+    {
+        std::string value = GetDeviceValue("ITLBPolarity");
+        if (value == "Direct") return false;
+        if (value == "Inverted") return true;
+        std::stringstream msg;
+        msg << "VX2750Pha::isITLAInverted - unrecognized return string : ";
+        msg << value;
+        throw std::runtime_error(msg);
+    }
+    /**
+     * setITLAInverted
+     *     @param invert - true to request inverted output.
+     */
+    void
+    VX2750Pha::setITLAInverted(bool inverted)
+    {
+        std::string value = inverted? "Inverted" : "Direct";
+        SetDeviceValue("ITLAPolarity", value.c_str());
+    }
+    /**
+     * setITLBInverted
+     *    @param invert true to request inverted
+     */
+    void
+    VX2750Pha::setITLBInverted(bool inverted)
+    {
+        std::string value = inverted? "Inverted" : "Direct";
+        SetDeviceValue("ITLBPolarity", value.c_str());
+    }
+    /**
+     * getITLConnect
+     *    @param ch  - channel number.
+     *    @return ITLConnect
+     */
+    VX2750Pha::ITLConnect
+    VX2750Pha::getITLConnect(unsigned ch)
+    {
+        return stringToEnum(stringToITLAConnect, GetChannelValue(ch, "ITLConnect"));
+    }
+    /**
+     * setITLConnect
+     *    @param ch - channel.
+     *    @param selection - the selected connection mode.
+     */
+    void
+    VX2750Pha::setITLConnect(ch, ITLConnect selection)
+    {
+        std::string value = enumToString(ITLAConnectToSTring, selection);
+        SetChannelValue(ch, "ITLConnect", value.c_str());
+    }
+    /**
+     * getITLAMask
+     *    get the mask of channels that are inputs to the ITLA logic.
+     *    Use either the mask or ITLConnect but not both.
+     *    @return uint64_t
+     */
+    std::uint64_t
+    VX2750Pha::getITLAMask()
+    {
+        return GetDeviceULong("ITLAMask");
+    }
+    /**
+     * getITLBMask
+     *    same as above but for the B trigger logic block.
+     */
+    std::uint64_t
+    VX2750Pha::getITLBMask()
+    {
+        return GetDeviceULong("ITLBMask");
+    }
+    /**
+     * setITLAMask
+     *    @param mask - new ITLA mask.
+     */
+    void
+    VX2750Pha::setITLAMask(std::uint64_t mask\)
+    {
+        SetDeviceValue("ITLAMask", mask);
+    }
+    /**
+     * setITLBMask
+     *    same as above but for the b mask.
+     */
+    void
+    VX2750Pha::setITLBMask(std::uint64_t mask)
+    {
+        SetDeviceValue("ITLBMask", mask);
+    }
+    /**
+     * getITLAGateWidth
+     *    @return std::uint32_t - width of the A gate in 8ns steps.
+     */
+    std::uint32_t
+    VX2750Pha::getITLAGateWidth()
+    {
+        return GetDeviceInteger("ITLAGateWidth");
+    }
+    /**
+     * getITLBGateWidth
+     *    same as above but for the B gat width.
+     */
+    std::uint32_t
+    VX2750Pha::getITLBGateWidth()
+    {
+        return GetDeviceInteger("ITLBGateWidth");
+    }
+    /**
+     * setITLAGateWidth
+     *    @param width - desired gatewidth in 8ns steps.
+     */
+    void
+    VX2750Pha::setITLAGateWidth(std::uint32_t width)
+    {
+        SetDeviceValue("ITLAGateWidth", width);
+    }
+    /**
+     * setITLBGateWidth
+     *   same as above but for the b gate.
+     */
+    void
+    VX2750Pha::setITLBGateWidth(std::uint32_t width)
+    {
+        SetDeviceValue("ITLBGateWidth", width);
+    }
+    /**
+     * getLVDSMode
+     *   @param quartet - which of the quartets.
+     *   @return LVDSMode - the mode that quartet is set in.
+     */
+    VX2750Pha::LVDSMode
+    VX2750Pha::getLVDSMode(unsigned quartet)
+    {
+        return stringToEnum(stringToLVDSMode, GetLVDSValue(quartet, "LVDSMode"));
+    }
+    /**
+     * setLVDSMode
+     *    @param quartet -the quartet to set.
+     *    @param mode    - The LVDSMode desired for that quartet.
+     */
+    void
+    VX2750Pha::setLVDSMode(unsigned quartet, LVDSMode mode)
+    {
+        std::string value = enumToSring(LVDSModeToString, mode);
+        SetLVDSValue(quartet, "LVDSMode", value.c_str());
+    }
+    /**
+     * getLVDSDirection
+     * @param quartet - which group of 4 to interrogate.
+     * @return LVDSDirection - Is the quartet composed of inputs or outputs.
+     */
+    VX2750Pha::getLVDSDirection(unsigned quartet)
+    {
+        return stringToEnum(stringToLVDSDirection, GetLVDSValue(quartet, "LVDSDirection"));
+    }
+    /**
+     * setLVDSDirection
+     *   @param quartet to set.
+     *   @param direction - desired signal direction.n
+     */
+    void
+    VX2750Pha::setLVDSDirection(unsigned quartet, LVDSDirection direction)
+    {
+        std::string value = enumToString(LVDSDirectionToSTring direction);
+        SetLVDSValue(quartet, "LVDSDirection", value.c_str());
+    }
+    /**
+     * getLVDSIOReg
+     *    If an LVDS register is set to IORegister mode, this will
+     *    return the value of the LVDS I/O states.  This will be correct if the
+     *    register has been programmed for input or output.
+     * @param quartet - the quartet to get the value of
+     * @return std::uint16_t - Bit mask of the I/O register.
+     */
+    std::uint16_t
+    VX2750Pha::getLVDSIOReg(unsigned quartet)
+    {
+        return GetLVDSInteger(quartet, "LVDSIOReg");
+    }
+    /**
+     * setLVDSIOReg
+     *    Sets the value of an LVDS I/O register.  This is only meaningful if
+     *    the mode is IORegister and the direction in output.  In that case,
+     *    this sets the values of the LVDS pins per the mask value passed in.
+     * @param quartet - selects the quartet of LVDS pins to set.
+     * @param mask    - Bit mask of LVDS outputs.
+     */
+    void
+    VX2750Pha::setLVDSIOReg(unsigned quartet, std::uint16_t mask)
+    {
+        SetLVDSValue(quartet, "LVDSIOReg", mask);
+    }
+    /**
+     * getLVDSTriggerMask
+     *    Reads the self trigger mask that would be sent to the LVDS outputs
+     *    if the mode is self trigger and the mode SelfTrigger
+     * @param masknum - Mask number.
+     * @return std::uint64_t
+     */
+    std::uint64_t
+    VX2750Pha::getLVDSTriggerMask(unsigned masknum)
+    {
+        // This mask number bit is handled with pure insantiy -- see the manual
+        // rather than encoding it into the path it's the initial value of the
+        // buffer.
+        
+        std::stringstream strnum;
+        strnum << masknum;
+        std::string smaskno = strnum.c_str();
+        
+        std::string strResult =  GetValue("/par/LVDSTrgMask", maskno.c_str());
+        std::uint64_t result;
+        std::stringstream sResult(strResult);
+        sResult >> result;
+        return result;
+    }
+    /**
+     * setLVDSTriggerMask
+     *    @param masknum - mask number.
+     *    @param mask - the trigger mask.
+     */
+    void
+    VX2750Pha::setLVDSTriggerMask(unsigned masknum, std::uint64_t mask)
+    {
+        std::stringstream strValue;
+        strValue << masknum << "=" << mask;
+        std::string value = strValue.str();
+        SetValue("/par/LVDSTrgMask", value.c_str());
+    }
+    /**
+     * getDACOutMode
+     *    @return DACOutMode - the signal assignment to the DACOut connector.
+     */
+    VX2750Pha::DACOutMode
+    VX2750Pha::getDACOutMode()
+    {
+        return stringToEnum(stringToDACoutMode, GetDeviceValue("DACoutMode"));
+    }
+    /**
+     * setDACOutMode
+     *    Assign the function of the DACOut connector
+     *
+     *    @para mode - desired mode.
+     */
+    void
+    VX2750Pha::setDACOutMode(DACOutMode mode)
+    {
+        std::string value = EnumToString(DACOutModeToString, mode);
+        SetDeviceValue("DACoutMode", value.c_str());
+    }
+    /**
+     * getDACOutValue
+     *    If the output has been set to Static, this value is the value sent to
+     *    the DAC for output on the DACOut connector
+     * @return std::uint16_t
+     */
+    std::uint16_t
+    VX2750Pha::getDACOutValue()
+    {
+        return GetDeviceInteger("DACoutStaticLevel");
+    }
+    /**
+     * setDACOutValue
+     *    If the output has been set to Static, this sends a value to the DAC
+     *    and the converted output is sent to the DACOut connector.
+     *   @param value - DAC value to set.
+     */
+    void
+    VX2750Pha::setDACOutValue(std::uint16_t value)
+    {
+        SetDeviceValue("DACoutStaticLEvel", value);
+    }
+    /**
+     * getDACChannel
+     *   @return unsigned - If a channel is gated to the DAQout connector,
+     *                     this fetches the channel number.\
+     */
+    unsigned
+    VX2750Pha::getDACChannel()
+    {
+        return GetDeviceInteger("DACoutChSelect");
+    }
+    /**
+     * setDACChannel
+     *    @param chan - number of the channel to send to the DACout if the
+     *                  channel mode is selected.
+    */
+    void
+    VX2750Pha::setDACCHannel(unsigned chan)
+    {
+        SetDeviceChannel("DACoutChSelet", chan);
+    }
+    /**
+     * getVGAGain
+     *    Return the VGA gain for a set of 16 channels.
+     *  @param group - the set to retrieve for.
+     *  @return double - The gain in dB
+     *  @note assume that the names are:  /vga/group/par/VGAGain.
+     */
+    double
+    VX2750Pha::getVGAGain(unsigned group)
+    {
+        std::stringstream strParName;
+        strParName << "/vga/" << group << "/par/VGAGain";
+        std::string parname = strParNam.str();
+        
+        return GetReal(parname.str());
+    }
+    /**
+     * setVGAGain
+     *   Set the gain common to a gropu of 16 channels.
+     * @param group - the group to set.
+     * @param value - the value to set.
+     * @note see above about contructing the path.
+     */
+    void
+    VX2750Pha::setVGAGain(unsigned group, double value)
+    {
+        std::stringstream strParName;
+        strParName << "/vga" << group << "/par/VGAGain";
+        std::string parname = strParName.str();
+        SetValue(parname.c_str(), value);
+    }
+    
+    /**
+     * isOffsetCalibrationEanbled
+     *    @param chan - the cannel to check.
+     *    @return bool - true if the selected channel's offset calibration
+     *                    is enabled.
+     */
+    bool
+    VX2750Pha::isOffstCalibrationEnabled(unsigned chan)
+    {
+        return GetChanBool(chan, "EnOffsetCalibration");
+    }
+    /**
+     * enableOffsetCalibration
+     *    @param chan - the channel.
+     *    @param enable  - True to enable, false to disable.
+     */
+    void
+    VX2750Pha::enableOffsetCalibration(unsigned chan, bool enable)
+    {
+        SetChanValue(chan, "EnOffsetCalibration", enable);
+    }
+    /**
+     * isChannelEnabled
+     *    @param chan - channel to check.
+     *    @return bool - True if the channel is enable.
+     */
+    bool
+    VX2750Pha::isChannelEnabled(unsigned chan)
+    {
+       return GetChanBool(chan, "ChEnable");
+    }
+    /**
+     * enableChannel
+     *   @param chan  - number of channel to enable/disable.
+     *   @param enable - true to enable false to disable.
+     */
+    void
+    VX2750Pha::enableChannel(unsigned chan, bool enable)
+    {
+        SetChanValue(chank, "ChEnable", enable);
+    }
+    /**
+     * getSelfTriggerRate
+     *   @param chan - channel to check.
+     *   @return int  - Channel self trigger rate in Hz
+     */
+    int
+    VX2750Pha::getSelfTriggerRate(unsigned chan)
+    {
+        return GetChanInteger(chan, "SelfTrgRate");
+    }
+    /**
+     * getChannelStatus
+     *    @param chan - the channel to query.
+     *    @return std::uint32_t - a bitmask providing the current channel
+     *                           status see the CHST_ definitions for symbolic
+     *                           bit names.
+     */
+    std::uint32_t
+    VX2750Pha::getChannelStatus(unsigned chan)
+    {
+        return GetChannelInteger(chan, "ChStatus");
+    }
+    /**
+     * getDCOffset
+     *    @param chan - the channel to fetch.
+     *    @return double percentage DC offset.,
+     */
+    double
+    VX2750Pha::getDCOffset(unsigned chan)
+    {
+        return GetChanReal(chan, "DCOffset");
+    }
+    /**
+     * setDCOffset
+     *   @param chan - channel to set.
+     *   @param pct  - Percentage DC Offset to set.
+     */
+    void
+    VX2750Pha::setDCOffset(unsigned chan, double pct)
+    {
+        SetChanValue(chan, "DCOffset", pct);
+    }
+    /**
+     * getGainFactor
+     *    @param chan - channel number.
+     *    @return double - the channel gain value stored in internal flash.
+     */
+    doubld
+    VX2750Pha::getGainFactor(unsigned chan)
+    {
+        return GetChanReal(chan, "GainFactor");
+    
+    }
+    /**
+     * getTriggerThreshold
+     *   @param chan - channel to fetch.
+     *   @return std::uint32_t - trigger threshold of that channel.
+     */
+    std::uint32_t
+    VX2750Pha::getTriggerThreshold(unsigned chan)
+    {
+        return GetChanInteger(chan "TriggerThr");
+    }
+    /**
+     * setTriggerThreshold
+     *   @param chan - channel to set
+     *   @param threshold - the new threshold value.
+     */
+    void
+    VX2750Pha::setTriggerThreshold(unsigned chan, std::uint32_t threshold)
+    {
+        SetChanValue(chan, "TriggerThr", threshold);
+    }
+    /**
+     * getPulsePolarity
+     *   @param chan - channel to query.
+     *   @return VX2750Pha::Polarity - the channel's polarity setting.
+     */
+    VX2750Pha::Polarity
+    VX2750Pha::getPulsePolarity(unsigned chan)
+    {
+        return stringToEnum(stringToPolarity, GetChannelValue(chan, "PulsePolarity"));
+    }
+    /**
+     * setPulsePolarity
+     *   @param chan - channel to set.
+     *   @param pol  - New channel polarity.
+     */
+    void
+    VX2750Pha::setPulsePolarity(unsigned chan, Polarity pol)
+    {
+        std:::string value = enumToString(polarityToString, pol);
+        SetChanValue(chan, "PulsePolarity", value.c_str());
+    }
+    /**
+     * getEnergySkimLowDiscriminator
+     *   @param chan - channel to fetch.
+     *   @return std::uint16_t
+     */
+    std::uint16_t
+    VX2750Pha::getEnergySkimLowDiscriminator(unsigned chan)
+    {
+        return GetChanInteger(chan, "EnergySkimLowDiscriminator");
+    }
+    /**
+     * setEnergySkimLowDiscriminator
+     *   @parm chan    - channel to set
+     *   @param value  - New low threshold for energy selection.
+     */
+    void
+    VX2750Pha::setEnergySkimLowDiscriminator(unsigned chan, std::uint16_t value)
+    {
+        SetChanValue(chan, "EnergySkimLowDiscriminator", value);
+    }
+    /**
+     * getEnerygSkimHighDiscriminator
+     *    @param chan -channel to get
+     *    @return std::uint16_t - Energy high cutoff value.
+     */
+    std::uint16_t
+    VX2750PHa::getEnergySkimHighDiscriminator(unsigned chan)
+    {
+        return GetChanInteger(chan, "EnergySkimHighDiscriminator");
+    }
+    /**
+     * setEnergySkimHighDiscriminator
+     *    @param chan -  channel to set.
+     *    @param value - new high cutoff.
+     */
+    void
+    VX2750Pha::setEnergySkimHighDiscriminator(unsigned chan, std::uint16_t value)
+    {
+        SeChanInteger(chan, "EnergySkimHighDiscriminator", value);
+    }
+    /**
+     * getEventSelector
+     *    @param chan - channel number.
+     *    @return EventSelection - describes which events are actually saved by the channel.
+     */
+    VX2750Pha::EventSelection
+    VX2750Pha::getEventSelector(unsigned chan)
+    {
+        return stringToEnum(stringToEventSelection, GetChanValue(chan, "EventSelector"));
+    }
+    /**
+     * setEventSelector
+     *    @param chan - channel number
+     *    @param sel  - Selection of events to save.
+     */
+    void
+    VX2750Pha::getEventSelector(unsigned chan, EventSelection sel)
+    {
+        std::string value = enumToString(eventSelectionToString, sel);
+        SetChanValue(chan, "EventSelector", value.c_str());
+    }
+    /**
+     * getWaveSelector
+     *    @paran chan
+     *    @return EventSelection - filtr on which waveforms are saved.
+     */
+    VX2750Pha::EventSelection
+    VX2750Pha::getWaveSelector(unsigned chan)
+    {
+        return stringToEnum(stringToEventSelection, GetChanValue(cha, "WaveSelector"));
+    }
+    /**
+     * setWaveSelector
+     *    Select which waveform are recorded.
+     *  @param chan - channel number
+     *  @param sel  - Event selector.
+     */
+    void
+    VX2750Pha::setWaveSelector(unsigned chan, EventSelection sel)
+    {
+        std::string value = enumToString(eventSelectionToString, sel);
+        SetChanValue(chan, "WaveSelector", value.c_str());
+    }
+    /**
+     * getCoincidenceMask
+     *   @param chan - channel whose selection we'll fetch.
+     */
+    VX2750Pha::CoincidenceMask
+    VX2750Pha::getCoincidenceMask(unsigned chan)
+    {
+        return stringToEnum(stringToCoincidenceMask, GetChanValue(chan, "CoincidenceMask"));
+    }
+    /**
+     * setCoincidenceMask
+     *    @param chan -  channel to set.
+     *    @param sel  - Desired mask.
+     */
+    void
+    VX2750Pha::setCoincidenceMask(unsigned chan, CoincidenceMask sel)
+    {
+        std::string value = enumToString(coincidenceMaskToString, sel);
+        SetChanValue(chan, "CoincidenceMask", value.c_str());
+    }
+    /**
+     * getAntiCoincidenceMask
+     *    @param chan - channel to fetch from.
+     *    @return CoincidenceMask - the anticoincidence triggr selection.
+     */
+    VX2750Pha::CoincidenceMask
+    VX2750Pha::getAntiCoincidenceMask(unsigned chan)
+    {
+        return stringToEnum(stringToCoincidenceMask, GetChanValue(chan, "AntiCoincidenceMask"));
+    }
+    /**
+     * setAntiCoincidenceMask
+     *   @param chan - channel to fetch from
+     *   @param sel  - Anticoincidence trigger selection.
+     */
+    void
+    VX2750Pha::setAntiCoincidenceMask(unsigned chan, CoincidenceMask sel)
+    {
+        std::string value = enumToString(coincidenceMaskToString, sel);
+        SetChanValue(chan, "AntiCoincidenceMask", value.c_str());
+    }
+    /**
+     * getCoincidenceSamples
+     *    @param chan - channel to fetch from.
+     *    @return std::uint32_t - number of samples in the coincidence trigger window.
+     */
+    std::uint32_t
+    VX2750Pha::getCoincidenceSamples(unsigned chan)
+    {
+        return GetChanInteger(chan, "CoincidenceLengthS");
+    }
+    /**
+     * setCoincidenceSamples
+     *    @param chan - channel to set.
+     *    @param samples -# samples to be used for that channel's coincidence window.
+     */
+    void
+    VX2750Pha::setCoincidenceSamples(unsigned chan, std::uint32_t samples)
+    {
+        SetChanValue(chan, "CoincidenceLengthS", samples);
+    }
+    /**
+     * setCoincidenceNs
+     *    @param chan - channel to get.
+     *    @return std::uint32_t - same as above but the result is in ns units./
+     */
+    std::uint32_t
+    VX2750Pha::getCoincidenceNs(unsigned chan)
+    {
+        return GetChanInteger(chan, "CoincidenceLengthT");
+    }
+    /**
+     * setCoincidenceNs
+     *   @param chan - channel number.
+     *   @para ns    - COincidence window in nanoseconds.
+     */
+    void
+    VX2750Pha::setCoincidenceNs(unsigned chan, std::uint32_t ns)
+    {
+        SetChanValue(chan, "ConcidenceLengthT", ns);
+    }
+    /**
+     * getTimeFilterRiseTime
+     *   @param chan - channel to get
+     *   @return std::unit32_t ns of rise time set in the time filter.
+     */
+    std::uint32_t
+    VX2750Pha::getTimeFilterRiseTime(unsigned chan)
+    {
+        return GetChanInteger(chan, "TimeFilterRiseTimeT");
+    }
+    /**
+     * getTimeFilterRiseSamples
+     *    @param chan - channel to get.
+     *    @return std::uint32_t - samples in the time filte rise time.
+     */
+    std::uint32_t
+    VX2750Pha::getTimeFilterRiseSamples(unsigned chan)
+    {
+        return GetChanInteger(chan, "TimeFilterRiseTimeS");
+    }
+    /**
+     * setTimeFilterRiseTime
+     *    Set the time filter rise-time in ns
+     *  @param chan - channel number to set.
+     *  @param ns   - rise time requested.
+     */
+    void
+    VX2750Pha::setTimeFilterRiseTime(unsigned chan, std::uint32_t ns)
+    {
+        SetChanValue(chan, "TimeFilterRiseTimeT", ns);
+    }
+    /**
+     * setTimeFilterRiseSamples
+     *   @param chan - channel number to set.
+     *   @param samples - samples in the time filter rise-time to set.
+     */
+    void
+    VX2750Pha::setTimeFilterRiseSamples(unsigned chan, std::uint32_t samples)
+    {
+        SetChanValue(chan, "TimeFilterRiseTimeS", samples);
+    }
+    /**
+     * getTimeFilterRetriggerGaurdTime
+     *   @param chan
+     *   @return std::uint32_t - ns in the time filter retrigger guard.
+     */
+    std::uint32_t
+    VX2750Pha::getTimeFilterRetriggerGuardTime(unsigned chan)
+    {
+        return GetChanInteger(chan, "TimeFilterRetriggerGuardT");
+    }
+    /**
+     * getTimeFilterRetriggerGuardSamples
+     *   @param chan
+     *   @return std::uint32_t -same as above but the units are digitizer samples.
+     */
+    std::uint32_t
+    VX2750Pha::getTimeFilterRetriggerGuardSamples(unsigned chan)
+    {
+        return GetChanInteger(chan, "TimeFilterRetriggerGaurdS");
+    }
+    /**
+     * setTimeFilterRetriggerGuardTime
+     *    @param chan
+     *    @param ns  - ns to set the retrigger guard time to for chan.
+     */
+    void
+    VX2750Pha::setTimeFilterRetriggerGuardTime(unsigned chan, std::uint32_t ns)
+    {
+        SetChanValue(chan, "TimeFilterRetriggerGuardT", ns);
+    }
+    /**
+     * setTimeFilterRetriggerGuardSamples
+     *    Same as above except the guard window is expressed in samples
+     */
+    void
+    VX2750Pha::setTimeFilterRetriggerGuardSamples(Unsigned chan, std::uint32_t samples)
+    {
+        SetChanValue(chan, "TimeFilterRetriggerGuardS", samples);
+    }
+    /**
+     * getEnergyFilterRiseTime
+     *    @param chan - channel to query.
+     *    @return std::uint32_t - energy filter rise time expressed in ns.
+     */
+    std::uint32_t
+    VX2750Pha::getEnergyFilterRiseTime(unsigned chan)
+    {
+        return GetChanInteger(chan, "EnergyFilterRiseTimeT");
+    }
+    /**
+     * getEnergyFilterRiseSamples
+     *    Same as above but the result is expressed in digitizer samples.
+     */
+    std::uint32_t
+    VX2750Pha::getEnergyFilterRiseSamples(unsigned chan)
+    {
+        return GetChanInteger(chan, "EnergyFilterRiseTimeS");
+    }
+    /**
+     * setEnergyFilterRisetime
+     *    @param chan - channel to set.
+     *    @param ns   - Nanoseconds to set the energy filter rise time.
+     */
+    void
+    VX2750Pha::setEnergyFilterRiseTime(unsigned chan, std::uint32_t ns)
+    {
+        SetChanInteger(chan, "EnergyFilterRiseTimeT", ns);
+    }
+    /**
+     * setEnergyFilterRiseSamples
+     *    Same as above but units are samples.
+     */
+    void
+    VX2750Pha::setEnergyFilterRiseSamples(unsigned chan, std::uint32_t samples)
+    {
+        SetChanInteger(chan, "EnergyFilterRiseTimeS", samples);
     }
     
 }                                // namespace

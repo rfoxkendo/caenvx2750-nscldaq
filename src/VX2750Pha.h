@@ -165,7 +165,7 @@ public
     typedef enum _DigitalProbe {
         Trigger, TimeFilterArmed, ReTriggerGuard, EneryFilterBaselineFreeze,
         EnergyFilterPeaking, EnergyFilterPeakReady, EnergyFilterPileupGuard,
-        EventPileUp, ADCSaturation, ADCSaturationProtection, PostSaturationEvent,
+        EventPileup, ADCSaturation, ADCSaturationProtection, PostSaturationEvent,
         EnergyFilterSaturation, AcquisitionInhibit
     } DigitalProbe;
     
@@ -203,6 +203,10 @@ public
         AND, OR, NONE
     } PairTriggerLogic;
     
+    typedef enum _ITLConnect {
+        Disabled, ITLA, ITLB
+    } ITLConnect;
+    
     typedef enum _LVDSMode {
         SelfTriggers, Sync, IORegister
     } LVDSMode;
@@ -233,21 +237,25 @@ public
         All, Pileup, EnergySkim
     } EventSelection;
     
-    typedef _CoincidenceMask {
+    typedef enum _CoincidenceMask {
         Disabled, Ch64Trigger, TRGIn, GlobalTriggerSource, ITLA, ITLB
     } CoincidenceMask;
     
-    typedef _EnergyPeakingAverage {
+    typedef enum _EnergyPeakingAverage {
         OneShot, LowAvg, MedumAvg, HighAvg
     } EnergyPeakingAvergage;
     
-    typedef _EnergyFilterBaselineAverage {
+    typedef enum _EnergyFilterBaselineAverage {
         Fixed, VeryLow, Low, MediumLow, Medium, MediumHigh, High
     } EnergyFiterBaselineAverage;
     
-    typedef _Endpoints {
+    typedef enum _Endpoints {
         raw, dpppha
     } Endpoints;
+
+    typedef enum  _DACOutMode {
+        Static, IPE, ChInput, MemOccupancy, ChSum, OverThrSum, Ramp, Sine, Square
+    } DACOutMode;
     
     // Struct to hold decoded data. The user can select which fields are filled in:
     
@@ -359,9 +367,7 @@ public:
     void         setMultiWindowRunEnable(bool state);
     bool          isPauseTimestampHoldEnabled();
     void          setPauseTimestampHold(bool enable);
-    PauseTimestampHandling
-                  getPauseTimestampHandling();
-    void          setPauseTimestampHandling(PauseTimestampHandling how);
+    
     std::uint32_t      getLEDStatus();
     std::uint32_t      getAcquisitionStatus();
     std::uint32_t      getMaxRawDataSize();
@@ -377,8 +383,8 @@ public:
     void          setRecordNs(unsigned chan, std::uint32_t ns);
     WaveResolution getWaveResolution(unsigned chan);
     void          setWaveResolution(unsigned chan, WaveResolution resolution);
-    AnalogProbe   getAnalogProbe(unsigned chan);
-    void          setAnalogProbe(unsigned chan, AnalogProbe probe);
+    AnalogProbe   getAnalogProbe(unsigned chan, unsigned probeNum);
+    void          setAnalogProbe(unsigned chan, unsigned probeNum, AnalogProbe probe);
     DigitalProbe  getDigitalProbe(unsigned chan, unsigned probeNum);
     void          setDigitalProbe(
         unsigned chan, unsigned probeNum, DigialProbe probe
@@ -391,7 +397,7 @@ public:
     void          setTestPulsePeriod(std::uint32_t ns);
     std::uint32_t getTestPulseWidth();
     void          setTestPulseWidth(std::uint32_t ns);
-    std::uint32_t getTestPulseLowLimit();
+    std::uint32_t getTestPulseLowLevel();
     void          setTestPulseLowLevel(std::uint32_t counts);
     std::uint32_t getTestPulseHighLevel();
     void          setTestPulseHighLevel(std::uint32_t counts);
@@ -403,8 +409,7 @@ public:
     double        getFirstADCTemp();         // All in degrees C.
     double        getLastADCTemp();
     double        getHottestADCTemp();
-    double        getADC0Temp();
-    double        getADC1Temp();
+    double        getADCTemp(unsigned chip);
     double        getDCDConverterTemp();
     
     double        getDCDCConverterInputVoltage();
@@ -413,14 +418,15 @@ public:
     double        getDCDCConverterHz();
     double        getDCDCConverterDutyCycle();
     
-    std::uint32_t getFan1Speed();
-    std::uint32_t getFan2Speed();
+    std::uint32_t getFanSpeed(unsigned fan);
+    
+    // Bit encoded errors per ERR_* bit definitions.
     
     std::uint32_t getErrorFlagMask();
+    void          setErrorFlagMask(std::uint32_t mask);
     std::uint32_t getErrorFlagDataMask();
-    
-    // Get ErrorFlags - 2.4.13 - need definitions of the enum and maybe
-    // there's another parameter that's not properly documented here?
+    void          setErrorFlagDataMask(std::uint32_t mask);
+    std::uint32_t getErrorFlags();
     
     bool          isBoardReady();
     
@@ -437,12 +443,20 @@ public:
     PairTriggerLogic getITLBPairLogic();
     void         setITLAPairLogic(PairTriggerLogic sel);
     void         setITLBPairLogic(PairTriggerLogic sel);
+    bool          isITLAInverted();
+    bool          isITLBInverted();
+    void          setITLAInverted(bool invert);
+    void          setITLBInverted(bool invert);
+    ITLConnect    getITLConnect(unsigned ch);
+    void          setITLConnect(unsigned ch, ITLConnect selection);
+    
     std::uint64_t getITLAMask();
     std::uint64_t getITLBMask();
+    
     void          setITLAMask(std::uint64_t mask);
     void          setITLBMask(std::uint64_t mask);
-    std::uint64_t getITLAGateWidth();
-    std::uint64_t getITLBGateWidth();
+    std::uint32_t getITLAGateWidth();
+    std::uint32_t getITLBGateWidth();
     void          setITLAGateWidth(std::uint32_t ns);
     void          setITLBGateWidth(std::uint32_t ns);
     
@@ -452,15 +466,23 @@ public:
     void          setLVDSDirection(unsigned quartet, LVDSDirection direction);
     std::uint16_t getLVDSIOReg(unsigned quartet);
     void          setLVDSIOReg(unsigned quartet, std::uint16_t mask);
-    
     std::uint64_t getLVDSTriggerMask(unsigned inputNum);
     void          setLVDSTriggerMask(unsigned inputNum, std::uint64_t mask);
+    
+    void getDACOutMode(DACOutMode mode);
+    DACOutMode getDACOutMode();
+    std::uint16_t getDACOutValue();
+    void          setDACOutValue(std::uint16_t value);
+    unsigned      getDACChannel();
+    void          setDACChannel(unsigned chan);
+    
+    
     
     double        getVGAGain(unsigned group);
     void          setVGAGain(unsigned group, double value);
     
     bool          isOffsetCalibrationEnabled(unsigned chan);
-    void          setOffsetCalibrationEnable(unsigned chan, bool enable);
+    void          enableOffsetCalibration(unsigned chan, bool enable);
     bool          isChannelEnabled(unsigned chan);
     void          enableChannel(unsigned chan, bool enable);
     int           getSelfTriggerRate(unsigned chan);
@@ -582,6 +604,8 @@ private:
     template<T> std::string enumToString(const std::map<T, std::string>& map, T value);
     template<T> T stringToEnum(const std::map<std::string, T>& map, const std::string& value);
     bool textToBool(const std::string& str);
+    void checkInclusiveRange(int low, int high, int value);
+    std::string appendNumber(const char* base, unsigned number);
   
 };
 }

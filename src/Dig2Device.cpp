@@ -103,6 +103,14 @@ namespace caen_nscldaq {
         SetValue(parameterName, strValue.c_str());
     }
     void
+    Dig2Device::SetValue(const char* parameterName, std::uint64_t value)
+    {
+        std::stringstream vstream;
+        vstream << value;
+        std::string strValue = vstream.str();
+        SetValue(parameterName, strValue.c_str());
+    }
+    void
     Dig2Device::SetValue(const char* parameterName, double value)
     {
         std::stringstream vstream;
@@ -136,6 +144,12 @@ namespace caen_nscldaq {
     }
     void
     Dig2Device::SetDeviceValue(const char* devParName, int value)
+    {
+        std::string fullDevPath = devPath(devParName);
+        SetValue(fullDevPath.c_str(), value);
+    }
+    void
+    Dig2Device::SetDeviceValue(const char* devParName, std::uint64_t value)
     {
         std::string fullDevPath = devPath(devParName);
         SetValue(fullDevPath.c_str(), value);
@@ -178,6 +192,12 @@ namespace caen_nscldaq {
         SetValue(parPath.c_str(), value);
     }
     void
+    Dig2Device::SetChanValue(unsigned chan, const char* chanParName, std::uint64_t value)
+    {
+        std::string parPath = chanPath(chan, chanParName);
+        SetValue(parPath.c_str(), value);
+    }
+    void
     Dig2Device::SetChanValue(unsigned  chan, const char* chanParName, double value)
     {
         std::string parPath = chanPath(chan, chanParName);
@@ -190,17 +210,58 @@ namespace caen_nscldaq {
         SetValue(parPath.c_str(), value);
     }
     /**
+     * SetLVDSValue
+     *   @param quartet -which of the LVDS groups
+     *   @param LVDSName - name of the parameter,
+     *   @param value  (overloaded) value to set.
+     */
+    void
+    Dig2Device::SetLVDSValue(unsigned quartet, const char* LVDSName, const char* value)
+    {
+        std::string path = LVDSPath(quartet, LVDSName);
+        SetValue(path.c_str(), value);
+    }
+    void
+    Dig2Device::SetLVDSValue(unsigned quartet, const char* LVDSName, int value)
+    {
+        std::string path = LVDSPath(quartet, LVDSName);
+        SetValue(path.c_str(), value);
+    }
+    void
+    Dig2Device::setLVDSValue(unsigned quartet, const char* LVDSName, std::uint64_t value)
+    {
+        std::string path = LVDSPath(quartet, LVDSName);
+        SetValue(path.c_str(), value);
+    }
+    void
+    Dig2Device::SetLVDSValue(unsigned quartet, const char* LVDSName, double value)
+    {
+        std::string path = LVDSPath(quartet, LVDSName);
+        SetValue(path.c_str(), value);
+    }
+    void
+    Dig2Device::SetLVDSValue(unsigned quartet, const char* LVDSName, bool value)
+    {
+        std::string path = LVDSPath(quartet, LVDSName);
+        SetValue(path.c_str(), value);
+    }
+    /**
      * getValueGet<type>Value
      *    Gets the value of a parameter.
      *   @todo using a templated function could get around the problem that
      *         overloadsd cannot vary solely in return type.
      *  @param parameterName - Full path to the parameter.
+     *  @param initial       - for LVDS trigger mask insanity - if specified, the
+     *                         initial value put int he buffer.
      *  @return value
      */
     std::string
-    Dig2Device::GetValue(const char* parameterName)
+    Dig2Device::GetValue(const char* parameterName, const char* initial)
     {
         char buffer[256];           // Max value according to lib docs.
+        if (initial) {
+            strcpy(buffer, initial);
+        }
         if (CAEN_FELib_GetValue(m_deviceHandle, parameterName, buffer) != CAEN_FELib_Success) {
             std::stringstream strMessage;
             strMessage << "GetValue failed for " << parameterName 
@@ -213,6 +274,14 @@ namespace caen_nscldaq {
     int Dig2Device::GetInteger(const char* parameterName)
     {
         int value;
+        std::string strValue = GetValue(parameterName);
+        std::stringstream sValue(strValue);
+        sValue >> value;
+        return value;
+    }
+    std::uint64_t Dig2Device::GetULong(const char* parameterName)
+    {
+        std::uint64_t value;
         std::string strValue = GetValue(parameterName);
         std::stringstream sValue(strValue);
         sValue >> value;
@@ -255,6 +324,12 @@ namespace caen_nscldaq {
         std::string fullPath = devPath(parameterName);
         return GetInteger(fullPath.c_str());
     }
+    std::uint64_t
+    Dig2Device::GetDeviceULong(const char*)
+    {
+        std::string fullPath = devPath(parameterName);
+        return GetULong(fullPath.c_str());
+    }
     double
     Dig2Device::GetDeviceReal(const char* parameterName)
     {
@@ -288,6 +363,12 @@ namespace caen_nscldaq {
         std::string fullPath = chanPath(chan, parameterName);
         return GetInteger(fullPath.c_str());
     }
+    std::uint64_t
+    Dig2Device::GetChanULong(unsigned chan, const char* parameterName)
+    {
+        std::string fullPath = chanPath(chan, parameterName);
+        return GetULong(fullPath.c_str());    
+    }
     double
     Dig2Device::GetChanReal(unsigned chan, const char* parameterName)
     {
@@ -298,6 +379,43 @@ namespace caen_nscldaq {
     Dig2Device::GetChanBool(unsigned chan, const char* parameterName)
     {
         std::string fullPath = chanPath(chan, parameterName);
+        return GetBool(fullPath.c_str());
+    }
+    /**
+     * getLVDSxxx
+     *   Get the value of an LVDS parameter.
+     * @param quartet - which of the LVDS quartets to query.
+     * @param parameterName - the name of the parameter in LVDS space.
+     * @return std::string the value read.
+     */
+    std::string
+    Dig2Device::GetLVDSValue(unsigned quartet, const char* parameterName)
+    {
+        std::string fullPath = LVDSPath(quartet, parameterName);
+        return GetValue(fullPath.c_str());
+    }
+    int
+    Dig2Device::GetLVDSInteger(unsigned quartet, const char* paramterName)
+    {
+        std::string fullPath = LVDSPath(quartet, parameterName);
+        return GetInteger(fullPath.c_str());
+    }
+    std::uint64_t
+    Dig2Device::GetLVDSUlong(unsigned quartet, const char* parameterName)
+    {
+        std::string fullPath = LVDSPath(quartet, parameterName);
+        return GetULong(fullPath.c_str());
+    }
+    double
+    Dig2Device::GetLVDSReal(unsigned quartet, const char* parameterName)
+    {
+        std::string fullPath = LVDSPath(quartet, parameterName);
+        return GetReal(fullPath.c_str());
+    }
+    bool
+    Dig2Device::GetLVDSBool(unsigned quartet, const char* parameterName)
+    {
+        std::string fullPath = LVDSPath(quartet, parameterName);
         return GetBool(fullPath.c_str());
     }
     /**
@@ -439,6 +557,22 @@ namespace caen_nscldaq {
         std::stringstream strPath;
         strPath << "/ch/" << chan << "/par/" << chanParName;
         
+        std::string result = strPath.str();
+        return result;
+    }
+    /**
+     * LVDSPath
+     *    Return the path to an LVDS Parameter
+     *
+     * @param quartet - the lVDS quartet selected.
+     *  @param LVDS parameter name.
+     *  @return std::string
+     */
+    std::string
+    Dig2Device::LVDSPath(unsigned quartet, const char* lvdsParName)
+    {
+        std::stringstream strPath;
+        strPath << "/lvds" << quartet << "/par/" << lvdsParName;
         std::string result = strPath.str();
         return result;
     }
