@@ -27,6 +27,7 @@
 #include <string>
 #include <map>
 #include <cstdint>
+#include <json.h>
 
 caen_nscldaq {
 
@@ -242,16 +243,16 @@ public
     } CoincidenceMask;
     
     typedef enum _EnergyPeakingAverage {
-        OneShot, LowAvg, MedumAvg, HighAvg
+        Average1, Average4, Average16, Average64
     } EnergyPeakingAvergage;
     
     typedef enum _EnergyFilterBaselineAverage {
-        Fixed, VeryLow, Low, MediumLow, Medium, MediumHigh, High
+        Fixed, Average16, Average64, Average256, Average1024, Average4K, Average16K
     } EnergyFiterBaselineAverage;
     
-    typedef enum _Endpoints {
-        raw, dpppha
-    } Endpoints;
+    typedef enum _Endpoint {
+        Raw, PHA
+    } Endpoint;
 
     typedef enum  _DACOutMode {
         Static, IPE, ChInput, MemOccupancy, ChSum, OverThrSum, Ramp, Sine, Square
@@ -285,6 +286,51 @@ public
         size_t         s_eventSize;
         
     } DecodedEvent, *pDecodedEvent;
+    
+    // this struct is used to store the initial enables for optional
+    // fields of the data from the DPP-PHA endpoint.
+    // It's used to generate the JSON required to configure the
+    // dpp-pha endpoint.
+    struct EnabledItems {
+        //                      channel is always on.
+        bool s_enableRawTimestamps;
+        //                      ns timestamp always enabled.
+        bool s_enableFineTimestamps;
+        //                      energy always enabled.
+        bool s_enableFlags;     // Enables all flags.
+        bool s_enableDownsampledTime;
+        bool s_enableAnalogProbe1;
+        bool s_enableAnalogProbe2;
+        bool s_enableDigitalProbe1;
+        bool s_enableDigitalProbe2;
+        bool s_enableDigitalProbe3;
+        bool s_enableDigitalProbe4;
+        bool s_enableSampleCount;
+        //                       fail always enabled.
+        bool s_enableEventSize;
+        // constructor:
+        EnabledItems() {
+            resetOptions();
+        }
+        void resetOptions() {
+            s_enableRawTimesstamps = false;
+            s_enableFineTimestamps = false;
+            s_enableFLags    = false;
+            s_enableDownsampledTime = false;;
+            s_enableAnalogProbe1 = false;;
+            s_enableAnalogProbe2 = false;
+            s_enableDigitalProbe1 = false;
+            s_enableDigitalProbe2 = false;
+            s_enableDigitalProbe3 = false;
+            s_enableDigitalProbe4 = false;
+            s_enableSampleCount   = false;
+            s_enableEventSize      = false;
+        }
+    };
+    
+    // InternalData.
+private:
+    EnabledItems  m_dppPhaOptions;
 public:
     VX2750Pha(const char* hostOrPid, bool isUsb = false);
     virtual ~VX2750Pha();
@@ -534,10 +580,10 @@ public:
     void           setEnergyFilterPeakingPosition(unsigned chan, std::uint32_t pct);
     EnergyPeakingAverage getEnergyFilterPeakingAverage(unsigned chan);
     void          setEnergyFilterPeakingAverage(unsigned chan, EnergyPeakingAverage sel);
-    std::uint32_t getEnergyFilterPoleZerotTime(unsigned chan);
+    std::uint32_t getEnergyFilterPoleZeroTime(unsigned chan);
     std::uint32_t getEnergyFilterPoleZeroSamples(unsigned chan);
     void          setEnergyFiterPoleZeroTime(unsigned chan, std::uint32_t ns);
-    void          setEnergyFilterPoleZeroTime(unsigned chan, std::uint32_t samples);
+    void          setEnergyFilterPoleZeroSamples(unsigned chan, std::uint32_t samples);
     double        getEnergyFilterFineGain(unsigned chan);
     void          setEnergyFilterFineGain(unsigned chan, double gain);
     bool          isEnergyFilterFLimitationEnabled(unsigned chan);
@@ -553,9 +599,9 @@ public:
     void          setEnergyFilterPileupGuardTime(unsigned chan, std::uint32_t ns);
     void          setEnergyFilterPileupGuardSamples(unsigned chan, std::uint32_t samples);
     
-    std::uint8_t  getEnergeyBits(unsigned chan);
-    std::uint32_t getRealtime(unsigned chan);
-    std::uint32_t getDeadtime(unsigned chan);
+    std::uint8_t  getEnergyBits(unsigned chan);
+    std::uint64_t getRealtime(unsigned chan);
+    std::uint64_t getDeadtime(unsigned chan);
     
     // Commands:
     
@@ -570,12 +616,13 @@ public:
     
     // Endpoint management:
     
-    Endpoint      getActiveEndpoint();
-    void          setActiveEndpoint(Endpoint selection);
+    Endpoint      getEndpoint();
+    void          selectEndpoint(Endpoint selection);
     
     // Raw endpoint - note that when reading raw waveforms we always read
     // both the size and data fields.
     
+    void   initializeRawEndpoint();          // In case someone changes the json.
     size_t readRawEndpoint(void* pBuffer);
     
     // We're going to try to hide that awful JSON crap inside our class
@@ -590,8 +637,8 @@ public:
     void enableDownsampling(bool enable);
     void enableAnalogProbes(bool probe1, bool probe2);
     void enableDigitalProbes(bool probe1, bool probe2, bool probe3, bool probe4);
-    void enableSamples(bool enable);
-    bool enableEventSize(bool enable);
+    void enableSampleSize(bool enable);
+    bool enableRawEventSize(bool enable);
     
     // This sends the JSON:
     
@@ -606,6 +653,8 @@ private:
     bool textToBool(const std::string& str);
     void checkInclusiveRange(int low, int high, int value);
     std::string appendNumber(const char* base, unsigned number);
+    Json::Value createScalar(const char* name, const char* type);
+    Json::Value createArray(const char* name, const char* type, unsigned dimension);
   
 };
 }

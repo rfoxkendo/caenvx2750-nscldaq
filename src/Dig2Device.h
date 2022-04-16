@@ -104,6 +104,7 @@ namespace caen_nscldaq {
         // than offered by felib IMHO.
         
         void SetActiveEndpoint(const char* ep);
+        std::string GetActiveEndpoint();
         void SetReadDataFormat(const char* json);   // Can we hide JSON generation?
         
         bool ReadData(int timeout, int argc, void** argv);

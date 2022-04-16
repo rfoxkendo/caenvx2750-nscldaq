@@ -450,6 +450,15 @@ namespace caen_nscldaq {
         SetValue("/endpoint/par/activeendpoint", ep);
     }
     /**
+     * gGtActiveEndpoint
+     *   Return the string name of the selected endpoint :
+     */
+    std::string
+    Dig2Device::GetActiveEndpoint()
+    {
+        return GetValue("/endpoint/par/activeendpoint");
+    }
+    /**
      * setReadDataFormat
      *   The actual stuff returned from a read is determined by this
      *   function.  We pass some JSON stuff to it to describe what we want

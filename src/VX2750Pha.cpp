@@ -28,6 +28,8 @@
 
 namespace caen_nscldaq {
 
+static const std::uin64_t FPGA_CLOCKS_PER_NS;
+
 // Enumerator mappings.  Readonly have string->enum maps.  R/W have
 // both a string to enum and enum to string map.  
 
@@ -528,6 +530,47 @@ static const std::map<VX2750Pha::CoincidenceMask, std::string> coincidenceMaskTo
     {VX2750Pha::GlobalTriggerSource}, "GlobalTriggerSource",
     {VX2750Pha::ITLA, "ITLA"},
     {VX2750Pha::ITLB, "ITLB"}
+};
+
+static const std::map<std::string, VX2750Pha::EnergyPeakingAverage> stringToPeakingAverage = {
+    {"OneShot", VX2750Pha::Average1},
+    {"LowAVG", VX2750Pha::Average4},
+    {"MediumAVG", VX2750Pha::Average16},
+    {"HighAVG", VX2750Pha::Average64}
+};
+static const std::map<VX2750Pha::EnergyPeakingAverage, std::string> peakingAverageToString = {
+    {VX2750Pha::Average1, "OneShot"},
+    {VX2750Pha::Average4, "LowAVG"},
+    {VX2750Pha::Average16, "MediumAVG"},
+    {VX2750Pha::Average64, "HighAVG"}
+};
+
+static const std::map<std::string VX2750Pha::EnergyFilterBaselineAverage> stringToBLAverage = {
+    {"Fixed", VX2750Pha::Fixed},
+    {"VeryLow", VX2750Pha::Average16},
+    {"Low", VX2750Pha::Average64},
+    {"MediumLow", VX2750Pha::Average256},
+    {"Medium", VX2750Pha::Average1024},
+    {"MediumHigh", VX2750Pha::Average4K},
+    {"High", Average16K}
+};
+static const std::map<VX2750Pha::EnergyFilterBaselineAverage, std::string> BLAverageToString = {
+    {VX2750Pha::Fixed, "Fixed"},
+    {VX2750Pha::Average16, "VeryLow"},
+    {VX2750Pha::Average64, "Low"},
+    {VX2750Pha::Average256, "MediumLow"},
+    {VX2750Pha::Average1024, "Medium"},
+    {VX2750Pha::Average4K, "MediumHigh"},
+    {Average16K, "High"}
+};
+
+static const std::map<std::string, VX2750Pha::Endpoint> stringToEndpoint = {
+    {"raw", VX2750Pha::Raw},
+    {"dpppha", VX2750Pha::PHA}
+};
+static const std::map<VX2750Pha::Endpoint, std::string> endpointToString = {
+    {VX2750Pha::Raw, "raw"},
+    {VX2750Pha::PHA, "dpppha"}
 };
 ////////////////////////////////////////////////////////////////////////////////
 // Public methods
@@ -2743,7 +2786,7 @@ static const std::map<VX2750Pha::CoincidenceMask, std::string> coincidenceMaskTo
     void
     VX2750Pha::setEnergyFilterRiseTime(unsigned chan, std::uint32_t ns)
     {
-        SetChanInteger(chan, "EnergyFilterRiseTimeT", ns);
+        SetChanValue(chan, "EnergyFilterRiseTimeT", ns);
     }
     /**
      * setEnergyFilterRiseSamples
@@ -2752,7 +2795,629 @@ static const std::map<VX2750Pha::CoincidenceMask, std::string> coincidenceMaskTo
     void
     VX2750Pha::setEnergyFilterRiseSamples(unsigned chan, std::uint32_t samples)
     {
-        SetChanInteger(chan, "EnergyFilterRiseTimeS", samples);
+        SetChanValue(chan, "EnergyFilterRiseTimeS", samples);
     }
-    
-}                                // namespace
+    /**
+     * getEnergyFilterFlatTopTime
+     *    @param ch - channel
+     *    @return uint32_t   - ns of flattop time.
+     */
+    std::uint32_t
+    VX2750Pha::getEnergyFilterFlatTopTime(unsigned ch)
+    {
+        return getChanInteger(ch, "EnergyFilterFlatTopT");
+    }
+    /**
+     * getEnergyFilterFlatTopSamples
+     *    @param ch -channel
+     *    @return uint32_t - number of samples in the flattop region.
+     */
+    std::uint32_t
+    VX2750Pha::getEnergyFilterFlatTopSamples(unsigned ch)
+    {
+        return getChanInteger(ch, "EnergyFilterFlatTopS");
+    }
+    /**
+     * setEnergyFilterFlatTopTime
+     *    @param ch - channel
+     *    @param ns  - nanoseconds of flattop time.
+     */
+    void
+    VX2750Pha::setEnergyFilterFlatTopTime(unsigned ch std::uint32_t ns)
+    {
+        setChanValue(ch, "EnergyFilterFlatTopT", ns);
+    }
+    /**
+     *  setEnergyFilterFlatTopSamples
+     *     @param ch - channel
+     *     @param samples - samples in the flattop region.
+     */
+    void
+    VX2750Pha::setEnergyFilterFlatTopSamples(unsigned ch, std::uint32_t samples)
+    {
+        setChanValue(unsigned ch, "EnergyFilterFlatTopS", samples);
+    }
+    /**
+     * getEnergyFilterPeakingPosition
+     *    @param ch - channel number.
+     *    @return std::uint32_t - The trapezoid Peaking Position in percentage (%) of the flat top.
+     */
+    std::uint32_t
+    VX2750Pha::getEnergFilterPeakingPosition(unsigned chan)
+    {
+        return getChanInteger(chan, "EnergyFilterPeakingPosition");
+    }
+    /**
+     * setEnergyFilterPeakingPosition.
+     *   @param ch - channel number.
+     *   @param pct - The trapezoid Peaking Position in percentage (%) of the flat top.
+     */
+    void
+    VX2750Pha::setEnergyFilterPeakingPosition(unsigned ch, std::uint32_t pct)
+    {
+        steChanValue(ch, "EnergyFilterPeakingPosition", pct);
+    }
+    /**
+     * getEnergyFilterPeakingAverage
+     *    @param ch - channel
+     *    @return VX2750Pha::EnergyPeakingAverage - Enum that describes the number
+     *                      of samples averaged in peak evaluation.
+     */
+    VX2750Pha::EnergyPeakingAverage
+    VX2750Pha::getEnergyFilterPeakingAverage(unsigned ch)
+    {
+        return stringToEnum(stringToPeakingAverage, getChanValue(unsigned ch, "EnergyFilterPeakingAvg"));
+    }
+    /**
+     * setEnerygFilterPeakingAverage
+     *    @param ch - channel
+     *    @param selection - VX2750Pha::EnergyPeakingAverage that selects the
+     *                        samples over which to average.
+     */
+    void
+    VX2750Pha::setEnergyFilterPeakingAverage(unsigned ch, EnergyPeakingAverage selection)
+    {
+        std::string value = enumToString(peakingAverageToString, selection);
+        setChanValue(ch, "EnergyFilterPeakingAvg", value.c_str());
+    }
+    /**
+     * getEnergyFilterPoleZeroTime
+     *    @param ch - channel number.
+     *    @return std::uint32_t pole zero compensation time in ns.
+     */
+    std::uint32_t
+    VX2750Pha::getEnergyFilterPoleZeroTime(unsigned ch)
+    {
+        return getChanInteger(ch, "EnergyFilterPoleZeroT");
+    }
+    /**
+     * getEnergyFilterPoleZeroSamples
+     *   @param ch
+     *   @return std::uint32_t - same as above but in units of ADC samples
+     */
+    std::uint32_t
+    VX2750Pha::getEnergyFilterPoleZeroSamples(unsigned ch)
+    {
+        return getChanInteger(ch, "EnergyFilterPoleZeroS");
+    }
+    /**
+     * setEnergyFilterPoleZeroTime
+     *    @param ch - channel number.
+     *    @param ns - nanoseconds for pole zero compenation time
+     */
+    void
+    VX2750Pha::setEnergyFilterPoleZeroTime(unsigned chan, std::uint32_t ns)
+    {
+        setChanValue(ch, "EnergyFilterPoleZeroT", ns);
+    }
+    /**
+     * setEnergyFilterPoleZeroSamples
+     *   Same as above but units of measure are samples:
+     */
+    void
+    VX2750Pha::setEnergyFilterPoleZeroSamples(unsigned ch, std::uint32_t samples)
+    {
+        setChanValue(ch, "EnergyFilterPoleZeroS", samples);
+    }
+    /**
+     * getEnergyFilterFineGain
+     *    @param chan - channel number.
+     *    @return double -Digital fine gain in the energy filter.
+     */
+    double
+    VX2750Pha::getEnergyFilterFineGain(unsigned ch)
+    {
+        return getChanReal(ch, "EnergyFilterFineGain");
+    }
+    /**
+     * setEnergyFilterFineGain
+     *    @param chan - channel number.
+     *    @param gain  - fine gain value.
+     */
+    void
+    VX2750Pha::setEnergyFilterFineGain(unsigned ch, double value)
+    {
+        setChanValue(ch, "EnergyFilterFineGain", value);
+    }
+    /**
+     * isEnergyFilterFLimitationEnabled
+     *    @param ch  - channel number.
+     *    @return bool - true if the low frequence filter is enabled for the chan.
+     */
+    bool
+    VX2750Pha::isEnergyFilterFLimitationEnabled(unsigned chan)
+    {
+        int value = getChanInteger(chan, "EnergyFilterFLimitation");
+        switch ( value ) {
+        case 1:
+            return true;
+        case 0:
+            return false;
+        default:
+            {
+                std::stringstream strMsg;
+                strMsg << "Got an unrecognized value for EnergyFilterFlimitiation: "
+                    << value;
+                std::string emsg = strMsg.str();
+                throw std::runtime_error(emsg);
+            }
+        }
+            
+    }
+    /**
+     * enableEnergyFilterFLimitation
+     *    @param ch -channel.
+     *    @param enable - true to enable.
+     */
+    void
+    VX2750Pha::enableEnergyFilterFlimitation(unsigned chan, bool enable)
+    {
+        SetChanValue(chan, "EnergyFilterFLimitation", enable ? 1 : 0);
+    }
+    /** getEnergyFilterBaselineAverage
+     *      Returns an enum value that indicates the number of samples that are averaged
+     *      to compute the running baseline.
+     *   @param ch - channel
+     *   @return VX2750Pha::EnergyFilterBaselineAverage
+     */
+    VX2750Pha::EnergyFilterBaselineAverage
+    VX2750Pha::getEnergyFilterBaselineAverage(unsigned ch)
+    {
+        return stringToEnum(
+            stringToBLAverage, getChanValue(ch, "EnergyFlterBaselineAvg")
+        );
+    }
+    /**
+     * setEnergyFilterBaselineAverage
+     *    @param ch - channel
+     *    @param sel - selection for baseline averaging.
+     */
+    void
+    VX2750Pha::setEnergyFilterBaselineAverage(
+        unsigned chan, EnergyFilterBaselineAverage sel
+    )
+    {
+        std::string value = enumToString(BLAverageToString, sel);
+        setChanValue(ch, value.c_str());
+    }
+    /**
+     * getEnergyFilterBaselineGuardTime
+     *    @param ch - channel number.
+     *    @return std::uint32_t ns baseline is frozen after the trapezoid  peak.
+     */
+    std::uint32_t
+    VX2750Pha::getEnergyFilterBaselineGuardTime(unsigned ch)
+    {
+        return GetChanInteger(ch, "EnergyFilterBaselineGuardT");
+    }
+    /**
+     * getEnergyFilterBaselineGuardSamples
+     *    Same as above but in units of samples not ns.
+     */
+    std::uint32_t
+    VX2750Pha::getEnergyFilterBaselineGuardSamples(unsigned ch)
+    {
+        return GetChanInteger(ch, "EnergyFilterBaselineGuardS");
+    }
+    /**
+     * setEnergyFilterBaselineGuardTime
+     *    @param ch - channel
+     *    @param ns - ns of baseline freeze after peak.
+    */
+    void
+    VX2750Pha::setEnergyFilterBaselineGuardTime(unsigned ch, std::uint32_t ns)
+    {
+        SetChanValue(ch, "EnergyFilterBaselineGuardT", ns);
+    }
+    /**
+     * setEnergyFilterBaselineGuardSamples
+     *   Same as above but in units of samples
+     *   @param ch - channel
+     *   @param samples - samples in the guard time.
+     */
+    void
+    VX2750Pha::setEnergyFilterBaselinGuardSamples(unsigned ch, std::uint32_t samples)
+    {
+        SetChanValue(ch, "EnergyFilterBaselineGuardS", samples);
+    }
+    /**
+     * getEnergyFilterPileupGuardTime
+     *    @param ch - channel
+     *    @return std::uint32_t ns in the pileup guard time.
+     */
+    std::uint32_t
+    VX2750Pha::getEnergyFilterPileupTime(unsigned ch)
+    {
+        return GetChanInteger(ch, "EnergyFilterPileUpGuardT");
+    }
+    /**
+     * getEnergyFilterPileupGuardSamples
+     *    Same as above but in units of samples.
+     */
+    std::uint32_t
+    VX2750Pha::getEnergyFilterPiluepSamples(unsigned ch)
+    {
+        return GetChanInteger(ch, "EnergyFilterPileupGuardS");
+    }
+    /**
+     * setEnergyFilterPileupGaurdTime
+     *   @param chan
+     *   @param ns - nanoseconds of desired pileup guard time.
+     */
+    void
+    VX2750Pha::setEnergyFilterPileupGuardTime(unsigned chan, std::uint32_t ns)
+    {
+        SetChanInteger(chan, "EnergyFilterPileupGuardT", ns);
+    }
+    /**
+     * setEnergyFilterPileupGuardSamples
+     *   @param chan
+     *   @param samples - digitizer samples int he guard time.
+     */
+    void
+    VX2750Pha::setEnergyFilterPileupGuardSamples(unsigned chan, std::uint32_t samples)
+    {
+        SetChanInteger(chan, "EnergyFilterPileupGuardS", samples);
+    }
+    /**
+     * getEnergyBits
+     *    @param  ch channel
+     *    @return std::uint8_t number of bits of resolution in the energy value.
+     */
+    std::uint8_t
+    VX2750Pha::getEnergyBits(unsigned ch)
+    {
+        return GetChanInteger(chan, "Energy_Nbit");
+    }
+    /**
+     * getRealTime
+     *   Get the real time according to the FPGA in ns.
+     *  @param ch - channel
+     *  @return std::uint64_t - ns of realtime
+     *  @note The docs say the raw value is in 8ns units.
+     *        We'll turn that into ns.  The docs also say these units are FPGA
+     *        clocks so this may be vulnerable to error in case boards come out
+     *        with this API but different FPGA clock periods.
+     */
+    std::uint64_t
+    VX2750Pha::getRealtime(unsigned ch)
+    {
+        std::uint64_t raw = GetChanInteger(chan, "ChRealtimeMonitor");
+        return raw * FPGA_CLOCKS_PER_NS;
+    }
+    /**
+     * getDeadtime
+     *    Same as above but get the deadtime
+     *    @param ch
+     *    @return std::uint64_t - again converted to ns.  ALl the same caveats.
+     */
+    std::uint64_t
+    VX2750Pha::getDeadTime(unsigned ch)
+    {
+        std::uint64_t raw = getChanInteger(ch, "ChDeadtimeMonitor");
+        return raw * FPGA_CLOCKS_PER_NS
+    }
+    // Command jackets:
+    /**
+     * Reset
+     *   Resets the board. This command sets all registers to the default value
+     *   and clear data from memories. It does not act on
+     *   the communication interfaces, the PLLs and the clocks
+     */
+    void
+    VX2750Pha::Reset()
+    {
+        Command("Reset");
+    }
+    /**
+     * ClearData
+     *    Clear data from memories. Register’s content is not affected.
+     *    This command is typically used before starting an
+     *    acquisition to guarantee that no data belonging to a previous run is
+     *    still present in the internal memory of the digitizer.
+     */
+    void
+    VX2750Pha::ClearData()
+    {
+        Command("ClearData");
+    }
+    /**
+     * Arm
+     *    Arms the digitizer to start an acquisition. When the start of run is
+     *    software controlled, the arming is not implicit in the
+     *    start command and it is necessary to use the ArmAcquisition command.
+     */
+    void
+    VX2750Pha::Arm()
+    {
+        Command("ArmAcquisition");
+    }
+    /*
+     * Disarm:
+     *   Disarms the acquisition and prevents the digitizer to start a new run
+     *   (for instance controlled by an external signal feeding SIN) without
+     *   the grant of the software. It is possible to set an automatic disarm
+     *   after the stop of the acquisition by means of the EnAutoDisarmAcq
+     *   parameter. However, in order to make the higher level software
+     *   aware of this occurrence and allow it to properly manage the Disarm
+     *   condition, the use of the DisarmAcquistion command is mandatory even
+     *   when the EnAutoDisarmAcq parameter is used.
+     */
+    void
+    VX2750Pha::Disarm()
+    {
+        Command("DisarmAcquisition");
+    }
+    /**
+     * Start
+     *    Starts the acquisition, provided that the option SwStart is enabled
+     *    in the parameter StartSource. This start command does require a
+     *    previous arming command
+     */
+    void
+    VX2750Pha::Start()
+    {
+        Command("SwStartAcquisition");    
+    }
+    /**
+     * Stop
+     *    Forces the acquisition to stop, whatever is the start source.
+     */
+    void
+    VX2750Pha::Stop()
+    {
+        Command("SwStopAcquisition");
+    }
+    /**
+     * Trigger
+     *    Send a software trigger to the digitizer, provided that the option
+     *    SwTrg is enabled in the GlobalTriggerSource parameter
+     */
+    void
+    VX2750Pha::Trigger()
+    {
+        Command("SendSWTrigger");
+    }
+    /**
+     * ReloadCalibration
+     *    Delete calibration file and reload it from flash or, if invalid, use
+     *    default calibration
+     */
+    void
+    VX2750Pha::ReloadCalibration()
+    {
+        Command("ReloadCalibration");
+    }
+    /**
+     * getEndpoint
+     *   @return VX2750Pha::Endpoint - the active endpoint.
+     */
+    VX2750Pha::Endopoint
+    VX2750Pha::getEndpoint()
+    {
+        return stringToEnum(stringToEndpoint, GetActiveEndpoint());
+    }
+    /**
+     * selectEndpoint
+     *   @param selection - desired active endpoint.
+     */
+    void
+    VX2750::selectEndPoint(Endpoint selection)
+    {
+        std::string value = enumToString(endpointToString, selection);
+        SetActiveEndpoint(value.c_str());
+    }
+    /**
+     * initializeRawEndPoint
+     *   Create the JSON required to initialize the format of the raw endpoint
+     *   to default.
+     */
+    void
+    VX2750::initializeRawEndPoint()
+    {
+        Json::Value d = createScalar("SIZE", "SIZE_T");
+        Json::Value wf = createArray("DATA", "U8", 1);
+        Json::Value descrption;
+        description[0] = d;
+        description[1] = wf;
+        std::stringstream strJson;
+        strJson << description;
+        std::string json = strJson.str();
+        SetReadDataFormat(json.c_str());
+        
+    }
+    /**
+     * readRawEndpoint
+     *   Performa  read on the default endpoint.. arguments are in order:
+     *   - size
+     *   - data.
+     * @param pBuffer - pointer to a buffer which must be sized using
+     *       getMaxRawDataSize.
+     * @return size_t - size of data read (bytes?).
+     * @note initializeRawEndPoint shoulid have been called after
+     *       selecting the raw endpoint.
+     */
+    size_t
+    VX2750Pha::readRawEndpoint(void* pBuffer)
+    {
+        size_t s;
+        void* argv[2];
+        argv[0] = &s;
+        argv[1] = pBuffer;
+        bool status = ReadData(1000000, 2, argv);
+        if (status) {
+            return s;
+        } else {
+            return 0;                  // TImeout.
+        }
+    }
+    /**
+     * setDefaultFormat
+     *     Applies to DPP-PHA data - resets the internal data structures
+     *     so that if initializeDPPPHAReadout the default readout format
+     *     will be used.
+     */
+    void
+    VX2750Pha::setDefaultFormat()
+    {
+        m_dppPhaOptions.resetOptions();
+    }
+    /**
+     * enableRawTimestamp
+     *    Determines if the raw timestamp will be read from the DPP-PHA
+     *    end point.
+     *   @param enable - if true, raw timestamps will be read.
+     *   @note After all of the desired enablexxx methods are called to
+     *         specify the desired event contents, the method
+     *         initializeDPPPHAReadout must be called to generate the approprate
+     *         JSON and send it to the device.
+     */
+    void
+    VX2750Pha::enableRawTimestamp(bool enable)
+    {
+        m_dppPhaOptions.s_enableRawTimestamps = enable;
+    }
+    /**
+     * enableFineTimestamp
+     *    As enablRawTimestamp but the CFD fine timestamp is enabled to be read
+     *    out.
+     * @param enable - true to enable, false to disable.
+     * @note After all of the desired enablexxx methods are called to
+     *         specify the desired event contents, the method
+     *         initializeDPPPHAReadout must be called to generate the approprate
+     *         JSON and send it to the device.
+     */
+    void
+    VX2750Pha::enableFineTimestamp(bool enable)
+    {
+        m_dppPhaOptions.s_enableFineTimestamps = enable;
+    }
+    /**
+     * enableFlags
+     *    Same as for enableRawTimestamp but enables/disables the status flags.
+     *    Note that there are two flags and they both get enabled or disabled
+     *    together.  These are the low priority and high priority flag sets.
+     * @param enable - true to enable, false to disable.
+     * @note After all of the desired enablexxx methods are called to
+     *         specify the desired event contents, the method
+     *         initializeDPPPHAReadout must be called to generate the approprate
+     *         JSON and send it to the device.
+     */
+    void
+    VX2750Pha::enableFlags(bool enable)
+    {
+        m_dppPhaOptions.s_enableFlags = enable;
+    }
+    /**
+     * enable Downsampling
+     *    Turn on/off adding the clock downsampling information to the data
+     *    read from the DPP_PHA endpoint:
+     * @param enable - true to enable, false to disable.
+     * @note After all of the desired enablexxx methods are called to
+     *         specify the desired event contents, the method
+     *         initializeDPPPHAReadout must be called to generate the approprate
+     *         JSON and send it to the device.
+     */
+    void
+    VX2750Pha::enableDownsampling(bool enable)
+    {
+        m_dppPhaOptions.s_enableDownsampledTime = enable;
+    }
+    /**
+     * enableAnalogProbes
+     *    Enable the readout of analog probes.  Note that this is also how to
+     *    enable traces.. one assigns the raw adc inputs to a probe and then
+     *    enables the readout of that probe.
+     *    There are two analog probes that can be enabled, probe 1 and probe 2.
+     *    These can be indpendently enabled:
+     * @param probe1 - if true the readout of probe 1 is enabled
+     * @param probe2 - if true, the readout of probe 2 is enabled.
+     * @note After all of the desired enablexxx methods are called to
+     *         specify the desired event contents, the method
+     *         initializeDPPPHAReadout must be called to generate the approprate
+     *         JSON and send it to the device.
+     *  @note that enabling an analog probe also enables the type of probe to be
+     *        read.
+     */
+    void
+    VX2750Pha::enableAnalogProbes(bool probe1, bool probe2)
+    {
+        m_dppPhaOptions.s_enableAnalogProbe1 = probe1;
+        m_dppPhaOptions.s_enableAnalogProbe2 = probe2;
+    }
+    /**
+     * enbaleDigitalProbes
+     *   Up to four digital probes can be assigned and independently enabled for readout.
+     *   Note that enabling a probe also enables the corresponding probe
+     *   description.
+     *
+     *   @oaram probe1  - enable probe 1 for readout.
+     *   @oaram probe2  - enable probe 2 for readout.
+     *   @oaram probe3  - enable probe 3 for readout.
+     *   @oaram probe4  - enable probe 4 for readout.
+     */
+    void
+    VX2750Pha::enableDigitalProbles(
+        bool, probe1, bool probe2, bool probe3, bool probe4
+    )
+    {
+        m_dppPhaOptions.s_enableDigitalProbe1 = probe1;
+        m_dppPhaOptions.s_enableDigitalProbe2 = probe2;
+        m_dppPhaOptions.s_enableDigitalProbe3 = probe3;
+        m_dppPhaOptions.s_enableDigitalProbe4 = probe4;
+    }
+    /**
+     * enableSampleSize
+     *    Turn on/off the readout of the number of samples in the analog probes.
+     *  @param enable - true to turn on, false to turn  off.
+     */
+    void
+    VX2750Pha::enableSampleSize(bool enable)
+    {
+        m_dppPhaOptions.s_enableSampleCount = enable;
+    }
+    /**
+     * enableRawEventSize
+     *    Enable the recording of the raw event size.  My understanding is that
+     *    this is the same as the size field from the raw endpoint..that is it
+     *    describes the total number of bytes in the raw event.
+     *  @param enable - true to enable. false to disable.
+     */
+    void
+    VX2750Pha::enableRawEventSize(bool enable)
+    {
+        m_dppPhaOptions.s_enableEventSize = enable;
+    }
+    /**
+     * initializeDPPPHAReadout
+     *    Initializes the DPP-PHA readout format in accordance with the default
+     *    set of items read and the values of the enables for the optional
+     *    items in m_dppPhaOptions.
+     */
+    void
+    VX2750Pha::initializeDPPPHAReadout()
+    {
+        
+    }
+}
+// namespace
