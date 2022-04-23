@@ -261,29 +261,29 @@ public
     // Struct to hold decoded data. The user can select which fields are filled in:
     
     typedef struct _DecodedEvent {
-        std::uint8_t   s_channel;
-        std::uint64_t  s_rawTimestamp;
-        std::uint64_t  s_nsTimestamp;
-        std::uint16_t  s_fineTimestamp;
-        std::uint16_t  s_energy;
-        std::uint16_t  s_lowPriorityFlags;
-        std::uint16_t  s_highPriorityFlags;
-        std::uint8_t   s_timeDownSampling;
-        std::int32_t*  s_pAnalogProbe1;
-        std::uint8_t   s_analogProbe1Type;
-        std::int32_t*  s_pAnalogProbe2;
-        std::uint8_t   s_analogProbe2Type;
-        std::uint8_t*  s_pDigitalProbe1;
-        std::uint8_t   s_digitalProbe1Type;
-        std::uint8_t*  s_pDigitalProbe2;
-        std;:uint8_t   s_digitalProbe3Type;
-        std::uint8_t*  s_pDigitalProbe2;
-        std;:uint8_t   s_digitalProbe3Type;
-        std::uint8_t*  s_pDigitalProbe4;
-        std::uint8_t   s_digitalProbe4Type;
-        size_t         s_samples;
-        bool           s_fail;
-        size_t         s_eventSize;
+        std::uint8_t   s_channel;               // Always present.
+        std::uint64_t  s_nsTimestamp;           // Always present.
+        std::uint64_t  s_rawTimestamp;          // s_enableRawTimestamps 
+        std::uint16_t  s_fineTimestamp;         // s_enableFineTimestamps
+        std::uint16_t  s_energy;                // Always present.
+        std::uint16_t  s_lowPriorityFlags;      // s_enableFlags
+        std::uint16_t  s_highPriorityFlags;     // s_enableFlags
+        std::uint8_t   s_timeDownSampling;      // s_enableDownSampledTime.
+        std::int32_t*  s_pAnalogProbe1;         // s_enableAnalogProbe1
+        std::uint8_t   s_analogProbe1Type;      // s_enableAnalogProbe1
+        std::int32_t*  s_pAnalogProbe2;         // s_enableAnalogProbe2
+        std::uint8_t   s_analogProbe2Type;      // s_enableAnalogProbe2
+        std::uint8_t*  s_pDigitalProbe1;        // s_enableDigitalProbe1
+        std::uint8_t   s_digitalProbe1Type;     // s_enableDigitalProbe1
+        std::uint8_t*  s_pDigitalProbe2;        // s_enableDigitalProbe2
+        std;:uint8_t   s_digitalProbe3Type;     // s_enableDigitalProbe2
+        std::uint8_t*  s_pDigitalProbe2;        // s_enableDigitalProbe3
+        std;:uint8_t   s_digitalProbe3Type;     // s_enableDigitalProbe3
+        std::uint8_t*  s_pDigitalProbe4;        // s_enableDigitalProbe4
+        std::uint8_t   s_digitalProbe4Type;      // s_enableDigitalProbe4
+        size_t         s_samples;               // s_enableSampleCount
+        bool           s_fail;                  // Always present.
+        size_t         s_eventSize;             // s_enableEventSize
         
     } DecodedEvent, *pDecodedEvent;
     
@@ -315,7 +315,7 @@ public
         void resetOptions() {
             s_enableRawTimesstamps = false;
             s_enableFineTimestamps = false;
-            s_enableFLags    = false;
+            s_enableFfags    = false;
             s_enableDownsampledTime = false;;
             s_enableAnalogProbe1 = false;;
             s_enableAnalogProbe2 = false;
@@ -643,13 +643,13 @@ public:
     // This sends the JSON:
     
     void initializeDPPPHAReadout();
-    void readDPPPHAEndpoint(pDecodedEvent);
+    void readDPPPHAEndpoint(DecodedEvent& event);
     
     
 private:
-    int    dottedToInt(const std::string& dotted);
-    template<T> std::string enumToString(const std::map<T, std::string>& map, T value);
-    template<T> T stringToEnum(const std::map<std::string, T>& map, const std::string& value);
+    uin32_t    dottedToInt(const std::string& dotted);
+    template<class T> std::string enumToString(const std::map<T, std::string>& map, T value);
+    template<class T> T stringToEnum(const std::map<std::string, T>& map, const std::string& value);
     bool textToBool(const std::string& str);
     void checkInclusiveRange(int low, int high, int value);
     std::string appendNumber(const char* base, unsigned number);
@@ -657,6 +657,64 @@ private:
     Json::Value createArray(const char* name, const char* type, unsigned dimension);
   
 };
+
+// Implementation of template methods:
+//  We use enums where possible so we can get compile time checking of
+//  values, therefore the main thing we need to do that's templated is
+//  conversions from enumerated values -> strings and back:
+
+/**
+ * enumToString
+ *    Given an enumerated value return the associated string.
+ *    This is templated on the key of the conversion mapping.
+ * @param map  - Map of enumerated value -> strings.
+ * @param value - Value in the key type of the map
+ * @return std::string  - mapped string value.
+ * @throw std::invalid_argument - lookup failure
+ * @note it is possible for a lookup failure to occur given C/C++'s ability to
+ *       treat enumerated values like integers including being able to perform
+ *       arithmetic on them DON'T DO THIS, but we protect anyway.
+ */
+template<class T>
+std::string
+VX2750Pha::enumToString(const std::map<T, std::string>&map, T value)
+{
+    auto p = map.find(value);
+    if (p == map.end()) {
+        throw std::invalid_argument("Invalid lookup key passed to enumToString");
+    }
+    return p->second;
 }
+/**
+ * stringToEnum
+ *    Given a  string looks up an enumeraged value.
+ *    Yes I could really implement both with two templated arguments
+ *    but I'm too stupid to do that, and this provides
+ *    a meaningful pair of method names which that would not
+ *
+ * @param map - mapping from string->enum.
+ * @param value - String value to look up.
+ * @return T.
+ * @throw std::invalid_argument if there's no mapping for the string
+ * @note If the map has been constructed properly, there's less chance of throw
+ *       than in the previous method because the 'hardware's returning the
+ *       strings that are getting tossed into this.
+ */
+template<class T>
+T
+VXPha2750::stringToEnum(const std::map<std::string, T>& map, std::string value)
+{
+    auto p = map.find(value);
+    if (p == map.end()) {
+        // We can also be a bit more detailed in our message:
+        
+        std::string msg("Invalid lookup key passed to enumToString : ");
+        msg += value;
+        throw std::invalid_argument(msg);
+    }
+    return p->second;
+}
+
+}                                 // namespace.
 
 #endif

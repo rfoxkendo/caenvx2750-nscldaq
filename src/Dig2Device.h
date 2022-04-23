@@ -108,6 +108,7 @@ namespace caen_nscldaq {
         void SetReadDataFormat(const char* json);   // Can we hide JSON generation?
         
         bool ReadData(int timeout, int argc, void** argv);
+        bool hasData();                             // True if a device has data.
     private:
         std::string devPath(const char* devParName);
         std::string chanPath(unsigned chan, const char* chanParName);

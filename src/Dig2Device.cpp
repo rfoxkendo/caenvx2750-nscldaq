@@ -514,7 +514,7 @@ namespace caen_nscldaq {
     {
         // No point in making a constant size since we'll have to list the
         // elements explicitly in the call to ReadData.
-        void* args[20];                // hopefully enough.
+        void* args[30];                // hopefully enough.
         assert(sizeof(std::uint64_t) <= sizeof(void*));
         if (argc > (sizeof(args)/sizeof(void*))) {
             throw std::out_of_range("argc in Dig2Device:: too big maximum 20");
@@ -524,7 +524,9 @@ namespace caen_nscldaq {
             args[0], args[1], args[2], args[3], args[4],
             args[5], args[6], args[7], args[8], args[9],
             args[10], args[11], args[12], args[13], args[14],
-            args[15], args[16], args[17], args[18], args[19]
+            args[15], args[16], args[17], args[18], args[19],
+            args[20], args[21], args[22], args[23], args[24],
+            args[25], args[26], args[27], args[28], args[29],
         );
         if (status == CAEN_FELib_Timeout) return false;
         if(status != CAEN_FELib_Success) {
@@ -534,6 +536,15 @@ namespace caen_nscldaq {
             throw std::runtime_error(msg);
         }
         return true;
+    }
+    /**
+     * hasData
+     * @return bool - true if the device has data that can be read:
+     */
+    bool
+    Dig2Device::hasData()
+    {
+        return CAEN_FELib_HasData(m_deviceHandle);
     }
     ///////////////////////////////////////////////////////////////
     // Utlity methods.

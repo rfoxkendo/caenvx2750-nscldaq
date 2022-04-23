@@ -24,11 +24,14 @@
 #include "VX2750Pha.h"
 #include <stdexcept>
 #include <sstream>
+#include <stdlib>
+#include <ctype.h>
 
 
 namespace caen_nscldaq {
 
 static const std::uin64_t FPGA_CLOCKS_PER_NS;
+static const unsigned DPP_MAX_PARAMS=30;    // sizes argv for DPP-PHA endpoint.
 
 // Enumerator mappings.  Readonly have string->enum maps.  R/W have
 // both a string to enum and enum to string map.  
@@ -3417,7 +3420,298 @@ static const std::map<VX2750Pha::Endpoint, std::string> endpointToString = {
     void
     VX2750Pha::initializeDPPPHAReadout()
     {
+        unsigned    index(0);
+        Json::Value description;
+        
+        // These elements are always read out:
+    
+        description[index++] = createScalar("CHANNEL", "U8");
+        description[index++] = createScalar("TIMESTAMP_NS", "U64");
+        description[index++] = createScalar("ENERGY", "U16");
+        description[index++] = createScalar("BOARD_FAIL", "BOOL");
+            
+        // Now add in any selected optional elements to the readout format:
+        
+        if (m_dppPhaOptions.s_enableRawTimestamp) {
+            
+            description[index++] = createScalar("TIMESTAMP", "U64");
+        }
+        if (m_dppPhaOptions.s_enableFineTimestamps) {
+            
+            description[index++] = createScalar("FINE_TIMSTAMP", "U16");
+        }
+        if(m_dppPhaOptions.s_enableFlags) {
+            
+            
+            description[index++] = createScalar("FLAGS_LOW_PRIORITY", "U16");
+            description[index++] = createScalar("FLAGS_HIGH_PRIORITY","U8");
+        }
+        if (m_dppPhaOptions.s_enableDownSampledTime) {
+            description[index++] = createScalar("TIME_RESOLUTION", "U8");
+        }
+        if (m_dppPhaOptions.s_enbaleAnalogProbe1) {
+            description[index++] = createArray("ANALOG_PROBE_1", "I32", 1);
+            description[index++] = createScalar("ANALOG_PROBE_1_TYPE", "U8");
+        }
+        if (m_dppPhaOptions.s_enbaleAnalogProbe1) {
+            description[index++] = createArray("ANALOG_PROBE_2", "I32", 1);
+            description[index++] = createScalar("ANALOG_PROBE_2_TYPE", "U8");
+        }
+        if (m_dppPhaOptions.s_enableDigitalProbe1) {
+            description[index++] = createArray("DIGITAL_PROBE_1", "U8", 1);
+            description[index++] = createScalar("DIGITAL_PROBE_1_TYPE", "U8");
+        }
+        if (m_dppPhaOptions.s_enableDigitalProbe2) {
+            description[index++] = createArray("DIGITAL_PROBE_2", "U8", 1);
+            description[index++] = createScalar("DIGITAL_PROBE_2_TYPE", "U8");
+        }
+        if (m_dppPhaOptions.s_enableDigitalProbe3) {
+            description[index++] = createArray("DIGITAL_PROBE_3", "U8", 1);
+            description[index++] = createScalar("DIGITAL_PROBE_3_TYPE", "U8");
+        }
+        if (m_dppPhaOptions.s_enableDigitalProbe4) {
+            description[index++] = createArray("DIGITAL_PROBE_4", "U8", 1);
+            description[index++] = createScalar("DIGITAL_PROBE_4_TYPE", "U8");
+        }
+        if (m_dppPhaOptions.s_enableSampleCount) {
+            description[index++] = createScalar("WAVEFORM_SIZE", "SIZE_T");
+        }
+        if (m_dppPhaOptions.s_enableEventSize) {
+            description[index++] = createScalar("EVENT_SIZE", "SIZE_T");
+        }
+        // Turn this JSON array into a string and send it off as the data format:
+        
+        std::stringstream strJson;
+        strJson << description;
+        std::string json = strJson.str();
+        SetReadDataFormat(json.c_str());
         
     }
-}
-// namespace
+    /**
+     * readDPPPHAEndPoint
+     *    Read an event from the decoded event point.  Prerequisites:
+     *    -  The end point must have been selected.
+     *    -  The various optional bits and pieces must have been enabled.
+     *    -  initializeDPPPHAReadout must have been called to set the data format.
+     *  @param[out] event - The struct of values and pointers that will be used to
+     *       get the data for the event.  All pointer elements for data that will
+     *       be returned must have been initialized by the caller to point to
+     *       appropriately sized blocks of data to receive data for that item.
+     *       Appropriate queries can be used to determine the maximum 
+     *       analog/digital probe samples required.  The actual number of samples
+     *       received can be gotten by enabling the wave form size.
+     *       Incorrectly initializing these pointers will, most likely, result
+     *       in segfaults or other very bad things.
+     *   @note - blocks until reads are satisified.  This means that you'd better know
+     *       that data is available.
+     *   @note - or more a todo:  It' possible, if the user re-uses event read after
+     *        read to provide a method that will hand back the argv/argc values
+     *        to them which would streamline the actual read process.
+     *        The code in this method is clunky but supports run-time decision
+     *        of the desired data.
+     */
+    void
+    VX2750Pha::readDPPPHAEndPoint(DecodedEvent& event)
+    {
+        void* argv[DPP_MAX_PARAMS];                  // Some extra slots...but beware if DecodedEvents expands.
+        int argc = 0;
+        
+        // Add in arguments that are always there  - this is the use case
+        // I gave the developers for needing support for an argc/argv version
+        // of their reads -- yes I'm rubbing that in.
+        
+        argv[argc++] = &(event.s_channel);
+        argv[argc++] = &(event.s_nsTimestamp);
+        argv[argc++] = &(event.s_energy);
+        argv[argc++] = &(event.s_fail);
+        
+        // The remaining arguments depend on the values of the dpp PHA options
+        // struct flags:
+        
+        if (m_dppPhaOptions.s_enableRawTimestamps) {
+            argv[argc++] = &(event.s_rawTimestamp);
+        }
+        if (m_dppPhaOptions.s_enableFineTimestamps) {
+            argv[argc++] = &(event.s_fineTimestamp);
+        }
+        if (m_dppPhaOptions.s_enableFlags) {
+            argv[argc++] = &(event.s_lowPriorityFlags);
+            argv[argc++] = &(event.s_highPriorityFlags);
+        }
+        if (m_dppPhaOptions.s_enableDownsampledTime) {
+            argv[argc++] = &(event.s_timeDownSampling);
+        }
+        if (m_dppPhaOptions.s_enableAnalogProbe1) {
+            argv[argc++] = event.s_pAnalaogProbe1;
+            argv[argc++] = &(event.s_AnalogProbe1Type);
+        }
+        if (m_dppPhaOptions.s_enableAnalogProbe2) {
+            argv[argc++] = event.s_pAnalaogProbe2;
+            argv[argc++] = &(event.s_AnalogProbe2Type);
+        }
+        if (m_dppPhaOptions.s_enableDigitalProbe1)  {
+            argv[argc++] = event.s_pDigitalProbe1;
+            argv[argc++] = &(event.s_DigitalProbe1Type);
+        }
+        if (m_dppPhaOptions.s_enableDigitalProbe2)  {
+            argv[argc++] = event.s_pDigitalProbe2;
+            argv[argc++] = &(event.s_DigitalProbe2Type);
+        }
+        if (m_dppPhaOptions.s_enableDigitalProbe3)  {
+            argv[argc++] = event.s_pDigitalProbe3;
+            argv[argc++] = &(event.s_DigitalProbe3Type);
+        }
+        if (m_dppPhaOptions.s_enableDigitalProbe4)  {
+            argv[argc++] = event.s_pDigitalProbe4;
+            argv[argc++] = &(event.s_DigitalProbe4Type);
+        }
+        if (m_dppPhaOptions.s_enableSampleCount) {
+            argv[argc++] = &(event.s_samples);
+        }
+        if (m_dppPhaOptions.s_enableEventSize) {
+            argv[argc++] = &(event.s_eventSize);
+        }
+        while(!ReadData(1000000, argc, argv))
+            ;                                          // Block until read.
+        
+    }
+    ////////////////////////////////////////////////////////////////////////////
+    // Implementation of private (utility) functions.
+    
+    /**
+     * dottedToInt
+     *    Convert a dotted ip address to an integer.
+     *  @param dotted - string containing the dotted IP address.
+     *  @retrun int - integer equivalent IP address.
+     *  @note  we assume the input string is a valid dotted address.
+     */
+    uint32_t
+    VX2750Pha::dottedToInt(const std::string& dotted)
+    {
+        int result = 0;
+        // there are three dots.
+        
+        size_t startAt(0);
+        std::string octets[4];    // whichi gives four fields
+        for (int i =0; i < 3; i++) {
+            size_t dotpos = dotted.find(".", startAt);
+            octets[i] = dotted.substr(startAt, dotpos - startAt);
+            startAt = dotpos+1;    // Next octet startpoint.
+        }
+        // startAt is pointing to the remainder of the string (octets[3])
+        
+        octets[3] = dotted.substr(starAt);
+        
+        // Now figure out the final value
+        //
+        for (int i = 0; i < 4; i++) {
+            result  = result << 8;
+            result |= strtoul(octests[i].c_str(), nullptr, 0);
+        }
+        return result;
+        
+    }
+    /**
+     * textToBool
+     *    Covert a string to a boolean value:
+     *    -  "True" is true
+     *    -  "False is false.
+     *    Just in case, the comparison is done case-blind
+     *  @param str - string to compare.
+     *  @return bool - boolean value of string.
+     *  @throws std::invalid_argument if str is neither.
+     */
+    bool
+    VX2750Pha::textToBool(const std::string& str)
+    {
+        // Convert to lower case:
+        
+        std::string lstr;
+        for (int i = 0; i < str.size(); i++) {
+            lstr.push_back(tolower(str[i]));
+        }
+        if (lstr == "true") return true;
+        if (lstr == "false") return false;
+        throw std::invalid_argument("VX2750Pha - invalid boolean string");
+    }
+    /**
+     * checkInclusiveRange
+     *    Check that an integer is in an inclusive range.  If not throws
+     *    std::range_error
+     * @param low - low limit of range.
+     * @param high - High limit of range.
+     * @param value  - Value to check.
+     */
+    void
+    VX2750Pha::checkInclusiveRange(int low, int high, int value)
+    {
+        if ((value < low) || (value > high)) {
+            std::stringstream strMessage;
+            strMessage << "The value " << value << " is not in the range ["
+            << low << ',' << high << ']';
+            std::string msg; = strMessage.str();
+            throw std::range_error(msg);
+        }
+    }
+    /**
+     * appendNumber
+     *   Given a string, append a number to it. E.g. "abcd", 10 gives
+     *   "abcd10"
+     * @param base - base value
+     * @param numbver - number to append.
+     * @return std::string
+     */
+    std::string
+    VX2750Pha::appendNumber(const char* base, unsigned value)
+    {
+        // stupid slow way:
+        
+        std::stringstream strResult;
+        strResult << base << value;
+        std::string result = strResult.str();
+        return result;
+    }
+    /**
+     * createScaler
+     *    Creates the JSON specification for a scalar value.
+     *    This will be a keyed array with name value pairs
+     *    -  name - the name of the item./
+     *    -  type - The data type of the object.
+     * @param  name - value for name key.
+     * @param type - value for the type key.
+     * @return Json::Value - JSON value encapsulating the string.
+     * 
+     */
+    Json::Value
+    VX2750Pha::createScalar(const char* name, const char* type)
+    {
+        Json::Value result;
+        
+        result["name"] = name;
+        result["value"] = value;
+        
+        return result;
+    }
+    /**
+     * createArray
+     *    Creates a format specification for an array parameter.
+     *    In addition to the name, type keys for a scalar, these
+     *    have a dim key which represents the dimensionality of the object.
+     * @param name
+     * @param type
+     * @param dimension - value to put in the "dim" key.
+     * @return Json::Value
+     */
+    Json::Value
+    VX2750Pha::createArray(const char* name, const char* type, unsigned dimension)
+    {
+        Json::Value result;
+        
+        result["name"] = name;
+        result["type"] = type;
+        result["dim"]  = dimension;
+        
+        return result;
+    }
+    
+}                 // namespace
