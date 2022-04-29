@@ -57,10 +57,10 @@ namespace caen_nscldaq {
         
         void SetChanValue(unsigned chan, const char* chanParName, const char* value);
         void SetChanValue(unsigned chan, const char* chanParName, int value);
-        void setChanValue(unsigned chan, const char* chanParName, std::uint64_t value);
+        void SetChanValue(unsigned chan, const char* chanParName, std::uint64_t value);
         void SetChanValue(unsigned chan, const char* chanParName, double value);
         void SetChanValue(unsigned chan, const char* chanParName, bool value);
-        ch
+
         void SetLVDSValue(unsigned quartet, const char* LVDSName, const char* value);
         void SetLVDSValue(unsigned quartet, const char* LVDSName, int value);
         void setLVDSValue(unsigned quartet, const char* LVDSName, std::uint64_t value);
@@ -112,7 +112,7 @@ namespace caen_nscldaq {
     private:
         std::string devPath(const char* devParName);
         std::string chanPath(unsigned chan, const char* chanParName);
-        std::string LDVDSPath(unsigned quartet, const char* lvdsParName);
+        std::string LVDSPath(unsigned quartet, const char* lvdsParName);
         std::string lastError();
     };
 }

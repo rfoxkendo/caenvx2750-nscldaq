@@ -325,7 +325,7 @@ namespace caen_nscldaq {
         return GetInteger(fullPath.c_str());
     }
     std::uint64_t
-    Dig2Device::GetDeviceULong(const char*)
+    Dig2Device::GetDeviceULong(const char* parameterName)
     {
         std::string fullPath = devPath(parameterName);
         return GetULong(fullPath.c_str());
@@ -395,13 +395,13 @@ namespace caen_nscldaq {
         return GetValue(fullPath.c_str());
     }
     int
-    Dig2Device::GetLVDSInteger(unsigned quartet, const char* paramterName)
+    Dig2Device::GetLVDSInteger(unsigned quartet, const char* parameterName)
     {
         std::string fullPath = LVDSPath(quartet, parameterName);
         return GetInteger(fullPath.c_str());
     }
     std::uint64_t
-    Dig2Device::GetLVDSUlong(unsigned quartet, const char* parameterName)
+    Dig2Device::GetLVDSULong(unsigned quartet, const char* parameterName)
     {
         std::string fullPath = LVDSPath(quartet, parameterName);
         return GetULong(fullPath.c_str());
@@ -526,7 +526,7 @@ namespace caen_nscldaq {
             args[10], args[11], args[12], args[13], args[14],
             args[15], args[16], args[17], args[18], args[19],
             args[20], args[21], args[22], args[23], args[24],
-            args[25], args[26], args[27], args[28], args[29],
+            args[25], args[26], args[27], args[28], args[29]
         );
         if (status == CAEN_FELib_Timeout) return false;
         if(status != CAEN_FELib_Success) {
@@ -544,7 +544,7 @@ namespace caen_nscldaq {
     bool
     Dig2Device::hasData()
     {
-        return CAEN_FELib_HasData(m_deviceHandle);
+        return CAEN_FELib_HasData(m_deviceHandle, 0);
     }
     ///////////////////////////////////////////////////////////////
     // Utlity methods.
