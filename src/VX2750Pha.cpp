@@ -24,13 +24,13 @@
 #include "VX2750Pha.h"
 #include <stdexcept>
 #include <sstream>
-#include <stdlib>
+#include <stdlib.h>
 #include <ctype.h>
 
 
 namespace caen_nscldaq {
 
-static const std::uin64_t FPGA_CLOCKS_PER_NS;
+static const std::uint64_t FPGA_CLOCKS_PER_NS;
 static const unsigned DPP_MAX_PARAMS=30;    // sizes argv for DPP-PHA endpoint.
 
 // Enumerator mappings.  Readonly have string->enum maps.  R/W have
@@ -54,122 +54,122 @@ static const std::map<std::string, VX2750Pha::FormFactors> stringToFormFactor = 
 static const std::map<std::string, VX2750Pha::ClockSource> stringToClockSource = {
     {"Internal", VX2750Pha::Internal},
     {"FPClkIn", VX2750Pha::FrontPanel},
-    {"P0ClkIn",   VX2750Pha::P0},
+    {"P0ClkIn",   VX2750Pha::CLock_P0},
     {"Link",   VX2750Pha::Link},
     {"DIPswitchSel", VX2750Pha::DIPSelected}
 };
 static const std::map<VX2750Pha::ClockSource, std::string> clockSourceToString = {
     {VX2750Pha::Internal, "Internal"},
     {VX2750Pha::FrontPanel, "FPClkIn"},
-    {VX2750Pha::P0, "P0ClkIn"},
+    {VX2750Pha::Clock_P0, "P0ClkIn"},
     {VX2750Pha::Link, "Link"},
     {VX2750Pha::DIPSelected, "DIPswitchSel"}
 };
 
 static const std::map<std::string, VX2750Pha::StartSource> stringToStartSource = {
-    {"EncodedClkIn", VX2750Pha::EncodedClockIn},
+    {"EncodedClkIn", VX2750Pha::Start_EncodedClockIn},
     {"SINlevel", VX2750Pha::SINLevel},
     {"SINedge", VX2750Pha::SINEdge},
     {"SWcmd", VX2750Pha::SWCommand},
-    {"LDVDS", VX2750Pha::LVDS},
-    {"P0",   VX2750Pha::P0}
+    {"LDVDS", VX2750Pha::Start_LVDS},
+    {"P0",   VX2750Pha::Start_P0}
 };
 
 static const std::map<VX2750Pha::StartSource, std::string> startSourceToString = {
-    {VX2750Pha::EncodedClockIn, "EncodedClkIn"},
+    {VX2750Pha::Start_EncodedClockIn, "EncodedClkIn"},
     {VX2750Pha::SINLevelm, "SINlevel"},
-    {VX2750Pha::SINEdge "SINedge",
+    {VX2750Pha::SINEdge, "SINedge",
     {VX2750Pha::SWCommand, "SWcmd"},
-    {VX2750Pha::LVDS, "LVDS"},
-    {VX2750Pha::P0, "P0"}
+    {VX2750Pha::Start_LVDS, "LVDS"},
+    {VX2750Pha::Start_P0, "P0"}
 };
 
 static const std::map<std::string, VX2750Pha::GlobalTriggerSource> stringToGlobalTriggerSource = {
-    {"TrgIn", VX2750Pha::TriggerIn},
-    {"P0", VX2750Pha::P0},
-    {"SwTrg", VX2750Pha::Software},
-    {"LVDS", VX2750Pha::LVDS},
-    {"ITLA", VX2750Pha::InternalA},
-    {"ITLB", VX2750Pha::InternalB},
-    {"ITLA_AND_ITLB", VX2750Pha::InternalAandB},
+    {"TrgIn", VX2750Pha::GlobalTrigger_TriggerIn},
+    {"P0", VX2750Pha::GlobalTrigger_P0},
+    {"SwTrg", VX2750Pha::GlobalTrigger_Software},
+    {"LVDS", VX2750Pha::GlobalTrigger_LVDS},
+    {"ITLA", VX2750Pha::GlobalTrigger_InternalA},
+    {"ITLB", VX2750Pha::GlobalTrigger_InternalB},
+    {"ITLA_AND_ITLB", VX2750Pha::GlobalTrigger_InternalAandB},
     {"ITLA_OR_ITLB", VX2750Pha::InternalAorB},
-    {"EncodedClkIn", VX2750Pha::EncodedClockIn},
-    {"GPIO", VX2750Pha::GPIO},
-    {"TestPulse", VX2750Pha::TestPulse}
+    {"EncodedClkIn", VX2750Pha::GlobalTrigger_EncodedClockIn},
+    {"GPIO", VX2750Pha::GlobalTrigger_GPIO},
+    {"TestPulse", VX2750Pha::GlobalTrigger_TestPulse}
 };
 static const std::map<VX2750Pha::GlobalTriggerSource, std::string> globalTriggerSourceToString = {
-    {VX2750Pha::TriggerIn, "TrgIn"},
-    {VX2750Pha::P0, "P0"},
-    {VX2750Pha::Software, "SwTrg"},
-    {VX2750Pha::LVDS, "LVDS"},
-    {VX2750Pha::InternalA, "ITLA"},
-    {VX2750Pha::InternalB, "ITLB"},
-    {VX2750Pha::InternalAandB, "ITLA_AND_ITLB"},
+    {VX2750Pha::GlobalTrigger_TriggerIn, "TrgIn"},
+    {VX2750Pha::GlobalTrigger_P0, "P0"},
+    {VX2750Pha::GlobalTrigger_Software, "SwTrg"},
+    {VX2750Pha::GlobalTrigger_LVDS, "LVDS"},
+    {VX2750Pha::GlobalTrigger_InternalA, "ITLA"},
+    {VX2750Pha::GlobalTrigger_InternalB, "ITLB"},
+    {VX2750Pha::GlobalTrigger_InternalAandB, "ITLA_AND_ITLB"},
     {VX2750Pha::InternalAorB, "ITLA_OR_ITLB"},
-    {VX2750Pha::EncodedClockIn, "EncodedClkIn"},
-    {VX2750Pha::GPIO, "GPIO"},
-    {VX2750Pha::TestPulse, "TestPulse"}    
+    {VX2750Pha::GlobalTrigger_EncodedClockIn, "EncodedClkIn"},
+    {VX2750Pha::GlobalTrigger_GPIO, "GPIO"},
+    {VX2750Pha::GlobalTrigger_TestPulse, "TestPulse"}    
 };
 
 static const std::map<std::string, VX2750Pha::WaveTriggerSource> stringToWaveTrigger= {
-     {"ITLB", VX2750Pha::InternalA},
-     {"ITLA", VX2750Pha::InternalB},
-     {"GlobalTriggerSource", VX2750Pha::GlobalTriggerSource},
-     {"TRGIN", VX2750Pha::TRGIN},
+     {"ITLB", VX2750Pha::WaveTrigger_InternalA},
+     {"ITLA", VX2750Pha::WaveTrigger_InternalB},
+     {"GlobalTriggerSource", VX2750Pha::WaveTrigger_GlobalTriggerSource},
+     {"TRGIN", VX2750Pha::WaveTrigger_TRGIN},
      {"ExternalInhibit", VX2750Pha::ExternalInhibit},
      {"ADCUnderSaturation", VX2750Pha::ADCUnderSaturation},
      {"ADCOverSaturation", VX2750Pha::ADCOverSaturation},
-     {"SWTrigger", VX2750Pha::Software},
-     {"ChSelfTrigger", VX2750Pha::ChannelSelfTrigger},
-     {"Ch64Trigger", VX2750Pha::AnyChannelSelfTrigger},
-     {"Disabled", VX2750Pha::Disabled}
+     {"SWTrigger", VX2750Pha::WaveTrigger_Software},
+     {"ChSelfTrigger", VX2750Pha::WaveTrigger_ChannelSelfTrigger},
+     {"Ch64Trigger", VX2750Pha::WaveTrigger_AnyChannelSelfTrigger},
+     {"Disabled", VX2750Pha::WaveTrigger_Disabled}
 };
 static const std::map<VX2750Pha::WaveTriggerSource, std::string> waveTriggerToString= {
-     {VX2750Pha::InternalA, "ITLB"},
-     {VX2750Pha::InternalB, "ITLA"},
-     {VX2750Pha::GlobalTriggerSource, "GlobalTriggerSource"},
-     {VX2750Pha::TRGIN, "TRGIN"},
+     {VX2750Pha::WaveTriger_InternalA, "ITLB"},
+     {VX2750Pha::WaveTrigger_InternalB, "ITLA"},
+     {VX2750Pha::WaveTrigger_GlobalTriggerSource, "GlobalTriggerSource"},
+     {VX2750Pha::WaveTrigger_TRGIN, "TRGIN"},
      {VX2750Pha::ExternalInhibit, "ExternalInhibit"},
      {VX2750Pha::ADCUnderSaturation, "ADCUnderSaturation"},
      {VX2750Pha::ADCOverSaturation, "ADCOverSaturation"},
-     {VX2750Pha::Software, "SWTrigger"},
-     {VX2750Pha::ChannelSelfTrigger, "ChSelfTrigger"},
-     {VX2750Pha::AnyChannelSelfTrigger, "Ch64Trigger"},
-     {VX2750Pha::Disabled, "Disabled"}
+     {VX2750Pha::WaveTrigger_Software, "SWTrigger"},
+     {VX2750Pha::WaveTrigger_ChannelSelfTrigger, "ChSelfTrigger"},
+     {VX2750Pha::WaveTrigger_AnyChannelSelfTrigger, "Ch64Trigger"},
+     {VX2750Pha::WaveTrigger_Disabled, "Disabled"}
 };
 
 static const std::map<std::string, VX2750Pha::EventTriggerSource> stringToEventTrigger = {
-    {"ITLB", VX2750Pha::InternalB},
-    {"ITLA", VX2750Pha::InternalA},
-    {"GlobalTriggerSource", VX2750Pha::GlobalTriggerSource},
-    {"TRGIN", VX2750Pha::TRGIN},
-    {"SWTrigger", VX2750Pha::Software},
-    {"ChSelfTrigger", VX2750Pha::ChannelSelfTrigger},
-    {"Ch64Trigger", VX2750Pha::AnyChannelSelfTrigger},
-    {"Disabled", VX2750Pha::Disabled}
+    {"ITLB", VX2750Pha::EventTrigger_InternalB},
+    {"ITLA", VX2750Pha::EventTrigger_InternalA},
+    {"GlobalTriggerSource", VX2750Pha::EventTrigger_GlobalTriggerSource},
+    {"TRGIN", VX2750Pha::EventTrigger_TRGIN},
+    {"SWTrigger", VX2750Pha::EventTrigger_Software},
+    {"ChSelfTrigger", VX2750Pha::EventTrigger_ChannelSelfTrigger},
+    {"Ch64Trigger", VX2750Pha::EventTrigger_AnyChannelSelfTrigger},
+    {"Disabled", VX2750Pha::EventTriger_Disabled}
 };
 static const std::map<VX2750Pha::EventTriggerSource, std::string> eventTriggerToString = {
-    {VX2750Pha::InternalB, "ITLB"},
-    {VX2750Pha::InternalA, "ITLA"},
-    {VX2750Pha::GlobalTriggerSource, "GlobalTriggerSource"},
-    {VX2750Pha::TRGIN, "TRGIN"},
-    {VX2750Pha::Software, "SWTrigger"},
-    {VX2750Pha::ChannelSelfTrigger, "ChSelfTrigger"},
-    {VX2750Pha::AnyChannelSelfTrigger, "Ch64Trigger"},
-    {VX2750Pha::Disabled, "Disabled"}    
+    {VX2750Pha::EventTrigger_InternalB, "ITLB"},
+    {VX2750Pha::WaveTrigger_InternalA, "ITLA"},
+    {VX2750Pha::EventTrigger_GlobalTriggerSource, "GlobalTriggerSource"},
+    {VX2750Pha::EventTrigger_TRGIN, "TRGIN"},
+    {VX2750Pha::EventTrigger_Software, "SWTrigger"},
+    {VX2750Pha::EventTrigger_ChannelSelfTrigger, "ChSelfTrigger"},
+    {VX2750Pha::EventTrigger_AnyChannelSelfTrigger, "Ch64Trigger"},
+    {VX2750Pha::EventTrigger_Disabled, "Disabled"}    
 };
 
 static const std::map<std::string, VX2750Pha::TimestampResetSource> stringToTimestampReset = {
     {"Start", VX2750Pha::Start},
-    {"SIN", VX2750Pha::SIN},
-    {"GPIO", VX2750Pha::GPIO},
-    {"EncodedClkIn", VX2750Pha::EncodedClockIn}
+    {"SIN", VX2750Pha::Timestamp_SIN},
+    {"GPIO", VX2750Pha::TimestampReset_GPIO},
+    {"EncodedClkIn", VX2750Pha::TimestampReset_EncodedClockIn}
 };
 static const std::map<VX2750Pha::TimestampResetSource, std::string> TimestampResetToString = {
     {VX2750Pha::Start, "Start"},
-    {VX2750Pha::SIN, "SIN"},
-    {VX2750Pha::GPIO, "GPIO"},
-    {VX2750Pha::EncodedClockIn, "EncodedClkIn"}
+    {VX2750Pha::Timestamp_SIN, "SIN"},
+    {VX2750Pha::TimestampReset_GPIO, "GPIO"},
+    {VX2750Pha::TimestampReset_EncodedClockIn, "EncodedClkIn"}
 };
 
 static const std::map<std::string, V2750Pha::TraceRecordMode> stringToTraceRecord = {
@@ -182,133 +182,133 @@ static const std::map<V2750Pha::TraceRecordMode, std::string> traceRecordToStrin
 };
 
 static const std::map<std::string, VX2750Pha::TRGOUTMode> stringToTRGOUT = {
-    {"TRGIN", VX2750Pha::TRGIN},
-    {"P0", VX2750Pha::P0},
-    {"SwTrg", VX2750Pha::Software},
-    {"LVDS", VX2750Pha::LVDS},
-    {"ITLA", VX2750Pha::InternalA},
-    {"ITLB", VX2750Pha::InternalB},
-    {"ITLA_AND_ITLB", VX2750Pha::InternalAandInternalB},
+    {"TRGIN", VX2750Pha::TriggerOut_TRGIN},
+    {"P0", VX2750Pha::TriggerOut_P0},
+    {"SwTrg", VX2750Pha::TriggerOut_Software},
+    {"LVDS", VX2750Pha::TriggerOut_LVDS},
+    {"ITLA", VX2750Pha::Triggerout_InternalA},
+    {"ITLB", VX2750Pha::TriggerOut_InternalB},
+    {"ITLA_AND_ITLB", VX2750Pha::TriggerOut_InternalAandInternalB},
     {"ITLA_OR_ITLB", VX2750Pha::InternalAorInternalB},
-    {"EncodedClkIn", VX2750Pha::EncodedClockIn},
+    {"EncodedClkIn", VX2750Pha::TriggerOut_EncodedClockIn},
     {"Run", VX2750Pha::Run},
     {"RefClk", VX2750Pha::ReferenceClock},
-    {"TestPulse", VX2750Pha::TestPuse},
+    {"TestPulse", VX2750Pha::TriggerOut_TestPuse},
     {"Busy", VX2750Pha::Busy},
     {"Fixed0", VX2750Pha::Zero},
     {"Fixed1", VX2750Pha::One},
     {"SyncIn", VX2750Pha::SynchIn},
-    {"SIN", VX2750Pha::SIN},
-    {"GPIO", VX2750Pha::GPIO},
+    {"SIN", VX2750Pha::TriggerOut_SIN},
+    {"GPIO", VX2750Pha::TriggerOut_GPIO},
     {"AcceptTrg", VX2750Pha::AcceptedTrigger},
     {"TrgClk", VX2750Pha::TriggerClock}
 };
 
 static const std::map<VX2750Pha::TRGOUTMode, std::string> TRGOUTToString = {
-    {VX2750Pha::TRGIN, "TRGIN"},
-    {VX2750Pha::P0, "P0"},
-    {VX2750Pha::Software, "SwTrg"},
-    {VX2750Pha::LVDS, "LVDS"},
-    {VX2750Pha::InternalA, "ITLA"},
-    {VX2750Pha::InternalB, "ITLB"},
-    {VX2750Pha::InternalAandInternalB, "ITLA_AND_ITLB"},
+    {VX2750Pha::TriggerOut_TRGIN, "TRGIN"},
+    {VX2750Pha::TriggerOut_P0, "P0"},
+    {VX2750Pha::TriggerOut_Software, "SwTrg"},
+    {VX2750Pha::TriggerOut_LVDS, "LVDS"},
+    {VX2750Pha::TriggerOutInternalA, "ITLA"},
+    {VX2750Pha::TriggerOut_InternalB, "ITLB"},
+    {VX2750Pha::TriggerOut_InternalAandInternalB, "ITLA_AND_ITLB"},
     {VX2750Pha::InternalAorInternalB, "ITLA_OR_ITLB"},
-    {VX2750Pha::EncodedClockIn, "EncodedClkIn"},
+    {VX2750Pha::TriggerOut_EncodedClockIn, "EncodedClkIn"},
     {VX2750Pha::Run, "Run"},
     {VX2750Pha::ReferenceClock, "RefClk"},
-    {VX2750Pha::TestPuse, "TestPulse"},
+    {VX2750Pha::TriggerOut_TestPuse, "TestPulse"},
     {VX2750Pha::Busy, "Busy"},
     {VX2750Pha::Zero, "Fixed0"},
     {VX2750Pha::One, "Fixed1"},
     {VX2750Pha::SynchIn, "SyncIn"},
-    {VX2750Pha::SIN, "SIN"},
-    {VX2750Pha::GPIO, "GPIO"},
+    {VX2750Pha::TriggerOut_SIN, "SIN"},
+    {VX2750Pha::TriggerOut_GPIO, "GPIO"},
     {VX2750Pha::AcceptedTrigger, "AcceptTrg"},
     {VX2750Pha::TriggerClock, "TrgClk"}
 };
 
 static const std::map<std::string, VX2750Pha::GPIOMode>  stringToGPIO = {
-    {"Disabled", VX2750Pha::Disabled},
-    {"TrgIn", VX2750Pha::TriggerIn},
-    {"P0", VX2750Pha::P0},
-    {"SIN", VX2750Pha::SIN},
-    {"LVDS", VX2750Pha::LVDS},
-    {"ITLA", VX2750Pha::InternalA},
-    {"ITLB", VX2750Pha::InternalB},
-    {"ITLA_AND_ITLB", VX2750Pha::InternalAandInternalB},
+    {"Disabled", VX2750Pha::GPIOMode_Disabled},
+    {"TrgIn", VX2750Pha::GPIOMode_TriggerIn},
+    {"P0", VX2750Pha::GPIOMode_P0},
+    {"SIN", VX2750Pha::GPIOMode_SIN},
+    {"LVDS", VX2750Pha::GPIOMode_LVDS},
+    {"ITLA", VX2750Pha::GPIOMode_InternalA},
+    {"ITLB", VX2750Pha::GPIOMode_InternalB},
+    {"ITLA_AND_ITLB", VX2750Pha::GPIOMode_InternalAandInternalB},
     {"ITLA_OR_ITLB", VX2750Pha::InternalAorInternalB},
-    {"EncodedClkIn", VX2750Pha::EncodedClockIn},
-    {"SwTrg", VX2750Pha::SoftwareTrigger},
+    {"EncodedClkIn", VX2750Pha::GPIOMode_EncodedClockIn},
+    {"SwTrg", VX2750Pha::GPIOMode_SoftwareTrigger},
     {"Run", VX2750Pha::Run},
     {"RefClk", VX2750Pha::ReferenceClock},
-    {"TestPulse", VX2750Pha::TestPulse},
+    {"TestPulse", VX2750Pha::GPIOMode_TestPulse},
     {"Busy", VX2750Pha::Busy},
     {"Fixed0", VX2750Pha::Zero},
     {"Fixed1", VX2750Pha::One}
 };
 static const std::map<VX2750Pha::GPIOMode,std::string> GPIOToString = {
-    {VX2750Pha::Disabled, "Disabled"},
-    {VX2750Pha::TriggerIn, "TrgIn"},
-    {VX2750Pha::P0, "P0"},
-    {VX2750Pha::SIN, "SIN"},
-    {VX2750Pha::LVDS, "LVDS"},
-    {VX2750Pha::InternalA, "ITLA"},
-    {VX2750Pha::InternalB, "ITLB"},
-    {VX2750Pha::InternalAandInternalB, "ITLA_AND_ITLB"},
+    {VX2750Pha::GPIOMode_Disabled, "Disabled"},
+    {VX2750Pha::GPIOMode_TriggerIn, "TrgIn"},
+    {VX2750Pha::GPIOMode_P0, "P0"},
+    {VX2750Pha::GPIOMode_SIN, "SIN"},
+    {VX2750Pha::GPIOMode_LVDS, "LVDS"},
+    {VX2750Pha::GPIOMode_InternalA, "ITLA"},
+    {VX2750Pha::GPIOMode_InternalB, "ITLB"},
+    {VX2750Pha::GPIOMode_InternalAandInternalB, "ITLA_AND_ITLB"},
     {VX2750Pha::InternalAorInternalB, "ITLA_OR_ITLB"},
-    {VX2750Pha::EncodedClockIn, "EncodedClkIn"},
-    {VX2750Pha::SoftwareTrigger, "SwTrg"},
+    {VX2750Pha::GPIOMode_EncodedClockIn, "EncodedClkIn"},
+    {VX2750Pha::GPIOMode_SoftwareTrigger, "SwTrg"},
     {VX2750Pha::Run, "Run"},
     {VX2750Pha::ReferenceClock, "RefClk"},
-    {VX2750Pha::TestPulse, "TestPulse"},
+    {VX2750Pha::GPIOMode_TestPulse, "TestPulse"},
     {VX2750Pha::Busy, "Busy"},
     {VX2750Pha::Zero, "Fixed0"},
     {VX2750Pha::One, "Fixed1"}
 };
 
 static const std::map<std::string, VX2750Pha::BusyInSource> stringToBusyIn = {
-    {"SIN", VX2750Pha::SIN},
-    {"GPIO", VX2750Pha::GPIO},
-    {"LVDS", VX2750Pha::LVDS},
-    {"Disabled", VX2750Pha::Disabled }
+    {"SIN", VX2750Pha::BusyIn_SIN},
+    {"GPIO", VX2750Pha::BusyIn_GPIO},
+    {"LVDS", VX2750Pha::BusyIn_LVDS},
+    {"Disabled", VX2750Pha::BusyIn_Disabled }
 };
 static const std::map<VX2750Pha::BusyInSource, std::string> BusyInTostring = {
-    {VX2750Pha::SIN, "SIN"},
-    {VX2750Pha::GPIO, "GPIO"},
-    {VX2750Pha::LVDS, "LVDS"},
-    {VX2750Pha::Disabled, "Disabled"}
+    {VX2750Pha::BusyIn_SIN, "SIN"},
+    {VX2750Pha::BusyIn_GPIO, "GPIO"},
+    {VX2750Pha::BusyIn_LVDS, "LVDS"},
+    {VX2750Pha::BusyIn_Disabled, "Disabled"}
 };
 
 static const std::map<std::string, VX2750PHA::SyncOutMode> stringToSyncOut = {
-    {"Disabled", VX2750Pha::Disabled},
+    {"Disabled", SyncOut_VX2750Pha::Disabled},
     {"SyncIn", VX2750Pha::SynchIn},
-    {"TestPulse", VX2750Pha::TestPulse},
+    {"TestPulse", VX2750Pha::SyncOut_TestPulse},
     {"IntClk", VX2750Pha::InternalClock},
     {"Run", VX2750Pha::Run}
 };
 static const std::map<VX2750Pha::SyncOutMode, std::string> syncOutToString = {
-    {VX2750Pha::Disabled, "Disabled"},
+    {VX2750Pha::SyncOut_Disabled, "Disabled"},
     {VX2750Pha::SynchIn, "SyncIn"},
-    {VX2750Pha::TestPulse, "TestPulse"},
+    {VX2750Pha::SyncOut_TestPulse, "TestPulse"},
     {VX2750Pha::InternalClock, "IntClk"},
     {VX2750Pha::Run, "Run"}
 };
 
 static const std::map<std::string , VX2750Pha::VetoSource> = stringToVeto = {
-    {"SIN", VX2750Pha::SIN},
-    {"LVDS", VX2750Pha::LVDS},
-    {"GPIO", VX2750Pha::GPIO},
-    {"P0", VX2750Pha::P0},
-    {"EncodedClkIn", VX2750Pha::EncodedClock},
-    {"Disabled", VX2750Pha::Disabled}
+    {"SIN", VX2750Pha::Veto_SIN},
+    {"LVDS", VX2750Pha::Veto_LVDS},
+    {"GPIO", VX2750Pha::Veto_GPIO},
+    {"P0", VX2750Pha::Veto_P0},
+    {"EncodedClkIn", VX2750Pha::Veto_EncodedClock},
+    {"Disabled", VX2750Pha::Veto_Disabled}
 }
 static const std::map<VX2750Pha::VetoSource, std::string> = vetoToString = {
-    {VX2750Pha::SIN, "SIN"},
-    {VX2750Pha::LVDS, "LVDS"},
-    {VX2750Pha::GPIO, "GPIO"},
-    {VX2750Pha::P0, "P0"},
-    {VX2750Pha::EncodedClock, "EncodedClkIn"},
-    {VX2750Pha::Disabled, "Disabled"}
+    {VX2750Pha::Veto_SIN, "SIN"},
+    {VX2750Pha::Veto_LVDS, "LVDS"},
+    {VX2750Pha::Veto_GPIO, "GPIO"},
+    {VX2750Pha::Veto_P0, "P0"},
+    {VX2750Pha::Veto_EncodedClock, "EncodedClkIn"},
+    {VX2750Pha::Veto_Disabled, "Disabled"}
 };
 
 static const std::map<std::string, VX2750Pha::VetoPolarity> stringToVetoPolarity = {
@@ -324,13 +324,13 @@ static const std::map<std::string, VX2750Pha::ChannelVetoSource> stringToChannel
     {"BoardVeto", VX2750Pha::BoardVeto},
     {"ADCOverSaturation", VX2750Pha::OverSaturation},
     {"ADCUnderSaturation", VX2750Pha::UnderSaturation},
-    {"Disabled", VX2750Pha::Disabled}
+    {"Disabled", VX2750Pha::ChanVeto_Disabled}
 };
 static const std::map<VX2750Pha::ChannelVetoSource, std::string> channelVetoToString = {
     {VX2750Pha::BoardVeto, "BoardVeto"},
     {VX2750Pha::OverSaturation, "ADCOverSaturation"},
     {VX2750Pha::UnderSaturation, "ADCUnderSaturation"},
-    {VX2750Pha::Disabled, "Disabled"}
+    {VX2750Pha::ChanVeto_Disabled, "Disabled"}
 };
 
 static const std::map<std::string, VX2750Pha::WaveDataSource> stringToWaveDataSource = {
@@ -445,12 +445,12 @@ static const std::map<VX2750Pha::PairTriggerLogic, std::string> pairLogicToStrin
 };
 
 static const std::map<std::string, VX2750Pha::ITLConnect> stringToITLConnect = {
-    {"Disabled", VX2750Pha::Disabled},
+    {"Disabled", VX2750Pha::ITL_Disabled},
     {"ITLA", VX2750Pha::ITLA},
     {"ITLB", VX2750Pha::ITLB}
 };
 static const std::map<VX2750Pha::ITLConnect, std::string> ITLConnectToString = {
-    {VX2750Pha::Disabled, "Disabled"},
+    {VX2750Pha::ITL_Disabled, "Disabled"},
     {VX2750Pha::ITLA, "ITLA"},
     {VX2750Pha::ITLB, "ITLB"}
 };
@@ -519,17 +519,17 @@ static const std::map<VX2750Pha::EventSelection, std::string> eventSelectionToSt
 };
 
 static const std::map<std::string, VX2750Pha::CoincidenceMask> stringToCoincidenceMask = {
-    {"Disabled", VX2750Pha::Disabled},
+    {"Disabled", VX2750Pha::Coincidence_Disabled},
     {"Ch64Trigger", VX2750Pha::Ch64Trigger},
-    {"TRGIN", VX2750Pha::TRGIn},
-    {"GlobalTriggerSource", VX2750Pha::GlobalTriggerSource},
+    {"TRGIN", VX2750Pha::Coincidence_TRGIn},
+    {"GlobalTriggerSource", VX2750Pha::Coincidence_GlobalTriggerSource},
     {"ITLA", VX2750Pha::ITLA},
     {"ITLB", VX2750Pha::ITLB}
 };
 static const std::map<VX2750Pha::CoincidenceMask, std::string> coincidenceMaskToString = {
-    {VX2750Pha::Disabled, "Disabled"},
+    {VX2750Pha::Coincidence_Disabled, "Disabled"},
     {VX2750Pha::Ch64Trigger, "Ch64Trigger"},
-    {VX2750Pha::TRGIn, "TRGIN"},
+    {VX2750Pha::Coincidence_TRGIn, "TRGIN"},
     {VX2750Pha::GlobalTriggerSource}, "GlobalTriggerSource",
     {VX2750Pha::ITLA, "ITLA"},
     {VX2750Pha::ITLB, "ITLB"}
@@ -2135,7 +2135,7 @@ static const std::map<VX2750Pha::Endpoint, std::string> endpointToString = {
      *    @param mask - new ITLA mask.
      */
     void
-    VX2750Pha::setITLAMask(std::uint64_t mask\)
+    VX2750Pha::setITLAMask(std::uint64_t mask)
     {
         SetDeviceValue("ITLAMask", mask);
     }

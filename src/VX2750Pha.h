@@ -27,10 +27,9 @@
 #include <string>
 #include <map>
 #include <cstdint>
-#include <json.h>
+#include <json/json.h>
 
-caen_nscldaq {
-
+namespace caen_nscldaq {
 /**
  * VX2750PHA - support for parameters in the VX2750.
  *             Since this derives from the Dig2Device class low level
@@ -38,7 +37,7 @@ caen_nscldaq {
  */
 class VX2750Pha : public Dig2Device
 {
-public
+public:
     typedef enum _FwType {
         DPP_PHA, DPP_ZLE, DPP_PSD, DPP_DAQ, DPP_OPEN, Scope
     } FwType;
@@ -47,31 +46,38 @@ public
     } FormFactor;
     
     typedef enum _ClockSource {
-        Internal, FrontPanel, P0, Link, DIPSelected
+        Internal, FrontPanel, Clock_P0, Link, DIPSelected
     } ClockSource;
     
     typedef enum _StartSource {
-        EncodedClockIn, SINLevel, SINEdge, SWCommand, LVDS, P0
+        Start_EncodedClockIn, SINLevel, SINEdge, SWCommand, Start_LVDS, Start_P0
     } StartSource;
     
     typedef enum _GlobalTriggerSource {
-        TriggerIn, P0, Software, LVDS, InternalA, InternalB, InternalAandB,
-        InternalAorB, EncodedClockIn, GPIO, TestPulse
+        TriggerIn, GlobalTrigger_P0,
+        GlobalTrigger_Software, GlobalTrigger_LVDS, GlobalTrigger_InternalA,
+        GlobalTrigger_InternalB, GlobalTrigger_InternalAandB,
+        InternalAorB, GlobalTrigger_EncodedClockIn, GlobalTrigger_GPIO,
+        GlobalTrigger_TestPulse
     } GlobalTriggerSource;
     
     typedef enum _WaveTriggerSource {
-        InternalA, InternalB, GlobalTriggerSource, TRGIN, ExternalInhibit,
-        ADCUnderSaturation, ADCOverSaturation, Software, ChannelSelfTrigger,
-        AnyChannelSelfTrigger, Disabled
+        WaveTrigger_InternalA, WaveTrigger_InternalB,
+        WaveTrigger_GlobalTriggerSource, WaveTrigger_TRGIN, ExternalInhibit,
+        ADCUnderSaturation, ADCOverSaturation,
+        WaveTrigger_Software, WaveTrigger_ChannelSelfTrigger,
+        WaveTrigger_AnyChannelSelfTrigger, WaveTrigger_Disabled
     } WaveTriggerSource;
     
     typedef enum _EventTriggerSource {
-        InternalB, InternalA, GlobalTriggerSource, TRGIN, Software, ChannelSelfTrigger,
-        AnyChannelSelfTrigger, Disabled
+        EventTrigger_InternalB, EventTrigger_InternalA,
+        EventTrigger_GlobalTriggerSource, EventTrigger_TRGIN,
+        EventTrigger_Software, Event_ChannelSelfTrigger,
+        EventTrigger_AnyChannelSelfTrigger, EventTrigger_Disabled
     } EventTriggerSource;
     
     typedef enum _TimestampResetSource {
-        Start, SIN, GPIO, EncodedClockIn
+        Start, Timestamp_SIN, TimestampReset_GPIO, Timestamp_EncodedClockIn
     } TimestampResetSource;
     
     typedef enum _TraceRecordMode {
@@ -79,27 +85,32 @@ public
     } TraceRecordMode;
     
     typedef enum _TRGOUTMode {
-        TRGIN, P0, Software, LVDS, InternalA, InternalB, InternalAandInternalB,
-        InternalAorInternalB, EncodedClockIn, Run, ReferenceClock, TestPuse,
-        Busy, Zero, One, SynchIn, SIN, GPIO, AcceptedTrigger, TriggerClock
+        TriggerOut_TRGIN, TriggerOut_P0,
+        TriggerOut_Software, TriggerOut_LVDS, TriggerOut_InternalA,
+        TriggerOut_InternalB, TriggerOut_InternalAandInternalB,
+        InternalAorInternalB, TriggerOut_EncodedClockIn, Run, ReferenceClock, TestPuse,
+        Busy, Zero, One, SynchIn, TriggerOut_SIN, TriggerOut_GPIO,
+        AcceptedTrigger, TriggerClock
     } TRGOUTMode;
     
     typedef enum _GPIOMode {
-        Disabled, TriggerIn, P0, SIN LVDS, InternalA, InternalB, InternalAandInternalB,
-        InternalAorInternalB, EncodedClockIn, SoftwareTrigger, Run, ReferenceClock,
-        TestPulse, Busy, Zero, One
+        GPIOMode_Disabled, TriggerIn, GPIOMode_P0, GPIOMode_SIN, GPIOMode_LVDS, GPIOMode_InternalA,
+        GPIOMode_InternalB, GPIOMode_InternalAandInternalB,
+        InternalAorInternalB, GPIOMode_EncodedClockIn,
+        GPIOMode_SoftwareTrigger, Run, ReferenceClock,
+        GPIOMode_TestPulse, Busy, Zero, One
     } GPIOMode;
     
     typedef enum _BusyInSource {
-        SIN, GPIO, LVDS, Disabled 
+        BusyIn_SIN, BusyIn_GPIO, BusyIn_LVDS, BusyIn_Disabled 
     } BusyInSource
     
     typedef enum _SyncOutMode {
-        Disabled, SynchIn, TestPulse, InternalClock, Run
+        SyncOut_Disabled, SynchIn, SyncOut_TestPulse, InternalClock, Run
     } SyncOutMode;
     
     typedef enum _VetoSource {
-        SIN, LVDS, GPIO, P0, EncodedClock, Disabled
+        Veto_SIN, Veto_LVDS, Veto_GPIO, Veto_P0, EncodedClock, Veto_Disabled
     } VetoSource;
     
     
@@ -108,7 +119,7 @@ public
     } VetoPolarity;
     
     typedef enum _ChannelVetoSource {
-        BoardVeto, OverSaturation, UnderSaturation, Disabled
+        BoardVeto, OverSaturation, UnderSaturation, ChanVeto_Disabled
     } ChannelVetoSource;
     
     typedef enum _PauseTimestampHandling {
@@ -205,7 +216,7 @@ public
     } PairTriggerLogic;
     
     typedef enum _ITLConnect {
-        Disabled, ITLA, ITLB
+        ITL_Disabled, ITLA, ITLB
     } ITLConnect;
     
     typedef enum _LVDSMode {
@@ -239,7 +250,7 @@ public
     } EventSelection;
     
     typedef enum _CoincidenceMask {
-        Disabled, Ch64Trigger, TRGIn, GlobalTriggerSource, ITLA, ITLB
+        Coincidence_Disabled, Ch64Trigger, Coincidence_TRGIN, Coincidence_GlobalTriggerSource, ITLA, ITLB
     } CoincidenceMask;
     
     typedef enum _EnergyPeakingAverage {
