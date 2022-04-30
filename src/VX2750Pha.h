@@ -54,10 +54,10 @@ public:
     } StartSource;
     
     typedef enum _GlobalTriggerSource {
-        TriggerIn, GlobalTrigger_P0,
+        GlobalTrigger_TriggerIn, GlobalTrigger_P0,
         GlobalTrigger_Software, GlobalTrigger_LVDS, GlobalTrigger_InternalA,
         GlobalTrigger_InternalB, GlobalTrigger_InternalAandB,
-        InternalAorB, GlobalTrigger_EncodedClockIn, GlobalTrigger_GPIO,
+        GlobalTrigger_InternalAorB, GlobalTrigger_EncodedClockIn, GlobalTrigger_GPIO,
         GlobalTrigger_TestPulse
     } GlobalTriggerSource;
     
@@ -88,25 +88,27 @@ public:
         TriggerOut_TRGIN, TriggerOut_P0,
         TriggerOut_Software, TriggerOut_LVDS, TriggerOut_InternalA,
         TriggerOut_InternalB, TriggerOut_InternalAandInternalB,
-        InternalAorInternalB, TriggerOut_EncodedClockIn, Run, ReferenceClock, TestPuse,
-        Busy, Zero, One, SynchIn, TriggerOut_SIN, TriggerOut_GPIO,
+        TriggerOut_InternalAorInternalB, TriggerOut_EncodedClockIn,
+        TriggerOut_Run, TriggerOut_ReferenceClock, TestPuse,
+        TriggerOut_Busy, TriggerOut_Zero,
+        TriggerOut_One, TriggerOut_SynchIn, TriggerOut_SIN, TriggerOut_GPIO,
         AcceptedTrigger, TriggerClock
     } TRGOUTMode;
     
     typedef enum _GPIOMode {
-        GPIOMode_Disabled, TriggerIn, GPIOMode_P0, GPIOMode_SIN, GPIOMode_LVDS, GPIOMode_InternalA,
+        GPIOMode_Disabled, GPIOMode_TriggerIn, GPIOMode_P0, GPIOMode_SIN, GPIOMode_LVDS, GPIOMode_InternalA,
         GPIOMode_InternalB, GPIOMode_InternalAandInternalB,
-        InternalAorInternalB, GPIOMode_EncodedClockIn,
-        GPIOMode_SoftwareTrigger, Run, ReferenceClock,
-        GPIOMode_TestPulse, Busy, Zero, One
+        GPIOMode_InternalAorInternalB, GPIOMode_EncodedClockIn,
+        GPIOMode_SoftwareTrigger, GPIOMode_Run, GPIOMode_ReferenceClock,
+        GPIOMode_TestPulse, GPIOMode_Busy, GPIOMode_Zero, GPIOMode_One
     } GPIOMode;
     
     typedef enum _BusyInSource {
         BusyIn_SIN, BusyIn_GPIO, BusyIn_LVDS, BusyIn_Disabled 
-    } BusyInSource
+    } BusyInSource;
     
     typedef enum _SyncOutMode {
-        SyncOut_Disabled, SynchIn, SyncOut_TestPulse, InternalClock, Run
+        SyncOut_Disabled, SyncOut_SynchIn, SyncOut_TestPulse, InternalClock, SyncOut_Run
     } SyncOutMode;
     
     typedef enum _VetoSource {
@@ -123,7 +125,7 @@ public:
     } ChannelVetoSource;
     
     typedef enum _PauseTimestampHandling {
-        Hold, Run
+        Hold, PauseTstamp_Run
     } PauseTimestampHandling;
     
     // Led bit masks:
@@ -161,7 +163,8 @@ public:
     // Waveform sources:
     
     typedef enum _WaveDataSource {
-        ADC_DATA, ADC_TEST_TOGGLE, ADC_TEST_RAMP, ADC_SIN, IPE, Ramp, SquareWave,
+        ADC_DATA, ADC_TEST_TOGGLE, ADC_TEST_RAMP, ADC_SIN, WaveSource_IPE,
+        WaveSource_Ramp, SquareWave,
         ADC_TEST_PRBS
     } WaveDataSource;
     
@@ -208,15 +211,15 @@ public:
     // individual Trigger generation values:
     
     typedef enum _IndividualTriggerLogic {
-        OR, AND, Majority
+        ITL_OR, ITL_AND, Majority
     } IndividualTriggerLogic;
     
     typedef enum _PairTriggerLogic {
-        AND, OR, NONE
+        PTL_AND, PTL_OR, NONE
     } PairTriggerLogic;
     
     typedef enum _ITLConnect {
-        ITL_Disabled, ITLA, ITLB
+        ITL_Disabled, ITL_ITLA, ITL_ITLB
     } ITLConnect;
     
     typedef enum _LVDSMode {
@@ -227,8 +230,8 @@ public:
     } LVDSDirection;
     
     typedef enum _DACOutputMode {
-        Static, IPE, ChInput, MemOccupancy, CHSum, OverThrSum,
-        Ramp, Sin5MHz, Square
+        Static, DACOut_IPE, DACOut_ChInput, MemOccupancy, CHSum, OverThrSum,
+        DACOut_Ramp, Sin5MHz, Square
     } DACOutputMode;
     
     static const std::uint32_t CHST_DelayInitdone = 1;
@@ -245,29 +248,27 @@ public:
         Positive, Negative
     } Polarity;
     
-    typdef enum _EventSelection {
+    typedef enum _EventSelection {
         All, Pileup, EnergySkim
     } EventSelection;
     
     typedef enum _CoincidenceMask {
-        Coincidence_Disabled, Ch64Trigger, Coincidence_TRGIN, Coincidence_GlobalTriggerSource, ITLA, ITLB
+        Coincidence_Disabled, Ch64Trigger, Coincidence_TRGIN, Coincidence_GlobalTriggerSource,
+        Coincidence_ITLA, Coincidence_ITLB
     } CoincidenceMask;
     
     typedef enum _EnergyPeakingAverage {
-        Average1, Average4, Average16, Average64
+        Average1, Average4, EPeakAvg_Average16, EPeakAvg_Average64
     } EnergyPeakingAvergage;
     
     typedef enum _EnergyFilterBaselineAverage {
-        Fixed, Average16, Average64, Average256, Average1024, Average4K, Average16K
+        Fixed, EFilterBlineAvg_Average16, EFilterBlineAvg_Average64, Average256, Average1024, Average4K, Average16K
     } EnergyFiterBaselineAverage;
     
     typedef enum _Endpoint {
         Raw, PHA
     } Endpoint;
 
-    typedef enum  _DACOutMode {
-        Static, IPE, ChInput, MemOccupancy, ChSum, OverThrSum, Ramp, Sine, Square
-    } DACOutMode;
     
     // Struct to hold decoded data. The user can select which fields are filled in:
     
@@ -287,9 +288,9 @@ public:
         std::uint8_t*  s_pDigitalProbe1;        // s_enableDigitalProbe1
         std::uint8_t   s_digitalProbe1Type;     // s_enableDigitalProbe1
         std::uint8_t*  s_pDigitalProbe2;        // s_enableDigitalProbe2
-        std;:uint8_t   s_digitalProbe3Type;     // s_enableDigitalProbe2
-        std::uint8_t*  s_pDigitalProbe2;        // s_enableDigitalProbe3
-        std;:uint8_t   s_digitalProbe3Type;     // s_enableDigitalProbe3
+        std::uint8_t   s_digitalProbe2Type;     // s_enableDigitalProbe2
+        std::uint8_t*  s_pDigitalProbe3;        // s_enableDigitalProbe3
+        std::uint8_t   s_digitalProbe3Type;     // s_enableDigitalProbe3
         std::uint8_t*  s_pDigitalProbe4;        // s_enableDigitalProbe4
         std::uint8_t   s_digitalProbe4Type;      // s_enableDigitalProbe4
         size_t         s_samples;               // s_enableSampleCount
@@ -348,14 +349,14 @@ public:
     
 private:
     VX2750Pha(const VX2750Pha&);
-    VX2750Pha& operator=(const VX2750PHA& );
-    int operator==(const VX2750PHA&);
-    int operator!=(constVX2750PHA&);
+    VX2750Pha& operator=(const VX2750Pha& );
+    int operator==(const VX2750Pha&);
+    int operator!=(const VX2750Pha&);
 public:
     
     std::string  getCupVersion();     // Get the CUP version
     std::string  getFpgaFWVersion();  // Get the firmware Version
-    FWType       getFirmwareType();   // Get the type of the firmware.
+    FwType       getFirmwareType();   // Get the type of the firmware.
     std::string  getModelCode();
     std::string  getPiggyBackCode();
     std::string  getModelName();
@@ -402,21 +403,21 @@ public:
     void          setTRGOUTMode(TRGOUTMode mode);
     GPIOMode      getGPIOMode();
     void          setGPIOMode(GPIOMode mode);
-    BuyInSource   getBusyInputSource();
+    BusyInSource   getBusyInputSource();
     void          setBusyInputSource(BusyInSource src);
     SyncOutMode   getSyncOutMode();
     void          setSyncOutMode(SyncOutMode mode);
     VetoSource    getBoardVetoSource();
     void          setBoardVetoSource(VetoSource src);
-    std::unit64_t   getBoardVetoWidth();
+    std::uint64_t   getBoardVetoWidth();
     void          setBoardVetoWidth(std::uint64_t ns);
     VetoPolarity  getBoardVetoPolarity();
     void          setBoardVetoPolarity(VetoPolarity pol);
     ChannelVetoSource getChannelVetoSource(unsigned chan);
-    void          setChannelVetoSource(unsigned chan, ChannelVetoSource, src);
-    std::unit32_t getChannelVetoWidth(unsigned chan);
+    void          setChannelVetoSource(unsigned chan, ChannelVetoSource src);
+    std::uint32_t getChannelVetoWidth(unsigned chan);
     void          setChannelVetoWidth(unsigned chan, std::uint32_t ns);
-    std::uint32_t getRunDelay()
+    std::uint32_t getRunDelay();
     void         setRunDelay(std::uint32_t ns);
     bool         isAutoDisarmEnabled();
     void         setAutoDisarmEnabled(bool state);
@@ -433,7 +434,7 @@ public:
     double        getPermanentClockDelay();
     void          setPermanentClockDelay(double value);
     WaveDataSource getWaveDataSource(unsigned chan);
-    void          setWaveDataSource(unsigned chan,, WaveDataSource source);
+    void          setWaveDataSource(unsigned chan, WaveDataSource source);
     std::uint32_t getRecordSamples(unsigned chan);
     void          setRecordSamples(unsigned chan, std::uint32_t samples);
     std::uint32_t getRecordNs(unsigned chan);
@@ -444,7 +445,7 @@ public:
     void          setAnalogProbe(unsigned chan, unsigned probeNum, AnalogProbe probe);
     DigitalProbe  getDigitalProbe(unsigned chan, unsigned probeNum);
     void          setDigitalProbe(
-        unsigned chan, unsigned probeNum, DigialProbe probe
+        unsigned chan, unsigned probeNum, DigitalProbe probe
     );
     std::uint32_t getPreTriggerSamples(unsigned chan);
     void          setPreTriggerSamples(unsigned chan, std::uint32_t nsamples);
@@ -489,8 +490,8 @@ public:
     
     IndividualTriggerLogic getITLAMainLogic();
     IndividualTriggerLogic getITLBMainLogic();
-    void          setITLAMainLogic(IndividualTrigerLogic sel);
-    void          setITLBMainLogic(IndividualTrigerLogic sel);
+    void          setITLAMainLogic(IndividualTriggerLogic sel);
+    void          setITLBMainLogic(IndividualTriggerLogic sel);
     unsigned      getITLAMajorityLevel();
     unsigned      getITLBMajorityLevel();
     void          setITLAMajorityLevel(unsigned level);
@@ -526,8 +527,8 @@ public:
     std::uint64_t getLVDSTriggerMask(unsigned inputNum);
     void          setLVDSTriggerMask(unsigned inputNum, std::uint64_t mask);
     
-    void getDACOutMode(DACOutMode mode);
-    DACOutMode getDACOutMode();
+    void setDACOutMode(DACOutputMode mode);
+    DACOutputMode getDACOutMode();
     std::uint16_t getDACOutValue();
     void          setDACOutValue(std::uint16_t value);
     unsigned      getDACChannel();
