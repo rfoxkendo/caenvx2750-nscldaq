@@ -30,7 +30,7 @@
 
 namespace caen_nscldaq {
 
-static const std::uint64_t FPGA_CLOCKS_PER_NS;
+static const std::uint64_t FPGA_NS_PER_CLOCK = 8;
 static const unsigned DPP_MAX_PARAMS=30;    // sizes argv for DPP-PHA endpoint.
 
 // Enumerator mappings.  Readonly have string->enum maps.  R/W have
@@ -43,18 +43,18 @@ static const std::map<std::string, VX2750Pha::FwType> stringToFwType = {
     { "DPP_DAQ", VX2750Pha::DPP_DAQ},
     { "DPP_OPEN", VX2750Pha::DPP_OPEN},
     {"Scope", VX2750Pha::Scope}
-}
+};
 
-static const std::map<std::string, VX2750Pha::FormFactors> stringToFormFactor = {
+static const std::map<std::string, VX2750Pha::FormFactor> stringToFormFactor = {
     {"0", VX2750Pha::VME},
     {"1", VX2750Pha::VME64X},
     {"2", VX2750Pha::DT}
-}
+};
 
 static const std::map<std::string, VX2750Pha::ClockSource> stringToClockSource = {
     {"Internal", VX2750Pha::Internal},
     {"FPClkIn", VX2750Pha::FrontPanel},
-    {"P0ClkIn",   VX2750Pha::CLock_P0},
+    {"P0ClkIn",   VX2750Pha::Clock_P0},
     {"Link",   VX2750Pha::Link},
     {"DIPswitchSel", VX2750Pha::DIPSelected}
 };
@@ -77,8 +77,8 @@ static const std::map<std::string, VX2750Pha::StartSource> stringToStartSource =
 
 static const std::map<VX2750Pha::StartSource, std::string> startSourceToString = {
     {VX2750Pha::Start_EncodedClockIn, "EncodedClkIn"},
-    {VX2750Pha::SINLevelm, "SINlevel"},
-    {VX2750Pha::SINEdge, "SINedge",
+    {VX2750Pha::SINLevel, "SINlevel"},
+    {VX2750Pha::SINEdge, "SINedge"},
     {VX2750Pha::SWCommand, "SWcmd"},
     {VX2750Pha::Start_LVDS, "LVDS"},
     {VX2750Pha::Start_P0, "P0"}
@@ -125,7 +125,7 @@ static const std::map<std::string, VX2750Pha::WaveTriggerSource> stringToWaveTri
      {"Disabled", VX2750Pha::WaveTrigger_Disabled}
 };
 static const std::map<VX2750Pha::WaveTriggerSource, std::string> waveTriggerToString= {
-     {VX2750Pha::WaveTriger_InternalA, "ITLB"},
+     {VX2750Pha::WaveTrigger_InternalA, "ITLB"},
      {VX2750Pha::WaveTrigger_InternalB, "ITLA"},
      {VX2750Pha::WaveTrigger_GlobalTriggerSource, "GlobalTriggerSource"},
      {VX2750Pha::WaveTrigger_TRGIN, "TRGIN"},
@@ -146,11 +146,11 @@ static const std::map<std::string, VX2750Pha::EventTriggerSource> stringToEventT
     {"SWTrigger", VX2750Pha::EventTrigger_Software},
     {"ChSelfTrigger", VX2750Pha::EventTrigger_ChannelSelfTrigger},
     {"Ch64Trigger", VX2750Pha::EventTrigger_AnyChannelSelfTrigger},
-    {"Disabled", VX2750Pha::EventTriger_Disabled}
+    {"Disabled", VX2750Pha::EventTrigger_Disabled}
 };
 static const std::map<VX2750Pha::EventTriggerSource, std::string> eventTriggerToString = {
     {VX2750Pha::EventTrigger_InternalB, "ITLB"},
-    {VX2750Pha::WaveTrigger_InternalA, "ITLA"},
+    {VX2750Pha::EventTrigger_InternalA, "ITLA"},
     {VX2750Pha::EventTrigger_GlobalTriggerSource, "GlobalTriggerSource"},
     {VX2750Pha::EventTrigger_TRGIN, "TRGIN"},
     {VX2750Pha::EventTrigger_Software, "SWTrigger"},
@@ -160,23 +160,23 @@ static const std::map<VX2750Pha::EventTriggerSource, std::string> eventTriggerTo
 };
 
 static const std::map<std::string, VX2750Pha::TimestampResetSource> stringToTimestampReset = {
-    {"Start", VX2750Pha::Start},
+    {"Start", VX2750Pha::TimestampReset_Start},
     {"SIN", VX2750Pha::Timestamp_SIN},
     {"GPIO", VX2750Pha::TimestampReset_GPIO},
     {"EncodedClkIn", VX2750Pha::TimestampReset_EncodedClockIn}
 };
-static const std::map<VX2750Pha::TimestampResetSource, std::string> TimestampResetToString = {
-    {VX2750Pha::Start, "Start"},
+static const std::map<VX2750Pha::TimestampResetSource, std::string> timestampResetToString = {
+    {VX2750Pha::TimestampReset_Start, "Start"},
     {VX2750Pha::Timestamp_SIN, "SIN"},
     {VX2750Pha::TimestampReset_GPIO, "GPIO"},
     {VX2750Pha::TimestampReset_EncodedClockIn, "EncodedClkIn"}
 };
 
-static const std::map<std::string, V2750Pha::TraceRecordMode> stringToTraceRecord = {
+static const std::map<std::string, VX2750Pha::TraceRecordMode> stringToTraceRecord = {
     {"Always", VX2750Pha::Always},
     {"On Request", VX2750Pha::OnRequest}
 };
-static const std::map<V2750Pha::TraceRecordMode, std::string> traceRecordToString = {
+static const std::map<VX2750Pha::TraceRecordMode, std::string> traceRecordToString = {
     {VX2750Pha::Always, "Always"},
     {VX2750Pha::OnRequest, "On Request"}
 };
@@ -186,14 +186,14 @@ static const std::map<std::string, VX2750Pha::TRGOUTMode> stringToTRGOUT = {
     {"P0", VX2750Pha::TriggerOut_P0},
     {"SwTrg", VX2750Pha::TriggerOut_Software},
     {"LVDS", VX2750Pha::TriggerOut_LVDS},
-    {"ITLA", VX2750Pha::Triggerout_InternalA},
+    {"ITLA", VX2750Pha::TriggerOut_InternalA},
     {"ITLB", VX2750Pha::TriggerOut_InternalB},
     {"ITLA_AND_ITLB", VX2750Pha::TriggerOut_InternalAandInternalB},
     {"ITLA_OR_ITLB", VX2750Pha::TriggerOut_InternalAorInternalB},
     {"EncodedClkIn", VX2750Pha::TriggerOut_EncodedClockIn},
     {"Run", VX2750Pha::TriggerOut_Run},
     {"RefClk", VX2750Pha::TriggerOut_ReferenceClock},
-    {"TestPulse", VX2750Pha::TriggerOut_TestPuse},
+    {"TestPulse", VX2750Pha::TriggerOut_TestPulse},
     {"Busy", VX2750Pha::TriggerOut_Busy},
     {"Fixed0", VX2750Pha::TriggerOut_Zero},
     {"Fixed1", VX2750Pha::TriggerOut_One},
@@ -209,18 +209,18 @@ static const std::map<VX2750Pha::TRGOUTMode, std::string> TRGOUTToString = {
     {VX2750Pha::TriggerOut_P0, "P0"},
     {VX2750Pha::TriggerOut_Software, "SwTrg"},
     {VX2750Pha::TriggerOut_LVDS, "LVDS"},
-    {VX2750Pha::TriggerOutInternalA, "ITLA"},
+    {VX2750Pha::TriggerOut_InternalA, "ITLA"},
     {VX2750Pha::TriggerOut_InternalB, "ITLB"},
     {VX2750Pha::TriggerOut_InternalAandInternalB, "ITLA_AND_ITLB"},
     {VX2750Pha::TriggerOut_InternalAorInternalB, "ITLA_OR_ITLB"},
     {VX2750Pha::TriggerOut_EncodedClockIn, "EncodedClkIn"},
     {VX2750Pha::TriggerOut_Run, "Run"},
     {VX2750Pha::TriggerOut_ReferenceClock, "RefClk"},
-    {VX2750Pha::TriggerOut_TestPuse, "TestPulse"},
+    {VX2750Pha::TriggerOut_TestPulse, "TestPulse"},
     {VX2750Pha::TriggerOut_Busy, "Busy"},
     {VX2750Pha::TriggerOut_Zero, "Fixed0"},
     {VX2750Pha::TriggerOut_One, "Fixed1"},
-    {VX2750Pha::TriggeroOut_SynchIn, "SyncIn"},
+    {VX2750Pha::TriggerOut_SynchIn, "SyncIn"},
     {VX2750Pha::TriggerOut_SIN, "SIN"},
     {VX2750Pha::TriggerOut_GPIO, "GPIO"},
     {VX2750Pha::AcceptedTrigger, "AcceptTrg"},
@@ -236,7 +236,7 @@ static const std::map<std::string, VX2750Pha::GPIOMode>  stringToGPIO = {
     {"ITLA", VX2750Pha::GPIOMode_InternalA},
     {"ITLB", VX2750Pha::GPIOMode_InternalB},
     {"ITLA_AND_ITLB", VX2750Pha::GPIOMode_InternalAandInternalB},
-    {"ITLA_OR_ITLB", VX2750Pha::InternalAorInternalB},
+    {"ITLA_OR_ITLB", VX2750Pha::GPIOMode_InternalAorInternalB},
     {"EncodedClkIn", VX2750Pha::GPIOMode_EncodedClockIn},
     {"SwTrg", VX2750Pha::GPIOMode_SoftwareTrigger},
     {"Run", VX2750Pha::GPIOMode_Run},
@@ -255,7 +255,7 @@ static const std::map<VX2750Pha::GPIOMode,std::string> GPIOToString = {
     {VX2750Pha::GPIOMode_InternalA, "ITLA"},
     {VX2750Pha::GPIOMode_InternalB, "ITLB"},
     {VX2750Pha::GPIOMode_InternalAandInternalB, "ITLA_AND_ITLB"},
-    {VX2750Pha::InternalAorInternalB, "ITLA_OR_ITLB"},
+    {VX2750Pha::GPIOMode_InternalAorInternalB, "ITLA_OR_ITLB"},
     {VX2750Pha::GPIOMode_EncodedClockIn, "EncodedClkIn"},
     {VX2750Pha::GPIOMode_SoftwareTrigger, "SwTrg"},
     {VX2750Pha::GPIOMode_Run, "Run"},
@@ -272,15 +272,15 @@ static const std::map<std::string, VX2750Pha::BusyInSource> stringToBusyIn = {
     {"LVDS", VX2750Pha::BusyIn_LVDS},
     {"Disabled", VX2750Pha::BusyIn_Disabled }
 };
-static const std::map<VX2750Pha::BusyInSource, std::string> BusyInTostring = {
+static const std::map<VX2750Pha::BusyInSource, std::string> busyInToString = {
     {VX2750Pha::BusyIn_SIN, "SIN"},
     {VX2750Pha::BusyIn_GPIO, "GPIO"},
     {VX2750Pha::BusyIn_LVDS, "LVDS"},
     {VX2750Pha::BusyIn_Disabled, "Disabled"}
 };
 
-static const std::map<std::string, VX2750PHA::SyncOutMode> stringToSyncOut = {
-    {"Disabled", SyncOut_VX2750Pha::Disabled},
+static const std::map<std::string, VX2750Pha::SyncOutMode> stringToSyncOut = {
+    {"Disabled", VX2750Pha::SyncOut_Disabled},
     {"SyncIn", VX2750Pha::SyncOut_SynchIn},
     {"TestPulse", VX2750Pha::SyncOut_TestPulse},
     {"IntClk", VX2750Pha::InternalClock},
@@ -288,21 +288,21 @@ static const std::map<std::string, VX2750PHA::SyncOutMode> stringToSyncOut = {
 };
 static const std::map<VX2750Pha::SyncOutMode, std::string> syncOutToString = {
     {VX2750Pha::SyncOut_Disabled, "Disabled"},
-    {VX2750Pha::SyncOu_SynchIn, "SyncIn"},
+    {VX2750Pha::SyncOut_SynchIn, "SyncIn"},
     {VX2750Pha::SyncOut_TestPulse, "TestPulse"},
     {VX2750Pha::InternalClock, "IntClk"},
     {VX2750Pha::SyncOut_Run, "Run"}
 };
 
-static const std::map<std::string , VX2750Pha::VetoSource> = stringToVeto = {
+static const std::map<std::string , VX2750Pha::VetoSource>  stringToVeto = {
     {"SIN", VX2750Pha::Veto_SIN},
     {"LVDS", VX2750Pha::Veto_LVDS},
     {"GPIO", VX2750Pha::Veto_GPIO},
     {"P0", VX2750Pha::Veto_P0},
     {"EncodedClkIn", VX2750Pha::Veto_EncodedClock},
     {"Disabled", VX2750Pha::Veto_Disabled}
-}
-static const std::map<VX2750Pha::VetoSource, std::string> = vetoToString = {
+};
+static const std::map<VX2750Pha::VetoSource, std::string>  vetoToString = {
     {VX2750Pha::Veto_SIN, "SIN"},
     {VX2750Pha::Veto_LVDS, "LVDS"},
     {VX2750Pha::Veto_GPIO, "GPIO"},
@@ -312,12 +312,12 @@ static const std::map<VX2750Pha::VetoSource, std::string> = vetoToString = {
 };
 
 static const std::map<std::string, VX2750Pha::VetoPolarity> stringToVetoPolarity = {
-    {"ActiveHigh", VX2750PHa::ActiveHigh},
-    {"ActiveLow", VX2750PHa::ActiveLow}
+    {"ActiveHigh", VX2750Pha::ActiveHigh},
+    {"ActiveLow", VX2750Pha::ActiveLow}
 };
 static const std::map<VX2750Pha::VetoPolarity, std::string> vetoPolarityToString = {
-    {VX2750PHa::ActiveHigh, "ActiveHigh"},
-    {VX2750PHa::ActiveLow, "ActiveLow"}
+    {VX2750Pha::ActiveHigh, "ActiveHigh"},
+    {VX2750Pha::ActiveLow, "ActiveLow"}
 };
 
 static const std::map<std::string, VX2750Pha::ChannelVetoSource> stringToChannelVeto = {
@@ -360,7 +360,7 @@ static const std::map<std::string, VX2750Pha::WaveResolution> stringToWaveResolu
     {"Res32", VX2750Pha::Res32},
     {"Res64", VX2750Pha::Res64} 
 };
-static const std::map<VX2750Pha::WaveResolution, std::string> waveResolutionToSTring = {
+static const std::map<VX2750Pha::WaveResolution, std::string> waveResolutionToString = {
     {VX2750Pha::Res8, "Res8",},
     {VX2750Pha::Res16, "Res16"},
     {VX2750Pha::Res32, "Res32"},
@@ -383,34 +383,34 @@ static const std::map<VX2750Pha::AnalogProbe, std::string> analogProbeToString =
 };
 
 static const std::map<std::string, VX2750Pha::DigitalProbe> stringToDigitalProbe = {
-    {"Trigger", VX2750Pha::Trigger},
+    {"Trigger", VX2750Pha::DProbe_Trigger},
     {"TimeFilterArmed", VX2750Pha::TimeFilterArmed},
     {"ReTriggerGuard", VX2750Pha::ReTriggerGuard},
     {"EnergyFilterBaslineFreeze", VX2750Pha::EneryFilterBaselineFreeze},
     {"EnergyFilterPeaking", VX2750Pha::EnergyFilterPeaking},
     {"EnergyFilterPeakReady", VX2750Pha::EnergyFilterPeakReady},
     {"EnergyFilterPileUpGuard", VX2750Pha::EnergyFilterPileupGuard},
-    {"EventPileup", VX2750Pha::EventEventPileup},
+    {"EventPileup", VX2750Pha::EventPileup},
     {"ADCSaturation", VX2750Pha::ADCSaturation},
     {"ADCSaturationProtection", VX2750Pha::ADCSaturationProtection},
     {"PostSaturationEvent", VX2750Pha::PostSaturationEvent},
-    {"EnergyFilterSaturation" VX2750Pha::EnergyFilterSaturation},
+    {"EnergyFilterSaturation", VX2750Pha::EnergyFilterSaturation},
     {"AcquisitionInhibit", VX2750Pha::AcquisitionInhibit}
 };
 static const std::map<VX2750Pha::DigitalProbe, std::string> digitalProbeToString = {
-    {VX2750Pha::Trigger, "Trigger"},
+    {VX2750Pha::DProbe_Trigger, "Trigger"},
     {VX2750Pha::TimeFilterArmed, "TimeFilterArmed"},
     {VX2750Pha::ReTriggerGuard, "ReTriggerGuard"},
     {VX2750Pha::EneryFilterBaselineFreeze, "EnergyFilterBaslineFreeze"},
-    {"VX2750Pha::EnergyFilterPeaking, EnergyFilterPeaking"},
-    {"EnergyFilterPeakReady", VX2750Pha::EnergyFilterPeakReady},
-    {"EnergyFilterPileUpGuard", VX2750Pha::EnergyFilterPileupGuard},
-    {"EventPileup", VX2750Pha::EventEventPileup},
-    {"ADCSaturation", VX2750Pha::ADCSaturation},
-    {"ADCSaturationProtection", VX2750Pha::ADCSaturationProtection},
-    {"PostSaturationEvent", VX2750Pha::PostSaturationEvent},
-    {"EnergyFilterSaturation" VX2750Pha::EnergyFilterSaturation},
-    {"AcquisitionInhibit", VX2750Pha::AcquisitionInhibit}
+    {VX2750Pha::EnergyFilterPeaking, "VX2750Pha::EnergyFilterPeaking" },
+    {VX2750Pha::EnergyFilterPeakReady, "EnergyFilterPeakReady"},
+    {VX2750Pha::EnergyFilterPileupGuard, "EnergyFilterPileUpGuard"},
+    {VX2750Pha::EventPileup, "EventPileup"},
+    {VX2750Pha::ADCSaturation, "ADCSaturation"},
+    {VX2750Pha::ADCSaturationProtection, "ADCSaturationProtection"},
+    {VX2750Pha::PostSaturationEvent, "PostSaturationEvent"},
+    {VX2750Pha::EnergyFilterSaturation, "EnergyFilterSaturation" },
+    {VX2750Pha::AcquisitionInhibit, "AcquisitionInhibit"}
 };
 
 static const std::map<std::string, VX2750Pha::IOLevel> stringToIOLevel = {
@@ -427,20 +427,20 @@ static const std::map<std::string, VX2750Pha::IndividualTriggerLogic> stringToIn
     {"AND", VX2750Pha::ITL_AND},
     {"Majority", VX2750Pha::Majority}
 };
-static const std::map<VX2750Pha::IndividualTriggerLogic> individualTriggerLogicToString = {
-    {VX2750Pha::PTL_OR, "OR"},
-    {VX2750Pha::PTL_AND, "AND"},
+static const std::map<VX2750Pha::IndividualTriggerLogic, std::string> individualTriggerLogicToString = {
+    {VX2750Pha::ITL_OR, "OR"},
+    {VX2750Pha::ITL_AND, "AND"},
     {VX2750Pha::Majority, "Majority"}
 };
 
 static const std::map<std::string, VX2750Pha::PairTriggerLogic> stringToPairLogic = {
-    {"AND", VX2750Pha::AND},
-    {"OR", VX2750Pha::OR},
+    {"AND", VX2750Pha::PTL_AND},
+    {"OR", VX2750Pha::PTL_OR},
     {"NONE", VX2750Pha::NONE}
 };
 static const std::map<VX2750Pha::PairTriggerLogic, std::string> pairLogicToString = {
-    {VX2750Pha::AND, "AND"},
-    {VX2750Pha::OR, "OR"},
+    {VX2750Pha::PTL_AND, "AND"},
+    {VX2750Pha::PTL_OR, "OR"},
     {VX2750Pha::NONE, "NONE"}
 };
 
@@ -460,7 +460,7 @@ static const std::map<std::string, VX2750Pha::LVDSMode> stringToLVDSMode = {
      {"Sync", VX2750Pha::Sync},
      {"IORegister", VX2750Pha::IORegister}
 };
-static const std::map<VX27850::LVDSMode, std::string> LVDSModeToString = {
+static const std::map<VX2750Pha::LVDSMode, std::string> LVDSModeToString = {
      {VX2750Pha::SelfTriggers, "SelfTriggers"},
      {VX2750Pha::Sync, "Sync"},
      {VX2750Pha::IORegister, "IORegister"}    
@@ -475,21 +475,21 @@ static const std::map<VX2750Pha::LVDSDirection, std::string> LVDSDirectionToStri
     {VX2750Pha::Output, "Output"}    
 };
 
-static const std::map<std::string, VX2750Pha::DACOutPutMode> stringToDACOutMode = {
+static const std::map<std::string, VX2750Pha::DACOutputMode> stringToDACOutMode = {
     {"Static", VX2750Pha::Static},
-    {"IPE", VX2750Pha::DacOut_IPE},
-    {"ChInput", VX2750Pha::ChInput},
+    {"IPE", VX2750Pha::DACOut_IPE},
+    {"ChInput", VX2750Pha::DACOut_ChInput},
     {"MemOccupancy", VX2750Pha::MemOccupancy},
     {"ChSum", VX2750Pha::ChSum},
     {"OverThrSum", VX2750Pha::OverThrSum},
-    {"Ramp", VX2750Pha::DACOutMode_Ramp},
+    {"Ramp", VX2750Pha::DACOut_Ramp},
     {"Sin5MHz", VX2750Pha::Sine5MHz},
     {"Square", VX2750Pha::Square}
 };
 static const std::map<VX2750Pha::DACOutputMode, std::string> DACOutModeToString = {
     {VX2750Pha::Static, "Static"},
     {VX2750Pha::DACOut_IPE, "IPE"},
-    {VX2750Pha::ChInput, "ChInput"},
+    {VX2750Pha::DACOut_ChInput, "ChInput"},
     {VX2750Pha::MemOccupancy, "MemOccupancy"},
     {VX2750Pha::ChSum, "ChSum"},
     {VX2750Pha::OverThrSum, "OverThrSum"},
@@ -521,16 +521,16 @@ static const std::map<VX2750Pha::EventSelection, std::string> eventSelectionToSt
 static const std::map<std::string, VX2750Pha::CoincidenceMask> stringToCoincidenceMask = {
     {"Disabled", VX2750Pha::Coincidence_Disabled},
     {"Ch64Trigger", VX2750Pha::Ch64Trigger},
-    {"TRGIN", VX2750Pha::Coincidence_TRGIn},
+    {"TRGIN", VX2750Pha::Coincidence_TRGIN},
     {"GlobalTriggerSource", VX2750Pha::Coincidence_GlobalTriggerSource},
     {"ITLA", VX2750Pha::Coincidence_ITLA},
-    {"ITLB", VX2750Pha::ITLB}
+    {"ITLB", VX2750Pha::Coincidence_ITLB}
 };
 static const std::map<VX2750Pha::CoincidenceMask, std::string> coincidenceMaskToString = {
     {VX2750Pha::Coincidence_Disabled, "Disabled"},
     {VX2750Pha::Ch64Trigger, "Ch64Trigger"},
-    {VX2750Pha::Coincidence_TRGIn, "TRGIN"},
-    {VX2750Pha::GlobalTriggerSource}, "GlobalTriggerSource",
+    {VX2750Pha::Coincidence_TRGIN, "TRGIN"},
+    {VX2750Pha::Coincidence_GlobalTriggerSource, "GlobalTriggerSource"},
     {VX2750Pha::Coincidence_ITLA, "ITLA"},
     {VX2750Pha::Coincidence_ITLB, "ITLB"}
 };
@@ -548,23 +548,23 @@ static const std::map<VX2750Pha::EnergyPeakingAverage, std::string> peakingAvera
     {VX2750Pha::EPeakAvg_Average64, "HighAVG"}
 };
 
-static const std::map<std::string VX2750Pha::EnergyFilterBaselineAverage> stringToBLAverage = {
+static const std::map<std::string, VX2750Pha::EnergyFilterBaselineAverage> stringToBLAverage = {
     {"Fixed", VX2750Pha::Fixed},
     {"VeryLow", VX2750Pha::EFilterBlineAvg_Average16},
     {"Low", VX2750Pha::EFilterBlineAvg_Average64},
-    {"MediumLow", VX2750Pha::Average256},q
+    {"MediumLow", VX2750Pha::Average256},
     {"Medium", VX2750Pha::Average1024},
     {"MediumHigh", VX2750Pha::Average4K},
-    {"High", Average16K}
+    {"High", VX2750Pha::Average16K}
 };
 static const std::map<VX2750Pha::EnergyFilterBaselineAverage, std::string> BLAverageToString = {
     {VX2750Pha::Fixed, "Fixed"},
-    {VX2750Pha::Average16, "VeryLow"},
+    {VX2750Pha::EFilterBlineAvg_Average16, "VeryLow"},
     {VX2750Pha::EFilterBlineAvg_Average64, "Low"},
     {VX2750Pha::Average256, "MediumLow"},
     {VX2750Pha::Average1024, "Medium"},
     {VX2750Pha::Average4K, "MediumHigh"},
-    {Average16K, "High"}
+    {VX2750Pha::Average16K, "High"}
 };
 
 static const std::map<std::string, VX2750Pha::Endpoint> stringToEndpoint = {
@@ -601,7 +601,7 @@ static const std::map<VX2750Pha::Endpoint, std::string> endpointToString = {
     std::string
     VX2750Pha::getCupVersion()
     {
-        return getDeviceValue("CupVer");
+        return GetDeviceValue("CupVer");
     }
     /**
      * getFPGA_FwVer
@@ -611,7 +611,7 @@ static const std::map<VX2750Pha::Endpoint, std::string> endpointToString = {
     std::string
     VX2750Pha::getFpgaFWVersion()
     {
-        return getDeviceValue("FPGA_FwVer");
+        return GetDeviceValue("FPGA_FwVer");
     }
     /**
      * Get the firmware type. Note that if the firmware type is anything other
@@ -619,10 +619,10 @@ static const std::map<VX2750Pha::Endpoint, std::string> endpointToString = {
      *
      * @return FWType
      */
-    VX2750Pha::FWType
+    VX2750Pha::FwType
     VX2750Pha::getFirmwareType()
     {
-        std::string strFwType = getDeviceValue("FwType");
+        std::string strFwType = GetDeviceValue("FwType");
         return stringToEnum(stringToFwType, strFwType);
     }
     /**
@@ -633,16 +633,16 @@ static const std::map<VX2750Pha::Endpoint, std::string> endpointToString = {
     std::string
     VX2750Pha::getModelCode()
     {
-        return getDeviceValue("ModelCode");
+        return GetDeviceValue("ModelCode");
     }
     /**
      * getPiggyBackCode
      *    @return std::string - the piggy back card type code.
      */
-    std::sring
+    std::string
     VX2750Pha::getPiggyBackCode()
     {
-        return getDeviceValue("PBCode");
+        return GetDeviceValue("PBCode");
     }
     /**
      * getModelName
@@ -652,7 +652,7 @@ static const std::map<VX2750Pha::Endpoint, std::string> endpointToString = {
     std::string
     VX2750Pha::getModelName()
     {
-        return getDeviceValue("ModelName");
+        return GetDeviceValue("ModelName");
     }
     /**
      * getFormFactor
@@ -662,7 +662,7 @@ static const std::map<VX2750Pha::Endpoint, std::string> endpointToString = {
     VX2750Pha::FormFactor
     VX2750Pha::getFormFactor()
     {
-        return stringToEnum(stringToFormFactor, getDeviceValue("FormFactor"));
+        return stringToEnum(stringToFormFactor, GetDeviceValue("FormFactor"));
     }
     /**
      * getFamilyCode
@@ -671,7 +671,7 @@ static const std::map<VX2750Pha::Endpoint, std::string> endpointToString = {
     int
     VX2750Pha::getFamilyCode()
     {
-        return getDeviceInteger("FamilyCode");
+        return GetDeviceInteger("FamilyCode");
     }
     /**
      * getSerialNumber
@@ -680,7 +680,7 @@ static const std::map<VX2750Pha::Endpoint, std::string> endpointToString = {
     std::string
     VX2750Pha::getSerialNumber()
     {
-        return getDeviceValue("SerialNum");
+        return GetDeviceValue("SerialNum");
     }
     /**
      *   getMotherboardRev
@@ -689,7 +689,7 @@ static const std::map<VX2750Pha::Endpoint, std::string> endpointToString = {
     int
     VX2750Pha::getMotherboardRev()
     {
-        return getDeviceInteger("PCBrev_MB");
+        return GetDeviceInteger("PCBrev_MB");
     }
     /**
      * getPiggybackRev
@@ -698,7 +698,7 @@ static const std::map<VX2750Pha::Endpoint, std::string> endpointToString = {
     int
     VX2750Pha::getPiggybackRev()
     {
-        return getDeviceInteger("PCBrev_PB");
+        return GetDeviceInteger("PCBrev_PB");
     }
     /**
      *  getLicense
@@ -707,7 +707,7 @@ static const std::map<VX2750Pha::Endpoint, std::string> endpointToString = {
     std::string
     VX2750Pha::getLicense()
     {
-        return getDeviceValue("License");    
+        return GetDeviceValue("License");    
     }
     /**
      * isLicensed
@@ -717,7 +717,7 @@ static const std::map<VX2750Pha::Endpoint, std::string> endpointToString = {
     bool
     VX2750Pha::isLicensed()
     {
-        auto value = getDeviceValue("LicenseStatus");
+        auto value = GetDeviceValue("LicenseStatus");
         if (value == "Licensed") {
             return true;
         } else if (value == "Not Licensed") {
@@ -735,10 +735,9 @@ static const std::map<VX2750Pha::Endpoint, std::string> endpointToString = {
      */
     int
     VX2750Pha::remainingUnlicensedTime()
-        {
-            return getDeviceInteger("LicenseRemainigTime");
-        }
-    )
+    {
+        return GetDeviceInteger("LicenseRemainigTime");
+    }
     /**
      * channelCount
      * @return int - number of channels the board has available.
@@ -746,7 +745,7 @@ static const std::map<VX2750Pha::Endpoint, std::string> endpointToString = {
     int
     VX2750Pha::channelCount()
     {
-        return getDeviceInteger("NumCh");
+        return GetDeviceInteger("NumCh");
     }
     /**
      * bitsOfResolution
@@ -755,7 +754,7 @@ static const std::map<VX2750Pha::Endpoint, std::string> endpointToString = {
     int
     VX2750Pha::bitsOfResolution()
     {
-        return getDeviceInteger("ADC_Nbit");
+        return GetDeviceInteger("ADC_Nbit");
     }
     /**
      * sampleRate
@@ -764,7 +763,7 @@ static const std::map<VX2750Pha::Endpoint, std::string> endpointToString = {
     int
     VX2750Pha::sampleRate()
     {
-        return getDeviceInteger("ADC_SamplRate");
+        return GetDeviceInteger("ADC_SamplRate");
     }
     /**
      * inputRange
@@ -773,7 +772,7 @@ static const std::map<VX2750Pha::Endpoint, std::string> endpointToString = {
     int
     VX2750Pha::inputRange()
     {
-        return getDeviceInteger("InputRange"); 
+        return GetDeviceInteger("InputRange"); 
     }
     /**
      *  isDifferential
@@ -782,9 +781,9 @@ static const std::map<VX2750Pha::Endpoint, std::string> endpointToString = {
      *     unrecognizable.
      */
     bool
-    VX2750Pha::isDifferential()
+    VX2750Pha::isDifferentialInput()
     {
-        auto value = getDeviceInteger("InputType");
+        auto value = GetDeviceInteger("InputType");
         switch (value) {
         case 0:
             return false;
@@ -807,7 +806,7 @@ static const std::map<VX2750Pha::Endpoint, std::string> endpointToString = {
     int
     VX2750Pha::inputImpedance()
     {
-        return getDeviceInteger("Zin");
+        return GetDeviceInteger("Zin");
     }
     /**
      * ipAddress
@@ -816,8 +815,8 @@ static const std::map<VX2750Pha::Endpoint, std::string> endpointToString = {
     int
     VX2750Pha::ipAddress()
     {
-        std::string ip = getDeviceValue("IPAddress");
-        return dottedtToInt(ip);
+        std::string ip = GetDeviceValue("IPAddress");
+        return dottedToInt(ip);
     }
     /**
      * netMask
@@ -826,7 +825,7 @@ static const std::map<VX2750Pha::Endpoint, std::string> endpointToString = {
     int
     VX2750Pha::netMask()
     {
-        std::string netmask = getDeviceValue("Netmask");
+        std::string netmask = GetDeviceValue("Netmask");
         return dottedToInt(netmask);
     }
     /**
@@ -836,16 +835,17 @@ static const std::map<VX2750Pha::Endpoint, std::string> endpointToString = {
     int
     VX2750Pha::gateway()
     {
-        std::string gw = getDeviceValue("Gateway");
+        std::string gw = GetDeviceValue("Gateway");
         return dottedToInt(gw);
     }
     /**
      *  getClockSource
-     *     @return V2750::Pha::ClockSource - The clock source.
+     *     @return V2750Pha::ClockSource - The clock source.
      */
+    VX2750Pha::ClockSource
     VX2750Pha::getClockSource()
     {
-        std::string strSource = getDeviceValue("ClockSource");
+        std::string strSource = GetDeviceValue("ClockSource");
         return stringToEnum(stringToClockSource, strSource);
     }
     /**
@@ -856,17 +856,17 @@ static const std::map<VX2750Pha::Endpoint, std::string> endpointToString = {
     void
     VX2750Pha::setClockSource(ClockSource selection)
     {
-        std::string src = enumToString(clockSourceToString, selecction);
+        std::string src = enumToString(clockSourceToString, selection);
         SetValue("ClockSource", src.c_str());
     }
     /**
      * isClockOutOnP0
      *    @return bool - true if the clock output is enabled on the backplane P0 connector.
      */
-    void
+    bool
     VX2750Pha::isClockOutOnP0()
     {
-        return  getDeviceBool("EnClockOutP0");
+        return  GetDeviceBool("EnClockOutP0");
         
 
     }
@@ -888,7 +888,7 @@ static const std::map<VX2750Pha::Endpoint, std::string> endpointToString = {
     bool
     VX2750Pha::isClockOutOnFP()
     {
-        return getDeviceBool("EnClockOutFP");
+        return GetDeviceBool("EnClockOutFP");
         
     }
     /**
@@ -897,10 +897,10 @@ static const std::map<VX2750Pha::Endpoint, std::string> endpointToString = {
      * @param bool  - desired state - true means output false don't.
      */
     void
-    VX2750Pha::setCLockOutOnFP(bool state)
+    VX2750Pha::setClockOutOnFP(bool state)
     {
         
-        setDeviceValue("EnClockOutFP", state);
+        SetDeviceValue("EnClockOutFP", state);
     }
     /**
      * getStartSource
@@ -919,7 +919,7 @@ static const std::map<VX2750Pha::Endpoint, std::string> endpointToString = {
      *       data acquisition on a digitizer.
      */
     void
-    VX2750Pha::setStartSource(StartSource, selection)
+    VX2750Pha::setStartSource(StartSource selection)
     {
         std::string strValue =  enumToString(startSourceToString, selection);
         SetDeviceValue("StartSource", strValue.c_str());
@@ -953,7 +953,7 @@ static const std::map<VX2750Pha::Endpoint, std::string> endpointToString = {
     VX2750Pha::WaveTriggerSource
     VX2750Pha::getWaveTriggerSource(unsigned ch)
     {
-        std::string strValue GetChanValue(ch, "WaveTriggerSource");
+        std::string strValue = GetChanValue(ch, "WaveTriggerSource");
         return stringToEnum(stringToWaveTrigger, strValue);
     }
     /**
@@ -977,7 +977,7 @@ static const std::map<VX2750Pha::Endpoint, std::string> endpointToString = {
     VX2750Pha::getEventTriggerSource(unsigned ch)
     {
         std::string strValue = GetChanValue(ch, "EventTriggerSource");
-        return strintToEnum(stringToEventTrigger, strValue);
+        return stringToEnum(stringToEventTrigger, strValue);
     }
     /**
      * setEventTriggerSource
@@ -987,7 +987,7 @@ static const std::map<VX2750Pha::Endpoint, std::string> endpointToString = {
     void
     VX2750Pha::setEventTriggerSource(unsigned ch, EventTriggerSource selection)
     {
-        std::string sel = enumToString(EventTriggerToString, selection);
+        std::string sel = enumToString(eventTriggerToString, selection);
         SetChanValue(ch, "EventTriggerSource", sel.c_str());
     }
     /**
@@ -1007,7 +1007,7 @@ static const std::map<VX2750Pha::Endpoint, std::string> endpointToString = {
      */
     void
     VX2750Pha::setTimestampResetSource(TimestampResetSource source) {
-        std::string strSource = enumToString(timeStampResetToString, source);
+        std::string strSource = enumToString(timestampResetToString, source);
         SetDeviceValue("TstampResetSource", strSource.c_str());
     }
     /**
@@ -1045,7 +1045,7 @@ static const std::map<VX2750Pha::Endpoint, std::string> endpointToString = {
     VX2750Pha::TraceRecordMode
     VX2750Pha::getTraceRecordMode(unsigned chan)
     {
-        std::string strValue = GetChanValue(ch, "WaveSaving");
+        std::string strValue = GetChanValue(chan, "WaveSaving");
         return stringToEnum(stringToTraceRecord, strValue);
     }
     /**
@@ -1054,7 +1054,7 @@ static const std::map<VX2750Pha::Endpoint, std::string> endpointToString = {
      *    @param mode - desired trace recording mode for that channel.
      */
     void
-    VX2750Pha::setTraceRecordMode(TraceRecordMode mode)
+    VX2750Pha::setTraceRecordMode(unsigned ch, TraceRecordMode mode)
     {
         std::string value =  enumToString(traceRecordToString, mode);
         SetChanValue(ch, "WaveSaving", value.c_str());
@@ -1076,7 +1076,7 @@ static const std::map<VX2750Pha::Endpoint, std::string> endpointToString = {
      * @param select - VX2750Pha::TRGOutMode selecting what's output.
      */
     void
-    VX2750Pha::setTRGOutMode(TRGOUTMode select)
+    VX2750Pha::setTRGOUTMode(TRGOUTMode select)
     {
         std::string strMode = enumToString(TRGOUTToString, select);
         SetDeviceValue("TrgOutMode", strMode.c_str());
@@ -1105,8 +1105,8 @@ static const std::map<VX2750Pha::Endpoint, std::string> endpointToString = {
      * getBusyInputSource
      *   @return VX2750Pha::BusyInSource - The current selection for the board busy.
      */
-    VX2750Pha::BusyInputSource
-    VX2750Pha::getBusyIn()
+    VX2750Pha::BusyInSource
+    VX2750Pha::getBusyInputSource()
     {
         std::string value = GetDeviceValue("BusyInSource");
         return stringToEnum(stringToBusyIn, value);
@@ -1117,15 +1117,15 @@ static const std::map<VX2750Pha::Endpoint, std::string> endpointToString = {
     void
     VX2750Pha::setBusyInputSource(VX2750Pha::BusyInSource src)
     {
-        std::string value = enumToSTring(BusyInToString, src);
+        std::string value = enumToString(busyInToString, src);
         SetDeviceValue("BusyInSource", value.c_str());
     }
     /**
      *  getSyncOutMode
      *     @return VX2750Pha::SyncOutMode - the current selection of the CLKOUT connector
      */
-    vx2750pHA::SyncOutMode
-    VX2750Pha::SyncOutMode()
+    VX2750Pha::SyncOutMode
+    VX2750Pha::getSyncOutMode()
     {
         std::string value = GetDeviceValue("SyncOutMode");
         return stringToEnum(stringToSyncOut, value);
@@ -1146,7 +1146,7 @@ static const std::map<VX2750Pha::Endpoint, std::string> endpointToString = {
      *    @return V2750::VetoSource - condition used to veto acquisitiontriggers.
      */
     VX2750Pha::VetoSource
-    VX2750Pha::getBoardVeto()
+    VX2750Pha::getBoardVetoSource()
     {
         std::string src = GetDeviceValue("BoardVetoSource");
         return stringToEnum(stringToVeto, src);
@@ -1172,7 +1172,7 @@ static const std::map<VX2750Pha::Endpoint, std::string> endpointToString = {
     {
         // Longer than an integer so:
         
-        std::string strValue getDeviceValue("BoardVetoWidth");
+        std::string strValue = GetDeviceValue("BoardVetoWidth");
         std::stringstream s(strValue);
         std::uint64_t result;
         s >> result;
@@ -1246,7 +1246,7 @@ static const std::map<VX2750Pha::Endpoint, std::string> endpointToString = {
      *  @param chan - the channel.
      *  @return std::uint32_t - the stretch.
      */
-    std::unit32_t
+    std::uint32_t
     VX2750Pha::getChannelVetoWidth(unsigned chan)
     {
         return GetChanInteger(chan, "ADCVetoWidth");
@@ -1262,7 +1262,7 @@ static const std::map<VX2750Pha::Endpoint, std::string> endpointToString = {
     void
     VX2750Pha::setChannelVetoWidth(unsigned chan, std::uint32_t ns)
     {
-        SetChanValue(chan, "ADCVetoWidth", ns);
+        SetChanValue(chan, "ADCVetoWidth", static_cast<int>(ns));
     }
     /**
      * getRunDelay
@@ -1286,7 +1286,7 @@ static const std::map<VX2750Pha::Endpoint, std::string> endpointToString = {
     void
     VX2750Pha::setRunDelay(std::uint32_t ns)
     {
-        SetDeviceValue("RunDelay", ns);
+        SetDeviceValue("RunDelay", static_cast<int>(ns));
     }
     /**
      * isAutoDisarmEnabled
@@ -1337,17 +1337,17 @@ static const std::map<VX2750Pha::Endpoint, std::string> endpointToString = {
      *    @bool - True if timestamp increments are suspended when the run is paused
      */
     bool
-    VX2750Pha::isTimestampHoldEnabled()
+    VX2750Pha::isPauseTimestampHoldEnabled()
     {
         std::string value = GetDeviceValue("PauseTimeStamp");
         // Hold -> true, Run -> False.
         
         if (value == "Hold") {
             return true;
-        } elseif (value == "Run") {
+        } else if (value == "Run") {
             return false;
         } else {
-            std::sstream strError;
+            std::stringstream strError;
             strError << "isTimestampHoldEnabled got an unrecognized value: '"
                 << value << "'";
             std::string msg = strError::str();
@@ -1372,7 +1372,7 @@ static const std::map<VX2750Pha::Endpoint, std::string> endpointToString = {
      * @return std::uint32
      */
     std::uint32_t
-    VX2750Pha::getLedStatus()
+    VX2750Pha::getLEDStatus()
     {
         return GetDeviceInteger("LedStatus");
         
@@ -1405,7 +1405,7 @@ static const std::map<VX2750Pha::Endpoint, std::string> endpointToString = {
      * @return double
      */
     double
-    VX2750Pha::getVolatileCLockDelay()
+    VX2750Pha::getVolatileClockDelay()
     {
         return GetDeviceReal("VolatileClockOutDelay");
     }
@@ -1414,7 +1414,7 @@ static const std::map<VX2750Pha::Endpoint, std::string> endpointToString = {
      *     @param ps - picoseconds of delay between input and output clock.
      */
     void
-    VX2750Pha::setVolatileCLockDelay(double ps)
+    VX2750Pha::setVolatileClockDelay(double ps)
     {
         SetDeviceValue("VolatileClockOutDelay", ps);
     }
@@ -1448,7 +1448,7 @@ static const std::map<VX2750Pha::Endpoint, std::string> endpointToString = {
     VX2750Pha::WaveDataSource
     VX2750Pha::getWaveDataSource(unsigned ch)
     {
-        return stringToEnum(stringToWaveDataSource, GetChannelValue(ch, "WaveDataSource"));
+        return stringToEnum(stringToWaveDataSource, GetChanValue(ch, "WaveDataSource"));
     }
     /**
      * setWaveDataSource
@@ -1456,10 +1456,10 @@ static const std::map<VX2750Pha::Endpoint, std::string> endpointToString = {
      *    @param selection - select the waveform data source sent to DPP
      */
     void
-    VX2750Pha::setWaveDataSource(unsigned chan, WaveDataSource, selection)
+    VX2750Pha::setWaveDataSource(unsigned chan, WaveDataSource selection)
     {
         std::string value = enumToString(waveDataSourcToString, selection);
-        SetChannelValue(ch, "WaveDataSource", value.c_str());
+        SetChanValue(ch, "WaveDataSource", value.c_str());
     }
     /**
      * getRecordSamples
@@ -1479,7 +1479,7 @@ static const std::map<VX2750Pha::Endpoint, std::string> endpointToString = {
     void
     VX2750Pha::setRecordSamples(unsigned ch, std::uint32_t samples)
     {
-        SetChanValue(ch, "ChRecordLengthS", samples);
+        SetChanValue(ch, "ChRecordLengthS", static_cast<int>(samples));
     }
     /**
      * getRecordNs
@@ -1489,7 +1489,7 @@ static const std::map<VX2750Pha::Endpoint, std::string> endpointToString = {
     std::uint32_t
     VX2750Pha::getRecordNs(unsigned ch)
     {
-        GetChanInteger(ch, "ChRecordLengthT");
+        return GetChanInteger(ch, "ChRecordLengthT");
     }
     /**
      * setRecordNs
@@ -1500,7 +1500,7 @@ static const std::map<VX2750Pha::Endpoint, std::string> endpointToString = {
     void
     VX2750Pha::setRecordNs(unsigned ch, std::uint32_t ns)
     {
-        SetChanValue(ch, "ChRecordLengthT", ns);
+        SetChanValue(ch, "ChRecordLengthT", static_cast<int>(ns));
     }
     /**
      * getWaveResolution
@@ -1524,7 +1524,7 @@ static const std::map<VX2750Pha::Endpoint, std::string> endpointToString = {
     VX2750Pha::setWaveResolution(unsigned ch, WaveResolution sel)
     {
         std::string value = enumToString(waveResolutionToString, sel);
-        SetChaneValue(ch, "WaveResolution", value.c_str());
+        SetChanValue(ch, "WaveResolution", value.c_str());
     }
     /**
      * getAnalogProbe
@@ -1539,7 +1539,7 @@ static const std::map<VX2750Pha::Endpoint, std::string> endpointToString = {
         std::string param = appendNumber("WaveAnalogProbes", probeNum);
         
         std::string value = GetChanValue(ch, param.c_str());
-        return stringToEnum(stringToWaveResolution, value);
+        return stringToEnum(stringToAnalogProbe, value);
     }
     /**
      * setAnalogProbe
@@ -1553,8 +1553,8 @@ static const std::map<VX2750Pha::Endpoint, std::string> endpointToString = {
         checkInclusiveRange(0, 1, probeNum);
         std::string param = appendNumber("WaveAnalogProbes", probeNum);
         
-        std::stringValue = enumToString(analogProbeToString, selection);
-        SetChanValue(ch, param.c_str(), stringValue.c_str());
+        std::string value = enumToString(analogProbeToString, selection);
+        SetChanValue(ch, param.c_str(), value.c_str());
     }
     /**
      * getDigitalProbe
@@ -1580,8 +1580,8 @@ static const std::map<VX2750Pha::Endpoint, std::string> endpointToString = {
     VX2750Pha::setDigitalProbe(unsigned ch, unsigned probe, DigitalProbe selection)
     {
         checkInclusiveRange(0, 3, probe);
-        std::string param ("WaveDigitalProbe", probe);
-        std::string value = enumToString(digitalProbeToString, probe);
+        std::string param = appendNumber("WaveDigitalProbe", probe);
+        std::string value = enumToString(digitalProbeToString, selection);
         SetChanValue(ch, param.c_str(), value.c_str());
     }
     /**
@@ -1602,7 +1602,7 @@ static const std::map<VX2750Pha::Endpoint, std::string> endpointToString = {
     void
     VX2750Pha::setPreTriggerSamples(unsigned ch, std::uint32_t samples)
     {
-        SetChanValue(ch, "ChPreTriggerS", samples);
+        SetChanValue(ch, "ChPreTriggerS", static_cast<int>(samples));
     }
     /**
      * getPreTriggerNs
@@ -1624,12 +1624,12 @@ static const std::map<VX2750Pha::Endpoint, std::string> endpointToString = {
     void
     VX2750Pha::setPreTriggerNs(unsigned chan, std::uint32_t ns)
     {
-        SetChanValue(chan, "ChPreTriggerT", ns);
+        SetChanValue(chan, "ChPreTriggerT", static_cast<int>(ns));
     }
     
     /**
      * getTestPulsePeriod
-     *    @return std::uint32_t = nanoseconds betwee repetitions of the test pulse.
+     *    @return std::uint32_t = nanoseconds between repetitions of the test pulse.
      */
     std::uint32_t
     VX2750Pha::getTestPulsePeriod()
@@ -1643,7 +1643,7 @@ static const std::map<VX2750Pha::Endpoint, std::string> endpointToString = {
     void
     VX2750Pha::setTestPulsePeriod(std::uint32_t ns)
     {
-        SetDeviceValue("TestPulsePeriod", ns);
+        SetDeviceValue("TestPulsePeriod", static_cast<int>(ns));
     }
     /**
      * getTestPulseWidth
@@ -1661,7 +1661,7 @@ static const std::map<VX2750Pha::Endpoint, std::string> endpointToString = {
     void
     VX2750Pha::setTestPulseWidth(std::uint32_t ns)
     {
-        SetDeviceValue("TestPulseWidth", ns);
+        SetDeviceValue("TestPulseWidth", static_cast<int>(ns));
     }
     /**
      * getTestPulseLowLevel
@@ -1679,7 +1679,7 @@ static const std::map<VX2750Pha::Endpoint, std::string> endpointToString = {
     void
     VX2750Pha::setTestPulseLowLeve(std::uint32_t counts)
     {
-        SetDeviceValue("TestPulseLowLevel", counts);
+        SetDeviceValue("TestPulseLowLevel", static_cast<int>(counts));
     }
     /**
      * getTestPulseHigHlevel
@@ -1697,7 +1697,7 @@ static const std::map<VX2750Pha::Endpoint, std::string> endpointToString = {
     void
     VX2750Pha::setTestPulseHighLevel(std::uint32_t counts)
     {
-         SetDeviceValue("TestPulseHighLevel", counts);
+         SetDeviceValue("TestPulseHighLevel", static_cast<int>(counts));
     }
     /**
      * getIOLevel
@@ -1707,7 +1707,7 @@ static const std::map<VX2750Pha::Endpoint, std::string> endpointToString = {
     VX2750Pha::IOLevel
     VX2750Pha::getIOLevel()
     {
-        return stringToEnum(stringToIOlevel, GetDeviceValue("IOLevel"));
+        return stringToEnum(stringToIOLevel, GetDeviceValue("IOLevel"));
     }
     /**
      * setIOLevel
@@ -1821,7 +1821,7 @@ static const std::map<VX2750Pha::Endpoint, std::string> endpointToString = {
      *     @return double - DCDC converter current in amps.
      */
     double
-    VX2750Pha::getDCDCCONverterAmps()
+    VX2750Pha::getDCDCConverterAmps()
     {
         return GetDeviceReal("IOutSensDCDC");
     }
@@ -1876,7 +1876,7 @@ static const std::map<VX2750Pha::Endpoint, std::string> endpointToString = {
     void
     VX2750Pha::setErrorFlagMask(std::uint32_t mask)
     {
-        SetDeviceValue("ErrorFlagMask", mask);
+        SetDeviceValue("ErrorFlagMask", static_cast<int>(mask));
     }
     /**
      * getErrorFlagDataMask
@@ -2097,7 +2097,7 @@ static const std::map<VX2750Pha::Endpoint, std::string> endpointToString = {
     VX2750Pha::ITLConnect
     VX2750Pha::getITLConnect(unsigned ch)
     {
-        return stringToEnum(stringToITLAConnect, GetChannelValue(ch, "ITLConnect"));
+        return stringToEnum(stringToITLAConnect, GetChanValue(ch, "ITLConnect"));
     }
     /**
      * setITLConnect
@@ -2108,7 +2108,7 @@ static const std::map<VX2750Pha::Endpoint, std::string> endpointToString = {
     VX2750Pha::setITLConnect(ch, ITLConnect selection)
     {
         std::string value = enumToString(ITLAConnectToSTring, selection);
-        SetChannelValue(ch, "ITLConnect", value.c_str());
+        SetChanValue(ch, "ITLConnect", value.c_str());
     }
     /**
      * getITLAMask
@@ -2505,7 +2505,7 @@ static const std::map<VX2750Pha::Endpoint, std::string> endpointToString = {
     VX2750Pha::Polarity
     VX2750Pha::getPulsePolarity(unsigned chan)
     {
-        return stringToEnum(stringToPolarity, GetChannelValue(chan, "PulsePolarity"));
+        return stringToEnum(stringToPolarity, GetChanValue(chan, "PulsePolarity"));
     }
     /**
      * setPulsePolarity
@@ -3106,7 +3106,7 @@ static const std::map<VX2750Pha::Endpoint, std::string> endpointToString = {
     VX2750Pha::getRealtime(unsigned ch)
     {
         std::uint64_t raw = GetChanInteger(chan, "ChRealtimeMonitor");
-        return raw * FPGA_CLOCKS_PER_NS;
+        return raw * FPGA_NS_PER_CLOCK;
     }
     /**
      * getDeadtime
@@ -3118,7 +3118,7 @@ static const std::map<VX2750Pha::Endpoint, std::string> endpointToString = {
     VX2750Pha::getDeadTime(unsigned ch)
     {
         std::uint64_t raw = getChanInteger(ch, "ChDeadtimeMonitor");
-        return raw * FPGA_CLOCKS_PER_NS
+        return raw * FPGA_NS_PER_CLOCK;
     }
     // Command jackets:
     /**

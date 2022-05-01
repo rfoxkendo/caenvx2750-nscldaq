@@ -72,12 +72,13 @@ public:
     typedef enum _EventTriggerSource {
         EventTrigger_InternalB, EventTrigger_InternalA,
         EventTrigger_GlobalTriggerSource, EventTrigger_TRGIN,
-        EventTrigger_Software, Event_ChannelSelfTrigger,
+        EventTrigger_Software, EventTrigger_ChannelSelfTrigger,
         EventTrigger_AnyChannelSelfTrigger, EventTrigger_Disabled
     } EventTriggerSource;
     
     typedef enum _TimestampResetSource {
-        Start, Timestamp_SIN, TimestampReset_GPIO, Timestamp_EncodedClockIn
+        TimestampReset_Start, Timestamp_SIN, TimestampReset_GPIO,
+        TimestampReset_EncodedClockIn
     } TimestampResetSource;
     
     typedef enum _TraceRecordMode {
@@ -89,7 +90,7 @@ public:
         TriggerOut_Software, TriggerOut_LVDS, TriggerOut_InternalA,
         TriggerOut_InternalB, TriggerOut_InternalAandInternalB,
         TriggerOut_InternalAorInternalB, TriggerOut_EncodedClockIn,
-        TriggerOut_Run, TriggerOut_ReferenceClock, TestPuse,
+        TriggerOut_Run, TriggerOut_ReferenceClock, TriggerOut_TestPulse,
         TriggerOut_Busy, TriggerOut_Zero,
         TriggerOut_One, TriggerOut_SynchIn, TriggerOut_SIN, TriggerOut_GPIO,
         AcceptedTrigger, TriggerClock
@@ -112,7 +113,7 @@ public:
     } SyncOutMode;
     
     typedef enum _VetoSource {
-        Veto_SIN, Veto_LVDS, Veto_GPIO, Veto_P0, EncodedClock, Veto_Disabled
+        Veto_SIN, Veto_LVDS, Veto_GPIO, Veto_P0, Veto_EncodedClock, Veto_Disabled
     } VetoSource;
     
     
@@ -178,7 +179,7 @@ public:
     } AnalogProbe;
     
     typedef enum _DigitalProbe {
-        Trigger, TimeFilterArmed, ReTriggerGuard, EneryFilterBaselineFreeze,
+        DProbe_Trigger, TimeFilterArmed, ReTriggerGuard, EneryFilterBaselineFreeze,
         EnergyFilterPeaking, EnergyFilterPeakReady, EnergyFilterPileupGuard,
         EventPileup, ADCSaturation, ADCSaturationProtection, PostSaturationEvent,
         EnergyFilterSaturation, AcquisitionInhibit
@@ -230,8 +231,8 @@ public:
     } LVDSDirection;
     
     typedef enum _DACOutputMode {
-        Static, DACOut_IPE, DACOut_ChInput, MemOccupancy, CHSum, OverThrSum,
-        DACOut_Ramp, Sin5MHz, Square
+        Static, DACOut_IPE, DACOut_ChInput, MemOccupancy, ChSum, OverThrSum,
+        DACOut_Ramp, Sine5MHz, Square
     } DACOutputMode;
     
     static const std::uint32_t CHST_DelayInitdone = 1;
@@ -259,11 +260,12 @@ public:
     
     typedef enum _EnergyPeakingAverage {
         Average1, Average4, EPeakAvg_Average16, EPeakAvg_Average64
-    } EnergyPeakingAvergage;
+    } EnergyPeakingAverage;
     
     typedef enum _EnergyFilterBaselineAverage {
-        Fixed, EFilterBlineAvg_Average16, EFilterBlineAvg_Average64, Average256, Average1024, Average4K, Average16K
-    } EnergyFiterBaselineAverage;
+        Fixed, EFilterBlineAvg_Average16, EFilterBlineAvg_Average64,
+        Average256, Average1024, Average4K, Average16K
+    } EnergyFilterBaselineAverage;
     
     typedef enum _Endpoint {
         Raw, PHA
@@ -325,9 +327,9 @@ public:
             resetOptions();
         }
         void resetOptions() {
-            s_enableRawTimesstamps = false;
+            s_enableRawTimestamps = false;
             s_enableFineTimestamps = false;
-            s_enableFfags    = false;
+            s_enableFlags    = false;
             s_enableDownsampledTime = false;;
             s_enableAnalogProbe1 = false;;
             s_enableAnalogProbe2 = false;
@@ -366,7 +368,7 @@ public:
     int          getMotherboardRev();
     int          getPiggybackRev();
     std::string  getLicense();
-    bool         isLicesnsed();
+    bool         isLicensed();
     int          remainingUnlicensedTime();
     int          channelCount();
     int          bitsOfResolution();
@@ -395,10 +397,10 @@ public:
     void         setEventTriggerSource(unsigned ch, EventTriggerSource src);
     TimestampResetSource getTimestampResetSource();
     void setTimestampResetSource(TimestampResetSource);
-    std::uint64_t getChannelTriggerMask();
-    void          setChannelTriggerMask(std::uint64_t mask);
-    TraceRecordMode getTraceRecordMode();
-    void           setTraceRecordMode(TraceRecordMode mode);
+    std::uint64_t getChannelTriggerMask(unsigned ch);
+    void          setChannelTriggerMask(unsigned ch, std::uint64_t mask);
+    TraceRecordMode getTraceRecordMode(unsigned ch);
+    void           setTraceRecordMode(unsigned ch, TraceRecordMode mode);
     TRGOUTMode    getTRGOUTMode();
     void          setTRGOUTMode(TRGOUTMode mode);
     GPIOMode      getGPIOMode();
@@ -430,7 +432,7 @@ public:
     std::uint32_t      getAcquisitionStatus();
     std::uint32_t      getMaxRawDataSize();
     double        getVolatileClockDelay();
-    void          setVolatileCLockDelay(double value);
+    void          setVolatileClockDelay(double value);
     double        getPermanentClockDelay();
     void          setPermanentClockDelay(double value);
     WaveDataSource getWaveDataSource(unsigned chan);
@@ -460,7 +462,7 @@ public:
     std::uint32_t getTestPulseHighLevel();
     void          setTestPulseHighLevel(std::uint32_t counts);
     IOLevel       getIOLevel();
-    void          setIOLEvel(IOLevel level);
+    void          setIOLevel(IOLevel level);
     double        getAirInTemp();
     double        getAirOutTemp();
     double        getCoreTemp();
@@ -468,7 +470,7 @@ public:
     double        getLastADCTemp();
     double        getHottestADCTemp();
     double        getADCTemp(unsigned chip);
-    double        getDCDConverterTemp();
+    double        getDCDCConverterTemp();
     
     double        getDCDCConverterInputVoltage();
     double        getDCDCConverterOutputVoltage();
@@ -601,7 +603,7 @@ public:
     bool          isEnergyFilterFLimitationEnabled(unsigned chan);
     void          enableEnerygFilterFLimitation(unsigned chan, bool enable);
     EnergyFilterBaselineAverage getEnergyFilterBaselineAverage(unsigned chan);
-    void          getEnergyFilterBaselineAverage(unsigned chan, EnergyFileterBaselineAverage sel);
+    void          getEnergyFilterBaselineAverage(unsigned chan, EnergyFilterBaselineAverage sel);
     std::uint32_t getEnergyFilterBaselineGuardTime(unsigned chan);
     std::uint32_t getEnergyFilterBaselineGuardSamples(unsigned chan);
     void          getEnergyFitlerBaselineGuardTime(unsigned chan, std::uint32_t ns);
@@ -659,7 +661,7 @@ public:
     
     
 private:
-    uin32_t    dottedToInt(const std::string& dotted);
+    uint32_t    dottedToInt(const std::string& dotted);
     template<class T> std::string enumToString(const std::map<T, std::string>& map, T value);
     template<class T> T stringToEnum(const std::map<std::string, T>& map, const std::string& value);
     bool textToBool(const std::string& str);
@@ -714,7 +716,7 @@ VX2750Pha::enumToString(const std::map<T, std::string>&map, T value)
  */
 template<class T>
 T
-VXPha2750::stringToEnum(const std::map<std::string, T>& map, std::string value)
+VX2750Pha::stringToEnum(const std::map<std::string, T>& map, const std::string& value)
 {
     auto p = map.find(value);
     if (p == map.end()) {
