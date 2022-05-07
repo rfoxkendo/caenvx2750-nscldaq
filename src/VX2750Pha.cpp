@@ -26,7 +26,8 @@
 #include <sstream>
 #include <stdlib.h>
 #include <ctype.h>
-
+#include <cstring>
+#include <cstdlib>
 
 namespace caen_nscldaq {
 
@@ -3577,6 +3578,123 @@ static const std::map<VX2750Pha::Endpoint, std::string> endpointToString = {
         while(!ReadData(1000000, argc, argv))
             ;                                          // Block until read.
         
+    }
+    //////////////////////////////////////////////////////////////////////////
+    // Decoded buffer management (DPPPHAEvent):
+    
+    /**
+     * initDecodedBuffer
+     *    Given a block of storage that is a decoded event,
+     *    initializes it for the first time.  Subsequently, setup and free
+     *    should be used on this block of storage.
+     *  @param[out] event  - The block of storage for a decoded event.
+     */
+    void
+    VX2750Pha::initDecodedBuffer(DecodedEvent& event)
+    {
+        // This is the simplest/minimalist way to ensure the
+        // buffer pointers are nulled out.  Really that's all we really care
+        //about:
+        
+        std::memset(&event, 0, sizeof(DecodedEvent));
+    }
+    /**
+     * setupDecodedBuffer
+     *    Given the objects current read options, allocates an appropriate
+     *    set of buffers for analog and digital probes.  Note that:
+     *    -  Be sure that the first thing you do to a DecodedEvent is invoke
+     *        initDecodedBuffer.
+     *    -  If this has already been done, first invoke freeDecodedBuffer
+     *       free any previous values.
+     *    -  If after doing this, the trace lengths and options are modified,
+     *       you really should invoke freeDecodedBuffer and thenn do another
+     *       setupDecoded buffer as there's no assurance the buffers in this
+     *       object will be large enough to accommodate a read.
+     * @param[out] event -the event to setup.
+     */
+    void
+    VX2750Pha::setupDecodedBuffer(DecodedEvent& event)
+    {
+        // Regardless we figure out the length of the longest trace:
+        
+        int nChans = channelCount();
+        std::uint32_t samples = 0;
+        for (int i=0; i < samples; i++) {
+            auto n = getRecordSamples(i);
+            if (n > samples) samples = n;
+        }
+        // samples is the number of analog samples and there's one bit per
+        // digital probe sample so:
+        
+        std::uint32_t dProbeLen = samples/sizeof(std::uint8_t);
+        
+        // Allocate the appropriate analog probe buffers:
+        
+        if (m_dppPhaOptions.s_enableAnalogProbe1) {
+            event.s_pAnalogProbe1 = new std::int32_t[samples];
+            if (!event.s_pAnalogProbe1) {
+                throw std::runtime_error("New failed for analog probe1 buffer");
+            }
+        }
+        if (m_dppPhaOptions.s_enableAnalogProbe2) {
+            event.s_pAnalogProbe2 = new std::int32_t[samples];
+            if (!event.s_pAnalogProbe2) {
+                throw std::runtime_error("New failed for analog probe 2 buffer");
+            }
+        }
+        // Now the digital probes- in this case the buffers are
+        // dProbelen bytes long.
+        
+        if (m_dppPhaOptions.s_enableDigitalProbe1) {
+            event.s_pDigitalProbe1 = new std::uint8_t[dProbeLen];
+            if (!event.s_pDigitalProbe1) {
+                throw std::runtime_error("New failed for digital probe 1");
+            }
+        }
+        
+        if (m_dppPhaOptions.s_enableDigitalProbe2) {
+            event.s_pDigitalProbe2 = new std::uint8_t[dProbeLen];
+            if (!event.s_pDigitalProbe2) {
+                throw std::runtime_error("New failed for digital probe 2");
+            }
+        }
+        
+        if (m_dppPhaOptions.s_enableDigitalProbe3) {
+            event.s_pDigitalProbe3 = new std::uint8_t[dProbeLen];
+            if (!event.s_pDigitalProbe3) {
+                throw std::runtime_error("New failed for digital probe 3");
+            }
+        }
+        
+        if (m_dppPhaOptions.s_enableDigitalProbe4) {
+            event.s_pDigitalProbe4 = new std::uint8_t[dProbeLen];
+            if (!event.s_pDigitalProbe4) {
+                throw std::runtime_error("New failed for digital probe 4");
+            }
+        }
+        
+        
+    }
+    /**
+     * freeDecodedBuffer
+     *     Frees any dynamically allocated bits of a DecodedEvent.
+     *     If the storage has been properly managed with init and setup,
+     *     we can just delete the dynamic bits
+     *     Note that the entire event storage is zeroed before return
+     * @param event - the buffer to free:
+     *
+     */
+    void
+    VX2750Pha::freeDecodedBuffer(DecodedEvent& event)
+    {
+        delete []event.s_pAnalogProbe1;
+        delete []event.s_pAnalogProbe2;
+        delete []event.s_pDigitalProbe1;
+        delete []event.s_pDigitalProbe2;
+        delete []event.s_pDigitalProbe3;
+        delete []event.s_pDigitalProbe4;
+        
+        initDecodedBuffer(event);
     }
     ////////////////////////////////////////////////////////////////////////////
     // Implementation of private (utility) functions.

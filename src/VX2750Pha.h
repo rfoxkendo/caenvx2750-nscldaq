@@ -659,6 +659,12 @@ public:
     void initializeDPPPHAReadout();
     void readDPPPHAEndpoint(DecodedEvent& event);
     
+    // Buffer management for the formatted (DPPPHAEndpoint):
+    
+    void initDecodedBuffer(DecodedEvent& event);
+    void setupDecodedBuffer(DecodedEvent& event);
+    void freeDecodedBuffer(DecodedEvent& event);
+    
     
 private:
     uint32_t    dottedToInt(const std::string& dotted);
