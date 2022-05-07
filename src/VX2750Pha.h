@@ -579,7 +579,7 @@ public:
     void           setTimeFilterRiseTime(unsigned chan, std::uint32_t ns);
     void           setTimeFilterRiseSamples(unsigned chan, std::uint32_t samples);
     std::uint32_t  getTimeFilterRetriggerGuardTime(unsigned chan);
-    std::uint32_t  getTimeFilterReetriggerGuardSamples(unsigned chan);
+    std::uint32_t  getTimeFilterRetriggerGuardSamples(unsigned chan);
     void           setTimeFilterRetriggerGuardTime(unsigned chan, std::uint32_t ns);
     void           setTimeFilterRetriggerGuardSamples(unsigned chan, std::uint32_t samples);
     std::uint32_t  getEnergyFilterRiseTime(unsigned chan);
@@ -587,7 +587,7 @@ public:
     void           setEnergyFilterRiseTime(unsigned chan, std::uint32_t ns);
     void           setEnergyFilterRiseSamples(unsigned chan, std::uint32_t samples);
     std::uint32_t  getEnergyFilterFlatTopTime(unsigned chan);
-    std::uint32_t  getEnergyFilterFlatTimeSamples(unsigned chan);
+    std::uint32_t  getEnergyFilterFlatTopSamples(unsigned chan);
     void           setEnergyFilterFlatTopTime(unsigned chan, std::uint32_t ns);
     void           setEnergyFilterFlatTopSamples(unsigned chan, std::uint32_t samples);
     std::uint32_t  getEnergyFilterPeakingPosition(unsigned chan);
@@ -596,18 +596,18 @@ public:
     void          setEnergyFilterPeakingAverage(unsigned chan, EnergyPeakingAverage sel);
     std::uint32_t getEnergyFilterPoleZeroTime(unsigned chan);
     std::uint32_t getEnergyFilterPoleZeroSamples(unsigned chan);
-    void          setEnergyFiterPoleZeroTime(unsigned chan, std::uint32_t ns);
+    void          setEnergyFilterPoleZeroTime(unsigned chan, std::uint32_t ns);
     void          setEnergyFilterPoleZeroSamples(unsigned chan, std::uint32_t samples);
     double        getEnergyFilterFineGain(unsigned chan);
     void          setEnergyFilterFineGain(unsigned chan, double gain);
     bool          isEnergyFilterFLimitationEnabled(unsigned chan);
-    void          enableEnerygFilterFLimitation(unsigned chan, bool enable);
+    void          enableEnergyFilterFLimitation(unsigned chan, bool enable);
     EnergyFilterBaselineAverage getEnergyFilterBaselineAverage(unsigned chan);
-    void          getEnergyFilterBaselineAverage(unsigned chan, EnergyFilterBaselineAverage sel);
+    void          setEnergyFilterBaselineAverage(unsigned chan, EnergyFilterBaselineAverage sel);
     std::uint32_t getEnergyFilterBaselineGuardTime(unsigned chan);
     std::uint32_t getEnergyFilterBaselineGuardSamples(unsigned chan);
-    void          getEnergyFitlerBaselineGuardTime(unsigned chan, std::uint32_t ns);
-    void          setEnergyFilterBaslineGuardSamples(unsigned chan, std::uint32_t samples);
+    void          setEnergyFilterBaselineGuardTime(unsigned chan, std::uint32_t ns);
+    void          setEnergyFilterBaselineGuardSamples(unsigned chan, std::uint32_t samples);
     std::uint32_t getEnergyFilterPileupGuardTime(unsigned chan);
     std::uint32_t getEnergyFilterPileupGuardSamples(unsigned chan);
     void          setEnergyFilterPileupGuardTime(unsigned chan, std::uint32_t ns);
@@ -652,7 +652,7 @@ public:
     void enableAnalogProbes(bool probe1, bool probe2);
     void enableDigitalProbes(bool probe1, bool probe2, bool probe3, bool probe4);
     void enableSampleSize(bool enable);
-    bool enableRawEventSize(bool enable);
+    void  enableRawEventSize(bool enable);
     
     // This sends the JSON:
     
