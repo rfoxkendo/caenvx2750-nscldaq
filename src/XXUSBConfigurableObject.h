@@ -19,43 +19,12 @@
 
 // Necessary includes (kept to a minimum using forward class defs).
 
-#ifndef __STL_STRING
 #include <string>
-#ifndef __STL_STRING
-#define __STL_STRING
-#endif
-#endif
-
-
-#ifndef __STL_MAP
 #include <map>			// also defines std::pair
-#ifndef __STL_MAP
-#define __STL_MAP
-#endif
-#endif
-
-
-#ifndef __STL_VECTOR
 #include <vector>
-#ifndef __STL_VECTOR
-#define __STL_VECTOR
-#endif
-#endif
-
-#ifndef __STL_SET
 #include <set>
-#ifndef __STL_SET
-#define __STL_SET
-#endif
-#endif
-
-#ifndef __STL_LIST
 #include <list>
-#ifndef __STL_LIST
-#define __STL_LIST
-#endif
-#endif
-
+#include <cstdint>
 
 // Typedefs for the parameter checker are in the global namespace:
 
@@ -109,11 +78,11 @@ public:
 
   struct  limit {
     bool   s_checkMe;
-    long    s_value;
+    std::int64_t    s_value;
     limit() :
       s_checkMe(false) 
     {}
-    limit(long value) : 
+    limit(std::int64_t value) : 
       s_checkMe(true), 
       s_value(value) {}
   } ;
@@ -190,9 +159,10 @@ public:
   ConfigurationArray cget();
 
   // Convenience functions that get common conversions:
+	//Note the return types assume int64_t and uint64_t are at most long longs wide.
 
-  int              getIntegerParameter (std::string name);
-  unsigned int     getUnsignedParameter(std::string name);
+  std::int64_t              getIntegerParameter (std::string name);
+  std::uint64_t     getUnsignedParameter(std::string name);
   bool             getBoolParameter    (std::string name);
   double           getFloatParameter   (std::string name);
   std::vector<int> getIntegerList      (std::string name);
@@ -216,8 +186,8 @@ public:
 
   // Convenience methods for creating typical parameter typse:
   
-  void addIntegerParameter(std::string name, int defaultVal = 0);
-  void addIntegerParameter(std::string name, int low, int high, int defaultVal = 0);
+  void addIntegerParameter(std::string name, std::int64_t defaultVal = 0);
+  void addIntegerParameter(std::string name, std::int64_t low, std::int64_t high, std::int64_t defaultVal = 0);
 
   void addBooleanParameter(std::string name, bool defaultVal = true);
 
@@ -229,12 +199,12 @@ public:
   void addBoolListParameter(std::string name, unsigned minLength, unsigned maxLength, 
 			    bool defaultVal = true, int defaultSize = -1);
 
-  void addIntListParameter(std::string name, unsigned size, int defaultVal = 0);
+  void addIntListParameter(std::string name, unsigned size, std::int64_t defaultVal = 0);
   void addIntListParameter(std::string name, unsigned minlength, unsigned maxLength,
-			   int defaultVal = 0, int defaultSize = -1);
-  void addIntListParameter(std::string name, int minValue, int maxValue,
+			   std::int64_t defaultVal = 0, int defaultSize = -1);
+  void addIntListParameter(std::string name, std::int64_t minValue, std::int64_t maxValue,
                            unsigned minlength, unsigned maxLength, unsigned defaultSize,
-			   int defaultVal);
+			   std::int64_t defaultVal);
  
 
   void addStringListParameter(std::string name, unsigned size, std::string defaultVal = "");
@@ -252,6 +222,8 @@ public:
   static bool isBoolList(std::string name,std::string value, void* arg);
   static bool isIntList(std::string name, std::string value, void* arg);
   static bool isStringList(std::string name, std::string value, void* arg);
+	
+	
 
   // Utilities:
 

@@ -48,6 +48,50 @@ namespace caen_nscldaq {
  *     -  readdigitalprobes   - list of four bools {probe1 probe2 probe3 probe4}
  *     -  readsamplecount     - bool -enable read of number of samples in fragment.
  *     -  readeventsize        - bool enable read of event size.
+ *  ### General Parameters:
+ *     -  clocksource - enumerated "Internal", "FPClkIn", "P0ClkIn", "Link", "DIPswitchSel"
+ *     -  outputp0clock - bool  Output clock on backplane.
+ *     -  outputfpclock - bool  Output clock on front panel.
+ *
+ *  ### Acquisition, Trigger and Veto Parameters:
+ *     -  startsource - enum EncodedClkIn, SINLevel, SINedge, SWcmd, LVDS, P0
+ *     -  gbltriggersrc - enum TrgIn, P0, SwTrg, LVDS, ITLA, ITLB,
+ *                             ITLA_AND_ITLB, ITLA_OR_ITLB, EncodedClkIn,
+ *                             GPIO, TestPulse
+ *     - wavetriggersrc - enum "ITLB", "ITLA", "GlobalTriggerSource", "TRGIN",
+ *                              "ExternalInhibit", "ADCUnderSaturation",
+ *                              "ADCOverSaturation", :SWTrigger", "ChSelfTrigger",
+ *                              "Ch64Trigger", "Disabled"
+ *     - eventtriggersrc - enum - same as wavetriggersrc.
+ *     - tstampresetsrc  - enum - "Start", "SIN", "GPIO", "EncodedClkIn"
+ *     - channeltriggermasks- list of up to 64 uint64 masks of channel triggers.
+ *                           that can trigger the associated channel.
+ *     - savetraces       - list of up to 64 bool values true to save traces from
+ *                          the corresponding channel.
+ *     - triggeroutmode   -  enum TRGIN, P0, SwTrg, LVDS, ITLA, ATLB, ITLA_AND_ITLB,
+ *                                ITLA_OR_ITLB, EncodedClkIn, Run, RefClk, TestPulse,
+ *                                Busy, Fixed0, Fixed1, SyncIn, SIN, GPIO,
+ *                                AcceptTrg, TrgClk
+ *     - gpiomode   - Enum: Disabled, TrgIn, P0, SIN, LVDS, ITLA, ITLB,
+ *                          ITLA_AND_ITLB, EncodedClkIn, SwTrg, Run, RefClk,
+ *                          TestPulse, Busy, Fixed0, Fixed1
+ *     - busyinsrc - enum - SIN, GPIO, LVDS, Disabled
+ *     - syncoutmode - enum - Disabled, SyncIn, TestPulse, Run
+ *     - boardvetosrc - enum SIN, LVDS, GPIO, P0, EncodedClkIn, Disabled
+ *     - boardvetowidth - integer ns 0 - 34359738360 inclusive.
+ *     - boardvetopolarity - enum ActiveHigh, ActiveLow
+ *     - chanvetosrc  - list of up to 64 enums: BoardVeto, ADCOverSaturation,
+ *                      ADCUnderSaturation, Disabled
+ *     - adcvetowidth - List of up to 64 integers 0-524280
+ *     - rundelay     - integer 0 - 54280
+ *     - autodisarm   - bool
+ *     - multiwindow - bool
+ *     - pausestamp  - enum hold, run
+ *     - volclkoutdelay - float -18888.888 - +18888.888
+ *     - permclkoutdelay - float -18888.888 - +18888.888
+ *     
+ *     
+ *     
  *     
  */
 class VX2750PHAModuleConfiguration : public ::XXUSB::XXUSBConfigurableObject
@@ -62,7 +106,10 @@ public:
     int operator!=(const VX2750PHAModuleConfiguration& rhs);
     
     // Everything else public is done by the base class.
-    
+private:
+    void defineReadoutOptions();
+    void defineGeneralOptions();
+    void defineAcqTriggerOptions();
 };
     
 }                                             // caen_nscldaq namespace

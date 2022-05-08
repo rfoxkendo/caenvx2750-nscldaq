@@ -292,13 +292,13 @@ CConfigurableObject::clearConfiguration()
     \retval the integer equivalent of the config paramter.
 
 */
-int
+std::int64_t
 CConfigurableObject::getIntegerParameter(string name)
 {
   string value = cget(name);
 
   char* end;
-  int iValue = strtol(value.c_str(), &end, 0);
+  long long iValue = strtoll(value.c_str(), &end, 0);
   if (end == value.c_str()) {
     string msg = "Expected an integer parameter value for config. parameter ";
     msg += name;
@@ -312,13 +312,13 @@ CConfigurableObject::getIntegerParameter(string name)
   Same as above but for an integer.  Needed because strtol for something
   bigger than MAXINT returns MAXINT.
 */
-unsigned int
+std::uint64_t
 CConfigurableObject::getUnsignedParameter(string name)
 {
   string value = cget(name);
 
   char* end;
-  int iValue = strtoul(value.c_str(), &end, 0);
+  std::uint64_t iValue = strtoull(value.c_str(), &end, 0);
   if (end == value.c_str()) {
     string msg = "Expected an integer parameter value for config. parameter ";
     msg += name;
@@ -460,13 +460,13 @@ CConfigurableObject::getEnumParameter(std::string name, const char** pValues)
  * @param defaultVal - Value given the configuration parameter if it is not explicitly configured.
  */
 void
-CConfigurableObject::addIntegerParameter(std::string name, int defaultVal)
+CConfigurableObject::addIntegerParameter(std::string name, std::int64_t defaultVal)
 {
 
 
   // Use the normal creation function.
 
-  addParameter(name, CConfigurableObject::isInteger, NULL, itos(defaultVal));
+  addParameter(name, CConfigurableObject::isInteger, NULL, std::to_string(defaultVal));
 
 }
 /**
@@ -480,7 +480,7 @@ CConfigurableObject::addIntegerParameter(std::string name, int defaultVal)
  *                     low/high range in which case, low is used.
  */
 void
-CConfigurableObject::addIntegerParameter(std::string name, int low, int high, int defaultVal)
+CConfigurableObject::addIntegerParameter(std::string name, std::int64_t low, std::int64_t high, std::int64_t defaultVal)
 {
   // Build the constraint object, and hook it into the autodelete mechanism.
 
@@ -498,7 +498,7 @@ CConfigurableObject::addIntegerParameter(std::string name, int low, int high, in
 
   // Add the parameter:
 
-  addParameter(name, CConfigurableObject::isInteger, pLimit, itos(defaultVal));
+  addParameter(name, CConfigurableObject::isInteger, pLimit, std::to_string(defaultVal));
 
 
 }
@@ -610,7 +610,7 @@ CConfigurableObject::addBoolListParameter(std::string name, unsigned minLength, 
  * @param defaultVal - Default value given to each element of the list.
  */
 void
-CConfigurableObject::addIntListParameter(std::string name, unsigned size, int defaultVal)
+CConfigurableObject::addIntListParameter(std::string name, unsigned size, std::int64_t defaultVal)
 {
   // This is just a special case of another overload:
 
@@ -627,14 +627,14 @@ CConfigurableObject::addIntListParameter(std::string name, unsigned size, int de
  */
 void
 CConfigurableObject::addIntListParameter(std::string name, unsigned minLength, unsigned maxLength,
-					 int defaultVal, int defaultSize )
+					 std::int64_t defaultVal, int defaultSize )
 {
   // Figure out the actual list size and build the default list.
   // string operations are much simpler than Tcl list ones since each element is an integer.
 
 
   defaultSize = computeDefaultSize(minLength, maxLength, defaultSize);
-  std::string defaultList = simpleList(itos(defaultVal), defaultSize);
+  std::string defaultList = simpleList(std::to_string(defaultVal), defaultSize);
 
   // Build the constraint struct and arrange for it to be freed when this object is
   // destroyed:
@@ -659,16 +659,16 @@ CConfigurableObject::addIntListParameter(std::string name, unsigned minLength, u
  * @param defaultLength - Default list length (minLength if not given).
  */
 void
-CConfigurableObject::addIntListParameter(std::string name, int minValue, int maxValue,
+CConfigurableObject::addIntListParameter(std::string name, std::int64_tint minValue, std::int64_t maxValue,
                            unsigned minlength, unsigned maxLength, unsigned defaultSize,
-			   int defaultVal)
+			   std::int64_t defaultVal)
 {
     // Figure out the actual list size and build the default list.
     // string operations are much simpler than Tcl list ones since each element is an integer.
   
   
     defaultSize = computeDefaultSize(minlength, maxLength, defaultSize);
-    std::string defaultList = simpleList(itos(defaultVal), defaultSize);
+    std::string defaultList = simpleList(std::to_string(defaultVal), defaultSize);
   
     // First build the constraint on the values of the list:
     
@@ -765,7 +765,7 @@ CConfigurableObject::isInteger(string name, string value, void* arg)
 
 
   char* end;
-  long lvalue = strtoul(value.c_str(), &end, 0);	// Base allows e.g. 0x.
+  auto lvalue = strtoull(value.c_str(), &end, 0);	// Base allows e.g. 0x.
   if (*end != '\0') {		               // String is not just an integer.
     return false;
   }

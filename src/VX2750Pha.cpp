@@ -72,7 +72,7 @@ static const std::map<std::string, VX2750Pha::StartSource> stringToStartSource =
     {"SINlevel", VX2750Pha::SINLevel},
     {"SINedge", VX2750Pha::SINEdge},
     {"SWcmd", VX2750Pha::SWCommand},
-    {"LDVDS", VX2750Pha::Start_LVDS},
+    {"LVDS", VX2750Pha::Start_LVDS},
     {"P0",   VX2750Pha::Start_P0}
 };
 
