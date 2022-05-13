@@ -42,3 +42,11 @@ CAENVX2750PhaTrigger::operator()
 {
     return m_module.hasData();
 }
+/**
+ * return reference to the module:
+ */
+VX2750Pha&
+CAENVX2750PhaTrigger::getModule()
+{
+    return m_module;
+}

@@ -39,4 +39,5 @@ private:
 public:
     CAENVX2750PhaTrigger(VX2750Pha& module);
     bool operator()();
+    VX2750Pha& getModule();
 };
