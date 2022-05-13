@@ -23,7 +23,7 @@
 */
 #include "CAENVX2750PhaTrigger.h
 #include "VX2750Pha.h"
-
+namespace caen_nscldaq {
 /**
  * constructor:
  *    @param module - the module we'll check for data.
@@ -49,4 +49,5 @@ VX2750Pha&
 CAENVX2750PhaTrigger::getModule()
 {
     return m_module;
+}
 }
