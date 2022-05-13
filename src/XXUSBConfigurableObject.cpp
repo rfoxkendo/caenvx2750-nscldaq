@@ -699,7 +699,38 @@ CConfigurableObject::addIntListParameter(std::string name, std::int64_tint minVa
   
     addParameter(name, CConfigurableObject::isIntList, pConstraint, defaultList);    
 }
-
+/**
+ * addEnumListParameter
+ *    Add a parameter whose value is a list of validated enumerated values.
+ * @param name - name of the parameter.
+ * @param pValues - null terminated array of valid values.
+ * @param defaultValue - default value if not supplied
+ * @param minlength - minimum allowed length.
+ * @param maxlenth  - maximum allowed length.
+ * @param defaultlen - Default list length (-1 if maxlength).
+ * 
+ */
+void
+CConfigurableObject::addEnumListParameter(
+  std::string name, const char** pValues, const char* defaultValue,
+  unsigned minlength, unsigned, maxlength, int defaultSize
+)
+{
+    // figure out the default list of values:
+    
+    defaultSize = computeDefaultSize(minlength, maxlength, defaultsize);
+    std::string defaultList = simpleList(defaultValue, defaultSize);
+    
+    // Create the constraint object:
+    
+    auto validValues = makeEnumSet(pValues);
+    isEnumParameter* pV = new isEnumParameter(validValues);
+    isListParameter* pConstraint =
+       reinterpret_cast<isListParameter*>(malloc(sizeof(isListParameter)));
+    *pConstraint = isListParameter(minlength, maxlength, TypeCheckInfo(isEnum, pV));
+    addParameter(name, isList, pConstraint);
+    
+}
 
 /**
  * Add a string parameter whose value is a fixed length array of strings.

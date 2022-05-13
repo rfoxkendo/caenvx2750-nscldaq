@@ -194,6 +194,12 @@ public:
   void addEnumParameter(std::string name,
 			const char** pValues,
 			std::string defaultValue = std::string(""));
+	void addEnumListParameter(
+			std::string name,
+			const char** pValues, const char* defaultValue,
+			unsigned minlength, unsigned maxlength, int defaultSize = -1
+	);
+					
 
   void addBoolListParameter(std::string name, unsigned size, bool defaultVal = true);
   void addBoolListParameter(std::string name, unsigned minLength, unsigned maxLength, 
