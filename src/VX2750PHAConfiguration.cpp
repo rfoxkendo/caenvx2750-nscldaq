@@ -38,6 +38,8 @@ VX2750PHAModuleConfiguration::VX2750PHAModuleConfiguration(const char* name) :
     defineReadoutOptions();
     defineGeneralOptions();
     defineAcqTriggerOptions();
+    defineWfInspectionOptions();
+    defineServiceOptions();
 }
 
 /**
@@ -184,7 +186,104 @@ VX2750PHAModuleConfiguration::defineAcqTriggerOptions()
      };
      addEnumParameter("gpiomode", gpiomodes, "Disabled");
      
+     const char* busyinSources[] = {
+        "SIN", "GPIO", "LVDS", "Disabled"
+        nullptr
+     };
+     addEnumParameter("busyinsrc", busyinSources, "Disabled");
+     
+     const char* synoutmodes = {
+        "Disabled", "SyncIn", "TestPulse", "Run",
+        nullptr
+     };
+     addEnumParameter("syncoutmode", syncoutmodes, "Disabled");
+     
+     const char* boardvetosources[] = {
+        "SIN", "LVDS", "GPIO", "P0", "EncodedClkIn", "Disabled",
+        nullptr
+     };
+     addEnumParameter("boardvetosrc", boardvetosources, "Disabled");
+     addIntParameter("boardvetowidth", 0, 34359738360, 200);
+     const char* vetopolarities[] = {
+      "ActiveHigh", "ActiveLow", nullptr
+                    
+     };
+     addEnumParameter("boardvetopolarity", vetopolarities, "ActiveLow");
+     
+     
+     const char* chanvetosources[ ] = {
+        "BoardVeto", "ADCOverSaturation", "ADCUnderSaturation", "Disabled",
+          nullptr
+     };
+     addEnumListParameter("chanveotsrc", chanvetosources, "Disabled", 0, 64, 64);
+     addIntParameter("chanvetorwidth", 0, 524280, 0, 64, 64, 200);
+     
+     addIntParameter("rundelay", 0, 54280, 0);
+     addBoolParameter("autodisarm", true);
+     addBoolParameter("multiwindow", false);
+     
+     const char* pausetsvalues[] = {
+        "hold", "run", nullptr
+     };
+     addBoolParameter("pausetimestamp", pausetsvalues, "run");
+     
+     addIntParameter("volclkoutdelay", -18888.888, 18888.888, 0);
+     addIntParameter("permclkoutdelay", -18888.888, 18888.888, 0);
      
 }
-
+/**
+ * defineWfInspectionOptions
+ *   Define options that control how waveform inspection (including
+ *   digital probes) operate.
+ *   See main class comments for more inforation.
+ */
+void
+VX2750PHAModuleConfiguration::defineWfInspectionOptions()
+{
+  const char* wavesources[] = {
+      "ADC_DATA", "ADC_TEST_TOGGLE", "ADC_TEST_RAMP", "ADC_TEST_SIN", "IPE",
+      "Ramp", "SquareWave", "ADC_TEST_PRBS",
+      nullptr
+  };
+  addEnumListParameter("wavesource", wavesources, "ADC_DATA", 0, 64, 64);
+  addIntListParameter("recordsamples", 4, 8100, 0 64, 64);
+  
+  const char* wfresolutions[] = {
+      "Res8", "Res16", "Res32", "Res64",
+      nullptr
+  };
+  addEnumListParameter("waveresolutions", wfresolutions, "Res8", 0, 64, 64);
+  
+  const char* analogProbes[] = {
+    "ADCInput", "TimeFilter", "EnergyFilter", "EnergyFilterBaseline",
+    "EnergyFilterMinusBaseline"
+    nullptr
+  };
+  addEnumListParameter("analogprobe1", analogProbes, "ADCInput", 0, 64, 64);
+  addenumListParameter("analogprobe2", analogProbes, "TimeFilter", 0, 64, 64);
+  
+  const char* digitalProbes[] = {
+    "Trigger", "TimeFilterArmed", "RetriggerGuard", "EnergyFilterBaselineFreeze",
+    "EnergyFilterPeaking", "EnergyFilterPileUpGuard", "EventPileUp", "ADCSaturation",
+    "ADCSaturationProtection", "PostSaturationEvent", "EnergyFilterSaturation",
+    "AcquisitionInhibit",
+    nullptr
+  };
+  addEnumListParameter("digitalprobe1", digitalProbes, "Trigger", 0, 64, 64);
+  addEnumListParameter("digitalprobe2", digitalProbes, "TimeFilterArmed", 0, 64, 64);
+  addEnumListParameter("digitalprobe3", digitalProbes, "RetriggerGuard", 0, 64, 64);
+  addEnumListParameter("digitalprobe4", digitalProbes, "EnergyBaselineFreeze", 0, 64, 64);
+  
+  addIntListParameter("pretriggersamples", 4, 4000,  0, 64, 64, 100);
+  
+}
+/**
+ * defineServiceOptions
+ *    Define options that control the writable digitizer service parameters.
+ */
+void
+VX2750PHAModuleConfiguration::defineServiceOptions()
+{
+  
+}
 }                                   // caen_nscldaq namespace.

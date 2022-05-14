@@ -82,7 +82,7 @@ namespace caen_nscldaq {
  *     - boardvetopolarity - enum ActiveHigh, ActiveLow
  *     - chanvetosrc  - list of up to 64 enums: BoardVeto, ADCOverSaturation,
  *                      ADCUnderSaturation, Disabled
- *     - adcvetowidth - List of up to 64 integers 0-524280
+ *     - chanvetowidth - List of up to 64 integers 0-524280
  *     - rundelay     - integer 0 - 54280
  *     - autodisarm   - bool
  *     - multiwindow - bool
@@ -90,9 +90,35 @@ namespace caen_nscldaq {
  *     - volclkoutdelay - float -18888.888 - +18888.888
  *     - permclkoutdelay - float -18888.888 - +18888.888
  *     
- *     
- *     
- *     
+ *  ### Waveform inspection parameters:
+ *      -  wavesource - list of enums: "ADC_DATA", "ADC_TEST_TOGGLE",
+ *                  "ADC_TEST_RAMP", "ADC_TEST_SIN", "IPE", "Ramp", "SquareWave",
+ *                  "ADC_TEST_PRBS"
+ *      -  recordsamples - list of integer record lengths in sampls: 4-8100
+ *      -  waveresolutions - list of 16 waveform resolution enums:
+ *                  "Res8", "Res16", "Res32", "Res64"
+ *      -  analogprobe0 = list of enums "ADCInput", "TimeFilter", "EnergyFilter",
+ *                          "EnergyFilterBaseline", "EnergyFilterMinusBaseline"
+ *      -  analogprobe1 = list of enums as above but for analog probe 1.
+ *      -  digitalprobe{1-4} list of enums describing the digital probes.
+ *                  values: "Trigger", "TimeFilterArmed", "RetriggerGuard",
+ *                  "EnerygFilterBaslineFreeze","EnergyFilterPeaking",
+ *                  "EnergyFilterPileUpGuard", "EventPileup", "ADCSaturation",
+ *                  "ADCSaturationProtection", "PostSaturationEvent",
+ *                  "EnergyFilterSaturation", "AcqusitionInhibit"
+ *      - pretriggersamples - samples prior to trigger list of integers 4-4000
+ *
+ *   ### Service Parameters
+ *
+ *      - testpulseperiod Integer 0 - 34359738360  Default 100000 (100usec).
+ *      - testpulsewidth  Integer 0 - 34359738360 Default 50000 (50usec).
+ *      - testpulselowlevel Integer 0 - 66535 - Default 0
+ *      - testpulseHighLevel Integer 0- 65535 - Default 65535
+ *      - iolevel  Enum NIM, TTL
+ *      - errorflagmask - integer - 0 - 65535 - default 0
+ *      - errorflagdatamask - integer - 65535 - default 0
+ *      
+ *      
  */
 class VX2750PHAModuleConfiguration : public ::XXUSB::XXUSBConfigurableObject
 {
@@ -110,6 +136,8 @@ private:
     void defineReadoutOptions();
     void defineGeneralOptions();
     void defineAcqTriggerOptions();
+    void defineWfInspectionOptions()
+    void defineServiceOptions();
 };
     
 }                                             // caen_nscldaq namespace
