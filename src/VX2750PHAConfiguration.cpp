@@ -40,6 +40,9 @@ VX2750PHAModuleConfiguration::VX2750PHAModuleConfiguration(const char* name) :
     defineAcqTriggerOptions();
     defineWfInspectionOptions();
     defineServiceOptions();
+    defineITLOptions();
+    defineLVDSOptions();
+    devineDACOptions();
 }
 
 /**
@@ -284,6 +287,87 @@ VX2750PHAModuleConfiguration::defineWfInspectionOptions()
 void
 VX2750PHAModuleConfiguration::defineServiceOptions()
 {
+  addIntParameter("testpulseperiod", 0, 34359738360, 100000);
+  addIntParameter("testpulsewidth", 0, 34359738360, 1000);
+  addIntParameter("testpulselowlevel", 0, 65535, 0);
+  addIntParameter("testpulsehighlevel", 0, 65535, 65535);
+  
+  const char* iolevels[] = {
+    "NIM", "TTL", nullptr
+  };
+  addEnumParameter("iolvel", iolevels, "NIM");
+  addIntParameter("errorlflagmask", 0, 65535, 0);
+  addIntParameter("errorflagdatamask", 0, 65535, 0);
+}
+/**
+ * defineITLOptions
+ *    Define the options that control the two individual trigger logic
+ *    blocks.
+ */
+void
+VX2750PHAModuleConfiguration::defineITLOptions()
+{
+  const char* mainlogicoptions[] = {
+    "OR", "AND", "Majority", nullptr
+  };
+  addEnumParameter("itlalogic", mainlogicoptions, "OR");
+  addEnumParameter("itlblogic", mainlogicoptions, "OR");
+  addIntParameter("itlamajoritylevel", 1, 63, 1);
+  addIntParameter("itlbmajoritylevel", 1, 63, 1);
+  
+  const char* pairlogicoptions[] =  {
+    "AND", "OR", "None", nullptr
+  };
+  addEnumParameter("itlapairlogic", pairlogicoptions, "None");
+  addEnumParameter("itlbpairlogic", pairlogicoptions, "None");
+  
+  const char* itlpolarity[] = {
+    "Direct", "Inverted", nullptr
+  };
+  addEnumParameter("itlapolarity", itlpolarity, "Direct");
+  addEnumParameter("itlbpolarity", itlpolarity, "Direct");
+  
+  const char* itlconnection[] = {
+    "Disabled", "ITLA", "ITLB", nullptr
+  };
+  addEnumListParameter("itlconnect", itlconnection, "Disabled", 0, 64, 64);
+  
+  addIntParameter("itlagatewidth", 0, 524280, 100);
+  addIntParameter("itlbgatewidth", 0, 524280, 100);
   
 }
+/**
+ * defineLVDSOptions
+ *     CReate settable options for the LVDS I/O pins.
+ */
+void
+VX2750PHAModuleConfiguration::defineLVDSOptions()
+{
+  const char* lvdsmodes[] = {
+    "SelfTriggers", "Sync", "IORegister", nullptr
+  };
+  addEnumList("lvdsmode", lvdsmodes, "IORegister", 4, 4, 4);
+  const char* lvdsdirections[] ={
+    "Input", "Output", nullptr
+  };
+  addEnumList("lvsdirection", lvdsdirections, "Output", 4, 4, 4);
+  addIntListParameter("lvdstrgmask", 0, 0xffffffffffffffff, 16, 16, 16, 0);
+}
+/**
+ * defineDACOptions
+ *    Define the options for the digial to analog converter output.
+ */
+void
+VX2750PHAModuleConfiguration::defineDACOptions()
+{
+  const char* dacoutmodes[]  = {
+    "Static", "IPE", "ChInput", "MemOccupancy", "ChSum", "OverThrSum",
+    "Ramp", "Sin5MHz", "Square",
+    nullptr
+  };
+  addEnumParameter("dacoutmode", daqoutmodes, "ChSum");
+  addIntParameter("dacoutputlevel", 0, 16383, 0);
+  addIntParameter("dacoutchannel", 0, 63, 0);
+}
 }                                   // caen_nscldaq namespace.
+

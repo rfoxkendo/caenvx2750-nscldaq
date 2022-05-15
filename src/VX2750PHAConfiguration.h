@@ -113,10 +113,33 @@ namespace caen_nscldaq {
  *      - testpulseperiod Integer 0 - 34359738360  Default 100000 (100usec).
  *      - testpulsewidth  Integer 0 - 34359738360 Default 50000 (50usec).
  *      - testpulselowlevel Integer 0 - 66535 - Default 0
- *      - testpulseHighLevel Integer 0- 65535 - Default 65535
+ *      - testpulsehighlevel Integer 0- 65535 - Default 65535
  *      - iolevel  Enum NIM, TTL
  *      - errorflagmask - integer - 0 - 65535 - default 0
  *      - errorflagdatamask - integer - 65535 - default 0
+ *
+ *   ### Individual trigger parameters:
+ *
+ *      -  itlamainlogic, itlbmainlogic - enum "OR"tr, "AND", "Majority
+ *      -  itlamajoritylevel, itlbmajoritylevel - integer 1-63
+ *      -  itlapairlogic, itlbpairlogic - enum - "AND", "OR", "NONE"
+ *      -  itlapolarity, itlbpolarity - Enum "Direct", "Inverted"
+ *      -  itlconnect - Enum list "Disabled", "ITLA", "ITLB"
+ *      -  itlagatewidth, itlbgatewidth - integer 0 - 524280 (default 100).
+ *      
+ *   ### LVDS Parameters
+ *
+ *      - lvdsmode - list of four enums: "SelfTriggers", "Sync", "IORegister"
+ *      - lvdsdirection - list of four enums: "Input", "Output"
+ *      - lvdsioreg  - LVDS I/O register values... 4 16 bit integers (?).
+ *      - lvdstrgmask - LVDS Trigger masks for each of 16 outputs (16 element list).
+ *
+ *   ### DAC Parameters:
+ *
+ *      - dacoutmode enum: "Static", "IPE", "ChInput", "MemOccupancy",
+ *          "ChSum", "OverThrSum", "Ramp", "Sin5MHz", "Square"
+ *      - dacoutputlevel integer 0 - 16383 defaults to 0.
+ *      - dacoutchannel integer 0 - 63. defaults to 0.
  *      
  *      
  */
@@ -138,6 +161,9 @@ private:
     void defineAcqTriggerOptions();
     void defineWfInspectionOptions()
     void defineServiceOptions();
+    void defineITLOptions();
+    void defineLVDSOptions();
+    void defineDACOptions();
 };
     
 }                                             // caen_nscldaq namespace
