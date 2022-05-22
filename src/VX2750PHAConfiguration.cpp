@@ -42,7 +42,10 @@ VX2750PHAModuleConfiguration::VX2750PHAModuleConfiguration(const char* name) :
     defineServiceOptions();
     defineITLOptions();
     defineLVDSOptions();
-    devineDACOptions();
+    defineDACOptions();
+    defineInputConditioningOptions();
+    defineEventSelectionOptions();
+    defineFilterOptions();
 }
 
 /**
@@ -369,5 +372,84 @@ VX2750PHAModuleConfiguration::defineDACOptions()
   addIntParameter("dacoutputlevel", 0, 16383, 0);
   addIntParameter("dacoutchannel", 0, 63, 0);
 }
+/**
+ * defineInputConditioningOptions
+ *    See the header comments for these, and section 2.8 of the
+ *    PHA parameter manual.
+ */
+void
+VX2750PHAModuleConfiguration::defineInputConditioningOptions()
+{
+    addIntParameter("vgagain", 0, 40, 0);
+    addBoolListParameter("offsetcalibrationenable", 0, 64, true, 64);
+    addBoolListParameter("chanelenables", 0, 64, true, 64);
+    addFloatListParameter("dcoffsets", 0.0, 100.0, 0, 64, 64, 50.0);
+    addIntListParameter("triggerthresholds", 0, 8191, 0, 64, 64, 1023);
+    
+    const char* polarities[] = {"Positive", "Negative", nullptr};
+    addEnumListParameter("inputpolarities", polarities, 0, 64, "Negative", 64);
+}
+
+/**
+ *  defineEventSelectionOptions
+ *      Define the options for event selection and coincidences.
+ *      see the header comments for the actual set of
+ *      parameters.
+ */
+void
+VX2750PHAModuleConfiguration::defineEventSelectionOptions()
+{
+  addIntListParameter("energyskimlow", 0, 65534, 0, 64, 64, 0);
+  addIntListParameter("energyskimhigh", 0, 65534, 0, 64, 64, 65534);
+  
+  const char* selectors[] = {
+    "All", "Pileup", "EnergySkim", nullptr
+  };
+  addEnumListParameter("eventselector", selectors, 0, 64, "All", 64);
+  addEnumListParameter("waveselector", selectors, 0, 64, "All", 64);
+  
+  const char* masks[] = {
+    "Disabled", "Ch64Trigger", "TRGIN", "GlobalTriggerSource", "ITLA", "ITLB",
+    nullptr
+  };
+  addEnumListParameter("coincidencemask", masks, 0, 64,"Disabled", 64);
+  addEnumListParameter("anticoincidencemask", masks, 0, 64,"Disabled", 64);
+  
+  addIntListParameter("coincidencelength", 8,  524280, 100);
+}
+/**
+ * defineFilterOptions
+ *    Defines the time and energy filter configuration options.
+ *    See header comments for parameter names.
+ *    
+ */
+void
+VX2750PHAModuleConfiguration::defineFilterOptions()
+{
+    addIntListParameter("tfrisetime", 80, 2000, 0, 64, 64, 80);
+    addIntListParameter("tfretriggerguard", 0, 8000, 0, 64, 64, 0);
+    addIntListParameter("efrisetime", 80, 13000, 0, 64, 64, 80);
+    addIntListParameter("efpeakingpos", 0, 100, 0, 64, 64, 50);
+    
+    const char* peakingaverages[] = {
+      "1", "4", "16", "64", nullptr
+    };
+    addEnumListParameter("efpeakingavg", peakingaverages, 0, 64, "1", 64);
+    addIntListParameter("efpolezero", 80, 524000, 0, 64, 64, 80);
+    addFloatListParameter("effinegain", 0, 0.0, 10.0, 64, 64, 1.0);
+    addBoolListParameter("eflflimitation", 0, 64, false, 64);
+    
+    const har* baslineaverages[] = {
+      "0", "16", "64", "64", "256", "1024", "4096", "16384", nuillptr
+    };
+    addEnumListParameter("efbaselineavg", baselineaverages, 0, 64, "0",64);
+    addIntListParameter("efbaselinegaurdt", 0, 8000, 0, 64, 64, 0);
+    addIntListParameter("efpileupguardt", 0, 80000, 0, 64, 64, 0);
+    
+}
+
+
 }                                   // caen_nscldaq namespace.
+
+
 

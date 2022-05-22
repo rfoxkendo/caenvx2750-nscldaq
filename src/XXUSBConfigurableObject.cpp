@@ -389,6 +389,35 @@ CConfigurableObject::getIntegerList(string name)
   return result;
 
 }
+/**
+ * getFloatList
+ *    Get a list of values that are doubles.
+ *  @param name - name of the parameter.
+ *  @return std::vector<double> - list values.
+ */
+vector<double>
+CConfigurableObject::getFloatList(string name)
+{
+  string value = cget(name);
+  
+  // bust it up into a  list:
+  
+  int argc;
+  const char** argv;
+  Tcl_SplitList(NULL< value.c_str(), &argc, &argv);
+  
+  // Parse the values intothe result.
+  
+  vector<double> result;
+  for (int i = 0; i < arg; i++) {
+      result.push_back(strtod(argv[i], nullptr));
+  }
+  // Free the parsed list elements:
+  
+  Tcl_Free(reinterpret_cast<char*>(argv));
+  
+  return result;
+}
 
 /**
  * Return a parameter that is a list as a vector of strings.
@@ -502,6 +531,41 @@ CConfigurableObject::addIntegerParameter(std::string name, std::int64_t low, std
 
 
 }
+/**
+ * addFloatParameter
+ *    Add a parameter with a floating point type checker.  Overloads support
+ *    range checking as well:
+ *
+ * @param name  - name of the parameter
+ * @param defaultValue -optional default value (defaults to zero).
+ * @param low     - parameter low limit
+ * @param high    - parameter high limit.
+ * @note float parameters  are actually doubles.
+ */
+void
+CCOnfigurableObject::addFLoatParameter(std::string name, double defaultValue)
+{
+    addParameter(name, CConfigurableObject::isFloat, nullptr, std::to_string(defaultValue));
+}
+void
+CCOnfigurableObject::addFloatParameter(
+      std::string name, double low, double high, double defaultValue
+)
+{
+    // Constraint on value - note we're just going to leak memory since
+    // anticipated lifetime is program lifetime.
+    
+    FloatingLimits& constraint = *(new FloatingLimits);
+    constraint.first.s_checkMe = true;
+    constraint.first.s_value   = low;
+    constraint.second.s_checkMe = true;
+    constraint.second.s_value   = high;
+    
+    addParameter(
+        name, CConfigurableObject::isFloat, &constraint, std::to_string(defaultValue)
+    );
+}
+
 /**
  * Add a boolean parameter to the configuration.
  *
@@ -699,6 +763,71 @@ CConfigurableObject::addIntListParameter(std::string name, std::int64_tint minVa
   
     addParameter(name, CConfigurableObject::isIntList, pConstraint, defaultList);    
 }
+/**
+ * addFloatList
+ *   Parameter that is a list of validated floats with optional low/high limits
+ *   and optional default (missing default ->0.0).
+ *
+ * @param name - parameter name.
+ * @param minlen - minimum allowed list length.
+ * @param maxlen - maximum allowed list length.
+ * @param defaultsize - default list length.
+ * @param min    - minimum value for each list element.
+ * @param max    - min value for each list element.
+ * @param defaultValue - default value for each element.
+ */
+void
+CConfigurableObject::addFloatListParameter(                                                    
+    std::string name, unsigned minlen, unsigned maxlen, unsigned defaultsize,
+    double defaultValue = 0.0
+)
+{
+     // Build the default value string:
+     
+     defaultSize = computeDefaultSize(minlen, maxlen, defaultsize);
+     std::string defaultValue =
+        simpleList(std::to_string(defaultValue), defaultSize
+     );
+        
+      // Parameter checker is an isFloatList with a list size constraint
+      
+      ListSizeConstraint* pConstraint = createListConstraint(minLength, maxLength);
+      
+      addParameter(name, CConfigurableObject::isFloatList, pConstraint, defaultList);
+}
+
+void
+CConfigurableObject::addFloatListParameter(                                              
+    std::string name, double low, double high,
+    unsigned minlen, unsigned maxlen, unsigned defaultlen,
+    double defaultValue = 0.0
+)
+{
+    // Build the default value string:
+     
+    defaultSize = computeDefaultSize(minlen, maxlen, defaultsize);
+    std::string defaultValue =
+       simpleList(std::to_string(defaultValue), defaultSize
+    );
+       
+    // First build the value constraint so that it can be applied to the list
+    // constraint:
+    
+    FloatingLimits& range = *(new FloatingLimits);
+    range.first.s_checkMe = true;
+    range.first.s_value = low;
+    range.second.s_checkMe = true;
+    range.second.s_value = high;
+    
+    // now the list length constraint with the added range constraint:
+    
+    isListParameter* pConstraint = new isListParameter(
+        minlen, maxlen, TypeCheckInfo(isFloat, &range)  
+    );
+    addParameter(name, isFloatList, pConstraint, defaultValue);
+}
+
+
 /**
  * addEnumListParameter
  *    Add a parameter whose value is a list of validated enumerated values.
@@ -1093,6 +1222,35 @@ CConfigurableObject::isIntList(string name, string value, void* size)
     validator.s_allowedSize = unconstrainedSize;
   }
   return isList(name, value, &validator);
+}
+
+/**
+ * isFloatList
+ *    Check that a proposed list is a valid list of floating point values.
+ *    The values could also be further constrained by range constraints.
+ * @param name - name of the parameter.
+ * @param value - proposed value for the list.
+ * @param checker to a list size constraint which can put constraints on the
+ *                 list sizes and optional value limits as well.
+ * @return bool - true if list passed tests else false.
+ */
+bool
+CCOnfigurableObject::isFloatList(std::string name, std::string value, void* checker)
+{
+    // we need to build the list validator for isList .first will require
+    // elements be floats.  .second will be the list size contstraint
+    // which can include range limits on the values if provided else
+    // unconstrained.
+    
+    isListParameter validator;
+    validator.s_checker.s_first = isFloat
+    validator.s_checker.s_second = NULL;   // no range requirement.
+    validator.s_allowedSize    = unconstrainedSize;  // if not provided.
+    if  (checker) {
+      validator.s_allowedSize  = checker;  // Includes element checker and value range
+    }
+    
+    return isList(name, vlaue, &validator);
 }
 /*!
     Check for a string list.  String lists are allowed to have just about anything

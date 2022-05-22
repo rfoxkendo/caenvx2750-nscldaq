@@ -95,7 +95,7 @@ namespace caen_nscldaq {
  *                  "ADC_TEST_RAMP", "ADC_TEST_SIN", "IPE", "Ramp", "SquareWave",
  *                  "ADC_TEST_PRBS"
  *      -  recordsamples - list of integer record lengths in sampls: 4-8100
- *      -  waveresolutions - list of 16 waveform resolution enums:
+ *      -  waveresolutions - list of 64 waveform resolution enums:
  *                  "Res8", "Res16", "Res32", "Res64"
  *      -  analogprobe0 = list of enums "ADCInput", "TimeFilter", "EnergyFilter",
  *                          "EnergyFilterBaseline", "EnergyFilterMinusBaseline"
@@ -138,10 +138,44 @@ namespace caen_nscldaq {
  *
  *      - dacoutmode enum: "Static", "IPE", "ChInput", "MemOccupancy",
  *          "ChSum", "OverThrSum", "Ramp", "Sin5MHz", "Square"
- *      - dacoutputlevel integer 0 - 16383 defaults to 0.
+ *      - dacoutputlevel integer 0 - 64383 defaults to 0.
  *      - dacoutchannel integer 0 - 63. defaults to 0.
  *      
+ *   ###  Input signalling parameters:
+ *
+ *      -  vgagain  - integer 0-40
+ *      -  offsetcalibrationenable - list of 64 bools.
+ *      -  channelenables - list of 64 bools.
+ *      -  dcoffsets - list of 64 floats 0-100 (percent).
+ *      -  triggerthresholds - list of 64 integers 0-8191.
+ *      -  inputpolarities - list of 64 enums (Positive, Negative)
+ *
+ *  ### Event Selection and Coincidence parameters:
+ *
+ *       - energyskimlow - 64 integers 0-65534
+ *       - energyskimhigh -  64 integers 0-65534
+ *       - eventselector - 64 enums All, Pileup, EnergSkim
+ *       - waveselector  - 64 enums as above.
+ *       - coincidencemask - 64 enums Disabled, Ch64Trigger, TRGIN,
+ *                        GlobalTriggerSource, ITLA, ITLB
+ *       - anticoincidencemask - same as above.
+ *       - coincidencelength - 64 integers nanosecond units.
+ *
+ *   ### DPP-PHA parameters
+ *      tfrisetime - List of 64 channel time filter rise times in ns 80-2000
+ *      tfretriggerguard - list of 64 channel TF retrigger guards in ns 0-8000
+ *      efristetime  - list of 64 per channel energy filter rise times in ns 80-13000
+ *      efflattop    - list of 64 per channel energy filter rise times in ns 80-3000
+ *      efpeakingpos - list of 64 per channel energy filter trap filter peaking positions 0-100 (percent).
+ *      efpeakingavg - samples averaged to locate the pieak enum: 1, 4, 16, 64.
+ *      efpolezero    - list of 64 per channel pole zero adjust ns 80 - 524000
+ *      effinegain   - 64 fine gains floats 1-10.
+ *      eflflimitation - 64 bools enable/disable low frequency filter.
+ *      efbaselineavg   -64 enums baseline averages: 0, 16, 64, 256, 1024, 4096, 16384.
+ *      efbaselineguardt - 64 ints baseline guard time ns 0-8000
+ *      efpileupguardt - 64 ints baseilne filter pileup guard ns 0-80000
  *      
+ *       
  */
 class VX2750PHAModuleConfiguration : public ::XXUSB::XXUSBConfigurableObject
 {
@@ -164,6 +198,9 @@ private:
     void defineITLOptions();
     void defineLVDSOptions();
     void defineDACOptions();
+    void defineInputConditioningOptions();
+    void defineEventSelectionOptions();
+    void defineFilterOptions();
 };
     
 }                                             // caen_nscldaq namespace

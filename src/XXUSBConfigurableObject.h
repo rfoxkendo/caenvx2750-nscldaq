@@ -167,7 +167,9 @@ public:
   double           getFloatParameter   (std::string name);
   std::vector<int> getIntegerList      (std::string name);
   std::vector<std::string> getList     (std::string name);
+	std::vector<double> getFloatList     (std::string name);    //
   int              getEnumParameter(std::string name, const char**pValues);
+	
     
   // Operations:
 
@@ -199,7 +201,10 @@ public:
 			const char** pValues, const char* defaultValue,
 			unsigned minlength, unsigned maxlength, int defaultSize = -1
 	);
-					
+	void addFloatParameter(std::string name, double defaultValue = 0.0);             
+	void addFloatParameter(
+			std::string name, double low, double high, double defaultValue = 0.0        
+	);
 
   void addBoolListParameter(std::string name, unsigned size, bool defaultVal = true);
   void addBoolListParameter(std::string name, unsigned minLength, unsigned maxLength, 
@@ -211,7 +216,15 @@ public:
   void addIntListParameter(std::string name, std::int64_t minValue, std::int64_t maxValue,
                            unsigned minlength, unsigned maxLength, unsigned defaultSize,
 			   std::int64_t defaultVal);
- 
+  void addFloatListParameter(                                                    
+			std::string name, unsigned minlen, unsigned maxlen, unsigned defaultsize,
+			double defaultValue = 0.0
+	);
+	void addFloatListParameter(                                                   
+			std::string name, double low, double high,
+			unsigned minlen, unsigned maxlen, unsigned defaultlen,
+			double defaultValue = 0.0
+	);
 
   void addStringListParameter(std::string name, unsigned size, std::string defaultVal = "");
   void addStringListParameter(std::string name, unsigned minLength, unsigned maxLength,
@@ -227,7 +240,8 @@ public:
   static bool isList(   std::string name, std::string value, void* arg);
   static bool isBoolList(std::string name,std::string value, void* arg);
   static bool isIntList(std::string name, std::string value, void* arg);
-  static bool isStringList(std::string name, std::string value, void* arg);
+	static bool isFloatList(std::string name, std::string value, void* arg);
+  static bool isStringList(std::string name, std::string value, void* arg); 
 	
 	
 
