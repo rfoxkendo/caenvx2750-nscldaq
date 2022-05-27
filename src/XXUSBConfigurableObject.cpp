@@ -372,23 +372,58 @@ CConfigurableObject::getFloatParameter(string name)
   \retval Vector containing the integers in the list.
 
 */
-vector<int>
+vector<int64_t>
 CConfigurableObject::getIntegerList(string name)
 {
   string value = cget(name);
   int argc;
   const char** argv;
-  vector<int> result;
+  vector<int64_t> result;
 
   Tcl_SplitList(NULL, value.c_str(), &argc, &argv);
 
   for (int i =0; i < argc; i++) {
-    result.push_back(static_cast<int>(strtol(argv[i], NULL, 0)));
+    result.push_back(static_cast<int64_t>(strtol(argv[i], NULL, 0)));
   }
   Tcl_Free((char*)argv);
   return result;
 
 }
+
+vector<uint64_t>
+CConfigurableObject::getUnsignedList(string name)
+{
+  string value = cget(name);
+  int argc;
+  const char** argv;
+  vector<uint64_t> result;
+
+  Tcl_SplitList(NULL, value.c_str(), &argc, &argv);
+
+  for (int i =0; i < argc; i++) {
+    result.push_back(static_cast<uint64_t>(strtoul(argv[i], NULL, 0)));
+  }
+  Tcl_Free((char*)argv);
+  return result;
+}
+
+vector<bool>
+CConfgurableParameter::getBoolList(string name);
+{
+  string value = cget(name);
+  int argc;
+  const char** argv;
+  vector<bool> result;
+
+  Tcl_SplitList(NULL, value.c_str(), &argc, &argv);
+
+  for (int i =0; i < argc; i++) {
+    result.push_back(strtoBool(argv[i]);
+  }
+  Tcl_Free((char*)argv);
+  return result;
+}
+
 /**
  * getFloatList
  *    Get a list of values that are doubles.

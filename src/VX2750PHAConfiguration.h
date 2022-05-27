@@ -30,6 +30,7 @@
 
 
 namespace caen_nscldaq {
+class VX2750Pha;
 
 /**
  * @class V2750PHAModuleConfiguration
@@ -188,11 +189,16 @@ public:
     int operator==(const VX2750PHAModuleConfiguration& rhs);
     int operator!=(const VX2750PHAModuleConfiguration& rhs);
     
+    void configureModule(VX2750Pha& module);
+    
     // Everything else public is done by the base class.
 private:
     void defineReadoutOptions();
+    void configureReadoutOptions(VX2750Pha& module);
     void defineGeneralOptions();
+    void configureGeneralOptions(VX2750Pha& module);
     void defineAcqTriggerOptions();
+    void configureAcquisitionTriggerOptions(VX2750PHha& module);
     void defineWfInspectionOptions()
     void defineServiceOptions();
     void defineITLOptions();

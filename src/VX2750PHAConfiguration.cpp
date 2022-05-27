@@ -23,7 +23,9 @@
 */
 
 #include "VX2750PHAConfiguration.h"
+#include "VX2750PHa.h"
 #include <string>
+#include <stdlib.h>
 
 namespace caen_nscldaq {
     
@@ -101,6 +103,23 @@ VX2750PHAModuleConfiguration::operator!=(const VX2750PHAModuleConfiguration& rhs
 {
    return !operator==(rhs);
 }
+
+/**
+ * configureModule
+ *    Configure the module in accordance with the current state of the configuration
+ *    database.
+ * @param module - module to configure.  The module object must already have
+ *                 been connected to he physical hardware.
+ */
+void
+VX2750PHAModuleConfiguration::configureModule(VX2750Pha& module)
+{
+  configureReadoutOptions(module);
+  configureGeneralOptions(module);
+  configureAcquisitionTriggerOptions(module);
+}
+
+ 
 ////////////////////////////////////////////////////////////////////////////////
 // Private methods define the various options:
 
@@ -115,12 +134,34 @@ VX2750PHAModuleConfiguration::defineReadoutOptions()
 {
     addBoolParameter("readrawtimes", false);
     addBoolParameter("readfinetimestamps", false);
+    addBoolParameter("readflags", false);
     addBoolParameter("readtimedownsampling", false);
     addBoolListParameter("readanalogprobes", 2,2, false);
     addBoolListParameter("readdigitalprobes", 4,4, false);
     addBoolParameter("readsamplecount", false);
     addBoolParameter("readeventsize", false);
 }
+/**
+ * configureReadoutOptions
+ *    Configure the readout options in a module
+ *  @param module - Te 
+ */
+void
+VX2750PHAModuleConfiguration::configureReadoutOptions(VX2750Pha& module)
+{
+    // start from the default format:
+    
+    module.setDefaultFormat();
+    module.enableRawTimestamp(getBoolParameter("readrawtimes"));
+    module.enableFineTimestamp(getBoolParameter("readfinetimestamps"));
+    module.enableFlags(getBoolParameter("readflags"));
+    module.enableDownSampling(getBoolParameter("readtimedownsampling"));
+    module.enableAnalogProbes(getBoolParameter("readanalogprobes"));
+    module.enableDigitalProbes(getBoolParameter("readdigitalprobes"));
+    module.enableSampleSize(getBoolParameter("readsamplecount"));
+    module.enableRawEventSize(getBoolParameter("readeventsize"));
+}
+
 /**
  * defineGeneralOptions
  *    Define the general options.
@@ -138,6 +179,20 @@ VX2750PHAModuleConfiguration::defineGeneralOptions()
     addBoolParameter("outputfpclock", false);
     
     
+}
+/**
+ * configureGeneralOptions
+ *     Configure general options in a real module
+ *   @param module -the module to configure.
+ */
+void
+VX2750PHAModuleConfiguration::configureGeneralOptions(VX2750Pha& module)
+{
+  module.setClockSource(V2750Pha::StringToClockSource[cget("clocksource")]);
+  module.setClockOutOnP0(getBoolParameter("outputp0clock"));
+  module.setClokcOutOnFP(getBoolParameter("outputfpclock"));
+                                                      
+                                                      
 }
 /**
  *  defineAcqTriggerOptions
@@ -165,8 +220,8 @@ VX2750PHAModuleConfiguration::defineAcqTriggerOptions()
           "Ch64Trigger", "Disabled"
           nullptr
      };
-     addEnumParameter("wavetriggersrc", triggerSources, "TRGIN");
-     addEnumParameter("eventtriggersrc", triggerSources, "TRGIN");
+     addEnumListParameter("wavetriggersrc", triggerSources, "TRGIN", 0,64,64);
+     addEnumListParameter("eventtriggersrc", triggerSources, "TRGIN", 0,64,64);
      
      const char* resetsrcs[] = {
         "Start", "SIN", "GPIO", "EncodedClkIn"
@@ -222,7 +277,7 @@ VX2750PHAModuleConfiguration::defineAcqTriggerOptions()
           nullptr
      };
      addEnumListParameter("chanveotsrc", chanvetosources, "Disabled", 0, 64, 64);
-     addIntParameter("chanvetorwidth", 0, 524280, 0, 64, 64, 200);
+     addIntListParameter("chanvetowidth", 0, 524280, 0, 64, 64, 200);
      
      addIntParameter("rundelay", 0, 54280, 0);
      addBoolParameter("autodisarm", true);
@@ -233,9 +288,59 @@ VX2750PHAModuleConfiguration::defineAcqTriggerOptions()
      };
      addBoolParameter("pausetimestamp", pausetsvalues, "run");
      
-     addIntParameter("volclkoutdelay", -18888.888, 18888.888, 0);
-     addIntParameter("permclkoutdelay", -18888.888, 18888.888, 0);
-     
+     addFloatParameter("volclkoutdelay", -18888.888, 18888.888, 0);
+     addFloatParameter("permclkoutdelay", -18888.888, 18888.888, 0);
+    
+}
+/**
+ * configureAcquisitionTriggerOptions
+ *    @param module -the module to configure.
+ */
+void
+VX2750PHAModuleConfiguration::configureAcquisitionTriggerOptions(VX2750Pha& module)
+{
+  int nch = module.getChannelCount();
+  
+  module.setStartSource(VX2750Pha::stringToStartSource[cget("startsource")]);
+  module.setGlobalTriggerSource(VX2750Pha::stringToGlobalTriggerSource[cget("gbltriggersrc")]);
+  
+  auto waveTriggers = getList("wavetriggersrc");
+  auto evtTriggers  = getList("eventtriggersrc");
+  auto triggerMasks = getUnsignedList("channeltriggermasks");   // since they're uint64_ts.
+  auto saveTraces   = getBoolList("savetraces");
+  auto chanVetoSrcs = getList("chnvetosrc");
+  auto chanVetoWidths = getIntListParameter("chanvetowidth");
+  
+  for (int i =0; i < nch; i++) {
+      module.setWaveTriggerSource(i, VX2750Pha::stringToWaveTrigger[waveTriggers[i]]);
+      module.setEventTriggerSource(i, VX2750Pha::stringToEventTrigger[evtTriggers[i]]);
+      module.setChannelTriggerMask(i, triggermasks[i]);
+      module.setTraceRecordMode(i, saveTraces[i]);
+      module.setChannelVetoSource(i, VX2750::StringToChannelVeto.get(cget("chanvetosrc")));
+      module.setChannelVetoWidth(i, chanVetoWidths[i]);
+  }
+  module.setTimestampResetSource(VX2750Pha::stringToTimestampReset[cget("tstampresetsrc")]);
+  module.setTRGOUTMode(VX2750Pha::stringToTRGOUT[cget("triggeroutmode")]);
+  module.setGPIOMode(VX2750Pha::stringToGPIO[cget("gpiomode")]);
+  module.setBusyInSource(VX2750Pha::stringToBusyIn.get(cget("busyinsrc")));
+  module.setSyncOutMode(VX2750Pha::stringToSyncOut.get(cget("syncoutmode")));
+  module.setBoardVetoSource(sVX2750Pha::tringToVeto.get(cget("boardvetosrc")));
+  module.setBoardVetoWidth(getIntParam("boardvetowidth"));
+  module.setBoardVetoPolarity(VX2750Pha::stringToVetoPolarity[cget("boardvetopolarity")]);
+  module.setRunDelay(getIntParam("rundelay"));
+  module.setAutoDisarmEnabled(getBoolParam("autodisarm"));
+  module.setMultiWindowRunEnabled(getBoolParam("multiwindow"));
+  bool hold;
+  if (cget("pausetimestamp") == "hold") {
+    hold = true;
+  } else {
+    hold = false;
+  }
+  module.setPauseTimestampHoldEnabled(hold);
+  module.setVolatileClockDelay(getFloatParameter("volclkoutdelay"));
+  module.setPermanentClockDelay(getFloatParameter("permclkoutdelay"));
+                                                 
+  
 }
 /**
  * defineWfInspectionOptions

@@ -341,7 +341,21 @@ public:
             s_enableEventSize      = false;
         }
     };
+    // These are useful for string based configuration modules.
     
+    static std::map<std::string, VX2750Pha::ClockSource> stringToClockSource;
+    static std::map<std::string, VX2750Pha::StartSource> stringToStartSource;
+    static std::map<std::string, VX2750Pha::GlobalTriggerSource> stringToGlobalTriggerSource;
+    static std::map<std::string, VX2750Pha::WaveTriggerSource> stringToWaveTrigger;
+    static std::map<std::string, VX2750Pha::EventTriggerSource> stringToEventTrigger;
+    static std::map<std::string, VX2750Pha::TimestampResetSource> stringToTimestampReset;
+    static std::map<std::string, VX2750Pha::TRGOUTMode> stringToTRGOUT;
+    static std::map<std::string, VX2750Pha::GPIOMode>  stringToGPIO;
+    static std::map<std::string, VX2750Pha::BusyInSource> stringToBusyIn;
+    static std::map<std::string, VX2750Pha::SyncOutMode> stringToSyncOut;
+    static std::map<std::string , VX2750Pha::VetoSource>  stringToVeto;
+    static std::map<std::string, VX2750Pha::VetoPolarity> stringToVetoPolarity;
+    static std::map<std::string, VX2750Pha::ChannelVetoSource> stringToChannelVeto;
     // InternalData.
 private:
     EnabledItems  m_dppPhaOptions;
