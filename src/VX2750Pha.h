@@ -356,6 +356,16 @@ public:
     static std::map<std::string , VX2750Pha::VetoSource>  stringToVeto;
     static std::map<std::string, VX2750Pha::VetoPolarity> stringToVetoPolarity;
     static std::map<std::string, VX2750Pha::ChannelVetoSource> stringToChannelVeto;
+    static std::map<std::string, VX2750Pha::WaveDataSource> stringToWaveDataSource;
+    static std::map<std::string, VX2750Pha::WaveResolution> stringToWaveResolution;
+    static std::map<std::string, VX2750Pha::AnalogProbe> stringToAnalogProbe;
+    static std::map<std::string, VX2750Pha::DigitalProbe> stringToDigitalProbe;
+    static std::map<std::string, VX2750Pha::IndividualTriggerLogic> stringToIndividualTriggerLogic;
+    static std::map<std::string, VX2750Pha::PairTriggerLogic> stringToPairLogic;
+    static std::map<std::string, VX2750Pha::ITLConnect> stringToITLConnect;
+    static std::map<std::string, VX2750Pha::LVDSMode> stringToLVDSMode;
+    static std::map<std::string, VX2750Pha::DACOutputMode> stringToDACOutMode;
+    
     // InternalData.
 private:
     EnabledItems  m_dppPhaOptions;

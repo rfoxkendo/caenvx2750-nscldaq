@@ -117,6 +117,10 @@ VX2750PHAModuleConfiguration::configureModule(VX2750Pha& module)
   configureReadoutOptions(module);
   configureGeneralOptions(module);
   configureAcquisitionTriggerOptions(module);
+  configureWfInspectionOptions(module);
+  configureServiceOptions(module);
+  configureITLOptions(module);
+  configureLVDSOptions(module);
 }
 
  
@@ -309,22 +313,22 @@ VX2750PHAModuleConfiguration::configureAcquisitionTriggerOptions(VX2750Pha& modu
   auto triggerMasks = getUnsignedList("channeltriggermasks");   // since they're uint64_ts.
   auto saveTraces   = getBoolList("savetraces");
   auto chanVetoSrcs = getList("chnvetosrc");
-  auto chanVetoWidths = getIntListParameter("chanvetowidth");
+  auto chanVetoWidths = getIntegerListParameter("chanvetowidth");
   
   for (int i =0; i < nch; i++) {
       module.setWaveTriggerSource(i, VX2750Pha::stringToWaveTrigger[waveTriggers[i]]);
       module.setEventTriggerSource(i, VX2750Pha::stringToEventTrigger[evtTriggers[i]]);
       module.setChannelTriggerMask(i, triggermasks[i]);
       module.setTraceRecordMode(i, saveTraces[i]);
-      module.setChannelVetoSource(i, VX2750::StringToChannelVeto.get(cget("chanvetosrc")));
+      module.setChannelVetoSource(i, VX2750::StringToChannelVeto[cget("chanvetosrc")]);
       module.setChannelVetoWidth(i, chanVetoWidths[i]);
   }
   module.setTimestampResetSource(VX2750Pha::stringToTimestampReset[cget("tstampresetsrc")]);
   module.setTRGOUTMode(VX2750Pha::stringToTRGOUT[cget("triggeroutmode")]);
   module.setGPIOMode(VX2750Pha::stringToGPIO[cget("gpiomode")]);
-  module.setBusyInSource(VX2750Pha::stringToBusyIn.get(cget("busyinsrc")));
-  module.setSyncOutMode(VX2750Pha::stringToSyncOut.get(cget("syncoutmode")));
-  module.setBoardVetoSource(sVX2750Pha::tringToVeto.get(cget("boardvetosrc")));
+  module.setBusyInSource(VX2750Pha::stringToBusyIn[cget("busyinsrc")]);
+  module.setSyncOutMode(VX2750Pha::stringToSyncOut[cget("syncoutmode")]);
+  module.setBoardVetoSource(sVX2750Pha::tringToVeto[(cget("boardvetosrc")]);
   module.setBoardVetoWidth(getIntParam("boardvetowidth"));
   module.setBoardVetoPolarity(VX2750Pha::stringToVetoPolarity[cget("boardvetopolarity")]);
   module.setRunDelay(getIntParam("rundelay"));
@@ -389,6 +393,54 @@ VX2750PHAModuleConfiguration::defineWfInspectionOptions()
   
 }
 /**
+ * configureWfInspectionOptions
+ *    Configure the wave form inspection parameters from the internal configuration
+ * @param module - reference to the module to configure.
+ * @note these are all per channel configurations.
+ */
+ void
+ VX2750PHAModuleConfiguration::configureWfInspectionOptions(VX2750Pha& module)
+ {
+    int nch = module.channelCount();            // # of channels in the module.
+    auto wfsources = getList("wfsource");
+    auto samples   = getIntegerList("recordsamples");
+    auto resolutions = getList("waveresolutions");
+    std::vector<std::string> analogProbes[2];
+    analogProbes[0] = getList("analogprobe1");
+    analogProbes[1] = getList("analogprobe2");
+    std::vector<std::string> digitalProbes[4];
+    digitalProbes[0] = getList("digitlaprobe1");
+    digitalProbes[1] = getList("digitlaprobe2");
+    digitalProbes[2] = getList("digitlaprobe3");
+    digitalProbes[3] = getList("digitlaprobe4");
+    auto pretrigger = getIntegerList("pretriggersamples");
+    
+    // Now loop over the channels setting the parameters:
+    
+    for (int i =0; i < nch; i++) {
+      module.setWaveDataSource(
+          i, VX2750Pha::stringToWaveDataSource[(wfsources[i])]
+      );
+      module.setRecordSamples(i, samples[i]);
+      module.setWaveResolutions(
+          i, VX2750Pha::stringToWaveResolution[resolutins[i]]
+      );
+      for (int p = 0; p < 2; p++) {
+        auto& probes = analogProbes[p];
+        module.setAnalogProbe(
+            i, p+1, V2750Pha::stringToAnalogProbe[probes[i]]
+        );
+      }
+      for (int p = 0; p < 4; p++) {
+        auto& probes = digitalProbes[p];
+        module.setDigitalProbe(
+          i, p+1, V2750Pha::stringToDigitalProbes[probes[i]]
+        );
+      }
+      module.setPretriggerSamples(i, pretrigger[i]);
+    }
+ }
+/**
  * defineServiceOptions
  *    Define options that control the writable digitizer service parameters.
  */
@@ -403,9 +455,22 @@ VX2750PHAModuleConfiguration::defineServiceOptions()
   const char* iolevels[] = {
     "NIM", "TTL", nullptr
   };
-  addEnumParameter("iolvel", iolevels, "NIM");
+  addEnumParameter("iolevel", iolevels, "NIM");
   addIntParameter("errorlflagmask", 0, 65535, 0);
   addIntParameter("errorflagdatamask", 0, 65535, 0);
+}
+/**
+ * configureServiceOptions
+ *    Configure the service options from the internal option database.
+ * @param module - reference to the module being configured.
+ */
+void
+VX2750PHAModuleConfiguration::configureServiceOptions(VX2750Pha& module)
+{
+    module.setTestPulsePeriod(getIntegerParameter("testpulseperiod"));
+    module.setTestPulseWidth(getIntegerParameter("testpulsewidth"));
+    module.setTestPulseLowLevel(getIntegerPrameter("testpulselowlevel"));
+    module.setTestPulseHighLevel(getIntegerParameter("testpulsehighlevel"));
 }
 /**
  * defineITLOptions
@@ -440,9 +505,40 @@ VX2750PHAModuleConfiguration::defineITLOptions()
   };
   addEnumListParameter("itlconnect", itlconnection, "Disabled", 0, 64, 64);
   
+  addIntegerParameter("itlamask");
+  addIntegerParameter("itlbmask");
   addIntParameter("itlagatewidth", 0, 524280, 100);
   addIntParameter("itlbgatewidth", 0, 524280, 100);
   
+}
+/**
+ * configureITLOptions
+ *    Configure the module internal trigger logic from the internal configuration
+ *    database.
+ * @param module - references the module to be configured.
+ */
+void
+VX2750PHAModuleConfiguration::configureITLOptions(VX2750Pha& module)
+{
+     module.setITLAMainLogic(VX2750Pha::stringToIndividualTriggerLogic[cget("itlalogic")]);
+     module.setITLBMainLogic(VX2750Pha::stringToIndividualTriggerLogic[cget("itlblogic")]);
+     module.setITLAMajorityLevel(getIntegerParameter("itlamajoritylevel"));
+     module.setITLBMajorityLevel(getIntegerParameter("itlbmajoritylevel"));
+     module.setITLAPairLogic(VX2750Pha::stringToPariLogic[cget("itlapairlogic")]);
+     module.setITLBPairLogic(VX2750Pha::stringToPariLogic[cget("itlbpairlogic")]);
+     module.setITLAInverted(cget("itlapolarity") == "Inverted" ? true : false);
+     module.setITLBInverted(cget("itlbpolarity") == "Inverted" ? true : false);
+     
+     int nch= module.channelCount();
+     auto connections = getList("itlconnect");
+     for (int i = 0; i < nch; i++) {
+        module.setITLConnect(i, VX2750Pha::stringToITLConnect[cget("itlconnect")]);
+  
+     }
+     module.setITLAMask(getUnsignedParameter("itlamask"));
+     module.setITLBMask(getUnsingedParameter("itlbmask")):
+     module.setITLAGateWidth(getUnsignedParameter("itlagatewidth"));
+     mdoule.setITLBGateWidth(getUnsignedParameter("itlbgatewidth"));
 }
 /**
  * defineLVDSOptions
@@ -462,6 +558,31 @@ VX2750PHAModuleConfiguration::defineLVDSOptions()
   addIntListParameter("lvdstrgmask", 0, 0xffffffffffffffff, 16, 16, 16, 0);
 }
 /**
+ * configureLVDSOptions
+ *    COnfigures the LVDS options in a module from our internalconfiguration.
+ * @param module -references the module to configure.
+ */
+void
+VX2750PHAModuleConfiguration::configureLVDSOptions(VX2750Pha& module)
+{
+  auto modes = getList("lvdsmode");
+  auto direction = getList("lvdsdirection");
+  auto masks   = getUnsignedList("lvdstrgmask");
+  
+  // First set the direction and mode of each quartet.
+  
+  for (int i = 0; i < 4; i++) {
+    module.setLVDSMode(i, VX2750Pha::stringToLVDSMode[modes[i]]);
+    module.setLVDSDirection(i, direction[i] == "Input" ? VX2750Pha::Input : VX2750Pha::Output);
+  }
+  
+  // Now set the per pin trigger masks.
+  
+  for (int i =0; i < 16; i++) {
+    module.setLVDSTirggerMask(i, masks[i]);
+  }
+}
+/**
  * defineDACOptions
  *    Define the options for the digial to analog converter output.
  */
@@ -476,6 +597,17 @@ VX2750PHAModuleConfiguration::defineDACOptions()
   addEnumParameter("dacoutmode", daqoutmodes, "ChSum");
   addIntParameter("dacoutputlevel", 0, 16383, 0);
   addIntParameter("dacoutchannel", 0, 63, 0);
+}
+/**
+ * configureDACOptions
+ *    @param module references a module that is to be configured.
+ */
+void
+VX2750PHAModuleConfiguration::configureDACOptions(VX2750Pha& module)
+{
+  module.setDACOutMode(VX2750Pha::stringToGDACOutMode[cget("dacoutmode")]);
+  module.setDACOutValue(getIntegerParameter("dacoutputlevel"));
+  module.setDACChannel(getIntegerParameter("dacoutchannel"));
 }
 /**
  * defineInputConditioningOptions

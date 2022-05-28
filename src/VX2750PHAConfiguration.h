@@ -200,10 +200,15 @@ private:
     void defineAcqTriggerOptions();
     void configureAcquisitionTriggerOptions(VX2750PHha& module);
     void defineWfInspectionOptions()
+    void configureWfInspectionOptions(VX2750Pha& module);
     void defineServiceOptions();
+    void configureServiceOptions(VX2750Pha& module);
     void defineITLOptions();
+    void configureITLOptions(VX2750Pha& module);
     void defineLVDSOptions();
+    void configureLVDSOptions(VX2750Pha& module);
     void defineDACOptions();
+    void configureDAQOptions(VX2750PHa& module);
     void defineInputConditioningOptions();
     void defineEventSelectionOptions();
     void defineFilterOptions();

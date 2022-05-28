@@ -334,7 +334,7 @@ static const std::map<VX2750Pha::ChannelVetoSource, std::string> channelVetoToSt
     {VX2750Pha::ChanVeto_Disabled, "Disabled"}
 };
 
-static const std::map<std::string, VX2750Pha::WaveDataSource> stringToWaveDataSource = {
+std::map<std::string, VX2750Pha::WaveDataSource> VX2750Pha::stringToWaveDataSource = {
     {"ADC_DATA", VX2750Pha::ADC_DATA},
     {"ADC_TEST_TOGGLE", VX2750Pha::ADC_TEST_TOGGLE},
     {"ADC_TEST_RAMP", VX2750Pha::ADC_TEST_RAMP},
@@ -355,7 +355,7 @@ static const std::map<VX2750Pha::WaveDataSource, std::string> waveDataSourceToSt
     {VX2750Pha::ADC_TEST_PRBS, "ADC_TEST_PRBS"}
 };
 
-static const std::map<std::string, VX2750Pha::WaveResolution> stringToWaveResolution = {
+std::map<std::string, VX2750Pha::WaveResolution> VX2750Pha::stringToWaveResolution = {
     {"Res8", VX2750Pha::Res8},
     {"Res16", VX2750Pha::Res16},
     {"Res32", VX2750Pha::Res32},
@@ -368,7 +368,7 @@ static const std::map<VX2750Pha::WaveResolution, std::string> waveResolutionToSt
     {VX2750Pha::Res64, "Res64"} 
 };
 
-static const std::map<std::string, VX2750Pha::AnalogProbe> stringToAnalogProbe = {
+std::map<std::string, VX2750Pha::AnalogProbe> VX2750Pha::stringToAnalogProbe = {
     {"ADCInput", VX2750Pha::ADCInput},
     {"TimeFilter", VX2750Pha::TimeFilter},
     { "EnergyFilter", VX2750Pha::EnergyFilter},
@@ -383,7 +383,7 @@ static const std::map<VX2750Pha::AnalogProbe, std::string> analogProbeToString =
     {VX2750Pha::EnergyFilterMinusBaseline, "EnergyFilterMinusBaseline"} 
 };
 
-static const std::map<std::string, VX2750Pha::DigitalProbe> stringToDigitalProbe = {
+std::map<std::string, VX2750Pha::DigitalProbe> VX2750Pha::stringToDigitalProbe = {
     {"Trigger", VX2750Pha::DProbe_Trigger},
     {"TimeFilterArmed", VX2750Pha::TimeFilterArmed},
     {"ReTriggerGuard", VX2750Pha::ReTriggerGuard},
@@ -423,7 +423,7 @@ static const std::map<VX2750Pha::IOLevel, std::string> ioLevelToString = {
     {VX2750Pha::TTL, "TTL"}
 };
 
-static const std::map<std::string, VX2750Pha::IndividualTriggerLogic> stringToIndividualTriggerLogic = {
+std::map<std::string, VX2750Pha::IndividualTriggerLogic> VX2750Pha::stringToIndividualTriggerLogic = {
     {"OR", VX2750Pha::ITL_OR},
     {"AND", VX2750Pha::ITL_AND},
     {"Majority", VX2750Pha::Majority}
@@ -434,7 +434,7 @@ static const std::map<VX2750Pha::IndividualTriggerLogic, std::string> individual
     {VX2750Pha::Majority, "Majority"}
 };
 
-static const std::map<std::string, VX2750Pha::PairTriggerLogic> stringToPairLogic = {
+std::map<std::string, VX2750Pha::PairTriggerLogic> VX2750Pha::stringToPairLogic = {
     {"AND", VX2750Pha::PTL_AND},
     {"OR", VX2750Pha::PTL_OR},
     {"NONE", VX2750Pha::NONE}
@@ -445,7 +445,7 @@ static const std::map<VX2750Pha::PairTriggerLogic, std::string> pairLogicToStrin
     {VX2750Pha::NONE, "NONE"}
 };
 
-static const std::map<std::string, VX2750Pha::ITLConnect> stringToITLConnect = {
+std::map<std::string, VX2750Pha::ITLConnect> VX2750Pha::stringToITLConnect = {
     {"Disabled", VX2750Pha::ITL_Disabled},
     {"ITLA", VX2750Pha::ITL_ITLA},
     {"ITLB", VX2750Pha::ITL_ITLB}
@@ -456,7 +456,7 @@ static const std::map<VX2750Pha::ITLConnect, std::string> ITLConnectToString = {
     {VX2750Pha::ITL_ITLB, "ITLB"}
 };
 
-static const std::map<std::string, VX2750Pha::LVDSMode> stringToLVDSMode = {
+std::map<std::string, VX2750Pha::LVDSMode> VX2750Pha::stringToLVDSMode = {
      {"SelfTriggers", VX2750Pha::SelfTriggers},
      {"Sync", VX2750Pha::Sync},
      {"IORegister", VX2750Pha::IORegister}
@@ -476,7 +476,7 @@ static const std::map<VX2750Pha::LVDSDirection, std::string> LVDSDirectionToStri
     {VX2750Pha::Output, "Output"}    
 };
 
-static const std::map<std::string, VX2750Pha::DACOutputMode> stringToDACOutMode = {
+std::map<std::string, VX2750Pha::DACOutputMode> VX2750Pha::stringToDACOutMode = {
     {"Static", VX2750Pha::Static},
     {"IPE", VX2750Pha::DACOut_IPE},
     {"ChInput", VX2750Pha::DACOut_ChInput},
