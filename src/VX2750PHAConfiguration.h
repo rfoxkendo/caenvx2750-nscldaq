@@ -208,10 +208,13 @@ private:
     void defineLVDSOptions();
     void configureLVDSOptions(VX2750Pha& module);
     void defineDACOptions();
-    void configureDAQOptions(VX2750PHa& module);
-    void defineInputConditioningOptions();
+    void configureDAQOptions(VX2750Pha& module);
+    void defineInputConditioningOptions(VX2750Pha& module);
+    void configureInputConditioning();
     void defineEventSelectionOptions();
+    void configureEventSelection(VX2750Pha& module);
     void defineFilterOptions();
+    void configureFilter(VX2750Pha& module)
 };
     
 }                                             // caen_nscldaq namespace

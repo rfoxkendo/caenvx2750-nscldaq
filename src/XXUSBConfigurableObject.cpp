@@ -408,7 +408,7 @@ CConfigurableObject::getUnsignedList(string name)
 }
 
 vector<bool>
-CConfgurableParameter::getBoolList(string name);
+CConfigurableObject::getBoolList(string name)
 {
   string value = cget(name);
   int argc;
@@ -418,7 +418,7 @@ CConfgurableParameter::getBoolList(string name);
   Tcl_SplitList(NULL, value.c_str(), &argc, &argv);
 
   for (int i =0; i < argc; i++) {
-    result.push_back(strtoBool(argv[i]);
+    result.push_back(strToBool(argv[i]));
   }
   Tcl_Free((char*)argv);
   return result;
@@ -439,12 +439,12 @@ CConfigurableObject::getFloatList(string name)
   
   int argc;
   const char** argv;
-  Tcl_SplitList(NULL< value.c_str(), &argc, &argv);
+  Tcl_SplitList(NULL, value.c_str(), &argc, &argv);
   
   // Parse the values intothe result.
   
   vector<double> result;
-  for (int i = 0; i < arg; i++) {
+  for (int i = 0; i < argc; i++) {
       result.push_back(strtod(argv[i], nullptr));
   }
   // Free the parsed list elements:
@@ -578,12 +578,12 @@ CConfigurableObject::addIntegerParameter(std::string name, std::int64_t low, std
  * @note float parameters  are actually doubles.
  */
 void
-CCOnfigurableObject::addFLoatParameter(std::string name, double defaultValue)
+CConfigurableObject::addFloatParameter(std::string name, double defaultValue)
 {
     addParameter(name, CConfigurableObject::isFloat, nullptr, std::to_string(defaultValue));
 }
 void
-CCOnfigurableObject::addFloatParameter(
+CConfigurableObject::addFloatParameter(
       std::string name, double low, double high, double defaultValue
 )
 {
@@ -758,7 +758,7 @@ CConfigurableObject::addIntListParameter(std::string name, unsigned minLength, u
  * @param defaultLength - Default list length (minLength if not given).
  */
 void
-CConfigurableObject::addIntListParameter(std::string name, std::int64_tint minValue, std::int64_t maxValue,
+CConfigurableObject::addIntListParameter(std::string name, std::int64_t minValue, std::int64_t maxValue,
                            unsigned minlength, unsigned maxLength, unsigned defaultSize,
 			   std::int64_t defaultVal)
 {
@@ -814,19 +814,19 @@ CConfigurableObject::addIntListParameter(std::string name, std::int64_tint minVa
 void
 CConfigurableObject::addFloatListParameter(                                                    
     std::string name, unsigned minlen, unsigned maxlen, unsigned defaultsize,
-    double defaultValue = 0.0
+    double defaultValue 
 )
 {
      // Build the default value string:
      
-     defaultSize = computeDefaultSize(minlen, maxlen, defaultsize);
-     std::string defaultValue =
-        simpleList(std::to_string(defaultValue), defaultSize
+     defaultsize = computeDefaultSize(minlen, maxlen, defaultsize);
+     std::string defaultList =
+        simpleList(std::to_string(defaultValue), defaultsize
      );
         
       // Parameter checker is an isFloatList with a list size constraint
       
-      ListSizeConstraint* pConstraint = createListConstraint(minLength, maxLength);
+      ListSizeConstraint* pConstraint = createListConstraint(minlen, maxlen);
       
       addParameter(name, CConfigurableObject::isFloatList, pConstraint, defaultList);
 }
@@ -835,14 +835,14 @@ void
 CConfigurableObject::addFloatListParameter(                                              
     std::string name, double low, double high,
     unsigned minlen, unsigned maxlen, unsigned defaultlen,
-    double defaultValue = 0.0
+    double defaultValue
 )
 {
     // Build the default value string:
      
-    defaultSize = computeDefaultSize(minlen, maxlen, defaultsize);
-    std::string defaultValue =
-       simpleList(std::to_string(defaultValue), defaultSize
+    defaultlen = computeDefaultSize(minlen, maxlen, defaultlen);
+    std::string defaultList =
+       simpleList(std::to_string(defaultValue), defaultlen
     );
        
     // First build the value constraint so that it can be applied to the list
@@ -859,7 +859,7 @@ CConfigurableObject::addFloatListParameter(
     isListParameter* pConstraint = new isListParameter(
         minlen, maxlen, TypeCheckInfo(isFloat, &range)  
     );
-    addParameter(name, isFloatList, pConstraint, defaultValue);
+    addParameter(name, isFloatList, pConstraint, defaultList);
 }
 
 
@@ -877,7 +877,7 @@ CConfigurableObject::addFloatListParameter(
 void
 CConfigurableObject::addEnumListParameter(
   std::string name, const char** pValues, const char* defaultValue,
-  unsigned minlength, unsigned, maxlength, int defaultSize
+  unsigned minlength, unsigned maxlength, int defaultSize
 )
 {
     // figure out the default list of values:

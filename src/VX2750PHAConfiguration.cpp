@@ -23,10 +23,30 @@
 */
 
 #include "VX2750PHAConfiguration.h"
-#include "VX2750PHa.h"
+#include "VX2750Pha.h"
 #include <string>
 #include <stdlib.h>
+#include <map>
 
+// Local lookup tables:
+
+static const std::map<unsigned, VX2750Pha::EnergyPeakingAverage> peakingAvgs =
+{
+  {1, VX2750Pha::Average1},
+  {4, VX2750Pha::Average4},
+  {16, VX2750Pha::EPeakAvg_Average16},
+  {64, VX2750Pha::EPeakAvg_Average64}
+};
+static const std::map<unsigned, VX2750Pha::EnergyFilterBaselineAverage> blaverage=
+{
+   {0, VX2750Pha::Fixed},
+   {16, VX2750Pha::EFilterBlineAvg_Average16},
+   {64, VX2750Pha::EFilterBlineAvg_Average64},
+   {256, VX2750Pha::Average256},
+   {1024,VX2750Pha::Average1024},
+   {4096, VX2750Pha::Average4K},
+   {16384, VX2750Pha::Average16K}
+};
 namespace caen_nscldaq {
     
 /**
@@ -121,6 +141,9 @@ VX2750PHAModuleConfiguration::configureModule(VX2750Pha& module)
   configureServiceOptions(module);
   configureITLOptions(module);
   configureLVDSOptions(module);
+  configureInputConditioning(module);
+  configureEventSelection(module);
+  configureFilter(module);
 }
 
  
@@ -617,7 +640,7 @@ VX2750PHAModuleConfiguration::configureDACOptions(VX2750Pha& module)
 void
 VX2750PHAModuleConfiguration::defineInputConditioningOptions()
 {
-    addIntParameter("vgagain", 0, 40, 0);
+    addIntListParameter("vgagain", 0, 40, 0, 4, 4, 0);
     addBoolListParameter("offsetcalibrationenable", 0, 64, true, 64);
     addBoolListParameter("chanelenables", 0, 64, true, 64);
     addFloatListParameter("dcoffsets", 0.0, 100.0, 0, 64, 64, 50.0);
@@ -626,7 +649,46 @@ VX2750PHAModuleConfiguration::defineInputConditioningOptions()
     const char* polarities[] = {"Positive", "Negative", nullptr};
     addEnumListParameter("inputpolarities", polarities, 0, 64, "Negative", 64);
 }
-
+/**
+ * conifigureInputConditioning
+ *    Configure how the analog inputs are conditioned prior to being
+ *    presented to the FADC.
+ * @param module - reference to module being configured.
+ */
+void
+VX2750PHAModuleConfiguration::configureInputConditioning(VX2750Pha& module)
+{
+  
+  
+  // Sinc eonly 2745 digitizers have a variable gain amp:
+  
+  if (module.getFamilyCode() == 2745) {
+    auto vgaGains = getIntegerList("vgagain");
+    for (int i =0; i < 4; i++) {
+         module.setVGAGain(i, vgaGains[i]); 
+    }
+  }
+  // The remainder are all per channel parameters:
+  
+  auto enableOffsetCalibration = getBoolList("offsetcalibrationenable");
+  auto channelEnables  = getBoolList("channelenables");
+  auto dcOffsets  = getFloatList("dcoffsets");
+  auto thresholds = getIntegerList("triggerthresholds");
+  auto inputPolarities = getList("inputpolarities");
+  
+  int nch = module.channelCount();
+  for (int i =0; i < nch; i++) {
+    module.enableOffsetCalibration(i, enableOffsetCalibration[i]);
+    module.enableChannel(i, channelEnables[i]);
+    module.setDCOffset(i, dcOffsets[i]);
+    module.setTriggerThreshold(i, thresholds[i]);
+    module.setPulsePolarity(
+        i,
+        (inputPolarities == "Positive") ?
+          VX2750Pha::Positive : VX2750Pha::Negative
+    );
+  }
+}
 /**
  *  defineEventSelectionOptions
  *      Define the options for event selection and coincidences.
@@ -652,7 +714,34 @@ VX2750PHAModuleConfiguration::defineEventSelectionOptions()
   addEnumListParameter("coincidencemask", masks, 0, 64,"Disabled", 64);
   addEnumListParameter("anticoincidencemask", masks, 0, 64,"Disabled", 64);
   
-  addIntListParameter("coincidencelength", 8,  524280, 100);
+  addIntListParameter("coincidencelength", 8,  524280, 0, 64, 64, 100);
+}
+/**
+ * configureEventSelection
+ *   Apply the event selection configuration parameters to a module.
+ * @param module -the module that will be configured.
+ */
+void
+VX2750PHAModuleConfiguration::configureEventSelection(VX2750Pha& module)
+{
+  auto lowskims = getIntegerList("energyskimlow");
+  auto hiskims  = getIntegerList("energyskimhigh");
+  auto eventselectors = getList("eventselector");
+  auto waveselectors = getList("waveSelector");
+  auto coincMasks = getList("coincidencemask");
+  auto anticoincMask = getList("anticoincidencemasks");
+  auto coincidencewindow = getIntegerList("coincidencelength");
+  
+  int nch = module.channelCount();
+  for(int i =0; i < nch; i++) {
+    module.setEnergySkimLowDiscriminator(i, lowskims[i]);
+    module.setEnergySkimHighDiscriminator(i, hiskims[i]);
+    module.setEventSelector(i, VX2750Pha::stringToEventSelector[eventselectors[i]]);
+    module.setWaveformSelector(i, VX2750Pha::stringToEventSelector[eventselectors[i]]);
+    module.setCoincidenceNs(chan, coincidencewindow[i]);
+    module.setCoincidenceMask(chan, VX2750Pha::stringToCoincidenceMask[coincMask[i]]);
+    module.setAntiCoincidenceMask(chan, VX2750Pha::stringToCoincidenceMask[anticoincMask[i]]);
+  }
 }
 /**
  * defineFilterOptions
@@ -666,6 +755,7 @@ VX2750PHAModuleConfiguration::defineFilterOptions()
     addIntListParameter("tfrisetime", 80, 2000, 0, 64, 64, 80);
     addIntListParameter("tfretriggerguard", 0, 8000, 0, 64, 64, 0);
     addIntListParameter("efrisetime", 80, 13000, 0, 64, 64, 80);
+    addIntListParameter("efflattoptime", 80, 3000, 0,64, 64, 80);
     addIntListParameter("efpeakingpos", 0, 100, 0, 64, 64, 50);
     
     const char* peakingaverages[] = {
@@ -677,14 +767,50 @@ VX2750PHAModuleConfiguration::defineFilterOptions()
     addBoolListParameter("eflflimitation", 0, 64, false, 64);
     
     const har* baslineaverages[] = {
-      "0", "16", "64", "64", "256", "1024", "4096", "16384", nuillptr
+      "0", "16", "64", "256", "1024", "4096", "16384", nullptr
     };
     addEnumListParameter("efbaselineavg", baselineaverages, 0, 64, "0",64);
-    addIntListParameter("efbaselinegaurdt", 0, 8000, 0, 64, 64, 0);
+    addIntListParameter("efbaselineguardt", 0, 8000, 0, 64, 64, 0);
     addIntListParameter("efpileupguardt", 0, 80000, 0, 64, 64, 0);
     
 }
-
+/**
+ * configureFilter
+ *    Set the module filter options in accordance with our option database.
+ * @parm module - module to configure.
+ */
+void
+VX2750PHAModuleConfiguration::configureFilter(VX2750Pha& module)
+{
+    auto triggerRiseTimes = getIntegerList("trfisetime");
+    auto triggerRetriggerGuards = getIntegerList("tfretriggerguard");
+    auto energyRiseTimes = getIntegerList("efrisetime");
+    auto energyFlatTopTimes = getIntegerList("efflattoptime");
+    auto energyPeakingPos = getIntegerList("efpieakingpos");
+    auto peakingAverages  = getIntegerList("efpeakingavg");  // The enums all translate as integers.
+    auto poleZeros       = getIntegerList("efpolezero");
+    auto fineGains      =getFloatList("efpolezero");
+    auto lfEliminations = getBoolList("eflflimitation");
+    auto blAveraging    = getIntegerList("efbaselineavg"); // again they're all integers
+    auto blGuardTimes   = getIntegerList("efbaselineguardt");
+    auto pupGuardTimes  = getIntegerList("efpileupguardt");
+    
+    int nch = module.channelCount();
+    for (int i = 0; i < nch; i++) {
+      module.setTimeFilterRiseTime(i, triggerRiseTimes[i]);
+      module.setTimeFilterRetriggerGuardTime(i, triggerRetriggerGuards[i]);
+      module.setEnergyFilterRiseTime(i, energyRiseTimes[i]);
+      modulee.setEnergyFilterFlattopTime(i, energyFlatTopTimes[i]);
+      module.setEnergyFilterFlatTopTime(i, energyPeakingPos[i]);
+      module.setEnergyFilterPeakingAverage(i, peakingAvgs[peakingAverages[i]]);
+      module.setEnergyFilterPoleZeroTime(i, poleZeros[i]);
+      module.setEnergyFilterFineGain(i, fineGains[i]);
+      module.setEnergyFilterFLimitationEnabled(i, lfEliminations[i]);
+      module.setEnergyFilterBaselineAverage(i, blaverage[blAveraging[i]]);
+      module.setEnergyFilterBaselineGuardTime(i, blGuardTimes[i]);
+      module.setEnergyFilterPileupGuardTime(i, pupGuardTimes[i]);
+    }
+}
 
 }                                   // caen_nscldaq namespace.
 

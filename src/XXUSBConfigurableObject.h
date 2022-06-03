@@ -169,7 +169,7 @@ public:
 	std::vector<uint64_t> getUnsignedList (std::string name);
   std::vector<std::string> getList     (std::string name);
 	std::vector<double> getFloatList     (std::string name);    //
-	std::Vector<bool>  getBoolList(std::string name);
+	std::vector<bool>  getBoolList(std::string name);
   int              getEnumParameter(std::string name, const char**pValues);
 	
     
