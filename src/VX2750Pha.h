@@ -343,28 +343,30 @@ public:
     };
     // These are useful for string based configuration modules.
     
-    static std::map<std::string, VX2750Pha::ClockSource> stringToClockSource;
-    static std::map<std::string, VX2750Pha::StartSource> stringToStartSource;
-    static std::map<std::string, VX2750Pha::GlobalTriggerSource> stringToGlobalTriggerSource;
-    static std::map<std::string, VX2750Pha::WaveTriggerSource> stringToWaveTrigger;
-    static std::map<std::string, VX2750Pha::EventTriggerSource> stringToEventTrigger;
-    static std::map<std::string, VX2750Pha::TimestampResetSource> stringToTimestampReset;
-    static std::map<std::string, VX2750Pha::TRGOUTMode> stringToTRGOUT;
-    static std::map<std::string, VX2750Pha::GPIOMode>  stringToGPIO;
-    static std::map<std::string, VX2750Pha::BusyInSource> stringToBusyIn;
-    static std::map<std::string, VX2750Pha::SyncOutMode> stringToSyncOut;
-    static std::map<std::string , VX2750Pha::VetoSource>  stringToVeto;
-    static std::map<std::string, VX2750Pha::VetoPolarity> stringToVetoPolarity;
-    static std::map<std::string, VX2750Pha::ChannelVetoSource> stringToChannelVeto;
-    static std::map<std::string, VX2750Pha::WaveDataSource> stringToWaveDataSource;
-    static std::map<std::string, VX2750Pha::WaveResolution> stringToWaveResolution;
-    static std::map<std::string, VX2750Pha::AnalogProbe> stringToAnalogProbe;
-    static std::map<std::string, VX2750Pha::DigitalProbe> stringToDigitalProbe;
-    static std::map<std::string, VX2750Pha::IndividualTriggerLogic> stringToIndividualTriggerLogic;
-    static std::map<std::string, VX2750Pha::PairTriggerLogic> stringToPairLogic;
-    static std::map<std::string, VX2750Pha::ITLConnect> stringToITLConnect;
-    static std::map<std::string, VX2750Pha::LVDSMode> stringToLVDSMode;
-    static std::map<std::string, VX2750Pha::DACOutputMode> stringToDACOutMode;
+    static const  std::map<std::string, VX2750Pha::ClockSource> stringToClockSource;
+    static const  std::map<std::string, VX2750Pha::StartSource> stringToStartSource;
+    static const  std::map<std::string, VX2750Pha::GlobalTriggerSource> stringToGlobalTriggerSource;
+    static const  std::map<std::string, VX2750Pha::WaveTriggerSource> stringToWaveTrigger;
+    static const  std::map<std::string, VX2750Pha::EventTriggerSource> stringToEventTrigger;
+    static const  std::map<std::string, VX2750Pha::TimestampResetSource> stringToTimestampReset;
+    static const  std::map<std::string, VX2750Pha::TRGOUTMode> stringToTRGOUT;
+    static const  std::map<std::string, VX2750Pha::GPIOMode>  stringToGPIO;
+    static const  std::map<std::string, VX2750Pha::BusyInSource> stringToBusyIn;
+    static const  std::map<std::string, VX2750Pha::SyncOutMode> stringToSyncOut;
+    static const  std::map<std::string , VX2750Pha::VetoSource>  stringToVeto;
+    static const  std::map<std::string, VX2750Pha::VetoPolarity> stringToVetoPolarity;
+    static const  std::map<std::string, VX2750Pha::ChannelVetoSource> stringToChannelVeto;
+    static const  std::map<std::string, VX2750Pha::WaveDataSource> stringToWaveDataSource;
+    static const  std::map<std::string, VX2750Pha::WaveResolution> stringToWaveResolution;
+    static const  std::map<std::string, VX2750Pha::AnalogProbe> stringToAnalogProbe;
+    static const  std::map<std::string, VX2750Pha::DigitalProbe> stringToDigitalProbe;
+    static const  std::map<std::string, VX2750Pha::IndividualTriggerLogic> stringToIndividualTriggerLogic;
+    static const  std::map<std::string, VX2750Pha::PairTriggerLogic> stringToPairLogic;
+    static const  std::map<std::string, VX2750Pha::ITLConnect> stringToITLConnect;
+    static const  std::map<std::string, VX2750Pha::LVDSMode> stringToLVDSMode;
+    static const  std::map<std::string, VX2750Pha::DACOutputMode> stringToDACOutMode;
+    static const  std::map<std::string, VX2750Pha::EventSelection> stringToEventSelection;
+    static const std::map<std::string, VX2750Pha::CoincidenceMask> stringToCoincidenceMask;
     
     // InternalData.
 private:
