@@ -382,266 +382,266 @@ private:
     int operator!=(const VX2750Pha&);
 public:
     
-    std::string  getCupVersion();     // Get the CUP version
-    std::string  getFpgaFWVersion();  // Get the firmware Version
-    FwType       getFirmwareType();   // Get the type of the firmware.
-    std::string  getModelCode();
-    std::string  getPiggyBackCode();
-    std::string  getModelName();
-    FormFactor   getFormFactor();
-    int          getFamilyCode();
-    std::string  getSerialNumber();
-    int          getMotherboardRev();
-    int          getPiggybackRev();
-    std::string  getLicense();
-    bool         isLicensed();
-    int          remainingUnlicensedTime();
-    int          channelCount();
-    int          bitsOfResolution();
-    int          sampleRate();
-    int          inputRange();
-    bool         isDifferentialInput();
-    int          inputImpedance();
-    double       adcOverTemperatureThreshold();
-    double       fpgaOverTemperatureThreshold();
-    int          ipAddress();
-    int          netMask();
-    int          gateway();
-    ClockSource  getClockSource();
-    void         setClockSource(ClockSource);
-    bool         isClockOutOnP0();
-    void         setClockOutOnP0(bool state);
-    bool         isClockOutOnFP();
-    void         setClockOutOnFP(bool state);
-    StartSource  getStartSource();
-    void         setStartSource(StartSource src);
-    GlobalTriggerSource getGlobalTriggerSource();
-    void         setGlobalTriggerSource(GlobalTriggerSource src);
-    WaveTriggerSource getWaveTriggerSource(unsigned ch);
-    void         setWaveTriggerSource(unsigned ch, WaveTriggerSource src);
-    EventTriggerSource getEventTriggerSource(unsigned ch);
-    void         setEventTriggerSource(unsigned ch, EventTriggerSource src);
-    TimestampResetSource getTimestampResetSource();
-    void setTimestampResetSource(TimestampResetSource);
-    std::uint64_t getChannelTriggerMask(unsigned ch);
-    void          setChannelTriggerMask(unsigned ch, std::uint64_t mask);
-    TraceRecordMode getTraceRecordMode(unsigned ch);
-    void           setTraceRecordMode(unsigned ch, TraceRecordMode mode);
-    TRGOUTMode    getTRGOUTMode();
-    void          setTRGOUTMode(TRGOUTMode mode);
-    GPIOMode      getGPIOMode();
-    void          setGPIOMode(GPIOMode mode);
-    BusyInSource   getBusyInputSource();
-    void          setBusyInputSource(BusyInSource src);
-    SyncOutMode   getSyncOutMode();
-    void          setSyncOutMode(SyncOutMode mode);
-    VetoSource    getBoardVetoSource();
-    void          setBoardVetoSource(VetoSource src);
-    std::uint64_t   getBoardVetoWidth();
-    void          setBoardVetoWidth(std::uint64_t ns);
-    VetoPolarity  getBoardVetoPolarity();
-    void          setBoardVetoPolarity(VetoPolarity pol);
-    ChannelVetoSource getChannelVetoSource(unsigned chan);
-    void          setChannelVetoSource(unsigned chan, ChannelVetoSource src);
-    std::uint32_t getChannelVetoWidth(unsigned chan);
-    void          setChannelVetoWidth(unsigned chan, std::uint32_t ns);
-    std::uint32_t getRunDelay();
-    void         setRunDelay(std::uint32_t ns);
-    bool         isAutoDisarmEnabled();
-    void         setAutoDisarmEnabled(bool state);
-    bool         isMultiWindowRunEnabled();
-    void         setMultiWindowRunEnable(bool state);
-    bool          isPauseTimestampHoldEnabled();
-    void          setPauseTimestampHold(bool enable);
+    std::string  getCupVersion() const;     // Get the CUP version
+    std::string  getFpgaFWVersion() const;  // Get the firmware Version
+    FwType       getFirmwareType() const;   // Get the type of the firmware.
+    std::string  getModelCode() const;
+    std::string  getPiggyBackCode() const;
+    std::string  getModelName() const;
+    FormFactor   getFormFactor() const;
+    int          getFamilyCode() const;
+    std::string  getSerialNumber() const;
+    int          getMotherboardRev() const;
+    int          getPiggybackRev() const;
+    std::string  getLicense() const;
+    bool         isLicensed() const;
+    int          remainingUnlicensedTime() const;
+    int          channelCount() const;
+    int          bitsOfResolution() const;
+    int          sampleRate() const;
+    int          inputRange() const;
+    bool         isDifferentialInput() const;
+    int          inputImpedance() const;
+    double       adcOverTemperatureThreshold() const;
+    double       fpgaOverTemperatureThreshold() const;
+    int          ipAddress() const;
+    int          netMask() const;
+    int          gateway() const;
+    ClockSource  getClockSource() const;
+    void         setClockSource(ClockSource) const;
+    bool         isClockOutOnP0() const;
+    void         setClockOutOnP0(bool state) const;
+    bool         isClockOutOnFP() const;
+    void         setClockOutOnFP(bool state) const;
+    StartSource  getStartSource() const;
+    void         setStartSource(StartSource src) const;
+    GlobalTriggerSource getGlobalTriggerSource() const;
+    void         setGlobalTriggerSource(GlobalTriggerSource src) const;
+    WaveTriggerSource getWaveTriggerSource(unsigned ch) const;
+    void         setWaveTriggerSource(unsigned ch, WaveTriggerSource src) const;
+    EventTriggerSource getEventTriggerSource(unsigned ch) const;
+    void         setEventTriggerSource(unsigned ch, EventTriggerSource src) const;
+    TimestampResetSource getTimestampResetSource() const;
+    void setTimestampResetSource(TimestampResetSource) const;
+    std::uint64_t getChannelTriggerMask(unsigned ch) const;
+    void          setChannelTriggerMask(unsigned ch, std::uint64_t mask) const;
+    TraceRecordMode getTraceRecordMode(unsigned ch) const;
+    void           setTraceRecordMode(unsigned ch, TraceRecordMode mode) const;
+    TRGOUTMode    getTRGOUTMode() const;
+    void          setTRGOUTMode(TRGOUTMode mode) const;
+    GPIOMode      getGPIOMode() const;
+    void          setGPIOMode(GPIOMode mode) const;
+    BusyInSource   getBusyInputSource() const;
+    void          setBusyInputSource(BusyInSource src) const;
+    SyncOutMode   getSyncOutMode() const;
+    void          setSyncOutMode(SyncOutMode mode) const;
+    VetoSource    getBoardVetoSource() const;
+    void          setBoardVetoSource(VetoSource src) const;
+    std::uint64_t   getBoardVetoWidth() const;
+    void          setBoardVetoWidth(std::uint64_t ns) const;
+    VetoPolarity  getBoardVetoPolarity() const;
+    void          setBoardVetoPolarity(VetoPolarity pol) const;
+    ChannelVetoSource getChannelVetoSource(unsigned chan) const;
+    void          setChannelVetoSource(unsigned chan, ChannelVetoSource src) const;
+    std::uint32_t getChannelVetoWidth(unsigned chan) const;
+    void          setChannelVetoWidth(unsigned chan, std::uint32_t ns) const;
+    std::uint32_t getRunDelay() const;
+    void         setRunDelay(std::uint32_t ns) const;
+    bool         isAutoDisarmEnabled() const;
+    void         setAutoDisarmEnabled(bool state) const;
+    bool         isMultiWindowRunEnabled() const;
+    void         setMultiWindowRunEnable(bool state) const;
+    bool          isPauseTimestampHoldEnabled() const;
+    void          setPauseTimestampHold(bool enable) const;
     
-    std::uint32_t      getLEDStatus();
-    std::uint32_t      getAcquisitionStatus();
-    std::uint32_t      getMaxRawDataSize();
-    double        getVolatileClockDelay();
-    void          setVolatileClockDelay(double value);
-    double        getPermanentClockDelay();
-    void          setPermanentClockDelay(double value);
-    WaveDataSource getWaveDataSource(unsigned chan);
-    void          setWaveDataSource(unsigned chan, WaveDataSource source);
-    std::uint32_t getRecordSamples(unsigned chan);
-    void          setRecordSamples(unsigned chan, std::uint32_t samples);
-    std::uint32_t getRecordNs(unsigned chan);
-    void          setRecordNs(unsigned chan, std::uint32_t ns);
-    WaveResolution getWaveResolution(unsigned chan);
-    void          setWaveResolution(unsigned chan, WaveResolution resolution);
-    AnalogProbe   getAnalogProbe(unsigned chan, unsigned probeNum);
-    void          setAnalogProbe(unsigned chan, unsigned probeNum, AnalogProbe probe);
-    DigitalProbe  getDigitalProbe(unsigned chan, unsigned probeNum);
+    std::uint32_t      getLEDStatus() const;
+    std::uint32_t      getAcquisitionStatus() const;
+    std::uint32_t      getMaxRawDataSize() const;
+    double        getVolatileClockDelay() const;
+    void          setVolatileClockDelay(double value) const;
+    double        getPermanentClockDelay() const;
+    void          setPermanentClockDelay(double value) const;
+    WaveDataSource getWaveDataSource(unsigned chan) const;
+    void          setWaveDataSource(unsigned chan, WaveDataSource source) const;
+    std::uint32_t getRecordSamples(unsigned chan) const;
+    void          setRecordSamples(unsigned chan, std::uint32_t samples) const;
+    std::uint32_t getRecordNs(unsigned chan) const;
+    void          setRecordNs(unsigned chan, std::uint32_t ns) const;
+    WaveResolution getWaveResolution(unsigned chan) const;
+    void          setWaveResolution(unsigned chan, WaveResolution resolution) const;
+    AnalogProbe   getAnalogProbe(unsigned chan, unsigned probeNum) const;
+    void          setAnalogProbe(unsigned chan, unsigned probeNum, AnalogProbe probe) const;
+    DigitalProbe  getDigitalProbe(unsigned chan, unsigned probeNum) const;
     void          setDigitalProbe(
         unsigned chan, unsigned probeNum, DigitalProbe probe
-    );
-    std::uint32_t getPreTriggerSamples(unsigned chan);
-    void          setPreTriggerSamples(unsigned chan, std::uint32_t nsamples);
-    std::uint32_t getPreTriggerNs(unsigned chan);
-    void          setPreTriggerNs(unsigned chan, std::uint32_t ns);
-    std::uint32_t getTestPulsePeriod();
-    void          setTestPulsePeriod(std::uint32_t ns);
-    std::uint32_t getTestPulseWidth();
-    void          setTestPulseWidth(std::uint32_t ns);
-    std::uint32_t getTestPulseLowLevel();
-    void          setTestPulseLowLevel(std::uint32_t counts);
-    std::uint32_t getTestPulseHighLevel();
-    void          setTestPulseHighLevel(std::uint32_t counts);
-    IOLevel       getIOLevel();
-    void          setIOLevel(IOLevel level);
-    double        getAirInTemp();
-    double        getAirOutTemp();
-    double        getCoreTemp();
-    double        getFirstADCTemp();         // All in degrees C.
-    double        getLastADCTemp();
-    double        getHottestADCTemp();
-    double        getADCTemp(unsigned chip);
-    double        getDCDCConverterTemp();
+    ) const;
+    std::uint32_t getPreTriggerSamples(unsigned chan) const;
+    void          setPreTriggerSamples(unsigned chan, std::uint32_t nsamples) const;
+    std::uint32_t getPreTriggerNs(unsigned chan) const;
+    void          setPreTriggerNs(unsigned chan, std::uint32_t ns) const;
+    std::uint32_t getTestPulsePeriod() const;
+    void          setTestPulsePeriod(std::uint32_t ns) const;
+    std::uint32_t getTestPulseWidth() const;
+    void          setTestPulseWidth(std::uint32_t ns) const;
+    std::uint32_t getTestPulseLowLevel() const;
+    void          setTestPulseLowLevel(std::uint32_t counts) const;
+    std::uint32_t getTestPulseHighLevel() const;
+    void          setTestPulseHighLevel(std::uint32_t counts) const;
+    IOLevel       getIOLevel() const;
+    void          setIOLevel(IOLevel level) const;
+    double        getAirInTemp() const;
+    double        getAirOutTemp() const;
+    double        getCoreTemp() const;
+    double        getFirstADCTemp() const;         // All in degrees C.
+    double        getLastADCTemp() const;
+    double        getHottestADCTemp() const;
+    double        getADCTemp(unsigned chip) const;
+    double        getDCDCConverterTemp() const;
     
-    double        getDCDCConverterInputVoltage();
-    double        getDCDCConverterOutputVoltage();
-    double        getDCDCConverterAmps();
-    double        getDCDCConverterHz();
-    double        getDCDCConverterDutyCycle();
+    double        getDCDCConverterInputVoltage() const;
+    double        getDCDCConverterOutputVoltage() const;
+    double        getDCDCConverterAmps() const;
+    double        getDCDCConverterHz() const;
+    double        getDCDCConverterDutyCycle() const;
     
-    std::uint32_t getFanSpeed(unsigned fan);
+    std::uint32_t getFanSpeed(unsigned fan) const;
     
     // Bit encoded errors per ERR_* bit definitions.
     
-    std::uint32_t getErrorFlagMask();
-    void          setErrorFlagMask(std::uint32_t mask);
-    std::uint32_t getErrorFlagDataMask();
-    void          setErrorFlagDataMask(std::uint32_t mask);
-    std::uint32_t getErrorFlags();
+    std::uint32_t getErrorFlagMask() const;
+    void          setErrorFlagMask(std::uint32_t mask) const;
+    std::uint32_t getErrorFlagDataMask() const;
+    void          setErrorFlagDataMask(std::uint32_t mask) const;
+    std::uint32_t getErrorFlags() const;
     
-    bool          isBoardReady();
+    bool          isBoardReady() const;
     
-    IndividualTriggerLogic getITLAMainLogic();
-    IndividualTriggerLogic getITLBMainLogic();
-    void          setITLAMainLogic(IndividualTriggerLogic sel);
-    void          setITLBMainLogic(IndividualTriggerLogic sel);
-    unsigned      getITLAMajorityLevel();
-    unsigned      getITLBMajorityLevel();
-    void          setITLAMajorityLevel(unsigned level);
-    void          setITLBMajorityLevel(unsigned level);
+    IndividualTriggerLogic getITLAMainLogic() const;
+    IndividualTriggerLogic getITLBMainLogic() const;
+    void          setITLAMainLogic(IndividualTriggerLogic sel) const;
+    void          setITLBMainLogic(IndividualTriggerLogic sel) const;
+    unsigned      getITLAMajorityLevel() const;
+    unsigned      getITLBMajorityLevel() const;
+    void          setITLAMajorityLevel(unsigned level) const;
+    void          setITLBMajorityLevel(unsigned level) const;
     
-    PairTriggerLogic getITLAPairLogic();
-    PairTriggerLogic getITLBPairLogic();
-    void         setITLAPairLogic(PairTriggerLogic sel);
-    void         setITLBPairLogic(PairTriggerLogic sel);
-    bool          isITLAInverted();
-    bool          isITLBInverted();
-    void          setITLAInverted(bool invert);
-    void          setITLBInverted(bool invert);
-    ITLConnect    getITLConnect(unsigned ch);
-    void          setITLConnect(unsigned ch, ITLConnect selection);
+    PairTriggerLogic getITLAPairLogic() const;
+    PairTriggerLogic getITLBPairLogic() const;
+    void         setITLAPairLogic(PairTriggerLogic sel) const;
+    void         setITLBPairLogic(PairTriggerLogic sel) const;
+    bool          isITLAInverted() const;
+    bool          isITLBInverted() const;
+    void          setITLAInverted(bool invert) const;
+    void          setITLBInverted(bool invert) const;
+    ITLConnect    getITLConnect(unsigned ch) const;
+    void          setITLConnect(unsigned ch, ITLConnect selection) const;
     
-    std::uint64_t getITLAMask();
-    std::uint64_t getITLBMask();
+    std::uint64_t getITLAMask() const;
+    std::uint64_t getITLBMask() const;
     
-    void          setITLAMask(std::uint64_t mask);
-    void          setITLBMask(std::uint64_t mask);
-    std::uint32_t getITLAGateWidth();
-    std::uint32_t getITLBGateWidth();
-    void          setITLAGateWidth(std::uint32_t ns);
-    void          setITLBGateWidth(std::uint32_t ns);
+    void          setITLAMask(std::uint64_t mask) const;
+    void          setITLBMask(std::uint64_t mask) const;
+    std::uint32_t getITLAGateWidth() const;
+    std::uint32_t getITLBGateWidth() const;
+    void          setITLAGateWidth(std::uint32_t ns) const;
+    void          setITLBGateWidth(std::uint32_t ns) const;
     
-    LVDSMode      getLVDSMode(unsigned quartet);
-    void          setLVDSMode(unsigned quartet, LVDSMode mode);
-    LVDSDirection getLVDSDirection(unsigned quartet);
-    void          setLVDSDirection(unsigned quartet, LVDSDirection direction);
-    std::uint16_t getLVDSIOReg(unsigned quartet);
-    void          setLVDSIOReg(unsigned quartet, std::uint16_t mask);
-    std::uint64_t getLVDSTriggerMask(unsigned inputNum);
-    void          setLVDSTriggerMask(unsigned inputNum, std::uint64_t mask);
+    LVDSMode      getLVDSMode(unsigned quartet) const;
+    void          setLVDSMode(unsigned quartet, LVDSMode mode) const;
+    LVDSDirection getLVDSDirection(unsigned quartet) const;
+    void          setLVDSDirection(unsigned quartet, LVDSDirection direction) const;
+    std::uint16_t getLVDSIOReg(unsigned quartet) const;
+    void          setLVDSIOReg(unsigned quartet, std::uint16_t mask) const;
+    std::uint64_t getLVDSTriggerMask(unsigned inputNum) const;
+    void          setLVDSTriggerMask(unsigned inputNum, std::uint64_t mask) const;
     
-    void setDACOutMode(DACOutputMode mode);
-    DACOutputMode getDACOutMode();
-    std::uint16_t getDACOutValue();
-    void          setDACOutValue(std::uint16_t value);
-    unsigned      getDACChannel();
-    void          setDACChannel(unsigned chan);
+    void setDACOutMode(DACOutputMode mode) const;
+    DACOutputMode getDACOutMode() const;
+    std::uint16_t getDACOutValue() const;
+    void          setDACOutValue(std::uint16_t value) const;
+    unsigned      getDACChannel() const;
+    void          setDACChannel(unsigned chan) const;
     
     
     
-    double        getVGAGain(unsigned group);
-    void          setVGAGain(unsigned group, double value);
+    double        getVGAGain(unsigned group) const;
+    void          setVGAGain(unsigned group, double value) const;
     
-    bool          isOffsetCalibrationEnabled(unsigned chan);
-    void          enableOffsetCalibration(unsigned chan, bool enable);
-    bool          isChannelEnabled(unsigned chan);
-    void          enableChannel(unsigned chan, bool enable);
-    int           getSelfTriggerRate(unsigned chan);
-    std::uint32_t getChannelStatus(unsigned chan);
-    double        getDCOffset(unsigned chan);
-    void          setDCOffset(unsigned chan, double pct);
-    double        getGainFactor(unsigned chan);
-    std::uint32_t getTriggerThreshold(unsigned chan);
-    void          setTriggerThreshold(unsigned chan, std::uint32_t threshold);
-    Polarity      getPulsePolarity(unsigned chan);
-    void          setPulsePolarity(unsigned chan, Polarity pol);
+    bool          isOffsetCalibrationEnabled(unsigned chan) const;
+    void          enableOffsetCalibration(unsigned chan, bool enable) const;
+    bool          isChannelEnabled(unsigned chan) const;
+    void          enableChannel(unsigned chan, bool enable) const;
+    int           getSelfTriggerRate(unsigned chan) const;
+    std::uint32_t getChannelStatus(unsigned chan) const;
+    double        getDCOffset(unsigned chan) const;
+    void          setDCOffset(unsigned chan, double pct) const;
+    double        getGainFactor(unsigned chan) const;
+    std::uint32_t getTriggerThreshold(unsigned chan) const;
+    void          setTriggerThreshold(unsigned chan, std::uint32_t threshold) const;
+    Polarity      getPulsePolarity(unsigned chan) const;
+    void          setPulsePolarity(unsigned chan, Polarity pol) const;
     
-    std::uint16_t getEnergySkimLowDiscriminator(unsigned chan);
-    void          setEnergySkimLowDiscriminator(unsigned chan, std::uint16_t value);
-    std::uint16_t getEnergySkimHighDiscriminator(unsigned chan);
-    void          setEnergySkimHighDiscriminator(unsigned chan, std::uint16_t value);
+    std::uint16_t getEnergySkimLowDiscriminator(unsigned chan) const;
+    void          setEnergySkimLowDiscriminator(unsigned chan, std::uint16_t value) const;
+    std::uint16_t getEnergySkimHighDiscriminator(unsigned chan) const;
+    void          setEnergySkimHighDiscriminator(unsigned chan, std::uint16_t value) const;
     
-    EventSelection getEventSelector(unsigned chan);
-    void           setEventSelector(unsigned chan, EventSelection sel);
-    EventSelection getWaveformSelector(unsigned chan);
-    void           setWaveformSelector(unsigned chan, EventSelection sel);
-    CoincidenceMask getCoincidenceMask(unsigned chan);
-    void           setCoincidenceMask(unsigned chan, CoincidenceMask sel);
-    CoincidenceMask getAntiCoincidenceMask(unsigned chan);
-    void           setAntiCoincidenceMask(unsigned chan, CoincidenceMask sel);
+    EventSelection getEventSelector(unsigned chan) const;
+    void           setEventSelector(unsigned chan, EventSelection sel) const;
+    EventSelection getWaveformSelector(unsigned chan) const;
+    void           setWaveformSelector(unsigned chan, EventSelection sel) const;
+    CoincidenceMask getCoincidenceMask(unsigned chan) const;
+    void           setCoincidenceMask(unsigned chan, CoincidenceMask sel) const;
+    CoincidenceMask getAntiCoincidenceMask(unsigned chan) const;
+    void           setAntiCoincidenceMask(unsigned chan, CoincidenceMask sel) const;
     
-    std::uint32_t  getCoincidenceSamples(unsigned chan);
-    void           setCoincidenceSamples(unsigned chan, std::uint32_t samples);
-    std::uint32_t  getCoincidenceNs(unsigned chan);
-    void           setCoincidenceNs(unsigned chan, std::uint32_t ns);
+    std::uint32_t  getCoincidenceSamples(unsigned chan) const;
+    void           setCoincidenceSamples(unsigned chan, std::uint32_t samples) const;
+    std::uint32_t  getCoincidenceNs(unsigned chan) const;
+    void           setCoincidenceNs(unsigned chan, std::uint32_t ns) const;
     
-    std::uint32_t  getTimeFilterRiseTime(unsigned chan);
-    std::uint32_t  getTimeFilterRiseSamples(unsigned chan);
-    void           setTimeFilterRiseTime(unsigned chan, std::uint32_t ns);
-    void           setTimeFilterRiseSamples(unsigned chan, std::uint32_t samples);
-    std::uint32_t  getTimeFilterRetriggerGuardTime(unsigned chan);
-    std::uint32_t  getTimeFilterRetriggerGuardSamples(unsigned chan);
-    void           setTimeFilterRetriggerGuardTime(unsigned chan, std::uint32_t ns);
-    void           setTimeFilterRetriggerGuardSamples(unsigned chan, std::uint32_t samples);
-    std::uint32_t  getEnergyFilterRiseTime(unsigned chan);
-    std::uint32_t  getEnergyFilterRiseSamples(unsigned chan);
-    void           setEnergyFilterRiseTime(unsigned chan, std::uint32_t ns);
-    void           setEnergyFilterRiseSamples(unsigned chan, std::uint32_t samples);
-    std::uint32_t  getEnergyFilterFlatTopTime(unsigned chan);
-    std::uint32_t  getEnergyFilterFlatTopSamples(unsigned chan);
-    void           setEnergyFilterFlatTopTime(unsigned chan, std::uint32_t ns);
-    void           setEnergyFilterFlatTopSamples(unsigned chan, std::uint32_t samples);
-    std::uint32_t  getEnergyFilterPeakingPosition(unsigned chan);
-    void           setEnergyFilterPeakingPosition(unsigned chan, std::uint32_t pct);
-    EnergyPeakingAverage getEnergyFilterPeakingAverage(unsigned chan);
-    void          setEnergyFilterPeakingAverage(unsigned chan, EnergyPeakingAverage sel);
-    std::uint32_t getEnergyFilterPoleZeroTime(unsigned chan);
-    std::uint32_t getEnergyFilterPoleZeroSamples(unsigned chan);
-    void          setEnergyFilterPoleZeroTime(unsigned chan, std::uint32_t ns);
-    void          setEnergyFilterPoleZeroSamples(unsigned chan, std::uint32_t samples);
-    double        getEnergyFilterFineGain(unsigned chan);
-    void          setEnergyFilterFineGain(unsigned chan, double gain);
-    bool          isEnergyFilterFLimitationEnabled(unsigned chan);
-    void          enableEnergyFilterFLimitation(unsigned chan, bool enable);
-    EnergyFilterBaselineAverage getEnergyFilterBaselineAverage(unsigned chan);
-    void          setEnergyFilterBaselineAverage(unsigned chan, EnergyFilterBaselineAverage sel);
-    std::uint32_t getEnergyFilterBaselineGuardTime(unsigned chan);
-    std::uint32_t getEnergyFilterBaselineGuardSamples(unsigned chan);
-    void          setEnergyFilterBaselineGuardTime(unsigned chan, std::uint32_t ns);
-    void          setEnergyFilterBaselineGuardSamples(unsigned chan, std::uint32_t samples);
-    std::uint32_t getEnergyFilterPileupGuardTime(unsigned chan);
-    std::uint32_t getEnergyFilterPileupGuardSamples(unsigned chan);
-    void          setEnergyFilterPileupGuardTime(unsigned chan, std::uint32_t ns);
-    void          setEnergyFilterPileupGuardSamples(unsigned chan, std::uint32_t samples);
+    std::uint32_t  getTimeFilterRiseTime(unsigned chan) const;
+    std::uint32_t  getTimeFilterRiseSamples(unsigned chan) const;
+    void           setTimeFilterRiseTime(unsigned chan, std::uint32_t ns) const;
+    void           setTimeFilterRiseSamples(unsigned chan, std::uint32_t samples) const;
+    std::uint32_t  getTimeFilterRetriggerGuardTime(unsigned chan) const;
+    std::uint32_t  getTimeFilterRetriggerGuardSamples(unsigned chan) const;
+    void           setTimeFilterRetriggerGuardTime(unsigned chan, std::uint32_t ns) const;
+    void           setTimeFilterRetriggerGuardSamples(unsigned chan, std::uint32_t samples) const;
+    std::uint32_t  getEnergyFilterRiseTime(unsigned chan) const;
+    std::uint32_t  getEnergyFilterRiseSamples(unsigned chan) const;
+    void           setEnergyFilterRiseTime(unsigned chan, std::uint32_t ns) const;
+    void           setEnergyFilterRiseSamples(unsigned chan, std::uint32_t samples) const;
+    std::uint32_t  getEnergyFilterFlatTopTime(unsigned chan) const;
+    std::uint32_t  getEnergyFilterFlatTopSamples(unsigned chan) const;
+    void           setEnergyFilterFlatTopTime(unsigned chan, std::uint32_t ns) const;
+    void           setEnergyFilterFlatTopSamples(unsigned chan, std::uint32_t samples) const;
+    std::uint32_t  getEnergyFilterPeakingPosition(unsigned chan) const;
+    void           setEnergyFilterPeakingPosition(unsigned chan, std::uint32_t pct) const;
+    EnergyPeakingAverage getEnergyFilterPeakingAverage(unsigned chan) const;
+    void          setEnergyFilterPeakingAverage(unsigned chan, EnergyPeakingAverage sel) const;
+    std::uint32_t getEnergyFilterPoleZeroTime(unsigned chan) const;
+    std::uint32_t getEnergyFilterPoleZeroSamples(unsigned chan) const;
+    void          setEnergyFilterPoleZeroTime(unsigned chan, std::uint32_t ns) const;
+    void          setEnergyFilterPoleZeroSamples(unsigned chan, std::uint32_t samples) const;
+    double        getEnergyFilterFineGain(unsigned chan) const;
+    void          setEnergyFilterFineGain(unsigned chan, double gain) const;
+    bool          isEnergyFilterFLimitationEnabled(unsigned chan) const;
+    void          enableEnergyFilterFLimitation(unsigned chan, bool enable) const;
+    EnergyFilterBaselineAverage getEnergyFilterBaselineAverage(unsigned chan) const;
+    void          setEnergyFilterBaselineAverage(unsigned chan, EnergyFilterBaselineAverage sel) const;
+    std::uint32_t getEnergyFilterBaselineGuardTime(unsigned chan) const;
+    std::uint32_t getEnergyFilterBaselineGuardSamples(unsigned chan) const;
+    void          setEnergyFilterBaselineGuardTime(unsigned chan, std::uint32_t ns) const;
+    void          setEnergyFilterBaselineGuardSamples(unsigned chan, std::uint32_t samples) const;
+    std::uint32_t getEnergyFilterPileupGuardTime(unsigned chan) const;
+    std::uint32_t getEnergyFilterPileupGuardSamples(unsigned chan) const;
+    void          setEnergyFilterPileupGuardTime(unsigned chan, std::uint32_t ns) const;
+    void          setEnergyFilterPileupGuardSamples(unsigned chan, std::uint32_t samples) const;
     
-    std::uint8_t  getEnergyBits(unsigned chan);
-    std::uint64_t getRealtime(unsigned chan);
-    std::uint64_t getDeadtime(unsigned chan);
+    std::uint8_t  getEnergyBits(unsigned chan) const;
+    std::uint64_t getRealtime(unsigned chan) const;
+    std::uint64_t getDeadtime(unsigned chan) const;
     
     // Commands:
     
@@ -693,14 +693,14 @@ public:
     
     
 private:
-    uint32_t    dottedToInt(const std::string& dotted);
-    template<class T> std::string enumToString(const std::map<T, std::string>& map, T value);
-    template<class T> T stringToEnum(const std::map<std::string, T>& map, const std::string& value);
-    bool textToBool(const std::string& str);
-    void checkInclusiveRange(int low, int high, int value);
-    std::string appendNumber(const char* base, unsigned number);
-    Json::Value createScalar(const char* name, const char* type);
-    Json::Value createArray(const char* name, const char* type, unsigned dimension);
+    uint32_t    dottedToInt(const std::string& dotted) const; 
+    template<class T> std::string enumToString(const std::map<T, std::string>& map, T value) const;
+    template<class T> T stringToEnum(const std::map<std::string, T>& map, const std::string& value) const;
+    bool textToBool(const std::string& str) const;
+    void checkInclusiveRange(int low, int high, int value) const;
+    std::string appendNumber(const char* base, unsigned number) const;
+    Json::Value createScalar(const char* name, const char* type) const;
+    Json::Value createArray(const char* name, const char* type, unsigned dimension) const;
   
 };
 
@@ -723,7 +723,7 @@ private:
  */
 template<class T>
 std::string
-VX2750Pha::enumToString(const std::map<T, std::string>&map, T value)
+VX2750Pha::enumToString(const std::map<T, std::string>&map, T value) const
 {
     auto p = map.find(value);
     if (p == map.end()) {
@@ -748,7 +748,7 @@ VX2750Pha::enumToString(const std::map<T, std::string>&map, T value)
  */
 template<class T>
 T
-VX2750Pha::stringToEnum(const std::map<std::string, T>& map, const std::string& value)
+VX2750Pha::stringToEnum(const std::map<std::string, T>& map, const std::string& value) const
 {
     auto p = map.find(value);
     if (p == map.end()) {
