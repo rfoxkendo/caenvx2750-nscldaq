@@ -882,7 +882,7 @@ CConfigurableObject::addEnumListParameter(
 {
     // figure out the default list of values:
     
-    defaultSize = computeDefaultSize(minlength, maxlength, defaultsize);
+    defaultSize = computeDefaultSize(minlength, maxlength, defaultSize);
     std::string defaultList = simpleList(defaultValue, defaultSize);
     
     // Create the constraint object:
@@ -1270,7 +1270,7 @@ CConfigurableObject::isIntList(string name, string value, void* size)
  * @return bool - true if list passed tests else false.
  */
 bool
-CCOnfigurableObject::isFloatList(std::string name, std::string value, void* checker)
+CConfigurableObject::isFloatList(std::string name, std::string value, void* checker)
 {
     // we need to build the list validator for isList .first will require
     // elements be floats.  .second will be the list size contstraint
@@ -1278,14 +1278,14 @@ CCOnfigurableObject::isFloatList(std::string name, std::string value, void* chec
     // unconstrained.
     
     isListParameter validator;
-    validator.s_checker.s_first = isFloat
-    validator.s_checker.s_second = NULL;   // no range requirement.
+    validator.s_checker.first = isFloat;
+    validator.s_checker.second = NULL;   // no range requirement.
     validator.s_allowedSize    = unconstrainedSize;  // if not provided.
     if  (checker) {
-      validator.s_allowedSize  = checker;  // Includes element checker and value range
+      validator.s_checker.second  = checker;  // Includes element checker and value range
     }
     
-    return isList(name, vlaue, &validator);
+    return isList(name, value, &validator);
 }
 /*!
     Check for a string list.  String lists are allowed to have just about anything
