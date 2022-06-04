@@ -27,7 +27,7 @@
 #include <string>
 #include <stdlib.h>
 #include <map>
-
+namespace caen_nscldaq {
 // Local lookup tables:
 
 static const std::map<unsigned, VX2750Pha::EnergyPeakingAverage> peakingAvgs =
@@ -47,7 +47,7 @@ static const std::map<unsigned, VX2750Pha::EnergyFilterBaselineAverage> blaverag
    {4096, VX2750Pha::Average4K},
    {16384, VX2750Pha::Average16K}
 };
-namespace caen_nscldaq {
+
     
 /**
  *  constructor (default)
@@ -55,7 +55,7 @@ namespace caen_nscldaq {
  *               this is used by various frameworks to look up the object.
  */
 VX2750PHAModuleConfiguration::VX2750PHAModuleConfiguration(const char* name) :
-    XXUSB::XXUSBConfigurableObject(std::string(name))
+  XXUSB::CConfigurableObject(name)
 {
     defineReadoutOptions();
     defineGeneralOptions();
@@ -65,7 +65,7 @@ VX2750PHAModuleConfiguration::VX2750PHAModuleConfiguration(const char* name) :
     defineITLOptions();
     defineLVDSOptions();
     defineDACOptions();
-    defineInputConditioningOptions();
+    defineInputConditioningOptions ();
     defineEventSelectionOptions();
     defineFilterOptions();
 }
@@ -79,7 +79,7 @@ VX2750PHAModuleConfiguration::VX2750PHAModuleConfiguration(const char* name) :
  */
 VX2750PHAModuleConfiguration::VX2750PHAModuleConfiguration(
     const VX2750PHAModuleConfiguration& rhs
-) : XXUSB::XXUSBConfigurableObject(rhs)
+) : XXUSB::CConfigurableObject(rhs)
 {}
 
  /**
@@ -98,7 +98,7 @@ VX2750PHAModuleConfiguration::~VX2750PHAModuleConfiguration()
 VX2750PHAModuleConfiguration&
 VX2750PHAModuleConfiguration::operator=(const VX2750PHAModuleConfiguration& rhs)
 {
-   XXUSB::XXUSBConfigurableObject::operator=(rhs);
+   XXUSB::CConfigurableObject::operator=(rhs);
    return *this;
 }
 /**
@@ -109,7 +109,7 @@ VX2750PHAModuleConfiguration::operator=(const VX2750PHAModuleConfiguration& rhs)
 int
 VX2750PHAModuleConfiguration::operator==(const VX2750PHAModuleConfiguration& rhs)
 {
-  return XXUSB::XXUSBConfigurableObject::operator==(rhs);
+  return XXUSB::CConfigurableObject::operator==(rhs);
 }
 /**
  * inequality comparison.
@@ -159,14 +159,14 @@ VX2750PHAModuleConfiguration::configureModule(VX2750Pha& module)
 void
 VX2750PHAModuleConfiguration::defineReadoutOptions()
 {
-    addBoolParameter("readrawtimes", false);
-    addBoolParameter("readfinetimestamps", false);
-    addBoolParameter("readflags", false);
-    addBoolParameter("readtimedownsampling", false);
+    addBooleanParameter("readrawtimes", false);
+    addBooleanParameter("readfinetimestamps", false);
+    addBooleanParameter("readflags", false);
+    addBooleanParameter("readtimedownsampling", false);
     addBoolListParameter("readanalogprobes", 2,2, false);
     addBoolListParameter("readdigitalprobes", 4,4, false);
-    addBoolParameter("readsamplecount", false);
-    addBoolParameter("readeventsize", false);
+    addBooleanParameter("readsamplecount", false);
+    addBooleanParameter("readeventsize", false);
 }
 /**
  * configureReadoutOptions
@@ -177,14 +177,18 @@ void
 VX2750PHAModuleConfiguration::configureReadoutOptions(VX2750Pha& module)
 {
     // start from the default format:
-    
+
+    auto aprobeEnables = getBoolList("readanalogprobes");
+    auto dprobeEnables = getBoolList("readdigitalprobes");
     module.setDefaultFormat();
     module.enableRawTimestamp(getBoolParameter("readrawtimes"));
     module.enableFineTimestamp(getBoolParameter("readfinetimestamps"));
     module.enableFlags(getBoolParameter("readflags"));
-    module.enableDownSampling(getBoolParameter("readtimedownsampling"));
-    module.enableAnalogProbes(getBoolParameter("readanalogprobes"));
-    module.enableDigitalProbes(getBoolParameter("readdigitalprobes"));
+    module.enableDownsampling(getBoolParameter("readtimedownsampling"));
+    module.enableAnalogProbes(aprobeEnables[0], aprobeEnables[1]);
+    module.enableDigitalProbes(
+       dprobeEnables[0], dprobeEnables[1], dprobeEnables[2], dprobeEnables[3]
+    );
     module.enableSampleSize(getBoolParameter("readsamplecount"));
     module.enableRawEventSize(getBoolParameter("readeventsize"));
 }
@@ -202,8 +206,8 @@ VX2750PHAModuleConfiguration::defineGeneralOptions()
        nullptr
     };
     addEnumParameter("clocksource", clockSources, "Internal");
-    addBoolParameter("outputp0clock", false);
-    addBoolParameter("outputfpclock", false);
+    addBooleanParameter("outputp0clock", false);
+    addBooleanParameter("outputfpclock", false);
     
     
 }
@@ -215,9 +219,10 @@ VX2750PHAModuleConfiguration::defineGeneralOptions()
 void
 VX2750PHAModuleConfiguration::configureGeneralOptions(VX2750Pha& module)
 {
-  module.setClockSource(V2750Pha::StringToClockSource[cget("clocksource")]);
+  auto src = VX2750Pha::stringToClockSource.find(cget("clocksource"))->second;
+  module.setClockSource(src);
   module.setClockOutOnP0(getBoolParameter("outputp0clock"));
-  module.setClokcOutOnFP(getBoolParameter("outputfpclock"));
+  module.setClockOutOnFP(getBoolParameter("outputfpclock"));
                                                       
                                                       
 }
@@ -236,34 +241,38 @@ VX2750PHAModuleConfiguration::defineAcqTriggerOptions()
      
      const char* globalTriggerSrcs[] = {
          "TrgIn", "P0", "SwTrg", "LVDS", "ITLA", "ITLB",
-         "ITLA_AND_ITLB", "ITLA_OR_ITLB", "EncodedCLkIn", "GPIO", "TestPulse"
+         "ITLA_AND_ITLB", "ITLA_OR_ITLB", "EncodedCLkIn", "GPIO", "TestPulse",
           nullptr
      };
-     addEnumParameter("gbltriggersrc", globalTriggerSrces, "TrgIn");
+     addEnumParameter("gbltriggersrc", globalTriggerSrcs, "TrgIn");
      
      const char* triggerSources[] = {
           "ITLB", "ITLA", "GlobalTriggerSource", "TRGIN", "ExternalInhibit",
           "ADCUnderSaturation", "ADCOverSaturation", "SWTrigger", "ChSelfTrigger",
-          "Ch64Trigger", "Disabled"
+          "Ch64Trigger", "Disabled",
           nullptr
      };
      addEnumListParameter("wavetriggersrc", triggerSources, "TRGIN", 0,64,64);
      addEnumListParameter("eventtriggersrc", triggerSources, "TRGIN", 0,64,64);
      
      const char* resetsrcs[] = {
-        "Start", "SIN", "GPIO", "EncodedClkIn"
+	 "Start", "SIN", "GPIO", "EncodedClkIn",
          nullptr
      };
      addEnumParameter("tstampresetsrc", resetsrcs, "Start");
-     addIntListParameter("channeltriggermasks", 0, 64);
-     addBoolListParameter("savetraces", 0, 64, false);
+     addIntListParameter("channeltriggermasks", 0, 64, 0, 64);
+
+     const char* traceRecordModes[] = {
+       "Always", "OnRequest", nullptr
+     };
+     addEnumListParameter("savetraces", traceRecordModes, "OnRequest", 0, 64, 64);
      
      const char* trgoutmodes[] = {
         "TRGIN", "P0", "SwTrg", "LVDS", "ITLA", "ITLB",
         "ITLA_AND_ITLB", "ITLA_OR_ITLB", "EncodedClkIn", "Run", "RefClk", "TestPulse",
-        "Busy", "Fixed0", "Fixed1", "SyncIn", "SIN", "GPIO", "AcceptTrg", "TrgClk"
+        "Busy", "Fixed0", "Fixed1", "SyncIn", "SIN", "GPIO", "AcceptTrg", "TrgClk",
         nullptr
-     }
+     };
      addEnumParameter("triggeroutmode", trgoutmodes, "TRGIN");
      
      const char* gpiomodes[] = {
@@ -275,12 +284,12 @@ VX2750PHAModuleConfiguration::defineAcqTriggerOptions()
      addEnumParameter("gpiomode", gpiomodes, "Disabled");
      
      const char* busyinSources[] = {
-        "SIN", "GPIO", "LVDS", "Disabled"
+      "SIN", "GPIO", "LVDS", "Disabled",
         nullptr
      };
      addEnumParameter("busyinsrc", busyinSources, "Disabled");
      
-     const char* synoutmodes = {
+     const char* syncoutmodes[] = {
         "Disabled", "SyncIn", "TestPulse", "Run",
         nullptr
      };
@@ -291,7 +300,7 @@ VX2750PHAModuleConfiguration::defineAcqTriggerOptions()
         nullptr
      };
      addEnumParameter("boardvetosrc", boardvetosources, "Disabled");
-     addIntParameter("boardvetowidth", 0, 34359738360, 200);
+     addIntegerParameter("boardvetowidth", 0, 34359738360, 200);
      const char* vetopolarities[] = {
       "ActiveHigh", "ActiveLow", nullptr
                     
@@ -306,14 +315,14 @@ VX2750PHAModuleConfiguration::defineAcqTriggerOptions()
      addEnumListParameter("chanveotsrc", chanvetosources, "Disabled", 0, 64, 64);
      addIntListParameter("chanvetowidth", 0, 524280, 0, 64, 64, 200);
      
-     addIntParameter("rundelay", 0, 54280, 0);
-     addBoolParameter("autodisarm", true);
-     addBoolParameter("multiwindow", false);
+     addIntegerParameter("rundelay", 0, 54280, 0);
+     addBooleanParameter("autodisarm", true);
+     addBooleanParameter("multiwindow", false);
      
      const char* pausetsvalues[] = {
         "hold", "run", nullptr
      };
-     addBoolParameter("pausetimestamp", pausetsvalues, "run");
+     addEnumParameter("pausetimestamp", pausetsvalues, "run");
      
      addFloatParameter("volclkoutdelay", -18888.888, 18888.888, 0);
      addFloatParameter("permclkoutdelay", -18888.888, 18888.888, 0);
@@ -326,44 +335,44 @@ VX2750PHAModuleConfiguration::defineAcqTriggerOptions()
 void
 VX2750PHAModuleConfiguration::configureAcquisitionTriggerOptions(VX2750Pha& module)
 {
-  int nch = module.getChannelCount();
+  int nch = module.channelCount();
   
-  module.setStartSource(VX2750Pha::stringToStartSource[cget("startsource")]);
-  module.setGlobalTriggerSource(VX2750Pha::stringToGlobalTriggerSource[cget("gbltriggersrc")]);
+  module.setStartSource(VX2750Pha::stringToStartSource.find(cget("startsource"))->second);
+  module.setGlobalTriggerSource(VX2750Pha::stringToGlobalTriggerSource.find(cget("gbltriggersrc"))->second);
   
   auto waveTriggers = getList("wavetriggersrc");
   auto evtTriggers  = getList("eventtriggersrc");
   auto triggerMasks = getUnsignedList("channeltriggermasks");   // since they're uint64_ts.
-  auto saveTraces   = getBoolList("savetraces");
+  auto saveTraces   = getList("savetraces");
   auto chanVetoSrcs = getList("chnvetosrc");
-  auto chanVetoWidths = getIntegerListParameter("chanvetowidth");
+  auto chanVetoWidths = getIntegerList("chanvetowidth");
   
   for (int i =0; i < nch; i++) {
-      module.setWaveTriggerSource(i, VX2750Pha::stringToWaveTrigger[waveTriggers[i]]);
-      module.setEventTriggerSource(i, VX2750Pha::stringToEventTrigger[evtTriggers[i]]);
-      module.setChannelTriggerMask(i, triggermasks[i]);
-      module.setTraceRecordMode(i, saveTraces[i]);
-      module.setChannelVetoSource(i, VX2750::StringToChannelVeto[cget("chanvetosrc")]);
+    module.setWaveTriggerSource(i, VX2750Pha::stringToWaveTrigger.find(waveTriggers[i])->second);
+    module.setEventTriggerSource(i, VX2750Pha::stringToEventTrigger.find(evtTriggers[i])->second);
+      module.setChannelTriggerMask(i, triggerMasks[i]);
+      module.setTraceRecordMode(i, (saveTraces[i] == "Always") ? VX2750Pha::Always : VX2750Pha::OnRequest);
+      module.setChannelVetoSource(i, VX2750Pha::stringToChannelVeto.find(cget("chanvetosrc"))->second);
       module.setChannelVetoWidth(i, chanVetoWidths[i]);
   }
-  module.setTimestampResetSource(VX2750Pha::stringToTimestampReset[cget("tstampresetsrc")]);
-  module.setTRGOUTMode(VX2750Pha::stringToTRGOUT[cget("triggeroutmode")]);
-  module.setGPIOMode(VX2750Pha::stringToGPIO[cget("gpiomode")]);
-  module.setBusyInSource(VX2750Pha::stringToBusyIn[cget("busyinsrc")]);
-  module.setSyncOutMode(VX2750Pha::stringToSyncOut[cget("syncoutmode")]);
-  module.setBoardVetoSource(sVX2750Pha::tringToVeto[(cget("boardvetosrc")]);
-  module.setBoardVetoWidth(getIntParam("boardvetowidth"));
-  module.setBoardVetoPolarity(VX2750Pha::stringToVetoPolarity[cget("boardvetopolarity")]);
-  module.setRunDelay(getIntParam("rundelay"));
-  module.setAutoDisarmEnabled(getBoolParam("autodisarm"));
-  module.setMultiWindowRunEnabled(getBoolParam("multiwindow"));
+  module.setTimestampResetSource(VX2750Pha::stringToTimestampReset.find(cget("tstampresetsrc"))->second);
+  module.setTRGOUTMode(VX2750Pha::stringToTRGOUT.find(cget("triggeroutmode"))->second);
+  module.setGPIOMode(VX2750Pha::stringToGPIO.find(cget("gpiomode"))->second);
+  module.setBusyInputSource(VX2750Pha::stringToBusyIn.find(cget("busyinsrc"))->second);
+  module.setSyncOutMode(VX2750Pha::stringToSyncOut.find(cget("syncoutmode"))->second);
+  module.setBoardVetoSource(VX2750Pha::stringToVeto.find(cget("boardvetosrc"))->second);
+  module.setBoardVetoWidth(getIntegerParameter("boardvetowidth"));
+  module.setBoardVetoPolarity(VX2750Pha::stringToVetoPolarity.find(cget("boardvetopolarity"))->second);
+  module.setRunDelay(getIntegerParameter("rundelay"));
+  module.setAutoDisarmEnabled(getBoolParameter("autodisarm"));
+  module.setMultiWindowRunEnable(getBoolParameter("multiwindow"));
   bool hold;
   if (cget("pausetimestamp") == "hold") {
     hold = true;
   } else {
     hold = false;
   }
-  module.setPauseTimestampHoldEnabled(hold);
+  module.setPauseTimestampHold(hold);
   module.setVolatileClockDelay(getFloatParameter("volclkoutdelay"));
   module.setPermanentClockDelay(getFloatParameter("permclkoutdelay"));
                                                  
@@ -384,7 +393,7 @@ VX2750PHAModuleConfiguration::defineWfInspectionOptions()
       nullptr
   };
   addEnumListParameter("wavesource", wavesources, "ADC_DATA", 0, 64, 64);
-  addIntListParameter("recordsamples", 4, 8100, 0 64, 64);
+  addIntListParameter("recordsamples", 4, 8100,  0, 64, 64, 8100, 4);
   
   const char* wfresolutions[] = {
       "Res8", "Res16", "Res32", "Res64",
@@ -394,11 +403,11 @@ VX2750PHAModuleConfiguration::defineWfInspectionOptions()
   
   const char* analogProbes[] = {
     "ADCInput", "TimeFilter", "EnergyFilter", "EnergyFilterBaseline",
-    "EnergyFilterMinusBaseline"
+    "EnergyFilterMinusBaseline",
     nullptr
   };
   addEnumListParameter("analogprobe1", analogProbes, "ADCInput", 0, 64, 64);
-  addenumListParameter("analogprobe2", analogProbes, "TimeFilter", 0, 64, 64);
+  addEnumListParameter("analogprobe2", analogProbes, "TimeFilter", 0, 64, 64);
   
   const char* digitalProbes[] = {
     "Trigger", "TimeFilterArmed", "RetriggerGuard", "EnergyFilterBaselineFreeze",
@@ -442,25 +451,25 @@ VX2750PHAModuleConfiguration::defineWfInspectionOptions()
     
     for (int i =0; i < nch; i++) {
       module.setWaveDataSource(
-          i, VX2750Pha::stringToWaveDataSource[(wfsources[i])]
+         i, VX2750Pha::stringToWaveDataSource.find((wfsources[i]))->second
       );
       module.setRecordSamples(i, samples[i]);
-      module.setWaveResolutions(
-          i, VX2750Pha::stringToWaveResolution[resolutins[i]]
+      module.setWaveResolution(
+       i, VX2750Pha::stringToWaveResolution.find(resolutions[i])->second
       );
       for (int p = 0; p < 2; p++) {
         auto& probes = analogProbes[p];
         module.setAnalogProbe(
-            i, p+1, V2750Pha::stringToAnalogProbe[probes[i]]
+	      i, p+1, VX2750Pha::stringToAnalogProbe.find(probes[i])->second
         );
       }
       for (int p = 0; p < 4; p++) {
         auto& probes = digitalProbes[p];
         module.setDigitalProbe(
-          i, p+1, V2750Pha::stringToDigitalProbes[probes[i]]
+          i, p+1, VX2750Pha::stringToDigitalProbes.find(probes[i])->second
         );
       }
-      module.setPretriggerSamples(i, pretrigger[i]);
+      module.setPreTriggerSamples(i, pretrigger[i]);
     }
  }
 /**
@@ -470,17 +479,17 @@ VX2750PHAModuleConfiguration::defineWfInspectionOptions()
 void
 VX2750PHAModuleConfiguration::defineServiceOptions()
 {
-  addIntParameter("testpulseperiod", 0, 34359738360, 100000);
-  addIntParameter("testpulsewidth", 0, 34359738360, 1000);
-  addIntParameter("testpulselowlevel", 0, 65535, 0);
-  addIntParameter("testpulsehighlevel", 0, 65535, 65535);
+  addIntegerParameter("testpulseperiod", 0, 34359738360, 100000);
+  addIntegerParameter("testpulsewidth", 0, 34359738360, 1000);
+  addIntegerParameter("testpulselowlevel", 0, 65535, 0);
+  addIntegerParameter("testpulsehighlevel", 0, 65535, 65535);
   
   const char* iolevels[] = {
     "NIM", "TTL", nullptr
   };
   addEnumParameter("iolevel", iolevels, "NIM");
-  addIntParameter("errorlflagmask", 0, 65535, 0);
-  addIntParameter("errorflagdatamask", 0, 65535, 0);
+  addIntegerParameter("errorlflagmask", 0, 65535, 0);
+  addIntegerParameter("errorflagdatamask", 0, 65535, 0);
 }
 /**
  * configureServiceOptions
@@ -492,7 +501,7 @@ VX2750PHAModuleConfiguration::configureServiceOptions(VX2750Pha& module)
 {
     module.setTestPulsePeriod(getIntegerParameter("testpulseperiod"));
     module.setTestPulseWidth(getIntegerParameter("testpulsewidth"));
-    module.setTestPulseLowLevel(getIntegerPrameter("testpulselowlevel"));
+    module.setTestPulseLowLevel(getIntegerParameter("testpulselowlevel"));
     module.setTestPulseHighLevel(getIntegerParameter("testpulsehighlevel"));
 }
 /**
@@ -508,8 +517,8 @@ VX2750PHAModuleConfiguration::defineITLOptions()
   };
   addEnumParameter("itlalogic", mainlogicoptions, "OR");
   addEnumParameter("itlblogic", mainlogicoptions, "OR");
-  addIntParameter("itlamajoritylevel", 1, 63, 1);
-  addIntParameter("itlbmajoritylevel", 1, 63, 1);
+  addIntegerParameter("itlamajoritylevel", 1, 63, 1);
+  addIntegerParameter("itlbmajoritylevel", 1, 63, 1);
   
   const char* pairlogicoptions[] =  {
     "AND", "OR", "None", nullptr
@@ -530,8 +539,8 @@ VX2750PHAModuleConfiguration::defineITLOptions()
   
   addIntegerParameter("itlamask");
   addIntegerParameter("itlbmask");
-  addIntParameter("itlagatewidth", 0, 524280, 100);
-  addIntParameter("itlbgatewidth", 0, 524280, 100);
+  addIntegerParameter("itlagatewidth", 0, 524280, 100);
+  addIntegerParameter("itlbgatewidth", 0, 524280, 100);
   
 }
 /**
@@ -618,8 +627,8 @@ VX2750PHAModuleConfiguration::defineDACOptions()
     nullptr
   };
   addEnumParameter("dacoutmode", daqoutmodes, "ChSum");
-  addIntParameter("dacoutputlevel", 0, 16383, 0);
-  addIntParameter("dacoutchannel", 0, 63, 0);
+  addIntegerParameter("dacoutputlevel", 0, 16383, 0);
+  addIntegerParameter("dacoutchannel", 0, 63, 0);
 }
 /**
  * configureDACOptions

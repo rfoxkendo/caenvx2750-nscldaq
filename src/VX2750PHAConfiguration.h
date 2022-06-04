@@ -178,7 +178,7 @@ class VX2750Pha;
  *      
  *       
  */
-class VX2750PHAModuleConfiguration : public ::XXUSB::XXUSBConfigurableObject
+class VX2750PHAModuleConfiguration : public ::XXUSB::CConfigurableObject
 {
 public:
     VX2750PHAModuleConfiguration(const char* name);
@@ -198,8 +198,8 @@ private:
     void defineGeneralOptions();
     void configureGeneralOptions(VX2750Pha& module);
     void defineAcqTriggerOptions();
-    void configureAcquisitionTriggerOptions(VX2750PHha& module);
-    void defineWfInspectionOptions()
+    void configureAcquisitionTriggerOptions(VX2750Pha& module);
+    void defineWfInspectionOptions();
     void configureWfInspectionOptions(VX2750Pha& module);
     void defineServiceOptions();
     void configureServiceOptions(VX2750Pha& module);
@@ -209,12 +209,12 @@ private:
     void configureLVDSOptions(VX2750Pha& module);
     void defineDACOptions();
     void configureDAQOptions(VX2750Pha& module);
-    void defineInputConditioningOptions(VX2750Pha& module);
-    void configureInputConditioning();
+    void defineInputConditioningOptions();
+    void configureInputConditioning(VX2750Pha& module);
     void defineEventSelectionOptions();
     void configureEventSelection(VX2750Pha& module);
     void defineFilterOptions();
-    void configureFilter(VX2750Pha& module)
+    void configureFilter(VX2750Pha& module);
 };
     
 }                                             // caen_nscldaq namespace
