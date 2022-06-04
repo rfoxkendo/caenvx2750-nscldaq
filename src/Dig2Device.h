@@ -43,77 +43,127 @@ namespace caen_nscldaq {
         virtual ~Dig2Device();
         
         // Use overloads to make the user's life simpler:
-        void SetValue(const char* parameterName, const char* value);
-        void SetValue(const char* parameterName, int  value);
-        void SetValue(const char* parameterName, std::uint64_t value);
-        void SetValue(const char* parameterName, double value);
-        void SetValue(const char* parameterName, bool value);
-        
-        void SetDeviceValue(const char* devParName, const char* value);
-        void SetDeviceValue(const char* devParName, int value);
-        void SetDeviceValue(const char* devParName, std::uint64_t value);
-        void SetDeviceValue(const char* devParName, double value);
-        void SetDeviceValue(const char* devParName, bool value);
-        
-        void SetChanValue(unsigned chan, const char* chanParName, const char* value);
-        void SetChanValue(unsigned chan, const char* chanParName, int value);
-        void SetChanValue(unsigned chan, const char* chanParName, std::uint64_t value);
-        void SetChanValue(unsigned chan, const char* chanParName, double value);
-        void SetChanValue(unsigned chan, const char* chanParName, bool value);
+        void SetValue(const char* parameterName, const char* value) const;
 
-        void SetLVDSValue(unsigned quartet, const char* LVDSName, const char* value);
-        void SetLVDSValue(unsigned quartet, const char* LVDSName, int value);
-        void setLVDSValue(unsigned quartet, const char* LVDSName, std::uint64_t value);
-        void SetLVDSValue(unsigned quartet, const char* LVDSName, double value);
-        void SetLVDSValue(unsigned quartet, const char* LVDSName, bool value);
+        void SetValue(const char* parameterName, int  value) const;
+
+        void SetValue(const char* parameterName, std::uint64_t value) const;
+
+        void SetValue(const char* parameterName, double value) const;
+
+        void SetValue(const char* parameterName, bool value) const;
+
+        
+        void SetDeviceValue(const char* devParName, const char* value) const;
+
+        void SetDeviceValue(const char* devParName, int value) const;
+
+        void SetDeviceValue(const char* devParName, std::uint64_t value) const;
+
+        void SetDeviceValue(const char* devParName, double value) const;
+
+        void SetDeviceValue(const char* devParName, bool value) const;
+
+        
+        void SetChanValue(unsigned chan, const char* chanParName, const char* value) const;
+
+        void SetChanValue(unsigned chan, const char* chanParName, int value) const;
+
+        void SetChanValue(unsigned chan, const char* chanParName, std::uint64_t value) const;
+
+        void SetChanValue(unsigned chan, const char* chanParName, double value) const;
+
+        void SetChanValue(unsigned chan, const char* chanParName, bool value) const;
+
+
+        void SetLVDSValue(unsigned quartet, const char* LVDSName, const char* value) const;
+
+        void SetLVDSValue(unsigned quartet, const char* LVDSName, int value) const;
+
+        void setLVDSValue(unsigned quartet, const char* LVDSName, std::uint64_t value) const;
+
+        void SetLVDSValue(unsigned quartet, const char* LVDSName, double value) const;
+
+        void SetLVDSValue(unsigned quartet, const char* LVDSName, bool value) const;
+
         
         
         
         // Sadly we can't do the overload trick for getValue since
         // C++ does not overload solely on return value type so:
         
-        std::string GetValue(const char* parameterName, const char* initial = nullptr);
-        int         GetInteger(const char* parameterName);
-        std::uint64_t GetULong(const char* parameterName);
-        double      GetReal(const char* parameterName);
-        bool        GetBool(const char* parameterName);
+        std::string GetValue(const char* parameterName, const char* initial = nullptr) const;
+
+        int         GetInteger(const char* parameterName) const;
+
+        std::uint64_t GetULong(const char* parameterName) const;
+
+        double      GetReal(const char* parameterName) const;
+
+        bool        GetBool(const char* parameterName) const;
+
         
-        std::string GetDeviceValue(const char* parameterName);
-        int         GetDeviceInteger(const char* parameterName);
-        std::uint64_t GetDeviceULong(const char* parameterName);
-        double      GetDeviceReal(const char* parameterName);
-        bool        GetDeviceBool(const char* parameterName);
+        std::string GetDeviceValue(const char* parameterName) const;
+
+        int         GetDeviceInteger(const char* parameterName) const;
+
+        std::uint64_t GetDeviceULong(const char* parameterName) const;
+
+        double      GetDeviceReal(const char* parameterName) const;
+
+        bool        GetDeviceBool(const char* parameterName) const;
+
         
-        std::string GetChanValue(unsigned chan, const char* parameterName);
-        int         GetChanInteger(unsigned chan, const char* parameterName);
-        std::uint64_t GetChanULong(unsigned chan, const char* parameterName);
-        double      GetChanReal(unsigned chan, const char* parameterName);
-        bool        GetChanBool(unsigned chan, const char* parameterName);
+        std::string GetChanValue(unsigned chan, const char* parameterName) const;
+
+        int         GetChanInteger(unsigned chan, const char* parameterName) const;
+
+        std::uint64_t GetChanULong(unsigned chan, const char* parameterName) const;
+
+        double      GetChanReal(unsigned chan, const char* parameterName) const;
+
+        bool        GetChanBool(unsigned chan, const char* parameterName) const;
+
         
-        std::string GetLVDSValue(unsigned quartet, const char* parameterName);
-        int         GetLVDSInteger(unsigned quartet, const char* parameterName);
-        std::uint64_t GetLVDSULong(unsigned quartet, const char* parameterName);
-        double      GetLVDSReal(unsigned quartet, const char* parameterName);
-        bool        GetLVDSBool(unsigned quartet, const char* parameterName);
+        std::string GetLVDSValue(unsigned quartet, const char* parameterName) const;
+
+        int         GetLVDSInteger(unsigned quartet, const char* parameterName) const;
+
+        std::uint64_t GetLVDSULong(unsigned quartet, const char* parameterName) const;
+
+        double      GetLVDSReal(unsigned quartet, const char* parameterName) const;
+
+        bool        GetLVDSBool(unsigned quartet, const char* parameterName) const;
+
         
         // Digitizer commands:
         
-        void Command(const char* command);
+        void Command(const char* command) const;
+
         
         // Acquistion -- these need a higher level of abstraction
         // than offered by felib IMHO.
         
-        void SetActiveEndpoint(const char* ep);
-        std::string GetActiveEndpoint();
-        void SetReadDataFormat(const char* json);   // Can we hide JSON generation?
+        void SetActiveEndpoint(const char* ep) const;
+
+        std::string GetActiveEndpoint() const;
+
+        void SetReadDataFormat(const char* json) const;
+   // Can we hide JSON generation?
         
-        bool ReadData(int timeout, int argc, void** argv);
-        bool hasData();                             // True if a device has data.
+        bool ReadData(int timeout, int argc, void** argv) const;
+
+        bool hasData() const;
+                             // True if a device has data.
     private:
-        std::string devPath(const char* devParName);
-        std::string chanPath(unsigned chan, const char* chanParName);
-        std::string LVDSPath(unsigned quartet, const char* lvdsParName);
-        std::string lastError();
+        std::string devPath(const char* devParName) const;
+
+        std::string chanPath(unsigned chan, const char* chanParName) const;
+
+        std::string LVDSPath(unsigned quartet, const char* lvdsParName) const;
+
+        std::string lastError() const;
+
     };
 }
 

@@ -68,7 +68,7 @@ namespace caen_nscldaq {
      *   C++ destructors cannot toss exceptions so we must assume the close
      *   worked:
      */
-    Dig2Device::~Dig2Device()
+    Dig2Device::~Dig2Device() 
     {
         CAEN_FELib_Close(m_deviceHandle);
     }
@@ -84,7 +84,7 @@ namespace caen_nscldaq {
      *  @todo - Can refactor in terms of a template function!.
      */
     void
-    Dig2Device::SetValue(const char* parameterName, const char* value)
+    Dig2Device::SetValue(const char* parameterName, const char* value) const
     {
         if (CAEN_FELib_SetValue(m_deviceHandle, parameterName, value) != CAEN_FELib_Success) {
             std::stringstream failmsg;
@@ -95,7 +95,7 @@ namespace caen_nscldaq {
         }
     }
     void
-    Dig2Device::SetValue(const char* parameterName, int value)
+    Dig2Device::SetValue(const char* parameterName, int value) const
     {
         std::stringstream vstream;
         vstream << value;
@@ -103,7 +103,7 @@ namespace caen_nscldaq {
         SetValue(parameterName, strValue.c_str());
     }
     void
-    Dig2Device::SetValue(const char* parameterName, std::uint64_t value)
+    Dig2Device::SetValue(const char* parameterName, std::uint64_t value) const
     {
         std::stringstream vstream;
         vstream << value;
@@ -111,7 +111,7 @@ namespace caen_nscldaq {
         SetValue(parameterName, strValue.c_str());
     }
     void
-    Dig2Device::SetValue(const char* parameterName, double value)
+    Dig2Device::SetValue(const char* parameterName, double value) const
     {
         std::stringstream vstream;
         vstream << value;
@@ -119,7 +119,7 @@ namespace caen_nscldaq {
         SetValue(parameterName, strValue.c_str());
     }
     void
-    Dig2Device::SetValue(const char* parameterName, bool value)
+    Dig2Device::SetValue(const char* parameterName, bool value) const
     {
         std::stringstream vstream;
         vstream << value;
@@ -137,31 +137,31 @@ namespace caen_nscldaq {
      * @todo - can think about this being a templated function.
      */
     void
-    Dig2Device::SetDeviceValue(const char* devParName, const char* value)
+    Dig2Device::SetDeviceValue(const char* devParName, const char* value) const
     {
         std::string fullDevPath = devPath(devParName);
         SetValue(fullDevPath.c_str(), value);
     }
     void
-    Dig2Device::SetDeviceValue(const char* devParName, int value)
+    Dig2Device::SetDeviceValue(const char* devParName, int value) const
     {
         std::string fullDevPath = devPath(devParName);
         SetValue(fullDevPath.c_str(), value);
     }
     void
-    Dig2Device::SetDeviceValue(const char* devParName, std::uint64_t value)
+    Dig2Device::SetDeviceValue(const char* devParName, std::uint64_t value) const
     {
         std::string fullDevPath = devPath(devParName);
         SetValue(fullDevPath.c_str(), value);
     }
     void
-    Dig2Device::SetDeviceValue(const char* devParName, double value)
+    Dig2Device::SetDeviceValue(const char* devParName, double value) const
     {
         std::string fullDevPath = devPath(devParName);
         SetValue(fullDevPath.c_str(), value);
     }
     void
-    Dig2Device::SetDeviceValue(const char* devParName, bool value)
+    Dig2Device::SetDeviceValue(const char* devParName, bool value) const
     {
         std::string fullDevPath = devPath(devParName);
         SetValue(fullDevPath.c_str(), value);
@@ -180,31 +180,31 @@ namespace caen_nscldaq {
      */
     
     void
-    Dig2Device::SetChanValue(unsigned  chan, const char* chanParName, const char* value)
+    Dig2Device::SetChanValue(unsigned  chan, const char* chanParName, const char* value) const
     {
         std::string parPath = chanPath(chan, chanParName);
         SetValue(parPath.c_str(), value);
     }
     void
-    Dig2Device::SetChanValue(unsigned  chan, const char* chanParName, int value)
+    Dig2Device::SetChanValue(unsigned  chan, const char* chanParName, int value) const
     {
         std::string parPath = chanPath(chan, chanParName);
         SetValue(parPath.c_str(), value);
     }
     void
-    Dig2Device::SetChanValue(unsigned chan, const char* chanParName, std::uint64_t value)
+    Dig2Device::SetChanValue(unsigned chan, const char* chanParName, std::uint64_t value) const
     {
         std::string parPath = chanPath(chan, chanParName);
         SetValue(parPath.c_str(), value);
     }
     void
-    Dig2Device::SetChanValue(unsigned  chan, const char* chanParName, double value)
+    Dig2Device::SetChanValue(unsigned  chan, const char* chanParName, double value) const
     {
         std::string parPath = chanPath(chan, chanParName);
         SetValue(parPath.c_str(), value);
     }
     void
-    Dig2Device::SetChanValue(unsigned  chan, const char* chanParName, bool value)
+    Dig2Device::SetChanValue(unsigned  chan, const char* chanParName, bool value) const
     {
         std::string parPath = chanPath(chan, chanParName);
         SetValue(parPath.c_str(), value);
@@ -216,31 +216,31 @@ namespace caen_nscldaq {
      *   @param value  (overloaded) value to set.
      */
     void
-    Dig2Device::SetLVDSValue(unsigned quartet, const char* LVDSName, const char* value)
+    Dig2Device::SetLVDSValue(unsigned quartet, const char* LVDSName, const char* value) const
     {
         std::string path = LVDSPath(quartet, LVDSName);
         SetValue(path.c_str(), value);
     }
     void
-    Dig2Device::SetLVDSValue(unsigned quartet, const char* LVDSName, int value)
+    Dig2Device::SetLVDSValue(unsigned quartet, const char* LVDSName, int value) const
     {
         std::string path = LVDSPath(quartet, LVDSName);
         SetValue(path.c_str(), value);
     }
     void
-    Dig2Device::setLVDSValue(unsigned quartet, const char* LVDSName, std::uint64_t value)
+    Dig2Device::setLVDSValue(unsigned quartet, const char* LVDSName, std::uint64_t value) const
     {
         std::string path = LVDSPath(quartet, LVDSName);
         SetValue(path.c_str(), value);
     }
     void
-    Dig2Device::SetLVDSValue(unsigned quartet, const char* LVDSName, double value)
+    Dig2Device::SetLVDSValue(unsigned quartet, const char* LVDSName, double value) const
     {
         std::string path = LVDSPath(quartet, LVDSName);
         SetValue(path.c_str(), value);
     }
     void
-    Dig2Device::SetLVDSValue(unsigned quartet, const char* LVDSName, bool value)
+    Dig2Device::SetLVDSValue(unsigned quartet, const char* LVDSName, bool value) const
     {
         std::string path = LVDSPath(quartet, LVDSName);
         SetValue(path.c_str(), value);
@@ -256,7 +256,7 @@ namespace caen_nscldaq {
      *  @return value
      */
     std::string
-    Dig2Device::GetValue(const char* parameterName, const char* initial)
+    Dig2Device::GetValue(const char* parameterName, const char* initial) const
     {
         char buffer[256];           // Max value according to lib docs.
         if (initial) {
@@ -271,7 +271,7 @@ namespace caen_nscldaq {
         }
         return std::string(buffer);
     }
-    int Dig2Device::GetInteger(const char* parameterName)
+    int Dig2Device::GetInteger(const char* parameterName) const
     {
         int value;
         std::string strValue = GetValue(parameterName);
@@ -279,7 +279,7 @@ namespace caen_nscldaq {
         sValue >> value;
         return value;
     }
-    std::uint64_t Dig2Device::GetULong(const char* parameterName)
+    std::uint64_t Dig2Device::GetULong(const char* parameterName) const
     {
         std::uint64_t value;
         std::string strValue = GetValue(parameterName);
@@ -287,7 +287,7 @@ namespace caen_nscldaq {
         sValue >> value;
         return value;
     }
-    double Dig2Device::GetReal(const char* parameterName)
+    double Dig2Device::GetReal(const char* parameterName) const
     {
         double value;
         std::string strValue = GetValue(parameterName);
@@ -295,7 +295,7 @@ namespace caen_nscldaq {
         sValue >> value;
         return value;
     }
-    bool Dig2Device::GetBool(const char* parameterName)
+    bool Dig2Device::GetBool(const char* parameterName) const
     {
         bool value;
         std::string strValue = GetValue(parameterName);
@@ -313,31 +313,31 @@ namespace caen_nscldaq {
      *         template method.
      */
     std::string
-    Dig2Device::GetDeviceValue(const char* parameterName)
+    Dig2Device::GetDeviceValue(const char* parameterName) const
     {
         std::string fullPath = devPath(parameterName);
         return GetValue(fullPath.c_str());        
     }
     int
-    Dig2Device::GetDeviceInteger(const char* parameterName)
+    Dig2Device::GetDeviceInteger(const char* parameterName) const
     {
         std::string fullPath = devPath(parameterName);
         return GetInteger(fullPath.c_str());
     }
     std::uint64_t
-    Dig2Device::GetDeviceULong(const char* parameterName)
+    Dig2Device::GetDeviceULong(const char* parameterName) const
     {
         std::string fullPath = devPath(parameterName);
         return GetULong(fullPath.c_str());
     }
     double
-    Dig2Device::GetDeviceReal(const char* parameterName)
+    Dig2Device::GetDeviceReal(const char* parameterName) const
     {
         std::string fullPath = devPath(parameterName);
         return GetReal(fullPath.c_str());
     }
     bool
-    Dig2Device::GetDeviceBool(const char* parameterName)
+    Dig2Device::GetDeviceBool(const char* parameterName) const
     {
         std::string fullPath = devPath(parameterName);
         return GetBool(fullPath.c_str());
@@ -352,31 +352,31 @@ namespace caen_nscldaq {
      * 
      */
     std::string
-    Dig2Device::GetChanValue(unsigned chan, const char* parameterName)
+    Dig2Device::GetChanValue(unsigned chan, const char* parameterName) const
     {
         std::string fullPath = chanPath(chan, parameterName);
         return GetValue(fullPath.c_str());
     }
     int
-    Dig2Device::GetChanInteger(unsigned chan, const char* parameterName)
+    Dig2Device::GetChanInteger(unsigned chan, const char* parameterName) const
     {
         std::string fullPath = chanPath(chan, parameterName);
         return GetInteger(fullPath.c_str());
     }
     std::uint64_t
-    Dig2Device::GetChanULong(unsigned chan, const char* parameterName)
+    Dig2Device::GetChanULong(unsigned chan, const char* parameterName) const
     {
         std::string fullPath = chanPath(chan, parameterName);
         return GetULong(fullPath.c_str());    
     }
     double
-    Dig2Device::GetChanReal(unsigned chan, const char* parameterName)
+    Dig2Device::GetChanReal(unsigned chan, const char* parameterName) const
     {
         std::string fullPath = chanPath(chan, parameterName);
         return GetReal(fullPath.c_str());
     }
     bool
-    Dig2Device::GetChanBool(unsigned chan, const char* parameterName)
+    Dig2Device::GetChanBool(unsigned chan, const char* parameterName) const
     {
         std::string fullPath = chanPath(chan, parameterName);
         return GetBool(fullPath.c_str());
@@ -389,31 +389,31 @@ namespace caen_nscldaq {
      * @return std::string the value read.
      */
     std::string
-    Dig2Device::GetLVDSValue(unsigned quartet, const char* parameterName)
+    Dig2Device::GetLVDSValue(unsigned quartet, const char* parameterName) const
     {
         std::string fullPath = LVDSPath(quartet, parameterName);
         return GetValue(fullPath.c_str());
     }
     int
-    Dig2Device::GetLVDSInteger(unsigned quartet, const char* parameterName)
+    Dig2Device::GetLVDSInteger(unsigned quartet, const char* parameterName) const
     {
         std::string fullPath = LVDSPath(quartet, parameterName);
         return GetInteger(fullPath.c_str());
     }
     std::uint64_t
-    Dig2Device::GetLVDSULong(unsigned quartet, const char* parameterName)
+    Dig2Device::GetLVDSULong(unsigned quartet, const char* parameterName) const
     {
         std::string fullPath = LVDSPath(quartet, parameterName);
         return GetULong(fullPath.c_str());
     }
     double
-    Dig2Device::GetLVDSReal(unsigned quartet, const char* parameterName)
+    Dig2Device::GetLVDSReal(unsigned quartet, const char* parameterName) const
     {
         std::string fullPath = LVDSPath(quartet, parameterName);
         return GetReal(fullPath.c_str());
     }
     bool
-    Dig2Device::GetLVDSBool(unsigned quartet, const char* parameterName)
+    Dig2Device::GetLVDSBool(unsigned quartet, const char* parameterName) const
     {
         std::string fullPath = LVDSPath(quartet, parameterName);
         return GetBool(fullPath.c_str());
@@ -424,7 +424,7 @@ namespace caen_nscldaq {
      * @param command - this is the terminal node of the command path string.
      */
     void
-    Dig2Device::Command(const char* command)
+    Dig2Device::Command(const char* command) const
     {
         std::string fullPath = "cmd/";
         fullPath += command;
@@ -445,7 +445,7 @@ namespace caen_nscldaq {
      *    @param ep = name of the endpoint
      */
     void
-    Dig2Device::SetActiveEndpoint(const char* ep)
+    Dig2Device::SetActiveEndpoint(const char* ep) const
     {
         SetValue("/endpoint/par/activeendpoint", ep);
     }
@@ -454,7 +454,7 @@ namespace caen_nscldaq {
      *   Return the string name of the selected endpoint :
      */
     std::string
-    Dig2Device::GetActiveEndpoint()
+    Dig2Device::GetActiveEndpoint() const
     {
         return GetValue("/endpoint/par/activeendpoint");
     }
@@ -467,7 +467,7 @@ namespace caen_nscldaq {
      * @param json   - The JSON that descsribes what we want from the device.
      */
     void
-    Dig2Device::SetReadDataFormat(const char* json)
+    Dig2Device::SetReadDataFormat(const char* json) const
     {
         if (CAEN_FELib_SetReadDataFormat(m_deviceHandle, json) != CAEN_FELib_Success) {
             std::stringstream strMessage;
@@ -510,7 +510,7 @@ namespace caen_nscldaq {
      *    @return bool   - true if data were read, false if timeout.
      */
     bool
-    Dig2Device::ReadData(int timeout, int argc, void** argv)
+    Dig2Device::ReadData(int timeout, int argc, void** argv) const
     {
         // No point in making a constant size since we'll have to list the
         // elements explicitly in the call to ReadData.
@@ -542,7 +542,7 @@ namespace caen_nscldaq {
      * @return bool - true if the device has data that can be read:
      */
     bool
-    Dig2Device::hasData()
+    Dig2Device::hasData() const
     {
         return CAEN_FELib_HasData(m_deviceHandle, 0);
     }
@@ -557,7 +557,7 @@ namespace caen_nscldaq {
      * @return std::string - the full path.
      */
     std::string
-    Dig2Device::devPath(const char* devParName)
+    Dig2Device::devPath(const char* devParName) const
     {
         std::string result = "/par/";
         result += devParName;
@@ -572,7 +572,7 @@ namespace caen_nscldaq {
      * @return std::string Full path.
      */
     std::string
-    Dig2Device::chanPath(unsigned chan, const char* chanParName)
+    Dig2Device::chanPath(unsigned chan, const char* chanParName) const
     {
         std::stringstream strPath;
         strPath << "/ch/" << chan << "/par/" << chanParName;
@@ -589,7 +589,7 @@ namespace caen_nscldaq {
      *  @return std::string
      */
     std::string
-    Dig2Device::LVDSPath(unsigned quartet, const char* lvdsParName)
+    Dig2Device::LVDSPath(unsigned quartet, const char* lvdsParName) const
     {
         std::stringstream strPath;
         strPath << "/lvds" << quartet << "/par/" << lvdsParName;
@@ -602,7 +602,7 @@ namespace caen_nscldaq {
      * @return std::string
      */
     std::string
-    Dig2Device::lastError()
+    Dig2Device::lastError() const
     {
         char msg[1024];                    // According to the API.
         if(CAEN_FELib_GetLastError(msg) != CAEN_FELib_Success) {
