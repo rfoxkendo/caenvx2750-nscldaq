@@ -393,7 +393,7 @@ VX2750PHAModuleConfiguration::defineWfInspectionOptions()
       nullptr
   };
   addEnumListParameter("wavesource", wavesources, "ADC_DATA", 0, 64, 64);
-  addIntListParameter("recordsamples", 4, 8100,  0, 64, 64, 8100, 4);
+  addIntListParameter("recordsamples", 4, 8100,  0, 64, 64, 4);
   
   const char* wfresolutions[] = {
       "Res8", "Res16", "Res32", "Res64",
@@ -466,7 +466,7 @@ VX2750PHAModuleConfiguration::defineWfInspectionOptions()
       for (int p = 0; p < 4; p++) {
         auto& probes = digitalProbes[p];
         module.setDigitalProbe(
-          i, p+1, VX2750Pha::stringToDigitalProbes.find(probes[i])->second
+          i, p+1, VX2750Pha::stringToDigitalProbe.find(probes[i])->second
         );
       }
       module.setPreTriggerSamples(i, pretrigger[i]);
@@ -552,25 +552,25 @@ VX2750PHAModuleConfiguration::defineITLOptions()
 void
 VX2750PHAModuleConfiguration::configureITLOptions(VX2750Pha& module)
 {
-     module.setITLAMainLogic(VX2750Pha::stringToIndividualTriggerLogic[cget("itlalogic")]);
-     module.setITLBMainLogic(VX2750Pha::stringToIndividualTriggerLogic[cget("itlblogic")]);
+     module.setITLAMainLogic(VX2750Pha::stringToIndividualTriggerLogic.find("itlalogic")->second);
+     module.setITLBMainLogic(VX2750Pha::stringToIndividualTriggerLogic.find("itlblogic")->second);
      module.setITLAMajorityLevel(getIntegerParameter("itlamajoritylevel"));
      module.setITLBMajorityLevel(getIntegerParameter("itlbmajoritylevel"));
-     module.setITLAPairLogic(VX2750Pha::stringToPariLogic[cget("itlapairlogic")]);
-     module.setITLBPairLogic(VX2750Pha::stringToPariLogic[cget("itlbpairlogic")]);
+     module.setITLAPairLogic(VX2750Pha::stringToPairLogic.find("itlapairlogic")->second);
+     module.setITLBPairLogic(VX2750Pha::stringToPairLogic.find("itlbpairlogic")->second);
      module.setITLAInverted(cget("itlapolarity") == "Inverted" ? true : false);
      module.setITLBInverted(cget("itlbpolarity") == "Inverted" ? true : false);
      
      int nch= module.channelCount();
      auto connections = getList("itlconnect");
      for (int i = 0; i < nch; i++) {
-        module.setITLConnect(i, VX2750Pha::stringToITLConnect[cget("itlconnect")]);
+        module.setITLConnect(i, VX2750Pha::stringToITLConnect.find("itlconnect")->second);
   
      }
      module.setITLAMask(getUnsignedParameter("itlamask"));
-     module.setITLBMask(getUnsingedParameter("itlbmask")):
+     module.setITLBMask(getUnsignedParameter("itlbmask"));
      module.setITLAGateWidth(getUnsignedParameter("itlagatewidth"));
-     mdoule.setITLBGateWidth(getUnsignedParameter("itlbgatewidth"));
+     module.setITLBGateWidth(getUnsignedParameter("itlbgatewidth"));
 }
 /**
  * defineLVDSOptions
@@ -582,11 +582,11 @@ VX2750PHAModuleConfiguration::defineLVDSOptions()
   const char* lvdsmodes[] = {
     "SelfTriggers", "Sync", "IORegister", nullptr
   };
-  addEnumList("lvdsmode", lvdsmodes, "IORegister", 4, 4, 4);
+  addEnumListParameter("lvdsmode", lvdsmodes, "IORegister", 4, 4, 4);
   const char* lvdsdirections[] ={
     "Input", "Output", nullptr
   };
-  addEnumList("lvsdirection", lvdsdirections, "Output", 4, 4, 4);
+  addEnumListParameter("lvsdirection", lvdsdirections, "Output", 4, 4, 4);
   addIntListParameter("lvdstrgmask", 0, 0xffffffffffffffff, 16, 16, 16, 0);
 }
 /**
@@ -604,14 +604,14 @@ VX2750PHAModuleConfiguration::configureLVDSOptions(VX2750Pha& module)
   // First set the direction and mode of each quartet.
   
   for (int i = 0; i < 4; i++) {
-    module.setLVDSMode(i, VX2750Pha::stringToLVDSMode[modes[i]]);
+    module.setLVDSMode(i, VX2750Pha::stringToLVDSMode.find(modes[i])->second);
     module.setLVDSDirection(i, direction[i] == "Input" ? VX2750Pha::Input : VX2750Pha::Output);
   }
   
   // Now set the per pin trigger masks.
   
   for (int i =0; i < 16; i++) {
-    module.setLVDSTirggerMask(i, masks[i]);
+    module.setLVDSTriggerMask(i, masks[i]);
   }
 }
 /**
@@ -626,7 +626,7 @@ VX2750PHAModuleConfiguration::defineDACOptions()
     "Ramp", "Sin5MHz", "Square",
     nullptr
   };
-  addEnumParameter("dacoutmode", daqoutmodes, "ChSum");
+  addEnumParameter("dacoutmode", dacoutmodes, "ChSum");
   addIntegerParameter("dacoutputlevel", 0, 16383, 0);
   addIntegerParameter("dacoutchannel", 0, 63, 0);
 }
@@ -637,7 +637,7 @@ VX2750PHAModuleConfiguration::defineDACOptions()
 void
 VX2750PHAModuleConfiguration::configureDACOptions(VX2750Pha& module)
 {
-  module.setDACOutMode(VX2750Pha::stringToGDACOutMode[cget("dacoutmode")]);
+  module.setDACOutMode(VX2750Pha::stringToDACOutMode.find("dacoutmode")->second);
   module.setDACOutValue(getIntegerParameter("dacoutputlevel"));
   module.setDACChannel(getIntegerParameter("dacoutchannel"));
 }
@@ -656,7 +656,7 @@ VX2750PHAModuleConfiguration::defineInputConditioningOptions()
     addIntListParameter("triggerthresholds", 0, 8191, 0, 64, 64, 1023);
     
     const char* polarities[] = {"Positive", "Negative", nullptr};
-    addEnumListParameter("inputpolarities", polarities, 0, 64, "Negative", 64);
+    addEnumListParameter("inputpolarities", polarities, "Negative", 0, 64, 64);
 }
 /**
  * conifigureInputConditioning
@@ -693,7 +693,7 @@ VX2750PHAModuleConfiguration::configureInputConditioning(VX2750Pha& module)
     module.setTriggerThreshold(i, thresholds[i]);
     module.setPulsePolarity(
         i,
-        (inputPolarities == "Positive") ?
+        (inputPolarities[i] == "Positive") ?
           VX2750Pha::Positive : VX2750Pha::Negative
     );
   }
@@ -713,15 +713,15 @@ VX2750PHAModuleConfiguration::defineEventSelectionOptions()
   const char* selectors[] = {
     "All", "Pileup", "EnergySkim", nullptr
   };
-  addEnumListParameter("eventselector", selectors, 0, 64, "All", 64);
-  addEnumListParameter("waveselector", selectors, 0, 64, "All", 64);
+  addEnumListParameter("eventselector", selectors, "All", 0, 64, 64);
+  addEnumListParameter("waveselector", selectors, "All", 0, 64, 64);
   
   const char* masks[] = {
     "Disabled", "Ch64Trigger", "TRGIN", "GlobalTriggerSource", "ITLA", "ITLB",
     nullptr
   };
-  addEnumListParameter("coincidencemask", masks, 0, 64,"Disabled", 64);
-  addEnumListParameter("anticoincidencemask", masks, 0, 64,"Disabled", 64);
+  addEnumListParameter("coincidencemask", masks, "Disabled", 0, 64, 64);
+  addEnumListParameter("anticoincidencemask", masks, "Disabled", 0, 64, 64);
   
   addIntListParameter("coincidencelength", 8,  524280, 0, 64, 64, 100);
 }
@@ -738,18 +738,18 @@ VX2750PHAModuleConfiguration::configureEventSelection(VX2750Pha& module)
   auto eventselectors = getList("eventselector");
   auto waveselectors = getList("waveSelector");
   auto coincMasks = getList("coincidencemask");
-  auto anticoincMask = getList("anticoincidencemasks");
+  auto anticoincMasks = getList("anticoincidencemasks");
   auto coincidencewindow = getIntegerList("coincidencelength");
   
   int nch = module.channelCount();
   for(int i =0; i < nch; i++) {
     module.setEnergySkimLowDiscriminator(i, lowskims[i]);
     module.setEnergySkimHighDiscriminator(i, hiskims[i]);
-    module.setEventSelector(i, VX2750Pha::stringToEventSelector[eventselectors[i]]);
-    module.setWaveformSelector(i, VX2750Pha::stringToEventSelector[eventselectors[i]]);
-    module.setCoincidenceNs(chan, coincidencewindow[i]);
-    module.setCoincidenceMask(chan, VX2750Pha::stringToCoincidenceMask[coincMask[i]]);
-    module.setAntiCoincidenceMask(chan, VX2750Pha::stringToCoincidenceMask[anticoincMask[i]]);
+    module.setEventSelector(i, VX2750Pha::stringToEventSelection.find(eventselectors[i])->second);
+    module.setWaveformSelector(i, VX2750Pha::stringToEventSelection.find(eventselectors[i])->second);
+    module.setCoincidenceNs(i, coincidencewindow[i]);
+			       module.setCoincidenceMask(i, VX2750Pha::stringToCoincidenceMask.find(coincMasks[i])->second);
+			       module.setAntiCoincidenceMask(i, VX2750Pha::stringToCoincidenceMask.find(anticoincMasks[i])->second);
   }
 }
 /**
@@ -770,15 +770,15 @@ VX2750PHAModuleConfiguration::defineFilterOptions()
     const char* peakingaverages[] = {
       "1", "4", "16", "64", nullptr
     };
-    addEnumListParameter("efpeakingavg", peakingaverages, 0, 64, "1", 64);
+    addEnumListParameter("efpeakingavg", peakingaverages, "1", 0, 64, 64);
     addIntListParameter("efpolezero", 80, 524000, 0, 64, 64, 80);
     addFloatListParameter("effinegain", 0, 0.0, 10.0, 64, 64, 1.0);
     addBoolListParameter("eflflimitation", 0, 64, false, 64);
     
-    const har* baslineaverages[] = {
+    const char* baselineaverages[] = {
       "0", "16", "64", "256", "1024", "4096", "16384", nullptr
     };
-    addEnumListParameter("efbaselineavg", baselineaverages, 0, 64, "0",64);
+    addEnumListParameter("efbaselineavg", baselineaverages, "0", 0, 64, 64);
     addIntListParameter("efbaselineguardt", 0, 8000, 0, 64, 64, 0);
     addIntListParameter("efpileupguardt", 0, 80000, 0, 64, 64, 0);
     
@@ -809,13 +809,13 @@ VX2750PHAModuleConfiguration::configureFilter(VX2750Pha& module)
       module.setTimeFilterRiseTime(i, triggerRiseTimes[i]);
       module.setTimeFilterRetriggerGuardTime(i, triggerRetriggerGuards[i]);
       module.setEnergyFilterRiseTime(i, energyRiseTimes[i]);
-      modulee.setEnergyFilterFlattopTime(i, energyFlatTopTimes[i]);
+      module.setEnergyFilterFlatTopTime(i, energyFlatTopTimes[i]);
       module.setEnergyFilterFlatTopTime(i, energyPeakingPos[i]);
-      module.setEnergyFilterPeakingAverage(i, peakingAvgs[peakingAverages[i]]);
+      module.setEnergyFilterPeakingAverage(i, peakingAvgs.find(peakingAverages[i])->second);
       module.setEnergyFilterPoleZeroTime(i, poleZeros[i]);
       module.setEnergyFilterFineGain(i, fineGains[i]);
-      module.setEnergyFilterFLimitationEnabled(i, lfEliminations[i]);
-      module.setEnergyFilterBaselineAverage(i, blaverage[blAveraging[i]]);
+      module.enableEnergyFilterFLimitation(i, lfEliminations[i]);
+      module.setEnergyFilterBaselineAverage(i, blaverage.find(blAveraging[i])->second);
       module.setEnergyFilterBaselineGuardTime(i, blGuardTimes[i]);
       module.setEnergyFilterPileupGuardTime(i, pupGuardTimes[i]);
     }

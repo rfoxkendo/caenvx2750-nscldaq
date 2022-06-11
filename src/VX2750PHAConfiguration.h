@@ -208,7 +208,7 @@ private:
     void defineLVDSOptions();
     void configureLVDSOptions(VX2750Pha& module);
     void defineDACOptions();
-    void configureDAQOptions(VX2750Pha& module);
+    void configureDACOptions(VX2750Pha& module);
     void defineInputConditioningOptions();
     void configureInputConditioning(VX2750Pha& module);
     void defineEventSelectionOptions();
