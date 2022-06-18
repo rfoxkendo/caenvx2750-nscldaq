@@ -64,8 +64,7 @@ private:
     void cget(CTCLInterpreter& interp, std::vector<CTCLObject>& objv);
     void destroy(CTCLInterpreter& interp, std::vector<CTCLObject>& objv);
     void list(CTCLInterpreter& interp, std::vector<CTCLObject>& objv);
-private:
-  VX2750PHAModuleConfiguration* getConfigOrThrow(std::string name);
+    VX2750PHAModuleConfiguration* getConfigOrThrow(std::string name);
   
 };
 
