@@ -27,12 +27,14 @@
 #include <vector>
 #include <map>
 
-namespace caen_nscldaq {
-
-class VX2750PHAConfiguration;
-
 class CTCLInterpreter;
 class CTCLobject;
+
+namespace caen_nscldaq {
+
+class VX2750PHAModuleConfiguration;
+
+
 
 /**
  * @class VX2750TclConfig
@@ -47,13 +49,13 @@ class CTCLobject;
 class VX2750TclConfig : public ::CTCLObjectProcessor
 {
 private:
-    std::map<std::string, VX2750PHAConfiguration*>  m_modules;
+    std::map<std::string, VX2750PHAModuleConfiguration*>  m_modules;
 public:
     VX2750TclConfig(CTCLInterpreter& interp, const char* pName);
     virtual ~VX2750TclConfig();
     
     int operator()(CTCLInterpreter& interp, std::vector<CTCLObject>& objv);
-    VX2750PHAConfiguration* getModule(const char* pName);
+    VX2750PHAModuleConfiguration* getModule(const char* pName);
     std::vector<std::string> listModules();
     
 private:
@@ -62,6 +64,9 @@ private:
     void cget(CTCLInterpreter& interp, std::vector<CTCLObject>& objv);
     void destroy(CTCLInterpreter& interp, std::vector<CTCLObject>& objv);
     void list(CTCLInterpreter& interp, std::vector<CTCLObject>& objv);
+private:
+  VX2750PHAModuleConfiguration* getConfigOrThrow(std::string name);
+  
 };
 
  

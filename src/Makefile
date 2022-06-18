@@ -30,7 +30,8 @@ CPPFLAGS=$(FELIB_CPPFLAGS) $(DIG2_CPPFLAGS) $(JSON_CPPFLAGS) $(NSCLDAQ_CXXFLAGS)
 	$(TCL_CPPFLAGS)
 
 
-libCaenVx2750.a:  Dig2Device.o VX2750Pha.o XXUSBConfigurableObject.o VX2750PHAConfiguration.o
+libCaenVx2750.a:  Dig2Device.o VX2750Pha.o XXUSBConfigurableObject.o VX2750PHAConfiguration.o \
+	VX2750TclConfig.o
 	ar -ruv $@ $?
 
 Dig2Device.o: Dig2Device.cpp Dig2Device.h
@@ -47,3 +48,6 @@ VX2750PHAConfiguration.o: VX2750PHAConfiguration.cpp VX2750PHAConfiguration.h \
 	$(CXX) $(CPPFLAGS) -c $<
 
 
+VX2750PHATclConfiguration:o VX2750PHATclConfiguration.cpp VX2750PHATclConfiguration.h \
+	VX2750PHAConfiguration.h XXUSBConfigurableObject.h
+	$(CXX) $(CPPFLAGS) -c $<

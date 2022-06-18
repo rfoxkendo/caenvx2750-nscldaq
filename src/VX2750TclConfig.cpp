@@ -21,13 +21,14 @@
 * @author   Ron Fox
 *
 */
-
+#include "VX2750TclConfig.h"
 #include "VX2750PHAConfiguration.h"
 #include <TCLObject.h>
 #include <TCLInterpreter.h>
 #include <tcl.h>
 #include <algorithm>
 #include <stdexcept>
+namespace caen_nscldaq {
 /**
  * constructor
  *    Register the command with the interpreter:
@@ -35,7 +36,7 @@
  *  @param pName  - Name of the command.
  */
 VX2750TclConfig::VX2750TclConfig(CTCLInterpreter& interp, const char* pName) :
-    CTCLObjectProcessor(interp, name, TCLPLUS::kfTRUE)
+    CTCLObjectProcessor(interp, pName, TCLPLUS::kfTRUE)
 {}
 
 /**
@@ -43,12 +44,13 @@ VX2750TclConfig::VX2750TclConfig(CTCLInterpreter& interp, const char* pName) :
  *   - We need to get rid of the modules we've already gotten as they get
  *     new'd into existence.
  */
-VX7250TclConfig::~VX2750TclConfig() {
+VX2750TclConfig::~VX2750TclConfig() {
     std::for_each(
-        m_modules.begin(), m_module.end(),
-        [](std::pair<std::string, VX2750PHAConfiguration*> item) {  //Lambda that
+        m_modules.begin(), m_modules.end(),
+        [](std::pair<std::string, VX2750PHAModuleConfiguration*> item) {  //Lambda that
             delete item.second;                               // Deletes the module.
         }
+    );
 }
 
 /**
@@ -63,7 +65,7 @@ VX7250TclConfig::~VX2750TclConfig() {
 int
 VX2750TclConfig::operator()(CTCLInterpreter& interp, std::vector<CTCLObject>& objv)
 {
-    BindAll(interp, objv);
+    bindAll(interp, objv);
     try {
         requireAtLeast(objv, 2, "Insufficient command parameters");
         std::string subcommand = objv[1];
@@ -81,7 +83,7 @@ VX2750TclConfig::operator()(CTCLInterpreter& interp, std::vector<CTCLObject>& ob
         } else {
             std::string msg = "Unrecognized subcommand: ";
             msg += subcommand;
-            throw m
+            throw msg;
         }
     }
     catch (std::string msg) {
@@ -92,4 +94,173 @@ VX2750TclConfig::operator()(CTCLInterpreter& interp, std::vector<CTCLObject>& ob
         interp.setResult(e.what());
         return TCL_ERROR;
     }
+    return TCL_OK;
 }
+/**
+ * create
+ * 
+ * create a new module:
+ *     vx27x0 create name
+ *
+ *   -   Require exactly three command line words.
+ *   -   Require a unique name.
+ *   -   Create a new VX2750PHAConfiguration and save it in the map
+ *       indexed by its name.
+ *       
+ * @param interp - references the interpreter running the command.
+ * @param obvj   - the encapsulated command words.
+ * @throw Various appropriate exceptions on faiulre.
+*/
+void VX2750TclConfig::create(CTCLInterpreter& interp, std::vector<CTCLObject>& objv)
+{
+    requireExactly(objv, 3, "Incorrect number of command line parameters");
+    
+    std::string name = objv[2];
+    if (m_modules.count(name) > 0) {
+        throw std::string("Duplicate configuration name");
+    }
+    
+    m_modules[name] = new VX2750PHAModuleConfiguration(name.c_str());
+}
+/**
+ * config
+ *    Configure a module.
+ *    -  Require at least 5 parameters
+ *    -  Require an odd number of parameters.
+ *    -  Look up the name, throwing if it can't be found.
+ *    -  For each config name/value pair, attempt to configure that parameter
+ *
+ *  
+ *    
+ * @param interp - references the interpreter running the command.
+ * @param obvj   - the encapsulated command words.
+ * @throw Various appropriate exceptions on faiulre.
+ * @note Partial configuration is possible:  If a configuration attempt fails,
+ *       all of the configurations up to that failure will be done.
+*/
+void VX2750TclConfig::config(CTCLInterpreter& interp, std::vector<CTCLObject>& objv)
+{
+    requireAtLeast(objv, 5, "Insufficient command line parameters");
+    if ((objv.size() % 2) != 1) {
+        throw std::string("Each configuration parameter name must be paired with a value");
+    }
+    std::string name = objv[2];
+    auto pConfig = getConfigOrThrow(name);
+    
+    // Note that failures will throw too:
+    
+    for (int i = 4; i < objv.size(); i += 2) {
+        std::string param =objv[i];
+        std::string value = objv[i+1];
+        pConfig->configure(param, value);
+    }
+}
+/**
+ * cget
+ *    Put the value of a configuration parameter in the command result.
+ *    - Must have exactly three or four
+ *    - The last word must be an existing object name.
+ *    - The result of cget is put in the intepreter result.
+ * @param interp - references the interpreter running the command.
+ * @param obvj   - the encapsulated command words.
+ * @throw Various appropriate exceptions on faiulre.
+ */
+void VX2750TclConfig::cget(CTCLInterpreter& interp, std::vector<CTCLObject>& objv)
+{
+
+    
+    if (objv.size() != 3 && objv.size() != 4) {
+        throw std::string("Incorrect Number of command line parameters");
+    }    
+    std::string name = objv[2];
+    auto pConfig = getConfigOrThrow(name);
+
+    if (objv.size() == 4) {
+        // Single item:
+        
+        std::string param = objv[3];
+        interp.setResult(pConfig->cget(param));
+    } else {
+        // Full config:
+        
+        auto config = pConfig->cget();
+        CTCLObject result;
+        result.Bind(interp);
+        
+        // Each name value pair makes a 2 element list which is an element
+        // of result.
+        
+        for (int i = 0; i < config.size(); i++) {
+            CTCLObject item;
+            item.Bind(interp);
+            std::string name = config[i].first;
+            std::string value = config[i].second;
+            item += name;
+            item +=  value;
+            result += item;
+        }
+        interp.setResult(result);
+    }
+    
+}
+/**
+ * destroy
+ *    Destroys a module configuration.
+ *    - Must be 3 words on the command.
+ *    - The last word must be a valid module.
+ *    - The module is deleted.
+ *    - The map entry is erased.
+ * @param interp - references the interpreter running the command.
+ * @param obvj   - the encapsulated command words.
+ * @throw Various appropriate exceptions on faiulre.
+ */
+void VX2750TclConfig::destroy(CTCLInterpreter& interp, std::vector<CTCLObject>& objv)
+{
+    requireExactly(objv, 3, "Incorrect number of command parameters");
+    std::string name = objv[2];
+    auto pConfig = getConfigOrThrow(name);
+    m_modules.erase(name);
+    delete pConfig;
+}
+/**
+ * list
+ *   List the names of the modules in the configuration.
+ *
+ * @param interp - references the interpreter running the command.
+ * @param obvj   - the encapsulated command words.
+ * @throw Various appropriate exceptions on faiulre.
+ */
+void VX2750TclConfig::list(CTCLInterpreter& interp, std::vector<CTCLObject>& objv)
+{
+    requireExactly(objv, 2, "Incorrect number of command parameters");
+    
+    CTCLObject result;
+    result.Bind(interp);
+    std::for_each(m_modules.begin(), m_modules.end(),
+        [&result](std::pair<std::string, VX2750PHAModuleConfiguration*> item) {
+            result += item.first;             
+        }
+    );
+    interp.setResult(result);
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// Private utils.
+
+/**
+ * getConfigOrThrow
+ *    Look up a configuration object by name and throw if it does not exist.
+ * @param name - name of config to find.
+ */
+VX2750PHAModuleConfiguration*
+VX2750TclConfig::getConfigOrThrow(std::string name)
+{
+    auto ptr = m_modules.find(name);
+    if (ptr == m_modules.end()) {
+        std::string message="No such module name: ";
+        message += name;
+        throw message; 
+    }
+    return ptr->second;
+}
+}                                    // caen_nscldaq namespace.
