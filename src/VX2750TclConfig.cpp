@@ -97,6 +97,35 @@ VX2750TclConfig::operator()(CTCLInterpreter& interp, std::vector<CTCLObject>& ob
     return TCL_OK;
 }
 /**
+ * getModule
+ *   Given a module name return the pointer to its configuration or throws a
+ *   string exception if not found.
+ * @param pName name of the module
+ * @return VX2750PHAModuleConfiguration*
+ */
+VX2750PHAModuleConfiguration*
+VX2750TclConfig::getModule(const char* pName)
+{
+    std::string name(pName);
+    return getConfigOrThrow(name);
+}
+/**
+ * listModules
+ *    @return std::vector<std::string>  list of module names.
+ */
+std::vector<std::string>
+VX2750TclConfig::listModules()
+{
+    std::vector<std::string> result;
+    std::for_each(m_modules.begin(), m_modules.end(),
+        [&result](std::pair<std::string, VX2750PHAModuleConfiguration*> m) {
+           result.push_back(m.first);
+        }
+    );
+    return result;
+}
+//////////////////////////////////////////////////////////////////////////////
+/**
  * create
  * 
  * create a new module:
