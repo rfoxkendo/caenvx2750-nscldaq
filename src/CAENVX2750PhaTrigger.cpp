@@ -21,7 +21,7 @@
 * @author   Ron Fox
 *
 */
-#include "CAENVX2750PhaTrigger.h
+#include "CAENVX2750PhaTrigger.h"
 #include "VX2750Pha.h"
 namespace caen_nscldaq {
 /**
@@ -38,7 +38,7 @@ CAENVX2750PhaTrigger::CAENVX2750PhaTrigger(VX2750Pha& module) :
  *    @return bool - true if the module has data to read.
  */
 bool
-CAENVX2750PhaTrigger::operator()
+CAENVX2750PhaTrigger::operator()()
 {
     return m_module.hasData();
 }

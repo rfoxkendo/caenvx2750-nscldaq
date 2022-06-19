@@ -23,13 +23,14 @@
 */
 #ifndef CAENVX2750MULTITRIGGER_H
 #define CAENVX2750MULTITRIGGER_H
-#include <CEventTrigger.h>
+#include <sbsreadout/CEventTrigger.h>
 #include <vector>
 
-class VX2750PhaTrigger;
-class VX2750Pha;
+
 
 namespace caen_nscldaq {
+  class CAENVX2750PhaTrigger;
+  class VX2750Pha;
     /**
      * @class VX2750MultiTrigger
      *     Manages several CAENVX2750 modules as a single trigger.
@@ -40,18 +41,18 @@ namespace caen_nscldaq {
     class VX2750MultiTrigger : public CEventTrigger
     {
     private:
-        std::vector<VX2750PhaTrigger*> m_triggers;
+        std::vector<CAENVX2750PhaTrigger*> m_triggers;
         std::vector<VX2750Pha*> m_triggeredModules;
         
     public:
         VX2750MultiTrigger();
         virtual ~VX2750MultiTrigger();
         
-        void addTrigger(VX2750PhaTrigger* pTrigger);
-        void removeTrigger(VX2750PhaTrigger* pTrigger);
-        std::vector<VX2750PhaTrigger*> getTriggers() const;
+        void addTrigger(CAENVX2750PhaTrigger* pTrigger);
+        void removeTrigger(CAENVX2750PhaTrigger* pTrigger);
+        std::vector<CAENVX2750PhaTrigger*> getTriggers() const;
         std::vector<VX2750Pha*> getModules() const;
-        const std::vector<VX2750PhaTrigger*>& getTriggeredModules() const;
+        const std::vector<VX2750Pha*>& getTriggeredModules() const;
         
         virtual bool operator()();
     };

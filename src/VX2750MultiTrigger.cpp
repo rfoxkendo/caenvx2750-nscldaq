@@ -22,7 +22,7 @@
 *
 */
 #include "VX2750MultiTrigger.h"
-#include "VX2750PhaTrigger.h"
+#include "CAENVX2750PhaTrigger.h"
 #include "VX2750Pha.h"
 #include <algorithm>
 
@@ -45,7 +45,7 @@ namespace caen_nscldaq {
      *                    the module.
      */
     void
-    VX2750MultiTrigger::addTrigger(VX2750PhaTrigger* pTrigger)
+    VX2750MultiTrigger::addTrigger(CAENVX2750PhaTrigger* pTrigger)
     {
         m_triggers.push_back(pTrigger);    
     }
@@ -57,7 +57,7 @@ namespace caen_nscldaq {
      *   @param pTrigger - pointer to the trigger to remove.
      */
     void
-    VX2750MultiTrigger::removeTrigger(VX2750PhaTrigger* pTrigger) {
+    VX2750MultiTrigger::removeTrigger(CAENVX2750PhaTrigger* pTrigger) {
         auto p = std::find(m_triggers.begin(), m_triggers.end(), pTrigger);
         if (p != m_triggers.end()) {
             m_triggers.erase(p);
@@ -68,7 +68,7 @@ namespace caen_nscldaq {
      *    Returns a *copy* of the trigger list.
      * @return std::vector<VX2750PhaTrigger*>
      */
-    std::vector<VX2750PhaTrigger*>
+    std::vector<CAENVX2750PhaTrigger*>
     VX2750MultiTrigger::getTriggers() const
     {
         return m_triggers;          // Does a copy.
@@ -83,8 +83,8 @@ namespace caen_nscldaq {
     VX2750MultiTrigger::getModules() const
     {
         std::vector<VX2750Pha*> result;
-        std::for_each(m_modules.begin(), m_modules.end(),
-            [&result](VX2750PhaTrigger* p) {
+        std::for_each(m_triggers.begin(), m_triggers.end(),
+            [&result](CAENVX2750PhaTrigger* p) {
                 result.push_back(&(p->getModule()));
             }
         );
@@ -95,7 +95,7 @@ namespace caen_nscldaq {
      *    Returns a vector of the modules that have triggered.
      * @return const std::vector<VX2750PhaTrigger*>&
      */
-    const std::vector<VX2750PhaTrigger*>&
+    const std::vector<VX2750Pha*>&
     VX2750MultiTrigger::getTriggeredModules() const
     {
         return m_triggeredModules;
@@ -114,9 +114,9 @@ namespace caen_nscldaq {
         m_triggeredModules.clear();
         for (auto p : m_triggers) {
             if ((*p)()) {
-                m_triggers.push_back(&(p->getModule));
+	      m_triggeredModules.push_back(&(p->getModule()));
             }
         }
-        return m_triggers.size() > 0;
+        return m_triggeredModules.size() > 0;
      }
 }
