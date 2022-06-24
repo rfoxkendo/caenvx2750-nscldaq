@@ -3627,6 +3627,7 @@ static const std::map<VX2750Pha::Endpoint, std::string> endpointToString = {
         // digital probe sample so:
         
         std::uint32_t dProbeLen = samples/sizeof(std::uint8_t);
+        if (samples % sizeof(std::uint8_t) > 0) dProbeLen++;     // Partial byte.
         
         // Allocate the appropriate analog probe buffers:
         
