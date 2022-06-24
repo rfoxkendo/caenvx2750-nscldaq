@@ -23,9 +23,11 @@
 */
 #include "VX2750EventSegment.h"
 #include "VX2750TclConfig.h"
+#include "VX2750PhaConfiguration.h"
 #include "VX2750Pha.h"
 #include <stdexcept>
 #include <sstream>
+#include <string.h>
 
 namespace caen_nscldaq {
 /**
@@ -43,7 +45,7 @@ namespace caen_nscldaq {
  */
 VX2750EventSegment::VX2750EventSegment(
         const char* pModuleName, VX2750TclConfig* pConfig,
-        const char* pHostOrPid, bool fIsUsb = false
+        const char* pHostOrPid, bool fIsUsb
     
 ) :
     m_pModule(nullptr), m_pConfiguration(pConfig), m_moduleName(pModuleName),
@@ -77,7 +79,7 @@ VX2750EventSegment::initialize()
 {
     try {
         auto pConfig = m_pConfiguration->getModule(m_moduleName.c_str());
-        m_pModule = new VX2750Pha(m_hostOrPid, m_isUsb);
+        m_pModule = new VX2750Pha(m_hostOrPid.c_str(), m_isUsb);
         
         
         // We need to ask the configuration what to expect from the module:
@@ -93,15 +95,15 @@ VX2750EventSegment::initialize()
         // The configuration takes care of initializing the module:
         
         pConfig->configureModule(*m_pModule);
-        m_pModule->initDecodedBuffer(m_event);
-        m_pModule->setupDecodedBuffer(m_event);
+        m_pModule->initDecodedBuffer(m_Event);
+        m_pModule->setupDecodedBuffer(m_Event);
         
         // Set up the endpoint for PHA data based on our configuration
         // the module configuration includes enables for the things we can get
         // from the module.
         
         
-        m_pModule->selectEndPoint(VX2750Pha::PHA);
+        m_pModule->selectEndpoint(VX2750Pha::PHA);
         m_pModule->initializeDPPPHAReadout();
         
         // prep the module for data taking and start it
@@ -158,7 +160,7 @@ void VX2750EventSegment::onResume()
     if (m_pModule) {
         disable();                   // Get rid of the existing module.
     }
-    enable();                        // reprocesses the configuration too.
+    initialize();                        // reprocesses the configuration too.
 }
  
  /**
@@ -253,7 +255,7 @@ void VX2750EventSegment::onResume()
     // First we need to read the event into the decoded buffer:
     // FIgure out the trace sizes:
     
-    m_pModule->readDPPPHAEndPointer(m_Event);
+    m_pModule->readDPPPHAEndpoint(m_Event);
     size_t traceLength = m_traceSizes[m_Event.s_channel];
     
     // figure out if this will fit.
@@ -262,30 +264,30 @@ void VX2750EventSegment::onResume()
     size_t bytesNeeded =
         m_moduleName.size() + 1 + 7*sizeof(uint16_t) +
         2*sizeof(uint64_t);                                      // Fixed junk:
-    bytesNeeded += 6*(sizeof(uin16_t) + sizeof(uint32_t));  // Always present probe stuff.
+    bytesNeeded += 6*(sizeof(uint16_t) + sizeof(uint32_t));  // Always present probe stuff.
     
     // Fold in any present traces. Null pointers in the event indicate
     // the trace is not enabled:
     
-    if (m_Event->s_pAnalogProbe1) {
+    if (m_Event.s_pAnalogProbe1) {
         bytesNeeded += traceLength * sizeof(int32_t);
     }
-    if (m_Event->s_pAnalogProbe2) {
+    if (m_Event.s_pAnalogProbe2) {
         bytesNeeded += traceLength * sizeof(int32_t);
     }
     size_t digitalProbeLength = traceLength/sizeof(uint8_t);
-    if (tracelength % sizeof(uint8_t) >0) digitalProbeLength++;
+    if (traceLength % sizeof(uint8_t) >0) digitalProbeLength++;
     
-    if (m_event->s_pDigitalProbe1) {
+    if (m_Event.s_pDigitalProbe1) {
         bytesNeeded += digitalProbeLength;
     }
-    if (m_event->s_pDigitalProbe2) {
+    if (m_Event.s_pDigitalProbe2) {
         bytesNeeded += digitalProbeLength;
     }
-    if (m_event->s_pDigitalProbe3) {
+    if (m_Event.s_pDigitalProbe3) {
         bytesNeeded += digitalProbeLength;
     }
-    if (m_event->s_pDigitalProbe4) {
+    if (m_Event.s_pDigitalProbe4) {
         bytesNeeded += digitalProbeLength;
     }
     //Yeah could assume sizeof(int16_t) is 2 but...
@@ -298,7 +300,7 @@ void VX2750EventSegment::onResume()
     
     if (bytesNeeded > (maxwords*sizeof(uint16_t))) {
         std::stringstream strMsg;
-        strMsg << "Reading out module " << m_ModuleName << " channel " << m_Event.s_channel
+        strMsg << "Reading out module " << m_moduleName << " channel " << m_Event.s_channel
             << " requires " << bytesNeeded << " bytes but there's only "
             << maxwords*sizeof(uint16_t) << " bytes available\n";
         strMsg << " Either increase the event buffer length or decrease the requirements for that channel";
@@ -319,7 +321,7 @@ void VX2750EventSegment::onResume()
     
     // First the module name:
     
-    strcpy(p.p8, m_moduleName.c_str());
+    strcpy(reinterpret_cast<char*>(p.p8), m_moduleName.c_str());
     p.p8 += m_moduleName.size() + 1;
     
     // Now the fixed part... we need to do this field by field because
@@ -332,34 +334,34 @@ void VX2750EventSegment::onResume()
     *p.p16++ = m_Event.s_energy;
     *p.p16++ = m_Event.s_lowPriorityFlags;
     *p.p16++ = m_Event.s_highPriorityFlags;
-    *p.p16+_ = m_Event.s_timeDownSampling;
+    *p.p16++ = m_Event.s_timeDownSampling;
     
     // Ok, now analog probe 1:
     
-    *p.p16++ = m_Event.s_AnalogProbe1Type;
+    *p.p16++ = m_Event.s_analogProbe1Type;
     if(m_Event.s_pAnalogProbe1) {
         *p.p32++ = traceLength;
         memcpy(p.p32, m_Event.s_pAnalogProbe1, traceLength*sizeof(uint32_t));
         p.p32 += traceLength;
     } else {
-        *p.p32++ = 0;        / no data.
+      *p.p32++ = 0;        // no data.
     }
     
     // Ok, now analog probe 2:
     
-    *p.p16++ = m_Event.s_AnalogProbe2Type;
+    *p.p16++ = m_Event.s_analogProbe2Type;
     if(m_Event.s_pAnalogProbe2) {
         *p.p32++ = traceLength;
         memcpy(p.p32, m_Event.s_pAnalogProbe2, traceLength*sizeof(uint32_t));
         p.p32 += traceLength;
     } else {
-        *p.p32++ = 0;        / no data.
+      *p.p32++ = 0;        // no data.
     }
     
     // Now the digital probes.  Note that digitalProbeLength has the # of bytes
     // per present probe.
     
-    *p.p16++ = m_event.s_DigitalProbe1Type;
+    *p.p16++ = m_Event.s_digitalProbe1Type;
     if (m_Event.s_pDigitalProbe1) {
         *p.p32++ = digitalProbeLength;
         memcpy(p.p8, m_Event.s_pDigitalProbe1, digitalProbeLength);
@@ -368,7 +370,7 @@ void VX2750EventSegment::onResume()
         *p.p32++ = 0;
     }
     
-    *p.p16++ = m_event.s_DigitalProbe2Type;
+    *p.p16++ = m_Event.s_digitalProbe2Type;
     if (m_Event.s_pDigitalProbe2) {
         *p.p32++ = digitalProbeLength;
         memcpy(p.p8, m_Event.s_pDigitalProbe2, digitalProbeLength);
@@ -377,7 +379,7 @@ void VX2750EventSegment::onResume()
         *p.p32++ = 0;
     }
     
-    *p.p16++ = m_event.s_DigitalProbe2Type;
+    *p.p16++ = m_Event.s_digitalProbe2Type;
     if (m_Event.s_pDigitalProbe3) {
         *p.p32++ = digitalProbeLength;
         memcpy(p.p8, m_Event.s_pDigitalProbe3, digitalProbeLength);
@@ -386,7 +388,7 @@ void VX2750EventSegment::onResume()
         *p.p32++ = 0;
     }
     
-    *p.p16++ = m_event.s_DigitalProbe4Type;
+    *p.p16++ = m_Event.s_digitalProbe4Type;
     if (m_Event.s_pDigitalProbe4) {
         *p.p32++ = digitalProbeLength;
         memcpy(p.p8, m_Event.s_pDigitalProbe4, digitalProbeLength);

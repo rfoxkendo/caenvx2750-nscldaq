@@ -49,7 +49,7 @@ class VX2750TclConfig;                    // May become XML later....
  *        from a system of several modules using a Vx2750MultiTrigger to direct the
  *        'traffic'.
  */
-class VX2750EventSegment : public :CEventSegment
+class VX2750EventSegment : public ::CEventSegment
 {
 private:
     VX2750Pha*       m_pModule;                  // Only non-null when run is active.
