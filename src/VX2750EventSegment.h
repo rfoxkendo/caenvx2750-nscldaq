@@ -28,7 +28,7 @@
 #include <string>
 #include "VX2750PHa.h"
 
-
+class CExperiment;
 
 namespace caen_nscldaq {
 class VX2750TclConfig;                    // May become XML later....
@@ -52,6 +52,8 @@ class VX2750TclConfig;                    // May become XML later....
 class VX2750EventSegment : public ::CEventSegment
 {
 private:
+    CExperiment*     m_pExperiment;
+    uint32_t         m_sourceId;
     VX2750Pha*       m_pModule;                  // Only non-null when run is active.
     VX2750TclConfig* m_pConfiguration;           // Global configuration.
     std::string      m_moduleName;               // Cofiguration lookup key.
@@ -62,10 +64,15 @@ private:
     size_t           *m_traceSizes;              // Sizes of traces from each channel.
 public:
     VX2750EventSegment(
+        CExperiment *pExperiment, uint32_t sourceId,
         const char* pModuleName, VX2750TclConfig* pConfig,
         const char* pHostOrPid, bool fIsUsb = false
     );
     virtual ~VX2750EventSegment();
+    
+    // Getters:
+    
+    VX2750Pha* getModule() {return m_pModule;}
     
     // Preparing and dropping modules:
     

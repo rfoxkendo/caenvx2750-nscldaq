@@ -21,6 +21,7 @@
 * @author   Ron Fox
 *
 */
+
 #include "VX2750EventSegment.h"
 #include "VX2750TclConfig.h"
 #include "VX2750PhaConfiguration.h"
@@ -28,6 +29,7 @@
 #include <stdexcept>
 #include <sstream>
 #include <string.h>
+#include <CExperiment.h>
 
 namespace caen_nscldaq {
 /**
@@ -36,6 +38,8 @@ namespace caen_nscldaq {
  *    Module is na nullpointer because we only connect to it at initialization
  *    time (we also disconnect at disable time)..
  *
+ *   @param pExperiment - Ponter to the experiment object.
+ *   @param sourceId    -  Event builder data source id assigned the module.
  *   @param pModuleName - name of the module in the configuration.
  *   @param pConfig     - The configuration database which will have our module config.
  *                        Note that the caller retains ownership of the configuration.
@@ -44,10 +48,12 @@ namespace caen_nscldaq {
  *                        This parameter is optional and defaults to fals (ethernet).
  */
 VX2750EventSegment::VX2750EventSegment(
+        CExperiment* pExperiment, uint32_t sourceId,        
         const char* pModuleName, VX2750TclConfig* pConfig,
         const char* pHostOrPid, bool fIsUsb
     
 ) :
+    m_pExperiment(pExperiment), m_sourceId(sourceId),
     m_pModule(nullptr), m_pConfiguration(pConfig), m_moduleName(pModuleName),
     m_hostOrPid(pHostOrPid), m_isUsb(fIsUsb), m_traceSizes(nullptr)
 {}
@@ -252,6 +258,7 @@ void VX2750EventSegment::onResume()
  size_t
  VX2750EventSegment::read(void* pBuffer, size_t maxwords)
  {
+    
     // First we need to read the event into the decoded buffer:
     // FIgure out the trace sizes:
     
@@ -311,6 +318,7 @@ void VX2750EventSegment::onResume()
     // There are archaic processors for which the following does not work
     // We think we're running intel so should be ok:
     
+    m_pExperiment->setSourceId(m_sourceId);
     union {
         uint8_t*  p8;
         uint16_t* p16;
@@ -329,6 +337,7 @@ void VX2750EventSegment::onResume()
     
     *p.p16++ = m_Event.s_channel;
     *p.p64++ = m_Event.s_nsTimestamp;
+    m_pExperiment->setTimestamp(m_Event.s_nsTimestamp);
     *p.p64++ = m_Event.s_rawTimestamp;
     *p.p16++ = m_Event.s_fineTimestamp;
     *p.p16++ = m_Event.s_energy;
