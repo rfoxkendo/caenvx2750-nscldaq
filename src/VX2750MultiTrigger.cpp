@@ -23,6 +23,7 @@
 */
 #include "VX2750MultiTrigger.h"
 #include "CAENVX2750PhaTrigger.h"
+#include "VX2750EventSegment.h"
 #include "VX2750Pha.h"
 #include <algorithm>
 
@@ -79,10 +80,10 @@ namespace caen_nscldaq {
      *   triggers adding their modules to the result vector.
      *  @return std::vector<VX2750Pha*>
      */
-    std::vector<VX2750Pha*>
+    std::vector<VX2750EventSegment*>
     VX2750MultiTrigger::getModules() const
     {
-        std::vector<VX2750Pha*> result;
+        std::vector<VX2750EventSegment*> result;
         std::for_each(m_triggers.begin(), m_triggers.end(),
             [&result](CAENVX2750PhaTrigger* p) {
                 result.push_back(&(p->getModule()));
@@ -93,10 +94,12 @@ namespace caen_nscldaq {
     /**
      * getTriggeredModules
      *    Returns a vector of the modules that have triggered.
-     * @return const std::vector<VX2750PhaTrigger*>&
+     * @return std::vector<VX2750PhaTrigger*>& Note this is not
+     *       a const reference to allow a client to service a module and then
+     *       remove it from the triggeredlist.
      */
-    const std::vector<VX2750Pha*>&
-    VX2750MultiTrigger::getTriggeredModules() const
+    std::vector<VX2750EventSegment*>&
+    VX2750MultiTrigger::getTriggeredModules() 
     {
         return m_triggeredModules;
     }
@@ -113,6 +116,7 @@ namespace caen_nscldaq {
      {
         m_triggeredModules.clear();
         for (auto p : m_triggers) {
+    
             if ((*p)()) {
 	      m_triggeredModules.push_back(&(p->getModule()));
             }

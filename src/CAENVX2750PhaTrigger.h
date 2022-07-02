@@ -25,7 +25,7 @@
 #include <sbsreadout/CEventTrigger.h>      // base class.
 
 namespace caen_nscldaq {
-class VX2750Pha;                // referenced class.
+class VX2750EventSegment;                // referenced class.
 
 /**
  * @class CAENV2750PhaTrigger
@@ -36,11 +36,11 @@ class VX2750Pha;                // referenced class.
 class  CAENVX2750PhaTrigger : public CEventTrigger
 {
 private:
-    VX2750Pha&    m_module;                      // Module we poll.
+    VX2750EventSegment&    m_module;                      // Module we poll.
 public:
-    CAENVX2750PhaTrigger(VX2750Pha& module);
+    CAENVX2750PhaTrigger(VX2750EventSegment& module);
     bool operator()();
-    VX2750Pha& getModule();
+    VX2750EventSegment& getModule();
 };
 
 }

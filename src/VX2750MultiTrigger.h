@@ -30,7 +30,7 @@
 
 namespace caen_nscldaq {
   class CAENVX2750PhaTrigger;
-  class VX2750Pha;
+  class VX2750EventSegment;
     /**
      * @class VX2750MultiTrigger
      *     Manages several CAENVX2750 modules as a single trigger.
@@ -42,7 +42,7 @@ namespace caen_nscldaq {
     {
     private:
         std::vector<CAENVX2750PhaTrigger*> m_triggers;
-        std::vector<VX2750Pha*> m_triggeredModules;
+        std::vector<VX2750EventSegment*> m_triggeredModules;
         
     public:
         VX2750MultiTrigger();
@@ -51,8 +51,8 @@ namespace caen_nscldaq {
         void addTrigger(CAENVX2750PhaTrigger* pTrigger);
         void removeTrigger(CAENVX2750PhaTrigger* pTrigger);
         std::vector<CAENVX2750PhaTrigger*> getTriggers() const;
-        std::vector<VX2750Pha*> getModules() const;
-        const std::vector<VX2750Pha*>& getTriggeredModules() const;
+        std::vector<VX2750EventSegment*> getModules() const;
+        std::vector<VX2750EventSegment*>& getTriggeredModules();
         
         virtual bool operator()();
     };

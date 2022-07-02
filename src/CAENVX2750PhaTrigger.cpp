@@ -22,6 +22,7 @@
 *
 */
 #include "CAENVX2750PhaTrigger.h"
+#include "VX2750EventSegment.h"
 #include "VX2750Pha.h"
 namespace caen_nscldaq {
 /**
@@ -29,7 +30,7 @@ namespace caen_nscldaq {
  *    @param module - the module we'll check for data.
  */
 
-CAENVX2750PhaTrigger::CAENVX2750PhaTrigger(VX2750Pha& module) :
+CAENVX2750PhaTrigger::CAENVX2750PhaTrigger(VX2750EventSegment& module) :
     m_module(module)
 {}
 
@@ -40,12 +41,12 @@ CAENVX2750PhaTrigger::CAENVX2750PhaTrigger(VX2750Pha& module) :
 bool
 CAENVX2750PhaTrigger::operator()()
 {
-    return m_module.hasData();
+    return m_module.getModule()->hasData();
 }
 /**
  * return reference to the module:
  */
-VX2750Pha&
+VX2750EventSegment&
 CAENVX2750PhaTrigger::getModule()
 {
     return m_module;
