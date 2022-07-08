@@ -28,6 +28,7 @@
 #include <std::string>
 #include <stdexcept>
 #include <iostream>
+#include <string.h> 
 
 namespace caen_spectcl {
 /**
@@ -102,14 +103,14 @@ VX2750ModuleUnpacker::reset()
     m_digitalProbe4Samples.clear();
 }
 /**
- * unpackModule
+ * unpackHit
  *   Unpack a hit into the appropriate chunks of the tree parameter array and
  *   the internal data which can be fetched by event processors e.g.
  * @param pData - pointer to the module data.
  * @return const void* - Pointer to the byte just after the unpacked data.
  */
 const void*
-VX2750ModuleUnpacker(const void* pData)
+VX2750ModuleHit(const void* pData)
 {
     // This union allows us to access the data in the most natural way
     // for each data type:
@@ -142,11 +143,333 @@ VX2750ModuleUnpacker(const void* pData)
     
     p.w++;
     
-    // Timestamp, coarse, fine, and energy.
+    // Timestamp, coarse, fine, and energy...all the fixed size stuff:
     
+    m_ns[ch] = *(p.q);  p.q++;
+    m_rawTimestamp[ch] = *(p.q); p.q++;
+    m_fineTimestamp[ch] = *(p.w); p.w++;
+    m_energy[ch] = *(p.w); p.w++;
+    m_lowPriorityFlags[ch] = *(p.w); p.w++;
+    m_highPriorityFlgs[ch] = *(p.w); p.w++;
+    m_downSampleSelection[ch] = *(p.w); p.w++;
+    m_failFlags[ch] = *(p.w) ; p.w++;
+    
+    // Analog probe 1:
+    
+    m_analogProbe1.Types[ch] = *(p.w); p.w++;
+    size_t nSamples = *(p.l); p.l++;
+    m.analogProbe1Samples[ch].resize(nSamples);
+    memcpy(m.analogProbe1Samples[ch].data(), p.l, nSamples*sizeof(std::uint32_t));
+    p.l += nSamples;
+    
+    // Analog probe 2
+    
+    m_analogProbe2.Types[ch] = *(p.w); p.w++;
+    nSamples = *(p.l); p.l++;
+    m.analogProbe2Samples[ch].resize(nSamples);
+    memcpy(m.analogProbe2Samples[ch].data(), p.l, nSamples*sizeof(std::uint32_t));
+    p.l += nSamples;
+    
+    // Digital Probe 1:
+    
+    m_digitalProbe1Types[ch] =  *(p.w) ; p.w++;
+    size_t nBytes = *(p.l); p.l++;
+    m.digitalProbe1Samples[ch].resize(nBytes);
+    memcpy(m.DigitalProbe1Samples[ch].data(), p.b, nBytes);
+    p.b += nBytes;
+    
+    // Digital Probe 2:
+    
+    m_digitalProbe2Types[ch] =  *(p.w) ; p.w++;
+    size_t nBytes = *(p.l); p.l++;
+    m.digitalProbe2Samples[ch].resize(nBytes);
+    memcpy(m.DigitalProbe2Samples[ch].data(), p.b, nBytes);
+    p.b += nBytes;
+    
+    // Digital Probe 1:
+    
+    m_digitalProbe3Types[ch] =  *(p.w) ; p.w++;
+    size_t nBytes = *(p.l); p.l++;
+    m.digitalProbe3Samples[ch].resize(nBytes);
+    memcpy(m.DigitalProbe3Samples[ch].data(), p.b, nBytes);
+    p.b += nBytes;
+    // Digital Probe 1:
+    
+    m_digitalProbe4Types[ch] =  *(p.w) ; p.w++;
+    size_t nBytes = *(p.l); p.l++;
+    m.digitalProbe4Samples[ch].resize(nBytes);
+    memcpy(m.DigitalProbe4Samples[ch].data(), p.b, nBytes);
+    p.b += nBytes;
     
     
     return p.b;              // Any field will do.
+}
+///////////////////////////////////////////////////////////////////////////////
+// Getter for things that are not tree parameters... after all to get a
+// tree parameter, just instantiate one with the same array and it'll bind to the
+// same underlying data.
+//
+
+/**
+ * getChannelMask
+ *    @return uint64_t - mask of channels present in this event
+ *    @note - in general, the unpackHit method will be potentially several times
+ *            per event by our client.  Once the event has been fully unpacked,
+ *            this can be called to get a mask of the channels that were unpacked.
+ *            Bit 0 is channel zero, bit 1 channel 1 and so on.
+ */
+std::uint64_t
+CVX2750ModuleUnpacker::getChannelMask() const
+{
+    return m_channelMask;
+}
+/**
+ * getChannelSet
+ *    Same as above in case you want an std::set of the channels that have been
+ *    hit.  This can be simpler to iterate over.
+ * @return std::set<unsigned> set containing the channels that were hit.
+ */
+std::set<unsigned>
+CVX2750ModuleUnpacker::getChannelSet() const
+{
+    std::set<unsigned> result
+    for (int i =0; i < 64; i++) {
+        if (m_channelMask & (1 << i)) {
+            result.insert(i);
+        }
+    }
+    return result;
+}
+/**
+ * getLowPriorityFlags
+ *    @param channel - Channel to fetch.
+ *    @return std::uint16_t the flags for that channel
+ *    @throw std::invalid_argument If the channel is invalid.  This is the
+ *    case if:
+ *    *   The channel number is too large (Bigger than VX2750_MAX_CHANNELS).
+ *    *   The channel number's bit is not set in the hit channels mask.
+ */
+std::uint16_t
+CVX2750ModuleUnpacker::getLowPriorityFlags(unsigned channel) const
+{
+    checkChannel(channel);
+    
+    return m_lowPriorityFlags[channel];
+}
+/**
+ * getHighPriorityFlags
+ *    @param channel
+ *    @return std::Uint16 _t the high priority flags for the selected channel.
+ *    @throw std::invalid_argument - the channel is invalid, see getLowPriorityFLags
+ */
+std::uint16_t
+CVX2750ModuleUpacker::getHighPriorityFlags(unsigned channel) const
+{
+    checkChannel(channel);
+    return m_highPriorityFlags[channe];
+}
+/**
+ * getDownSampleSelection
+ *     @param channel
+ *     @return std::uint16_t - Code describing down sampling selection for the channel
+ *     @throw std::invalid_argument -see getLowPriorityFlags.
+ */
+std::uint16_t
+CVX2750ModuleUnpacker::getDownSampleSelection(unsigned channel) const
+{
+    checkChannel(channel);
+    return m_downSampleSelection[channel];
+}
+/**
+ * getFailFlags
+ *   @param channel - channel number
+ *   @return std::uint16_t - fail flags for the channel
+ *   @throw std::invalid_argument - if the channel is invalid.
+ */
+std::uint16_t
+CVX2750ModuleUnpacker::getFailFlags(unsigned channel) const
+{
+    checkChannel(channel);
+    return m_failFlags[channel];
+}
+/**
+ * getAnalogProbe1Type
+ *    @param channel
+ *    @return std::uint16_t - analog probe type code for the channel.
+ *    @thow std::invalid_argument - the channel is not valid.
+ */
+std::uint16_t
+CVX2750ModuleUnpacker::getAnalogProbe1Type(unsigned channel) const
+{
+    checkChannel(channel);
+    return m_analogProbe1Types[channel];
+}
+/**
+ * getAnalogProbe1Samples
+ *    @param channel - the channel to fetch for.
+ *    @return const std::vector<uint32_t>& - reference to the samples for probe
+ *                     for this channel
+ *      @throw std::invalid_argument - if the channel is not valid.
+ *      
+ */
+const std::vector<std::uint32_t>&
+CVX2750ModuleUnpacker::getAnalogProbe1Samples(unsigned channel) const
+{
+    checkChannel(channel);
+    return m_analogProbe1Samples;
+}
+/**
+ * getAnalogProbe2Type
+ *    @param channel
+ *    @return std::uint16_t - analog probe type code for the channel.
+ *    @thow std::invalid_argument - the channel is not valid.
+ */
+std::uint16_t
+CVX2750ModuleUnpacker::getAnalogProbe2Type(unsigned channel) const
+{
+    checkChannel(channel);
+    return m_analogProbe2Types[channel];
+}
+/**
+ * getAnalogProbe2Samples
+ *    @param channel - the channel to fetch for.
+ *    @return const std::vector<uint32_t>& - reference to the samples for probe
+ *                     for this channel
+ *      @throw std::invalid_argument - if the channel is not valid.
+ *      
+ */
+const std::vector<std::uint32_t>&
+CVX2750ModuleUnpacker::getAnalogProbe2Samples(unsigned channel) const
+{
+    checkChannel(channel);
+    return m_analogProbe2Samples;
+}
+
+/**
+ * getDigitalProbe1Type
+ *   @param channel - a channel number with a hit.
+ *   @return std::uint16_t - the probe type code.
+ *   @throw std::invalid_argument - Channel is not a valid hit.
+ */
+std::uint16_t
+VX2750ModuleUnpacker::getDigitalProbe1Type(unsigned channel) const
+{
+    checkChannel(channel);
+    return m_digitalProbe1Types[channel];
+}
+/**
+ * getDigitalProbe1Samples
+ *    @param channel -valid hit channel number.
+ *    @return const std::vector<std::uint8_t>& - references the hit samples.
+ *    @throw std::invalid_argument - invalid channel.
+ *    
+ */
+const std::vector<std::uint8_t>&
+VX2750ModuleUnpacker::getDigitalProbe1Samples(unsigned channel) const
+{
+    checkChannel(channel);
+    return m_DigitalProbe1Samples[channel];
+}
+
+/**
+ * getDigitalProbe2Type
+ *   @param channel - a channel number with a hit.
+ *   @return std::uint16_t - the probe type code.
+ *   @throw std::invalid_argument - Channel is not a valid hit.
+ */
+std::uint16_t
+VX2750ModuleUnpacker::getDigitalProbe2Type(unsigned channel) const
+{
+    checkChannel(channel);
+    return m_digitalProbe2Types[channel];
+}
+/**
+ * getDigitalProbe2Samples
+ *    @param channel -valid hit channel number.
+ *    @return const std::vector<std::uint8_t>& - references the hit samples.
+ *    @throw std::invalid_argument - invalid channel.
+ *    
+ */
+const std::vector<std::uint8_t>&
+VX2750ModuleUnpacker::getDigitalProbe2Samples(unsigned channel) const
+{
+    checkChannel(channel);
+    return m_DigitalProbe2Samples[channel];
+}
+
+/**
+ * getDigitalProbe3Type
+ *   @param channel - a channel number with a hit.
+ *   @return std::uint16_t - the probe type code.
+ *   @throw std::invalid_argument - Channel is not a valid hit.
+ */
+std::uint16_t
+VX2750ModuleUnpacker::getDigitalProbe3Type(unsigned channel) const
+{
+    checkChannel(channel);
+    return m_digitalProbe3Types[channel];
+}
+/**
+ * getDigitalProbe3Samples
+ *    @param channel -valid hit channel number.
+ *    @return const std::vector<std::uint8_t>& - references the hit samples.
+ *    @throw std::invalid_argument - invalid channel.
+ *    
+ */
+const std::vector<std::uint8_t>&
+VX2750ModuleUnpacker::getDigitalProbe3Samples(unsigned channel) const
+{
+    checkChannel(channel);
+    return m_DigitalProbe3Samples[channel];
+}
+
+/**
+ * getDigitalProbe4Type
+ *   @param channel - a channel number with a hit.
+ *   @return std::uint16_t - the probe type code.
+ *   @throw std::invalid_argument - Channel is not a valid hit.
+ */
+std::uint16_t
+VX2750ModuleUnpacker::getDigitalProbe4Type(unsigned channel) const
+{
+    checkChannel(channel);
+    return m_digitalProbe4Types[channel];
+}
+/**
+ * getDigitalProbe4Samples
+ *    @param channel -valid hit channel number.
+ *    @return const std::vector<std::uint8_t>& - references the hit samples.
+ *    @throw std::invalid_argument - invalid channel.
+ *    
+ */
+const std::vector<std::uint8_t>&
+VX2750ModuleUnpacker::getDigitalProbe4Samples(unsigned channel) const
+{
+    checkChannel(channel);
+    return m_DigitalProbe4Samples[channel];
+}
+//////////////////////////////////////////////////////////////////////////////
+// Private utilities.
+
+/**
+ * checkChannel
+ *    Ensures a channel is valid.  A channel is valid if:
+ *    -  It is in the range [0, VX2750_MAX_CHANNELS)
+ *    -  It's corresponding bit is set in m_chnanelMask (a hit has been
+ *       processed for it).
+ *   @param channel - channel to check.
+ *   @throw std::invalid_argument - if the channel is not valid.
+ */
+void
+VX2750ModuleUnpacker::checkChannel(unsigned channel)
+{
+    if (channel >= VX2750_MAX_CHANNELS) {
+        throw std::invalid_argument("Channel number is out of range");
+    }
+    
+    if ((m_channelMask & (1 << channel)) == 0) {
+        throw std::invalid_argument("Channel was not hit");
+    }
 }
 
 }                                             // caen_spectcl namespace.

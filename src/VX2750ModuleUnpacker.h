@@ -68,7 +68,7 @@ public:
     virtual ~CVX2750ModuleUnpacker();
     
     void reset();                   // Data reset method.
-    const void* unpackModule(const void* pData);
+    const void* unpackHit(const void* pData);
     
     // Selectors:
     
@@ -76,7 +76,7 @@ public:
     std::set<unsigned> getChannelSet() const;
     std::uint16_t getLowPriorityFlags(unsigned channel) const;
     std::uint16_t getHighPriorityFlags(unsigned channel) const;
-    std::uint16_t getDownSampleSelecion(unsigned channel) const;
+    std::uint16_t getDownSampleSelection(unsigned channel) const;
     std::uint1_t  getFailFlags(unsigned channel) const;
     
     std::uint16_t getAnalogProbe1Type(unsigned channel) const;
