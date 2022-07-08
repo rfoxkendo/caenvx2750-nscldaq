@@ -26,8 +26,24 @@ NSCLDAQROOT=/usr/opt/daq/12.0-pre3
 NSCLDAQ_CXXFLAGS=-I$(NSCLDAQROOT)/include -I$(NSCLDAQROOT)/include/sbsreadout
 NSCLDAQ_LDFLAGS=-L$(NSCLDAQROOT)/lib -Wl,-rpath=$(NSCLDAQROOT)/lib
 
+
+ROOTSYS=/usr/opt/root/root-6.24.06
+SPECTCLROOT=/usr/opt/spectcl/5.10-000
+SPECTCL_CXXFLAGS=-I$(SPECTCLROOT)/include -I$(ROOTSYS)/include -c -g
+
+
+
+
 CPPFLAGS=$(FELIB_CPPFLAGS) $(DIG2_CPPFLAGS) $(JSON_CPPFLAGS) $(NSCLDAQ_CXXFLAGS) \
 	$(TCL_CPPFLAGS)
+
+all: libCaenVx2750.a libCaenVxUnpackers.a
+
+libCaenVxUnpackers.a:  VX2750ModuleUnpacker.o
+	ar -ruv $@ $?
+
+VX2750ModuleUnpacker.o: VX2750ModuleUnpacker.cpp VX2750ModuleUnpacker.h
+	$(CXX) $(SPECTCL_CXXFLAGS) $<
 
 
 libCaenVx2750.a:  Dig2Device.o VX2750Pha.o XXUSBConfigurableObject.o VX2750PHAConfiguration.o \

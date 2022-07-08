@@ -22,10 +22,10 @@
 *
 */
 
-#include "VX2750ModuleUnpacker.cpp"
+#include "VX2750ModuleUnpacker.h"
 #include <TreeParameter.h>
 #include <sstream>
-#include <std::string>
+#include <string>
 #include <stdexcept>
 #include <iostream>
 #include <string.h> 
@@ -95,12 +95,14 @@ void
 VX2750ModuleUnpacker::reset()
 {
     m_channelMask = 0;
-    m_analogProbe1Samples.clear();
-    m_analogProbe2Samples.clear();
-    m_digitalProbe1Samples.clear();
-    m_digitalProbe2Samples.clear();
-    m_digitalProbe3Samples.clear();
-    m_digitalProbe4Samples.clear();
+    for (int i = 0; i < VX2750_MAX_CHANNELS; i++) {
+        m_analogProbe1Samples[i].clear();
+        m_analogProbe2Samples[i].clear();
+        m_digitalProbe1Samples[i].clear();
+        m_digitalProbe2Samples[i].clear();
+        m_digitalProbe3Samples[i].clear();
+        m_digitalProbe4Samples[i].clear();
+    }
 }
 /**
  * unpackHit
@@ -110,18 +112,19 @@ VX2750ModuleUnpacker::reset()
  * @return const void* - Pointer to the byte just after the unpacked data.
  */
 const void*
-VX2750ModuleHit(const void* pData)
+VX2750ModuleUnpacker::unpackHit(const void* pData)
 {
     // This union allows us to access the data in the most natural way
     // for each data type:
     
     union pointer {
-        char*         c
-        std::uint8_t* b;
-        std::uint16_t* w;
-        std::uint32_t* l;
-        std::uint64_t* q;
-    } p = reinterpret_cast<union pointer>(pData);
+        const char*         c;
+        const std::uint8_t* b;
+        const std::uint16_t* w;
+        const std::uint32_t* l;
+        const std::uint64_t* q;
+    } p;
+    p.c = reinterpret_cast<const char*>(pData);
     
     // Check the mdoule name:
     
@@ -145,60 +148,60 @@ VX2750ModuleHit(const void* pData)
     
     // Timestamp, coarse, fine, and energy...all the fixed size stuff:
     
-    m_ns[ch] = *(p.q);  p.q++;
-    m_rawTimestamp[ch] = *(p.q); p.q++;
-    m_fineTimestamp[ch] = *(p.w); p.w++;
-    m_energy[ch] = *(p.w); p.w++;
-    m_lowPriorityFlags[ch] = *(p.w); p.w++;
-    m_highPriorityFlgs[ch] = *(p.w); p.w++;
-    m_downSampleSelection[ch] = *(p.w); p.w++;
-    m_failFlags[ch] = *(p.w) ; p.w++;
+    (*m_ns)[ch] = static_cast<double>(*(p.q));  p.q++;
+    (*m_rawTimestamp)[ch] = static_cast<double>(*(p.q)); p.q++;
+    (*m_fineTimestamp)[ch] = static_cast<double>(*(p.w)) ; p.w++;
+    (*m_energy)[ch] = static_cast<double>(*(p.w)); p.w++;
+    m_lowPriorityFlags[ch] = static_cast<double>(*(p.w)); p.w++;
+    m_highPriorityFlags[ch] = static_cast<double>(*(p.w)); p.w++;
+    m_downSampleSelection[ch] = static_cast<double>(*(p.w)); p.w++;
+    m_failFlags[ch] = static_cast<double>(*(p.w)) ; p.w++;
     
     // Analog probe 1:
     
-    m_analogProbe1.Types[ch] = *(p.w); p.w++;
+    m_analogProbe1Types[ch] = *(p.w); p.w++;
     size_t nSamples = *(p.l); p.l++;
-    m.analogProbe1Samples[ch].resize(nSamples);
-    memcpy(m.analogProbe1Samples[ch].data(), p.l, nSamples*sizeof(std::uint32_t));
+    m_analogProbe1Samples[ch].resize(nSamples);
+    memcpy(m_analogProbe1Samples[ch].data(), p.l, nSamples*sizeof(std::uint32_t));
     p.l += nSamples;
     
     // Analog probe 2
     
-    m_analogProbe2.Types[ch] = *(p.w); p.w++;
+    m_analogProbe2Types[ch] = *(p.w); p.w++;
     nSamples = *(p.l); p.l++;
-    m.analogProbe2Samples[ch].resize(nSamples);
-    memcpy(m.analogProbe2Samples[ch].data(), p.l, nSamples*sizeof(std::uint32_t));
+    m_analogProbe2Samples[ch].resize(nSamples);
+    memcpy(m_analogProbe2Samples[ch].data(), p.l, nSamples*sizeof(std::uint32_t));
     p.l += nSamples;
     
     // Digital Probe 1:
     
     m_digitalProbe1Types[ch] =  *(p.w) ; p.w++;
     size_t nBytes = *(p.l); p.l++;
-    m.digitalProbe1Samples[ch].resize(nBytes);
-    memcpy(m.DigitalProbe1Samples[ch].data(), p.b, nBytes);
+    m_digitalProbe1Samples[ch].resize(nBytes);
+    memcpy(m_digitalProbe1Samples[ch].data(), p.b, nBytes);
     p.b += nBytes;
     
     // Digital Probe 2:
     
     m_digitalProbe2Types[ch] =  *(p.w) ; p.w++;
-    size_t nBytes = *(p.l); p.l++;
-    m.digitalProbe2Samples[ch].resize(nBytes);
-    memcpy(m.DigitalProbe2Samples[ch].data(), p.b, nBytes);
+    nBytes = *(p.l); p.l++;
+    m_digitalProbe2Samples[ch].resize(nBytes);
+    memcpy(m_digitalProbe2Samples[ch].data(), p.b, nBytes);
     p.b += nBytes;
     
     // Digital Probe 1:
     
     m_digitalProbe3Types[ch] =  *(p.w) ; p.w++;
-    size_t nBytes = *(p.l); p.l++;
-    m.digitalProbe3Samples[ch].resize(nBytes);
-    memcpy(m.DigitalProbe3Samples[ch].data(), p.b, nBytes);
+    nBytes = *(p.l); p.l++;
+    m_digitalProbe3Samples[ch].resize(nBytes);
+    memcpy(m_digitalProbe3Samples[ch].data(), p.b, nBytes);
     p.b += nBytes;
     // Digital Probe 1:
     
     m_digitalProbe4Types[ch] =  *(p.w) ; p.w++;
-    size_t nBytes = *(p.l); p.l++;
-    m.digitalProbe4Samples[ch].resize(nBytes);
-    memcpy(m.DigitalProbe4Samples[ch].data(), p.b, nBytes);
+    nBytes = *(p.l); p.l++;
+    m_digitalProbe4Samples[ch].resize(nBytes);
+    memcpy(m_digitalProbe4Samples[ch].data(), p.b, nBytes);
     p.b += nBytes;
     
     
@@ -219,7 +222,7 @@ VX2750ModuleHit(const void* pData)
  *            Bit 0 is channel zero, bit 1 channel 1 and so on.
  */
 std::uint64_t
-CVX2750ModuleUnpacker::getChannelMask() const
+VX2750ModuleUnpacker::getChannelMask() const
 {
     return m_channelMask;
 }
@@ -230,9 +233,9 @@ CVX2750ModuleUnpacker::getChannelMask() const
  * @return std::set<unsigned> set containing the channels that were hit.
  */
 std::set<unsigned>
-CVX2750ModuleUnpacker::getChannelSet() const
+VX2750ModuleUnpacker::getChannelSet() const
 {
-    std::set<unsigned> result
+    std::set<unsigned> result;
     for (int i =0; i < 64; i++) {
         if (m_channelMask & (1 << i)) {
             result.insert(i);
@@ -250,7 +253,7 @@ CVX2750ModuleUnpacker::getChannelSet() const
  *    *   The channel number's bit is not set in the hit channels mask.
  */
 std::uint16_t
-CVX2750ModuleUnpacker::getLowPriorityFlags(unsigned channel) const
+VX2750ModuleUnpacker::getLowPriorityFlags(unsigned channel) const
 {
     checkChannel(channel);
     
@@ -263,10 +266,10 @@ CVX2750ModuleUnpacker::getLowPriorityFlags(unsigned channel) const
  *    @throw std::invalid_argument - the channel is invalid, see getLowPriorityFLags
  */
 std::uint16_t
-CVX2750ModuleUpacker::getHighPriorityFlags(unsigned channel) const
+VX2750ModuleUnpacker::getHighPriorityFlags(unsigned channel) const
 {
     checkChannel(channel);
-    return m_highPriorityFlags[channe];
+    return  m_highPriorityFlags[channel];
 }
 /**
  * getDownSampleSelection
@@ -275,7 +278,7 @@ CVX2750ModuleUpacker::getHighPriorityFlags(unsigned channel) const
  *     @throw std::invalid_argument -see getLowPriorityFlags.
  */
 std::uint16_t
-CVX2750ModuleUnpacker::getDownSampleSelection(unsigned channel) const
+VX2750ModuleUnpacker::getDownSampleSelection(unsigned channel) const
 {
     checkChannel(channel);
     return m_downSampleSelection[channel];
@@ -287,7 +290,7 @@ CVX2750ModuleUnpacker::getDownSampleSelection(unsigned channel) const
  *   @throw std::invalid_argument - if the channel is invalid.
  */
 std::uint16_t
-CVX2750ModuleUnpacker::getFailFlags(unsigned channel) const
+VX2750ModuleUnpacker::getFailFlags(unsigned channel) const
 {
     checkChannel(channel);
     return m_failFlags[channel];
@@ -299,7 +302,7 @@ CVX2750ModuleUnpacker::getFailFlags(unsigned channel) const
  *    @thow std::invalid_argument - the channel is not valid.
  */
 std::uint16_t
-CVX2750ModuleUnpacker::getAnalogProbe1Type(unsigned channel) const
+VX2750ModuleUnpacker::getAnalogProbe1Type(unsigned channel) const
 {
     checkChannel(channel);
     return m_analogProbe1Types[channel];
@@ -313,10 +316,10 @@ CVX2750ModuleUnpacker::getAnalogProbe1Type(unsigned channel) const
  *      
  */
 const std::vector<std::uint32_t>&
-CVX2750ModuleUnpacker::getAnalogProbe1Samples(unsigned channel) const
+VX2750ModuleUnpacker::getAnalogProbe1Samples(unsigned channel) const
 {
     checkChannel(channel);
-    return m_analogProbe1Samples;
+    return m_analogProbe1Samples[channel];
 }
 /**
  * getAnalogProbe2Type
@@ -325,7 +328,7 @@ CVX2750ModuleUnpacker::getAnalogProbe1Samples(unsigned channel) const
  *    @thow std::invalid_argument - the channel is not valid.
  */
 std::uint16_t
-CVX2750ModuleUnpacker::getAnalogProbe2Type(unsigned channel) const
+VX2750ModuleUnpacker::getAnalogProbe2Type(unsigned channel) const
 {
     checkChannel(channel);
     return m_analogProbe2Types[channel];
@@ -339,10 +342,10 @@ CVX2750ModuleUnpacker::getAnalogProbe2Type(unsigned channel) const
  *      
  */
 const std::vector<std::uint32_t>&
-CVX2750ModuleUnpacker::getAnalogProbe2Samples(unsigned channel) const
+VX2750ModuleUnpacker::getAnalogProbe2Samples(unsigned channel) const
 {
     checkChannel(channel);
-    return m_analogProbe2Samples;
+    return m_analogProbe2Samples[channel];
 }
 
 /**
@@ -368,7 +371,7 @@ const std::vector<std::uint8_t>&
 VX2750ModuleUnpacker::getDigitalProbe1Samples(unsigned channel) const
 {
     checkChannel(channel);
-    return m_DigitalProbe1Samples[channel];
+    return m_digitalProbe1Samples[channel];
 }
 
 /**
@@ -394,7 +397,7 @@ const std::vector<std::uint8_t>&
 VX2750ModuleUnpacker::getDigitalProbe2Samples(unsigned channel) const
 {
     checkChannel(channel);
-    return m_DigitalProbe2Samples[channel];
+    return m_digitalProbe2Samples[channel];
 }
 
 /**
@@ -420,7 +423,7 @@ const std::vector<std::uint8_t>&
 VX2750ModuleUnpacker::getDigitalProbe3Samples(unsigned channel) const
 {
     checkChannel(channel);
-    return m_DigitalProbe3Samples[channel];
+    return m_digitalProbe3Samples[channel];
 }
 
 /**
@@ -446,7 +449,7 @@ const std::vector<std::uint8_t>&
 VX2750ModuleUnpacker::getDigitalProbe4Samples(unsigned channel) const
 {
     checkChannel(channel);
-    return m_DigitalProbe4Samples[channel];
+    return m_digitalProbe4Samples[channel];
 }
 //////////////////////////////////////////////////////////////////////////////
 // Private utilities.
@@ -461,7 +464,7 @@ VX2750ModuleUnpacker::getDigitalProbe4Samples(unsigned channel) const
  *   @throw std::invalid_argument - if the channel is not valid.
  */
 void
-VX2750ModuleUnpacker::checkChannel(unsigned channel)
+VX2750ModuleUnpacker::checkChannel(unsigned channel) const
 {
     if (channel >= VX2750_MAX_CHANNELS) {
         throw std::invalid_argument("Channel number is out of range");

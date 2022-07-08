@@ -30,7 +30,7 @@
 class CTreeParameterArray;
 
 namespace caen_spectcl {
-    static unsigned int VX2750_MAX_CHANNELS(64);
+    static const unsigned int VX2750_MAX_CHANNELS(64);
 /**
  *   @class VX2750ModuleUpacker
  *     Unpacks data that comes from a single module of a VX2750
@@ -38,7 +38,7 @@ namespace caen_spectcl {
  *     which will iterate through the modules in the event, matching module names
  *     with unpackers and calling each unpacker.
  */
-class CVX2750ModuleUnpacker {
+class VX2750ModuleUnpacker {
 private:
     std::string                 m_moduleName;
     std::uint64_t               m_channelMask;
@@ -56,7 +56,7 @@ private:
     std::vector<std::uint32_t>  m_analogProbe2Samples[VX2750_MAX_CHANNELS];
     std::uint32_t               m_digitalProbe1Types[VX2750_MAX_CHANNELS];
     std::vector<std::uint8_t>   m_digitalProbe1Samples[VX2750_MAX_CHANNELS];
-    std::uint32_t               m_digitalProbe2Types[VX2750_MAX_CHANNELS]
+    std::uint32_t               m_digitalProbe2Types[VX2750_MAX_CHANNELS];
     std::vector<std::uint8_t>   m_digitalProbe2Samples[VX2750_MAX_CHANNELS];
     std::uint32_t               m_digitalProbe3Types[VX2750_MAX_CHANNELS];
     std::vector<std::uint8_t>   m_digitalProbe3Samples[VX2750_MAX_CHANNELS];
@@ -64,8 +64,8 @@ private:
     std::vector<std::uint8_t>   m_digitalProbe4Samples[VX2750_MAX_CHANNELS];
 
 public:
-    CVX2750ModuleUnpacker(const char* moduleName, const char* paramBaseName);
-    virtual ~CVX2750ModuleUnpacker();
+    VX2750ModuleUnpacker(const char* moduleName, const char* paramBaseName);
+    virtual ~VX2750ModuleUnpacker();
     
     void reset();                   // Data reset method.
     const void* unpackHit(const void* pData);
@@ -77,7 +77,7 @@ public:
     std::uint16_t getLowPriorityFlags(unsigned channel) const;
     std::uint16_t getHighPriorityFlags(unsigned channel) const;
     std::uint16_t getDownSampleSelection(unsigned channel) const;
-    std::uint1_t  getFailFlags(unsigned channel) const;
+    std::uint16_t  getFailFlags(unsigned channel) const;
     
     std::uint16_t getAnalogProbe1Type(unsigned channel) const;
     const std::vector<std::uint32_t>& getAnalogProbe1Samples(unsigned channel) const;
