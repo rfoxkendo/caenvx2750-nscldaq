@@ -126,6 +126,8 @@ VX2750ModuleUnpacker::unpackHit(const void* pData)
     } p;
     p.c = reinterpret_cast<const char*>(pData);
     
+    p.l++;                          // Skip the size longword.
+    
     // Check the mdoule name:
     
     std::string name(p.c);
