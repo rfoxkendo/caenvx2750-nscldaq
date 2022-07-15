@@ -26,6 +26,7 @@
 #include <cstdint>
 #include <iostream>
 
+namespace caen_spectcl {
 /**
  * constructor
  *    @param pUnpacker - pointer to the unpacker associated with this
@@ -104,11 +105,11 @@ VX2750EventProcessor::operator()(
     // the fragment body size
     
     const std::uint32_t* p = reinterpret_cast<std::uint32_t*>(pEvent);
-    const std::uint8_t   pEnd;
-    std::uint32_t nWords = *p:
+    const std::uint8_t*   pEnd;
+    std::uint32_t nWords = *p;
     
     try {
-        pEnd = reinterpret_cast<const std::uint8_t*>(m_pUnpacker(p));
+      pEnd = reinterpret_cast<const std::uint8_t*>(m_pUnpacker->unpackHit(p));
     }
     catch (std::exception& e) {
         std::cerr << "Exception caught in VX2750EventProcessor: " << e.what() << std::endl;
@@ -116,13 +117,16 @@ VX2750EventProcessor::operator()(
     }
     // Ensure the event processor procssed the right amount of data:
     
-    const std::uint8_t* pStart = reinterpret_cast<std::uint8_t*>(p);
+    const std::uint8_t* pStart = reinterpret_cast<const std::uint8_t*>(p);
     ptrdiff_t nBytes = pEnd-pStart;
-    if((nBytes) != (nWords*sizeof(uint16_t)) {
+    if(nBytes != (nWords*sizeof(uint16_t))) {
         std::cerr << "VX2750EventProcessor: Fragment had : " << nWords * sizeof(uint16_t)
             << " but the unpacker processed: " <<nBytes << " of them\n";
         return kfFALSE;
     }
     return kfTRUE;
 }
-)
+
+}
+
+  

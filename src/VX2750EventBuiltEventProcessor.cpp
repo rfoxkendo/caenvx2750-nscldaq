@@ -65,7 +65,7 @@ namespace caen_spectcl {
      */
     VX2750EventBuiltEventProcessor::VX2750EventBuiltEventProcessor(
         std::string baseName
-    )   : CEventBuilderEventProcessor(1000.0, basename)
+    )   : CEventBuilderEventProcessor(1000.0, baseName)
     {}
     /**
      * destructor
@@ -138,7 +138,7 @@ namespace caen_spectcl {
         VX2750ModuleUnpacker* pUnpacker = new VX2750ModuleUnpacker(
             moduleName.c_str(), paramBasename.c_str()
         );
-        createdModuleUnpacker.push_back(pUnpacker);
+        m_createdModuleUnpackers.push_back(pUnpacker);
         addEventProcessor(sourceId, *pUnpacker);
     }
     
@@ -161,8 +161,8 @@ namespace caen_spectcl {
         CBufferDecoder& rDecoder
     )
     {
-        for (p : m_eventProcessor) {
-            p->resetUnpackr();
+        for (auto p : m_eventProcessors) {
+            p->resetUnpacker();
         }
         return CEventBuilderEventProcessor::operator()(
             pEvent, rEvent, rAnalyzer, rDecoder

@@ -39,10 +39,21 @@ CPPFLAGS=$(FELIB_CPPFLAGS) $(DIG2_CPPFLAGS) $(JSON_CPPFLAGS) $(NSCLDAQ_CXXFLAGS)
 
 all: libCaenVx2750.a libCaenVxUnpackers.a
 
-libCaenVxUnpackers.a:  VX2750ModuleUnpacker.o
+libCaenVxUnpackers.a:  VX2750ModuleUnpacker.o VX2750EventProcessor.o \
+	VX2750EventBuiltEventProcessor.o
 	ar -ruv $@ $?
 
-VX2750ModuleUnpacker.o: VX2750ModuleUnpacker.cpp VX2750ModuleUnpacker.h
+VX2750ModuleUnpacker.o: VX2750ModuleUnpacker.cpp VX2750ModuleUnpacker.h 
+	$(CXX) $(SPECTCL_CXXFLAGS) $<
+
+VX2750EventProcessor.o: VX2750EventProcessor.cpp VX2750EventProcessor.h \
+	VX2750ModuleUnpacker.h
+	$(CXX) $(SPECTCL_CXXFLAGS) $<
+
+VX2750EventBuiltEventProcessor.o: VX2750EventBuiltEventProcessor.cpp \
+	VX2750EventBuiltEventProcessor.h \
+	VX2750EventProcessor.h \
+	VX2750ModuleUnpacker.h
 	$(CXX) $(SPECTCL_CXXFLAGS) $<
 
 
