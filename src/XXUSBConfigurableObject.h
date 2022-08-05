@@ -155,6 +155,7 @@ public:
 
 public:
   std::string getName() const;
+	void setName(const char* pName) {m_name = pName; }
   std::string cget(std::string name) ;
   ConfigurationArray cget();
 

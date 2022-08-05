@@ -21,6 +21,9 @@
 * @author   Ron Fox
 *
 */
+#ifndef VX2750EVENTBUILTEVENTPROCESSOR_H
+#define VX2750EVENTBUILTEVENTPROCESSOR_H3
+
 #include "CEventBuilderEventProcessor.h"
 #include <vector>
 #include <string>
@@ -70,3 +73,5 @@ namespace caen_spectcl {
         
     };
 }                      // caen_spectcl namespace.
+
+#endif

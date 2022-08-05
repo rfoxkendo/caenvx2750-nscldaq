@@ -31,11 +31,14 @@ ROOTSYS=/usr/opt/root/root-6.24.06
 SPECTCLROOT=/usr/opt/spectcl/5.10-000
 SPECTCL_CXXFLAGS=-I$(SPECTCLROOT)/include -I$(ROOTSYS)/include -c -g
 
+PUGI_CXXFLAGS=-I$(HERE)../pugixml/include
+PUGI_LDFLAGS=-L$(HERE)../pugixml/lib -lpugixml
+
 
 
 
 CPPFLAGS=$(FELIB_CPPFLAGS) $(DIG2_CPPFLAGS) $(JSON_CPPFLAGS) $(NSCLDAQ_CXXFLAGS) \
-	$(TCL_CPPFLAGS)
+	$(TCL_CPPFLAGS) $(PUGI_CXXFLAGS)
 
 all: libCaenVx2750.a libCaenVxUnpackers.a
 
@@ -59,7 +62,8 @@ VX2750EventBuiltEventProcessor.o: VX2750EventBuiltEventProcessor.cpp \
 
 libCaenVx2750.a:  Dig2Device.o VX2750Pha.o XXUSBConfigurableObject.o VX2750PHAConfiguration.o \
 	VX2750TclConfig.o CAENVX2750PhaTrigger.o  VX2750MultiTrigger.o \
-	VX2750EventSegment.o VX2750MultiModuleEventSegment.o
+	VX2750EventSegment.o VX2750MultiModuleEventSegment.o \
+	VX2750XMLConfig.o
 	ar -ruv $@ $?
 
 Dig2Device.o: Dig2Device.cpp Dig2Device.h
@@ -95,3 +99,6 @@ VX2750MultiModuleEventSegment.o: VX2750MultiModuleEventSegment.cpp \
 	VX2750MultiModuleEventSegment.h VX2750Pha.h  VX2750MultiTrigger.h
 	$(CXX) $(CPPFLAGS) -c $<
 
+VX2750XMLConfig.o: VX2750XMLConfig.cpp VX2750XMLConfig.h \
+	VX2750XMLConfig.h VX2750PHAConfiguration.h
+	$(CXX) $(CPPFLAGS) -c $<

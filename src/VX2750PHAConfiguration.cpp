@@ -290,7 +290,7 @@ VX2750PHAModuleConfiguration::defineAcqTriggerOptions()
      addEnumParameter("busyinsrc", busyinSources, "Disabled");
      
      const char* syncoutmodes[] = {
-        "Disabled", "SyncIn", "TestPulse", "Run",
+        "Disabled", "SyncIn", "TestPulse", "IntClk", "Run",
         nullptr
      };
      addEnumParameter("syncoutmode", syncoutmodes, "Disabled");
