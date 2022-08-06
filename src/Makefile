@@ -9,6 +9,9 @@ HERE=$(shell pwd)
 FELIB=$(HERE)/../felib
 DIG2=$(HERE)/../dig2
 
+CPPUNIT_CPPFLAGS=$(shell pkg-config cppunit --cflags)
+CPPUNIT_LDFLAGS=$(shell pkg-config cppunit --libs)
+
 FELIB_CPPFLAGS=-I$(FELIB)/include
 FELIB_LDFLAGS=-L$(FELIB)/lib -lCAEN_FELib -Wl,-rpath=$(FELIB)/lib
 
@@ -40,7 +43,7 @@ PUGI_LDFLAGS=-L$(HERE)../pugixml/lib -lpugixml
 CPPFLAGS=$(FELIB_CPPFLAGS) $(DIG2_CPPFLAGS) $(JSON_CPPFLAGS) $(NSCLDAQ_CXXFLAGS) \
 	$(TCL_CPPFLAGS) $(PUGI_CXXFLAGS)
 
-all: libCaenVx2750.a libCaenVxUnpackers.a
+all: libCaenVx2750.a libCaenVxUnpackers.a test_programs
 
 libCaenVxUnpackers.a:  VX2750ModuleUnpacker.o VX2750EventProcessor.o \
 	VX2750EventBuiltEventProcessor.o
@@ -102,3 +105,12 @@ VX2750MultiModuleEventSegment.o: VX2750MultiModuleEventSegment.cpp \
 VX2750XMLConfig.o: VX2750XMLConfig.cpp VX2750XMLConfig.h \
 	VX2750XMLConfig.h VX2750PHAConfiguration.h
 	$(CXX) $(CPPFLAGS) -c $<
+
+test_programs:  fejackettests
+
+tests:  fejackettests
+	./fejackettests
+
+fejackettests: TestRunner.cpp
+	$(CXX) $(CPPUNIT_CPPFLAGS) $(CPPUNIT_LDFLAGS) -o fejackettests $<
+
