@@ -108,8 +108,13 @@ VX2750XMLConfig.o: VX2750XMLConfig.cpp VX2750XMLConfig.h \
 
 test_programs:  fejackettests
 
+#  The arguments below describe the module targeted by tests:
+
+TEST_MODULE_ISUSB=1
+TEST_MODULE_CONNECTION=15236
+
 tests:  fejackettests
-	./fejackettests
+	./fejackettests $(TEST_MODULE_CONNECTION) $(TEST_MODULE_ISUSB)
 
 fejackettests: TestRunner.cpp
 	$(CXX) $(CPPUNIT_CPPFLAGS) $(CPPUNIT_LDFLAGS) -o fejackettests $<
