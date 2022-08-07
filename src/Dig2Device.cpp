@@ -29,7 +29,8 @@
 #include <string.h>
 
 static const char* scheme="dig2";
-static const char* usbhost="usb:";
+
+static const char* usbhost="caendgtz-usb-";
 
 namespace caen_nscldaq {
     /**
@@ -49,7 +50,7 @@ namespace caen_nscldaq {
         std::stringstream uristream;
         uristream << scheme << "://";
         if (isusb) {
-            uristream << "usbhost";
+            uristream << usbhost;
         }
         uristream << hostOrPid;
         

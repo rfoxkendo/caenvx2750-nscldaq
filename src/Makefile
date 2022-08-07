@@ -6,18 +6,18 @@
 #  This is the configurable part when we move towards production
 
 HERE=$(shell pwd)
-FELIB=$(HERE)/../felib
-DIG2=$(HERE)/../dig2
+
+
 
 CPPUNIT_CPPFLAGS=$(shell pkg-config cppunit --cflags)
 CPPUNIT_LDFLAGS=$(shell pkg-config cppunit --libs)
 
-FELIB_CPPFLAGS=-I$(FELIB)/include
-FELIB_LDFLAGS=-L$(FELIB)/lib -lCAEN_FELib -Wl,-rpath=$(FELIB)/lib
+FELIB_CPPFLAGS=
+FELIB_LDFLAGS=-lCAEN_FELib 
 
 
-DIG2_CPPFLAGS=-I$(DIG2)/include
-DIG2_LDFLAGS=-L$(DIG2)/lib -lCAEN_Dig2 -Wl,-rpath=$(DIG2)/lib
+DIG2_CPPFLAGS=
+DIG2_LDFLAGS= #  -lCAEN_Dig2 
 
 JSON_CPPFLAGS = $(shell pkg-config jsoncpp --cflags)
 JSON_LDLFAGS  = $(shell pkg-config jsoncpp  --libs)
@@ -42,6 +42,8 @@ PUGI_LDFLAGS=-L$(HERE)../pugixml/lib -lpugixml
 
 CPPFLAGS=$(FELIB_CPPFLAGS) $(DIG2_CPPFLAGS) $(JSON_CPPFLAGS) $(NSCLDAQ_CXXFLAGS) \
 	$(TCL_CPPFLAGS) $(PUGI_CXXFLAGS)
+
+DEVTEST_LDFLAGS=$(CPPUNIT_LDFLAGS) $(FELIB_LDFLAGS) $(DIG2_LDFLAGS)
 
 all: libCaenVx2750.a libCaenVxUnpackers.a test_programs
 
@@ -114,8 +116,13 @@ TEST_MODULE_ISUSB=1
 TEST_MODULE_CONNECTION=15236
 
 tests:  fejackettests
-	./fejackettests $(TEST_MODULE_CONNECTION) $(TEST_MODULE_ISUSB)
+	LD_LIBRARY_PATH=$(LD_LIBRARY_PATH) ./fejackettests $(TEST_MODULE_CONNECTION) $(TEST_MODULE_ISUSB)
 
-fejackettests: TestRunner.cpp
-	$(CXX) $(CPPUNIT_CPPFLAGS) $(CPPUNIT_LDFLAGS) -o fejackettests $<
+fejackettests: TestRunner.cpp devtests.cpp libCaenVx2750.a 
+	$(CXX) $(CPPUNIT_CPPFLAGS) $(CPPUNIT_LDFLAGS) -o fejackettests  \
+	TestRunner.cpp devtests.cpp \
+	-L. -lCaenVx2750 $(DEVTEST_LDFLAGS)
 
+clean:
+	rm -f *.o *.a
+	rm -f fejackettests
