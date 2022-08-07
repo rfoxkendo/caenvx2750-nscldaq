@@ -41,6 +41,11 @@ class devtest : public CppUnit::TestFixture {
   CPPUNIT_TEST(chanstring); // Convenience functions for
   CPPUNIT_TEST(channum);    // channel level params.
   CPPUNIT_TEST(chanfloat);
+
+  // Set at top level (need full path).
+
+  CPPUNIT_TEST(setclocksrc);
+  CPPUNIT_TEST(setvetowidth);
   CPPUNIT_TEST_SUITE_END();
     
 private:
@@ -65,6 +70,9 @@ protected:
   void chanstring();
   void channum();
   void chanfloat();
+
+  void setclocksrc();
+  void setvetowidth();
 };
 
 CPPUNIT_TEST_SUITE_REGISTRATION(devtest);
@@ -146,4 +154,28 @@ void devtest::channum()
 void devtest::chanfloat()
 {
   CPPUNIT_ASSERT_NO_THROW(m_pConnection->GetChanReal(0, "DCOffset"));
+}
+
+void devtest::setclocksrc()
+{
+  CPPUNIT_ASSERT_NO_THROW(m_pConnection->SetValue("/par/ClockSource", "FPClkIn"));
+  EQ(std::string("FPClkIn"), m_pConnection->GetDeviceValue("ClockSource"));
+
+  // Set it to internal:
+
+  CPPUNIT_ASSERT_NO_THROW(m_pConnection->SetValue("/par/ClockSource", "Internal"));
+  EQ(std::string("Internal"), m_pConnection->GetDeviceValue("ClockSource"));
+}
+void devtest::setvetowidth()
+{
+  int original = m_pConnection->GetDeviceInteger("BoardVetoWidth");
+
+  CPPUNIT_ASSERT_NO_THROW(m_pConnection->SetValue("/par/BoardVetoWidth", 0));
+  EQ(0, m_pConnection->GetDeviceInteger("BoardVetoWidth"));
+  m_pConnection->SetValue("/par/BoardVetoWidth", 1232); // granular
+  EQ(1232, m_pConnection->GetDeviceInteger("BoardVetoWidth"));
+  m_pConnection->SetValue("/par/BoardVetoWidth", original);
+  EQ(original, m_pConnection->GetDeviceInteger("BoardVetoWidth"));
+			  
+  
 }
