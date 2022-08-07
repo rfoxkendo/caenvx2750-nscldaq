@@ -41,7 +41,7 @@ PUGI_LDFLAGS=-L$(HERE)../pugixml/lib -lpugixml
 
 
 CPPFLAGS=$(FELIB_CPPFLAGS) $(DIG2_CPPFLAGS) $(JSON_CPPFLAGS) $(NSCLDAQ_CXXFLAGS) \
-	$(TCL_CPPFLAGS) $(PUGI_CXXFLAGS)
+	$(TCL_CPPFLAGS) $(PUGI_CXXFLAGS) -g
 
 DEVTEST_LDFLAGS=$(CPPUNIT_LDFLAGS) $(FELIB_LDFLAGS) $(DIG2_LDFLAGS)
 
@@ -119,7 +119,7 @@ tests:  fejackettests
 	LD_LIBRARY_PATH=$(LD_LIBRARY_PATH) ./fejackettests $(TEST_MODULE_CONNECTION) $(TEST_MODULE_ISUSB)
 
 fejackettests: TestRunner.cpp devtests.cpp libCaenVx2750.a 
-	$(CXX) $(CPPUNIT_CPPFLAGS) $(CPPUNIT_LDFLAGS) -o fejackettests  \
+	$(CXX) -g  $(CPPUNIT_CPPFLAGS) $(CPPUNIT_LDFLAGS) -o fejackettests  \
 	TestRunner.cpp devtests.cpp \
 	-L. -lCaenVx2750 $(DEVTEST_LDFLAGS)
 

@@ -28,9 +28,20 @@ extern std::string connection;
 extern bool        isUsb;
 
 class devtest : public CppUnit::TestFixture {
-    CPPUNIT_TEST_SUITE(devtest);
-    CPPUNIT_TEST(test_1);
-    CPPUNIT_TEST_SUITE_END();
+  CPPUNIT_TEST_SUITE(devtest);
+  CPPUNIT_TEST(serial);    // Base parameter getting checks.
+  CPPUNIT_TEST(getnum);
+  CPPUNIT_TEST(getfloat);
+  CPPUNIT_TEST(isPHA);
+
+  CPPUNIT_TEST(devstring); // Convenience functions for
+  CPPUNIT_TEST(devnum);    // device level parameters.
+  CPPUNIT_TEST(devfloat);
+
+  CPPUNIT_TEST(chanstring); // Convenience functions for
+  CPPUNIT_TEST(channum);    // channel level params.
+  CPPUNIT_TEST(chanfloat);
+  CPPUNIT_TEST_SUITE_END();
     
 private:
     caen_nscldaq::Dig2Device* m_pConnection;
@@ -42,11 +53,97 @@ public:
         delete m_pConnection;
     }
 protected:
-    void test_1();
+  void serial();
+  void getnum();
+  void getfloat();
+  void isPHA();
+
+  void devstring();
+  void devnum();
+  void devfloat();
+
+  void chanstring();
+  void channum();
+  void chanfloat();
 };
 
 CPPUNIT_TEST_SUITE_REGISTRATION(devtest);
 
-void devtest::test_1()
+// Read serial - it's the same as the PID -- assumes
+// a usb connection.
+
+void devtest::serial()
 {
+  
+    std::string ser;
+    CPPUNIT_ASSERT_NO_THROW(
+	 ser = m_pConnection->GetValue("/par/SerialNum")
+    );
+  if (isUsb)  EQ(connection, ser);
+}
+
+// Number of channels is an integer:
+
+void devtest::getnum()
+{
+  int chans;
+  CPPUNIT_ASSERT_NO_THROW(
+     chans = m_pConnection->GetInteger("/par/NumCh")
+  );
+  EQ(64, chans);
+}
+
+
+// The volatile and permanent clock delays  is a float but
+// damned if I know what to check it against.
+void devtest::getfloat()
+{
+  float vol, perm;
+  CPPUNIT_ASSERT_NO_THROW(
+      vol = m_pConnection->GetReal("/par/VolatileClockOutDelay")
+  );
+  
+}
+
+// We're going to use dpp-pha parameter so we need to know
+// that's the firmware type:
+
+void devtest::isPHA()
+{
+  std::string fwType = m_pConnection->GetValue("/par/FwType");
+  EQ(std::string("DPP_PHA"), fwType);
+}
+
+void devtest::devstring()
+{
+  std::string ser;
+  CPPUNIT_ASSERT_NO_THROW(
+    ser = m_pConnection->GetDeviceValue("SerialNum")
+  );
+  if (isUsb) EQ(connection ,ser);
+}
+void devtest::devnum() {
+  int chans;
+  CPPUNIT_ASSERT_NO_THROW(
+     chans = m_pConnection->GetDeviceInteger("NumCh")
+  );
+  EQ(64, chans);
+}
+void devtest::devfloat()
+{
+  CPPUNIT_ASSERT_NO_THROW(m_pConnection->GetDeviceReal("VolatileClockOutDelay"));
+}
+void devtest::chanstring()
+{
+  CPPUNIT_ASSERT_NO_THROW(m_pConnection->GetChanValue(0,"EventTriggerSource"));
+}
+
+void devtest::channum()
+{
+  CPPUNIT_ASSERT_NO_THROW(m_pConnection->GetChanInteger(0, "ADCVetoWidth"));
+}
+
+void devtest::chanfloat()
+{
+  CPPUNIT_ASSERT_NO_THROW(m_pConnection->GetChanReal(0, "DCOffset"));
 }
