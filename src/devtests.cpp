@@ -47,6 +47,12 @@ class devtest : public CppUnit::TestFixture {
   CPPUNIT_TEST(setclocksrc);
   CPPUNIT_TEST(setvetowidth);
   CPPUNIT_TEST(enclockFP);       // boolean
+  
+  // Set at device level:
+  
+  CPPUNIT_TEST(devsetclocksrc);
+  CPPUNIT_TEST(devsetvetowidth);
+  CPPUNIT_TEST(devenclockFP);
   CPPUNIT_TEST_SUITE_END();
     
 private:
@@ -75,6 +81,10 @@ protected:
   void setclocksrc();
   void setvetowidth();
   void enclockFP();
+  
+  void devsetclocksrc();
+  void devsetvetowidth();
+  void devenclockFP();
 };
 
 CPPUNIT_TEST_SUITE_REGISTRATION(devtest);
@@ -193,4 +203,43 @@ void devtest::enclockFP()
   EQ(false, m_pConnection->GetDeviceBool("EnClockOutFP"));
   
   m_pConnection->SetValue("/par/EnClockOutFP", original);
+}
+
+
+//
+void devtest::devsetclocksrc()
+{
+  CPPUNIT_ASSERT_NO_THROW(m_pConnection->SetDeviceValue("ClockSource", "FPClkIn"));
+  EQ(std::string("FPClkIn"), m_pConnection->GetDeviceValue("ClockSource"));
+
+  // Set it to internal:
+
+  CPPUNIT_ASSERT_NO_THROW(m_pConnection->SetDeviceValue("ClockSource", "Internal"));
+  EQ(std::string("Internal"), m_pConnection->GetDeviceValue("ClockSource"));
+}
+void devtest::devsetvetowidth()
+{
+  int original = m_pConnection->GetDeviceInteger("BoardVetoWidth");
+
+  CPPUNIT_ASSERT_NO_THROW(m_pConnection->SetDeviceValue("BoardVetoWidth", 0));
+  EQ(0, m_pConnection->GetDeviceInteger("BoardVetoWidth"));
+  m_pConnection->SetDeviceValue("BoardVetoWidth", 1232); // granular
+  EQ(1232, m_pConnection->GetDeviceInteger("BoardVetoWidth"));
+  m_pConnection->SetDeviceValue("BoardVetoWidth", original);
+  EQ(original, m_pConnection->GetDeviceInteger("BoardVetoWidth"));
+			  
+  
+}
+
+void devtest::devenclockFP()
+{
+  bool original = m_pConnection->GetDeviceBool("EnClockOutFP");
+  
+  CPPUNIT_ASSERT_NO_THROW(m_pConnection->SetDeviceValue("EnClockOutFP", true));
+  EQ(true, m_pConnection->GetDeviceBool("EnClockOutFP"));
+  
+  m_pConnection->SetDeviceValue("EnClockOutFP", false);
+  EQ(false, m_pConnection->GetDeviceBool("EnClockOutFP"));
+  
+  m_pConnection->SetDeviceValue("EnClockOutFP", original);
 }
