@@ -20,7 +20,7 @@ DIG2_CPPFLAGS=
 DIG2_LDFLAGS= #  -lCAEN_Dig2 
 
 JSON_CPPFLAGS = $(shell pkg-config jsoncpp --cflags)
-JSON_LDLFAGS  = $(shell pkg-config jsoncpp  --libs)
+JSON_LDFLAGS  = $(shell pkg-config jsoncpp  --libs)
 
 TCL_CPPFLAGS = $(shell pkg-config tcl8.6 --cflags)
 TCL_LDFLAGS  = $(shell pkg-config tcl8.6 --libs) 
@@ -40,10 +40,12 @@ PUGI_LDFLAGS=-L$(HERE)../pugixml/lib -lpugixml
 
 
 
-CPPFLAGS=$(FELIB_CPPFLAGS) $(DIG2_CPPFLAGS) $(JSON_CPPFLAGS) $(NSCLDAQ_CXXFLAGS) \
+CPPFLAGS=$(FELIB_CPPFLAGS) $(DIG2_CPPFLAGS) $(JSON_CPPFLAGS) \
+	$(NSCLDAQ_CXXFLAGS) \
 	$(TCL_CPPFLAGS) $(PUGI_CXXFLAGS) -g
 
-DEVTEST_LDFLAGS=$(CPPUNIT_LDFLAGS) $(FELIB_LDFLAGS) $(DIG2_LDFLAGS)
+DEVTEST_LDFLAGS=$(CPPUNIT_LDFLAGS) $(FELIB_LDFLAGS) $(DIG2_LDFLAGS) \
+	$(JSON_LDFLAGS)
 
 all: libCaenVx2750.a libCaenVxUnpackers.a test_programs
 
@@ -122,7 +124,7 @@ fejackettests: TestRunner.cpp devtests.cpp vx2750phatests.cpp \
 	libCaenVx2750.a 
 	$(CXX) -g  $(CPPUNIT_CPPFLAGS) $(CPPUNIT_LDFLAGS) -o fejackettests  \
 	TestRunner.cpp devtests.cpp vx2750phatests.cpp \
-	-L. -lCaenVx2750 $(DEVTEST_LDFLAGS)
+	-L. -lCaenVx2750 $(DEVTEST_LDFLAGS) $(JSON_CPPFLAGS) $(JSON_LDFLAGS)
 
 clean:
 	rm -f *.o *.a
