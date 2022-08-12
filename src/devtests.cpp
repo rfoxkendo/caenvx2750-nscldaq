@@ -56,6 +56,13 @@ class devtest : public CppUnit::TestFixture {
   CPPUNIT_TEST(devsetvetowidth);
   CPPUNIT_TEST(devenclockFP);
   CPPUNIT_TEST(devvolclkdelay);
+  
+  CPPUNIT_TEST(chsetstring);
+  CPPUNIT_TEST(chsetint);
+  CPPUNIT_TEST(chsetfloat);
+  CPPUNIT_TEST(chsetbool);
+  
+  
   CPPUNIT_TEST_SUITE_END();
     
 private:
@@ -89,6 +96,11 @@ protected:
   void devsetvetowidth();
   void devenclockFP();
   void devvolclkdelay();
+  
+  void chsetstring();
+  void chsetint();
+  void chsetfloat();
+  void chsetbool();
 };
 
 CPPUNIT_TEST_SUITE_REGISTRATION(devtest);
@@ -265,4 +277,53 @@ void devtest::devvolclkdelay()
   ASSERT(std::abs(now - 5000.7) < 50.0);
   
   m_pConnection->SetDeviceValue("VolatileClockOutDelay", original);
+}
+
+void devtest::chsetstring()
+{
+  std::string original = m_pConnection->GetChanValue(0, "EventTriggerSource");
+  CPPUNIT_ASSERT_NO_THROW(m_pConnection->SetChanValue(0, "EventTriggerSource", "ITLA"));
+  EQ(std::string("ITLA"), m_pConnection->GetChanValue(0, "EventTriggerSource"));
+  
+  m_pConnection->SetChanValue(0, "EventTriggerSource", "ChSelfTrigger");
+  EQ(std::string("ChSelfTrigger"), m_pConnection->GetChanValue(0, "EventTriggerSource"));
+  
+  m_pConnection->SetChanValue(0, "EventTriggerSource", original.c_str());
+                          
+}
+void devtest::chsetint()
+{
+  int original = m_pConnection->GetChanInteger(0, "ADCVetoWidth");
+  CPPUNIT_ASSERT_NO_THROW(m_pConnection->SetChanValue(0, "ADCVetoWidth", 0));
+  EQ(0, m_pConnection->GetChanInteger(0, "ADCVetoWidth"));
+  
+  m_pConnection->SetChanValue(0, "ADCVetoWidth", 2000);
+  EQ(2000, m_pConnection->GetChanInteger(0, "ADCVetoWidth"));
+  
+  m_pConnection->SetChanValue(0, "ADCVetoWidth", original);
+}
+
+void devtest::chsetfloat()
+{
+  double original = m_pConnection->GetChanReal(0, "DCOffset");
+  
+  CPPUNIT_ASSERT_NO_THROW(m_pConnection->SetChanValue(0, "DCOffset", 0.0));
+  EQ(0.0, m_pConnection->GetChanReal(0, "DCOffset"));
+  
+  m_pConnection->SetChanValue(0, "DCOffset", 50.0);
+  ASSERT(std::abs(50.0 - m_pConnection->GetChanReal(0, "DCOffset")) < 1.0);
+  
+  m_pConnection->SetChanValue(original, "DCOffset", original);
+}
+
+void devtest::chsetbool()
+{
+  bool original = m_pConnection->GetChanBool(0, "ChEnable");
+  CPPUNIT_ASSERT_NO_THROW(m_pConnection->SetChanValue(0, "ChEnable", true));
+  ASSERT(m_pConnection->GetChanBool(0, "ChEnable"));
+  
+  m_pConnection->SetChanValue(0, "ChEnable", false);
+  ASSERT(!m_pConnection->GetChanBool(0, "ChEnable"));
+  
+  m_pConnection->SetChanValue(0, "ChEnable", original);
 }
