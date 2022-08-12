@@ -75,6 +75,8 @@ namespace caen_nscldaq {
 
         void SetChanValue(unsigned chan, const char* chanParName, bool value) const;
 
+        /// These don't work and I'm not sure how to make them work yet.
+        ///
 
         void SetLVDSValue(unsigned quartet, const char* LVDSName, const char* value) const;
 
@@ -82,10 +84,7 @@ namespace caen_nscldaq {
 
         void SetLVDSValue(unsigned quartet, const char* LVDSName, std::uint64_t value) const;
 
-        void SetLVDSValue(unsigned quartet, const char* LVDSName, double value) const;
-
-        void SetLVDSValue(unsigned quartet, const char* LVDSName, bool value) const;
-
+        
         
         
         
@@ -131,9 +130,7 @@ namespace caen_nscldaq {
 
         std::uint64_t GetLVDSULong(unsigned quartet, const char* parameterName) const;
 
-        double      GetLVDSReal(unsigned quartet, const char* parameterName) const;
-
-        bool        GetLVDSBool(unsigned quartet, const char* parameterName) const;
+        
 
         
         // Digitizer commands:
@@ -160,10 +157,12 @@ namespace caen_nscldaq {
 
         std::string chanPath(unsigned chan, const char* chanParName) const;
 
-        std::string LVDSPath(unsigned quartet, const char* lvdsParName) const;
+        std::string LVDSPath(const char* lvdsParName) const;
 
         std::string lastError() const;
-
+        std::string encodeLVDSquartet(unsigned quartet, const char* value=0) const;
+        std::string encodeLVDSValue(unsigned quartet, std::uint64_t value) const;
+        
     };
 }
 

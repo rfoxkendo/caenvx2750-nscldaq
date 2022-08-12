@@ -118,9 +118,10 @@ TEST_MODULE_CONNECTION=15236
 tests:  fejackettests
 	./fejackettests $(TEST_MODULE_CONNECTION) $(TEST_MODULE_ISUSB)
 
-fejackettests: TestRunner.cpp devtests.cpp libCaenVx2750.a 
+fejackettests: TestRunner.cpp devtests.cpp vx2750phatests.cpp \
+	libCaenVx2750.a 
 	$(CXX) -g  $(CPPUNIT_CPPFLAGS) $(CPPUNIT_LDFLAGS) -o fejackettests  \
-	TestRunner.cpp devtests.cpp \
+	TestRunner.cpp devtests.cpp vx2750phatests.cpp \
 	-L. -lCaenVx2750 $(DEVTEST_LDFLAGS)
 
 clean:

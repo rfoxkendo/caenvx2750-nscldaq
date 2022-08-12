@@ -1,7 +1,5 @@
 /*
-    This software is Copyright by the Board of Trustees of Michigan
-    State University (c) Copyright 2017.
-
+    
     You may use this software under the terms of the GNU public license
     (GPL).  The terms of this license are described at:
 
@@ -9,10 +7,7 @@
 
      Authors:
              Ron Fox
-             Giordano Cerriza
-	     FRIB
-	     Michigan State University
-	     East Lansing, MI 48824-1321
+    
 */
 
 /** @file:  devtests.cpp
@@ -62,6 +57,8 @@ class devtest : public CppUnit::TestFixture {
   CPPUNIT_TEST(chsetfloat);
   CPPUNIT_TEST(chsetbool);
   
+  //CPPUNIT_TEST(lvdsstring);
+  //CPPUNIT_TEST(lvdsint);
   
   CPPUNIT_TEST_SUITE_END();
     
@@ -101,6 +98,9 @@ protected:
   void chsetint();
   void chsetfloat();
   void chsetbool();
+  
+  void lvdsstring();
+  void lvdsint();
 };
 
 CPPUNIT_TEST_SUITE_REGISTRATION(devtest);
@@ -326,4 +326,31 @@ void devtest::chsetbool()
   ASSERT(!m_pConnection->GetChanBool(0, "ChEnable"));
   
   m_pConnection->SetChanValue(0, "ChEnable", original);
+}
+
+// lvds - group set - reads and writes:
+
+void devtest::lvdsstring()
+{
+  std::string old = m_pConnection->GetLVDSValue(0, "LVDSMode");
+  
+  CPPUNIT_ASSERT_NO_THROW(m_pConnection->SetLVDSValue(0, "LVDSMode", "IORegister"));
+  EQ(std::string("IORegister"), m_pConnection->GetLVDSValue(0, "LVDSMode"));
+  
+  m_pConnection->SetLVDSValue(0, "LVDSMode", "SelfTriggers");
+  EQ(std::string("SelfTriggers"), m_pConnection->GetLVDSValue(0, "LVDSMode"));
+  
+  m_pConnection->SetLVDSValue(0, "LVDSMode", old.c_str());
+}
+void devtest::lvdsint()
+{
+  int old = m_pConnection->GetLVDSInteger(0, "LVDSIOReg");
+  
+  CPPUNIT_ASSERT_NO_THROW(m_pConnection->SetLVDSValue(0, "LVDSIOReg", 0x5555));
+  EQ(0x5555, m_pConnection->GetLVDSInteger(0, "LVDSIOReg"));
+  
+  m_pConnection->SetLVDSValue(0, "LVDSIOReg", 0xaaaa);
+  EQ(0xaaaa, m_pConnection->GetLVDSInteger(0, "LVDSIOReg"));
+  
+  m_pConnection->SetLVDSValue(0, "LVDSIOReg", old);
 }

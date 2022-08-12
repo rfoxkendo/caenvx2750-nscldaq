@@ -218,33 +218,25 @@ namespace caen_nscldaq {
     void
     Dig2Device::SetLVDSValue(unsigned quartet, const char* LVDSName, const char* value) const
     {
-        std::string path = LVDSPath(quartet, LVDSName);
-        SetValue(path.c_str(), value);
+        std::string path = LVDSPath(LVDSName);
+        std::string actual =encodeLVDSquartet(quartet, value);
+        SetValue(path.c_str(), actual.c_str());
     }
     void
     Dig2Device::SetLVDSValue(unsigned quartet, const char* LVDSName, int value) const
     {
-        std::string path = LVDSPath(quartet, LVDSName);
-        SetValue(path.c_str(), value);
+        std::string path = LVDSPath(LVDSName);
+        std::string actual =encodeLVDSValue(quartet, value);
+        SetValue(path.c_str(), actual.c_str());
     }
     void
     Dig2Device::SetLVDSValue(unsigned quartet, const char* LVDSName, std::uint64_t value) const
     {
-        std::string path = LVDSPath(quartet, LVDSName);
-        SetValue(path.c_str(), value);
+        std::string path = LVDSPath(LVDSName);
+        std::string actual = encodeLVDSValue(quartet, value);
+        SetValue(path.c_str(), actual.c_str());
     }
-    void
-    Dig2Device::SetLVDSValue(unsigned quartet, const char* LVDSName, double value) const
-    {
-        std::string path = LVDSPath(quartet, LVDSName);
-        SetValue(path.c_str(), value);
-    }
-    void
-    Dig2Device::SetLVDSValue(unsigned quartet, const char* LVDSName, bool value) const
-    {
-        std::string path = LVDSPath(quartet, LVDSName);
-        SetValue(path.c_str(), value);
-    }
+    
     /**
      * getValueGet<type>Value
      *    Gets the value of a parameter.
@@ -390,33 +382,23 @@ namespace caen_nscldaq {
     std::string
     Dig2Device::GetLVDSValue(unsigned quartet, const char* parameterName) const
     {
-        std::string fullPath = LVDSPath(quartet, parameterName);
-        return GetValue(fullPath.c_str());
+        std::string fullPath = LVDSPath(parameterName);
+        std::string lvdsInitial = encodeLVDSquartet(quartet);
+        return GetValue(fullPath.c_str(), lvdsInitial.c_str());
     }
     int
     Dig2Device::GetLVDSInteger(unsigned quartet, const char* parameterName) const
     {
-        std::string fullPath = LVDSPath(quartet, parameterName);
+        std::string fullPath = LVDSPath( parameterName);
         return GetInteger(fullPath.c_str());
     }
     std::uint64_t
     Dig2Device::GetLVDSULong(unsigned quartet, const char* parameterName) const
     {
-        std::string fullPath = LVDSPath(quartet, parameterName);
+        std::string fullPath = LVDSPath(parameterName);
         return GetULong(fullPath.c_str());
     }
-    double
-    Dig2Device::GetLVDSReal(unsigned quartet, const char* parameterName) const
-    {
-        std::string fullPath = LVDSPath(quartet, parameterName);
-        return GetReal(fullPath.c_str());
-    }
-    bool
-    Dig2Device::GetLVDSBool(unsigned quartet, const char* parameterName) const
-    {
-        std::string fullPath = LVDSPath(quartet, parameterName);
-        return GetBool(fullPath.c_str());
-    }
+    
     /**
      * Command
      *    Send a command to the digitizer.
@@ -583,15 +565,14 @@ namespace caen_nscldaq {
      * LVDSPath
      *    Return the path to an LVDS Parameter
      *
-     * @param quartet - the lVDS quartet selected.
      *  @param LVDS parameter name.
      *  @return std::string
      */
     std::string
-    Dig2Device::LVDSPath(unsigned quartet, const char* lvdsParName) const
+    Dig2Device::LVDSPath( const char* lvdsParName) const
     {
         std::stringstream strPath;
-        strPath << "/lvds" << quartet << "/par/" << lvdsParName;
+        strPath << "/par/" << lvdsParName ;
         std::string result = strPath.str();
         return result;
     }
@@ -610,6 +591,40 @@ namespace caen_nscldaq {
             throw std::runtime_error("Failed to get last error message!");
         }
         std::string result(msg);
+        return result;
+    }
+    /**
+     * encodeLVDSQuartet
+     *    Returns a string that encodes the LVDS quartet and optional value.
+     *  @param quartet 0-3 quartet number
+     *  @param value   - if supplied "=" value is appended to the number.
+     *  @return std::string
+     *  @note using a 'quartet' from 0-7 allows encoding the trigger masks as well.
+     */
+    std::string
+    Dig2Device::encodeLVDSquartet(unsigned quartet, const char* value) const
+    {
+        std::stringstream strResult;
+        strResult << quartet;
+        if (value) {
+            strResult << "=" << value;
+        }
+        std::string result = strResult.str();
+        return result;
+    }
+    /**
+     * encodeLVDSValue
+     *     Same as LVDSQuartet but always takes an integer value:
+     * @param quartet - number to the left of =
+     * @param value   - number to the right of =
+     * @return std::string
+     */
+    std::string
+    Dig2Device::encodeLVDSValue(unsigned quartet, std::uint64_t value) const
+    {
+        std::stringstream strResult;
+        strResult << quartet << "=" << value;
+        std::string result = strResult.str();
         return result;
     }
     
