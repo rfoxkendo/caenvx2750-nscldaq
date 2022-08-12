@@ -80,7 +80,7 @@ namespace caen_nscldaq {
 
         void SetLVDSValue(unsigned quartet, const char* LVDSName, int value) const;
 
-        void setLVDSValue(unsigned quartet, const char* LVDSName, std::uint64_t value) const;
+        void SetLVDSValue(unsigned quartet, const char* LVDSName, std::uint64_t value) const;
 
         void SetLVDSValue(unsigned quartet, const char* LVDSName, double value) const;
 

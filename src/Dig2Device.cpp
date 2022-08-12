@@ -228,7 +228,7 @@ namespace caen_nscldaq {
         SetValue(path.c_str(), value);
     }
     void
-    Dig2Device::setLVDSValue(unsigned quartet, const char* LVDSName, std::uint64_t value) const
+    Dig2Device::SetLVDSValue(unsigned quartet, const char* LVDSName, std::uint64_t value) const
     {
         std::string path = LVDSPath(quartet, LVDSName);
         SetValue(path.c_str(), value);
