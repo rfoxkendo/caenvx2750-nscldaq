@@ -46,6 +46,7 @@ class devtest : public CppUnit::TestFixture {
 
   CPPUNIT_TEST(setclocksrc);
   CPPUNIT_TEST(setvetowidth);
+  CPPUNIT_TEST(enclockFP);       // boolean
   CPPUNIT_TEST_SUITE_END();
     
 private:
@@ -73,6 +74,7 @@ protected:
 
   void setclocksrc();
   void setvetowidth();
+  void enclockFP();
 };
 
 CPPUNIT_TEST_SUITE_REGISTRATION(devtest);
@@ -178,4 +180,17 @@ void devtest::setvetowidth()
   EQ(original, m_pConnection->GetDeviceInteger("BoardVetoWidth"));
 			  
   
+}
+
+void devtest::enclockFP()
+{
+  bool original = m_pConnection->GetDeviceBool("EnClockOutFP");
+  
+  CPPUNIT_ASSERT_NO_THROW(m_pConnection->SetValue("/par/EnClockOutFP", true));
+  EQ(true, m_pConnection->GetDeviceBool("EnClockOutFP"));
+  
+  m_pConnection->SetValue("/par/EnClockOutFP", false);
+  EQ(false, m_pConnection->GetDeviceBool("EnClockOutFP"));
+  
+  m_pConnection->SetValue("/par/EnClockOutFP", original);
 }

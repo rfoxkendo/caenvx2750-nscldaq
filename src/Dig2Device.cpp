@@ -122,9 +122,8 @@ namespace caen_nscldaq {
     void
     Dig2Device::SetValue(const char* parameterName, bool value) const
     {
-        std::stringstream vstream;
-        vstream << value;
-        std::string strValue = vstream.str();
+        
+        std::string strValue = value ? "True" : "False";
         SetValue(parameterName, strValue.c_str());
     }
     /**
@@ -300,8 +299,7 @@ namespace caen_nscldaq {
     {
         bool value;
         std::string strValue = GetValue(parameterName);
-        std::stringstream sValue(strValue);
-        sValue >> value;
+        value = strValue == "True" ? true : false;
         return value;
     }
     /**
