@@ -40,6 +40,17 @@ class vx2750phatest : public CppUnit::TestFixture {
     CPPUNIT_TEST(getpiggyrev);
     CPPUNIT_TEST(getlicense);
     CPPUNIT_TEST(isLicensed);
+    
+    CPPUNIT_TEST(timebomb);
+    CPPUNIT_TEST(channelCount);
+    CPPUNIT_TEST(bits);
+    CPPUNIT_TEST(samplerate);
+    CPPUNIT_TEST(inputRange);
+    CPPUNIT_TEST(inputsDifferential);
+    CPPUNIT_TEST(inputImpedance);
+    CPPUNIT_TEST(ip);
+    CPPUNIT_TEST(netmask);
+    CPPUNIT_TEST(gateway);
     CPPUNIT_TEST_SUITE_END();
     
 private:
@@ -66,6 +77,18 @@ protected:
     void getpiggyrev();
     void getlicense();
     void isLicensed();
+    
+    void timebomb();
+    void channelCount();
+    void bits();
+    void samplerate();
+    void inputRange();
+    void inputsDifferential();
+    void inputImpedance();
+    void ip();
+    void netmask();
+    void gateway();
+    
 };
 
 CPPUNIT_TEST_SUITE_REGISTRATION(vx2750phatest);
@@ -128,4 +151,54 @@ void vx2750phatest::getlicense()
 void vx2750phatest::isLicensed()
 {
     CPPUNIT_ASSERT_NO_THROW(m_pModule->isLicensed());    
+}
+
+void vx2750phatest::timebomb()
+{
+    CPPUNIT_ASSERT_NO_THROW(m_pModule->remainingUnlicensedTime());
+}
+void vx2750phatest::channelCount()
+{
+    int nchan;
+    CPPUNIT_ASSERT_NO_THROW(nchan = m_pModule->channelCount());
+    EQ(64, nchan);
+}
+void vx2750phatest::bits()
+{
+    int bits;
+    CPPUNIT_ASSERT_NO_THROW(bits = m_pModule->bitsOfResolution());
+    EQ(16, bits);
+}
+void vx2750phatest::samplerate()
+{
+    int rate;
+    CPPUNIT_ASSERT_NO_THROW(rate = m_pModule->sampleRate());
+    EQ(125, rate);
+}
+void vx2750phatest::inputRange()
+{
+    int range;
+    CPPUNIT_ASSERT_NO_THROW(range = m_pModule->inputRange());
+    EQ(2, range);
+}
+void vx2750phatest::inputsDifferential()
+{
+    CPPUNIT_ASSERT_NO_THROW(m_pModule->isDifferentialInput());
+}
+void vx2750phatest::inputImpedance()
+{
+    CPPUNIT_ASSERT_NO_THROW(m_pModule->inputImpedance());
+}
+
+void vx2750phatest::ip()
+{
+    CPPUNIT_ASSERT_NO_THROW(m_pModule->ipAddress());
+}
+void vx2750phatest::netmask()
+{
+    CPPUNIT_ASSERT_NO_THROW(m_pModule->netMask());
+}
+void vx2750phatest::gateway()
+{
+    CPPUNIT_ASSERT_NO_THROW(m_pModule->gateway());
 }

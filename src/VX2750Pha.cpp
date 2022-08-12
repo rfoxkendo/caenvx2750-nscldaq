@@ -737,7 +737,7 @@ static const std::map<VX2750Pha::Endpoint, std::string> endpointToString = {
     int
     VX2750Pha::remainingUnlicensedTime() const
     {
-        return GetDeviceInteger("LicenseRemainigTime");
+        return GetDeviceInteger("LicenseRemainingTime");
     }
     /**
      * channelCount
@@ -809,6 +809,7 @@ static const std::map<VX2750Pha::Endpoint, std::string> endpointToString = {
     {
         return GetDeviceInteger("Zin");
     }
+    
     /**
      * ipAddress
      *   @return int  - uint32_t actually with IP address.

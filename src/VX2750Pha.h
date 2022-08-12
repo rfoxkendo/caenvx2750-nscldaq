@@ -402,8 +402,6 @@ public:
     int          inputRange() const;
     bool         isDifferentialInput() const;
     int          inputImpedance() const;
-    double       adcOverTemperatureThreshold() const;
-    double       fpgaOverTemperatureThreshold() const;
     int          ipAddress() const;
     int          netMask() const;
     int          gateway() const;
