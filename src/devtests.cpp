@@ -23,6 +23,8 @@
 #include "Asserts.h"
 
 #include "Dig2Device.h"
+#include <cmath>
+#include <iostream>
 // Connection parameters:
 extern std::string connection;
 extern bool        isUsb;
@@ -53,6 +55,7 @@ class devtest : public CppUnit::TestFixture {
   CPPUNIT_TEST(devsetclocksrc);
   CPPUNIT_TEST(devsetvetowidth);
   CPPUNIT_TEST(devenclockFP);
+  CPPUNIT_TEST(devvolclkdelay);
   CPPUNIT_TEST_SUITE_END();
     
 private:
@@ -85,6 +88,7 @@ protected:
   void devsetclocksrc();
   void devsetvetowidth();
   void devenclockFP();
+  void devvolclkdelay();
 };
 
 CPPUNIT_TEST_SUITE_REGISTRATION(devtest);
@@ -242,4 +246,23 @@ void devtest::devenclockFP()
   EQ(false, m_pConnection->GetDeviceBool("EnClockOutFP"));
   
   m_pConnection->SetDeviceValue("EnClockOutFP", original);
+}
+void devtest::devvolclkdelay()
+{
+  double original = m_pConnection->GetDeviceReal("VolatileClockOutDelay");
+  
+  CPPUNIT_ASSERT_NO_THROW(m_pConnection->SetDeviceValue("VolatileClockOutDelay", 12345.3));
+  
+  // there's granularity and it's not documented what that granularity is so
+  // guessing below there's a 50ps granularity or less.  FOr these values
+  // that's empirically seen to be true but....*sigh*
+  
+  double now = m_pConnection->GetDeviceReal("VolatileClockOutDelay");
+  ASSERT(std::abs(now - 12345.3) < 50.0);
+  
+  m_pConnection->SetDeviceValue("VolatileClockOutDelay", 5000.7);
+  now = m_pConnection->GetDeviceReal("VolatileClockOutDelay");
+  ASSERT(std::abs(now - 5000.7) < 50.0);
+  
+  m_pConnection->SetDeviceValue("VolatileClockOutDelay", original);
 }
