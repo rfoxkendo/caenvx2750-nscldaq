@@ -721,7 +721,7 @@ static const std::map<VX2750Pha::Endpoint, std::string> endpointToString = {
         auto value = GetDeviceValue("LicenseStatus");
         if (value == "Licensed") {
             return true;
-        } else if (value == "Not Licensed") {
+        } else if (value == "NotLicensed") {
             return false;
         } else {
             std::stringstream s;
