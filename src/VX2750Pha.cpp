@@ -183,7 +183,7 @@ static const std::map<VX2750Pha::TraceRecordMode, std::string> traceRecordToStri
 };
 
 const std::map<std::string, VX2750Pha::TRGOUTMode> VX2750Pha::stringToTRGOUT = {
-    {"TRGIN", VX2750Pha::TriggerOut_TRGIN},
+    {"TrgIn", VX2750Pha::TriggerOut_TRGIN},
     {"P0", VX2750Pha::TriggerOut_P0},
     {"SwTrg", VX2750Pha::TriggerOut_Software},
     {"LVDS", VX2750Pha::TriggerOut_LVDS},
@@ -206,7 +206,7 @@ const std::map<std::string, VX2750Pha::TRGOUTMode> VX2750Pha::stringToTRGOUT = {
 };
 
 static const std::map<VX2750Pha::TRGOUTMode, std::string> TRGOUTToString = {
-    {VX2750Pha::TriggerOut_TRGIN, "TRGIN"},
+    {VX2750Pha::TriggerOut_TRGIN, "TrgIn"},
     {VX2750Pha::TriggerOut_P0, "P0"},
     {VX2750Pha::TriggerOut_Software, "SwTrg"},
     {VX2750Pha::TriggerOut_LVDS, "LVDS"},
