@@ -419,8 +419,7 @@ public:
     void         setWaveTriggerSource(unsigned ch, WaveTriggerSource src) const;
     EventTriggerSource getEventTriggerSource(unsigned ch) const;
     void         setEventTriggerSource(unsigned ch, EventTriggerSource src) const;
-    TimestampResetSource getTimestampResetSource() const;
-    void setTimestampResetSource(TimestampResetSource) const;
+    
     std::uint64_t getChannelTriggerMask(unsigned ch) const;
     void          setChannelTriggerMask(unsigned ch, std::uint64_t mask) const;
     TraceRecordMode getTraceRecordMode(unsigned ch) const;
@@ -752,7 +751,7 @@ VX2750Pha::stringToEnum(const std::map<std::string, T>& map, const std::string& 
     if (p == map.end()) {
         // We can also be a bit more detailed in our message:
         
-        std::string msg("Invalid lookup key passed to enumToString : ");
+        std::string msg("Invalid lookup key passed to stringtoenum : ");
         msg += value;
         throw std::invalid_argument(msg);
     }

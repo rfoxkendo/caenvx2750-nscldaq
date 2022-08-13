@@ -175,11 +175,11 @@ static const std::map<VX2750Pha::TimestampResetSource, std::string> timestampRes
 
 static const std::map<std::string, VX2750Pha::TraceRecordMode> stringToTraceRecord = {
     {"Always", VX2750Pha::Always},
-    {"On Request", VX2750Pha::OnRequest}
+    {"OnRequest", VX2750Pha::OnRequest}
 };
 static const std::map<VX2750Pha::TraceRecordMode, std::string> traceRecordToString = {
     {VX2750Pha::Always, "Always"},
-    {VX2750Pha::OnRequest, "On Request"}
+    {VX2750Pha::OnRequest, "OnRequest"}
 };
 
 const std::map<std::string, VX2750Pha::TRGOUTMode> VX2750Pha::stringToTRGOUT = {
@@ -859,7 +859,7 @@ static const std::map<VX2750Pha::Endpoint, std::string> endpointToString = {
     VX2750Pha::setClockSource(ClockSource selection) const
     {
         std::string src = enumToString(clockSourceToString, selection);
-        SetValue("ClockSource", src.c_str());
+        SetDeviceValue("ClockSource", src.c_str());
     }
     /**
      * isClockOutOnP0
@@ -880,7 +880,7 @@ static const std::map<VX2750Pha::Endpoint, std::string> endpointToString = {
     void
     VX2750Pha::setClockOutOnP0(bool state) const
     {
-        SetDeviceValue("EnClockOutP0", state);
+        SetDeviceValue("EnClockOutP0", state );
     }
     /**
      * isClockOutOnP0
@@ -992,27 +992,7 @@ static const std::map<VX2750Pha::Endpoint, std::string> endpointToString = {
         std::string sel = enumToString(eventTriggerToString, selection);
         SetChanValue(ch, "EventTriggerSource", sel.c_str());
     }
-    /**
-     * getTimestampResetSource
-     *    @return VX2750Pha::TimestampResetSource - the digitizer's source for
-     *                resettting its timestamp.
-     */
-    VX2750Pha::TimestampResetSource
-    VX2750Pha::getTimestampResetSource() const
-    {
-        std::string strValue = GetDeviceValue("TstampResetSource");
-        return stringToEnum(stringToTimestampReset, strValue);
-    }
-    /**
-     * setTimetsampResetSource
-     *     @param source - the digitizer's source for resetting the timestamp values.
-     */
-    void
-    VX2750Pha::setTimestampResetSource(TimestampResetSource source) const {
-        std::string strSource = enumToString(timestampResetToString, source);
-        SetDeviceValue("TstampResetSource", strSource.c_str());
-    }
-    /**
+        /**
      *    getChannelTriggerMask
      *  @param ch - Digitizer channel
      *  @return std::uint64_t - trigger mask fr the channel.
@@ -1021,7 +1001,7 @@ static const std::map<VX2750Pha::Endpoint, std::string> endpointToString = {
     std::uint64_t
     VX2750Pha::getChannelTriggerMask(unsigned ch) const
     {
-        std::string strValue = GetChanValue(ch, "ChannelTriggerMask");
+        std::string strValue = GetChanValue(ch, "ChannelsTriggerMask");
         std::stringstream s(strValue);
         std::uint64_t result;
         s >> result;
@@ -1038,7 +1018,7 @@ static const std::map<VX2750Pha::Endpoint, std::string> endpointToString = {
         std::stringstream s;
         s << mask;
         std::string value = s.str();
-        SetChanValue(ch, "ChannelTriggerMask", value.c_str());
+        SetChanValue(ch, "ChannelsTriggerMask", value.c_str());
     }
     /** getTraceRecordMode
      *    @param ch - digitizer channel.

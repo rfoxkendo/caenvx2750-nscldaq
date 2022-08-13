@@ -355,7 +355,7 @@ VX2750PHAModuleConfiguration::configureAcquisitionTriggerOptions(VX2750Pha& modu
       module.setChannelVetoSource(i, VX2750Pha::stringToChannelVeto.find(cget("chanvetosrc"))->second);
       module.setChannelVetoWidth(i, chanVetoWidths[i]);
   }
-  module.setTimestampResetSource(VX2750Pha::stringToTimestampReset.find(cget("tstampresetsrc"))->second);
+  // module.setTimestampResetSource(VX2750Pha::stringToTimestampReset.find(cget("tstampresetsrc"))->second);
   module.setTRGOUTMode(VX2750Pha::stringToTRGOUT.find(cget("triggeroutmode"))->second);
   module.setGPIOMode(VX2750Pha::stringToGPIO.find(cget("gpiomode"))->second);
   module.setBusyInputSource(VX2750Pha::stringToBusyIn.find(cget("busyinsrc"))->second);
