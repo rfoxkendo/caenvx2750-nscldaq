@@ -1613,37 +1613,37 @@ static const std::map<VX2750Pha::Endpoint, std::string> endpointToString = {
      * getTestPulsePeriod
      *    @return std::uint32_t = nanoseconds between repetitions of the test pulse.
      */
-    std::uint32_t
+    std::uint64_t
     VX2750Pha::getTestPulsePeriod() const
     {
-        return GetDeviceInteger("TestPulsePeriod");
+        return GetDeviceULong("TestPulsePeriod");
     }
     /**
      * setTestPulsePeriod.
      * @param ns - desired nanoseconds between repetitions of the test pulse.
      */
     void
-    VX2750Pha::setTestPulsePeriod(std::uint32_t ns) const
+    VX2750Pha::setTestPulsePeriod(std::uint64_t ns) const
     {
-        SetDeviceValue("TestPulsePeriod", static_cast<int>(ns));
+        SetDeviceValue("TestPulsePeriod", ns);
     }
     /**
      * getTestPulseWidth
      *    @return std::uint32_t test pulse width in ns.
      */
-    std::uint32_t
+    std::uint64_t
     VX2750Pha::getTestPulseWidth() const
     {
-        return GetDeviceInteger("TestPulseWidth");
+        return GetDeviceULong("TestPulseWidth");
     }
     /**
      * setTestPulseWidth
      *    @param ns - desired nanonseconds for which the test pulse is high.
      */
     void
-    VX2750Pha::setTestPulseWidth(std::uint32_t ns) const
+    VX2750Pha::setTestPulseWidth(std::uint64_t ns) const
     {
-        SetDeviceValue("TestPulseWidth", static_cast<int>(ns));
+        SetDeviceValue("TestPulseWidth", ns);
     }
     /**
      * getTestPulseLowLevel
@@ -3817,5 +3817,20 @@ static const std::map<VX2750Pha::Endpoint, std::string> endpointToString = {
         
         return result;
     }
-    
+    /**
+     *    toUpper
+     *      @param s - input string.
+     *      @return std::string - string converted to upper case.
+     *      @note this is used in stringToEnum to do case blind searches.
+     */
+    std::string
+    toUpper(const std::string& s)
+    {
+        std::string result;
+        result.reserve(s.size());
+        for (auto c : s) {
+            result.push_back(std::toupper(c));
+        }
+        return result;
+    }
 }                 // namespace

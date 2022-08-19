@@ -443,11 +443,11 @@ public:
     std::uint32_t getChannelVetoWidth(unsigned chan) const;
     void          setChannelVetoWidth(unsigned chan, std::uint32_t ns) const;
     std::uint32_t getRunDelay() const;
-    void         setRunDelay(std::uint32_t ns) const;
-    bool         isAutoDisarmEnabled() const;
-    void         setAutoDisarmEnabled(bool state) const;
-    bool         isMultiWindowRunEnabled() const;
-    void         setMultiWindowRunEnable(bool state) const;
+    void          setRunDelay(std::uint32_t ns) const;
+    bool          isAutoDisarmEnabled() const;
+    void          setAutoDisarmEnabled(bool state) const;
+    bool          isMultiWindowRunEnabled() const;
+    void          setMultiWindowRunEnable(bool state) const;
     bool          isPauseTimestampHoldEnabled() const;
     void          setPauseTimestampHold(bool enable) const;
     
@@ -476,10 +476,10 @@ public:
     void          setPreTriggerSamples(unsigned chan, std::uint32_t nsamples) const;
     std::uint32_t getPreTriggerNs(unsigned chan) const;
     void          setPreTriggerNs(unsigned chan, std::uint32_t ns) const;
-    std::uint32_t getTestPulsePeriod() const;
-    void          setTestPulsePeriod(std::uint32_t ns) const;
-    std::uint32_t getTestPulseWidth() const;
-    void          setTestPulseWidth(std::uint32_t ns) const;
+    std::uint64_t getTestPulsePeriod() const;
+    void          setTestPulsePeriod(std::uint64_t ns) const;
+    std::uint64_t getTestPulseWidth() const;
+    void          setTestPulseWidth(std::uint64_t ns) const;
     std::uint32_t getTestPulseLowLevel() const;
     void          setTestPulseLowLevel(std::uint32_t counts) const;
     std::uint32_t getTestPulseHighLevel() const;
@@ -535,9 +535,9 @@ public:
     
     std::uint64_t getITLAMask() const;
     std::uint64_t getITLBMask() const;
-    
     void          setITLAMask(std::uint64_t mask) const;
     void          setITLBMask(std::uint64_t mask) const;
+    
     std::uint32_t getITLAGateWidth() const;
     std::uint32_t getITLBGateWidth() const;
     void          setITLAGateWidth(std::uint32_t ns) const;
@@ -697,7 +697,8 @@ private:
     void checkInclusiveRange(int low, int high, int value) const;
     std::string appendNumber(const char* base, unsigned number) const;
     Json::Value createScalar(const char* name, const char* type) const;
-    Json::Value createArray(const char* name, const char* type, unsigned dimension) const;
+    Json::Value createArray(const char* name, const char* type, unsigned dimension) const
+    static std::string toUpper(conts std::string& s);
   
 };
 
@@ -747,7 +748,17 @@ template<class T>
 T
 VX2750Pha::stringToEnum(const std::map<std::string, T>& map, const std::string& value) const
 {
-    auto p = map.find(value);
+    // Case blind fine of value in the string keys of the map:
+    
+    auto p = map.begin();
+    std::string needle = toUpper(value);
+    while (p != map.end()) {
+        if (toUpper(p->first) == needle) {
+            break;
+        }
+        ++p;
+    }
+    
     if (p == map.end()) {
         // We can also be a bit more detailed in our message:
         
