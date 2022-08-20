@@ -403,7 +403,7 @@ static const std::map<VX2750Pha::DigitalProbe, std::string> digitalProbeToString
     {VX2750Pha::TimeFilterArmed, "TimeFilterArmed"},
     {VX2750Pha::ReTriggerGuard, "ReTriggerGuard"},
     {VX2750Pha::EneryFilterBaselineFreeze, "EnergyFilterBaselineFreeze"},
-    {VX2750Pha::EnergyFilterPeaking, "VX2750Pha::EnergyFilterPeaking" },
+    {VX2750Pha::EnergyFilterPeaking, "EnergyFilterPeaking" },
     {VX2750Pha::EnergyFilterPeakReady, "EnergyFilterPeakReady"},
     {VX2750Pha::EnergyFilterPileupGuard, "EnergyFilterPileUpGuard"},
     {VX2750Pha::EventPileup, "EventPileup"},
