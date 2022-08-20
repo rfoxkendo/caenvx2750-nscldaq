@@ -387,7 +387,7 @@ const std::map<std::string, VX2750Pha::DigitalProbe> VX2750Pha::stringToDigitalP
     {"Trigger", VX2750Pha::DProbe_Trigger},
     {"TimeFilterArmed", VX2750Pha::TimeFilterArmed},
     {"ReTriggerGuard", VX2750Pha::ReTriggerGuard},
-    {"EnergyFilterBaslineFreeze", VX2750Pha::EneryFilterBaselineFreeze},
+    {"EnergyFilterBaselineFreeze", VX2750Pha::EneryFilterBaselineFreeze},
     {"EnergyFilterPeaking", VX2750Pha::EnergyFilterPeaking},
     {"EnergyFilterPeakReady", VX2750Pha::EnergyFilterPeakReady},
     {"EnergyFilterPileUpGuard", VX2750Pha::EnergyFilterPileupGuard},
@@ -402,7 +402,7 @@ static const std::map<VX2750Pha::DigitalProbe, std::string> digitalProbeToString
     {VX2750Pha::DProbe_Trigger, "Trigger"},
     {VX2750Pha::TimeFilterArmed, "TimeFilterArmed"},
     {VX2750Pha::ReTriggerGuard, "ReTriggerGuard"},
-    {VX2750Pha::EneryFilterBaselineFreeze, "EnergyFilterBaslineFreeze"},
+    {VX2750Pha::EneryFilterBaselineFreeze, "EnergyFilterBaselineFreeze"},
     {VX2750Pha::EnergyFilterPeaking, "VX2750Pha::EnergyFilterPeaking" },
     {VX2750Pha::EnergyFilterPeakReady, "EnergyFilterPeakReady"},
     {VX2750Pha::EnergyFilterPileupGuard, "EnergyFilterPileUpGuard"},
@@ -2334,7 +2334,7 @@ static const std::map<VX2750Pha::Endpoint, std::string> endpointToString = {
     void
     VX2750Pha::setDACChannel(unsigned chan) const
     {
-      SetDeviceValue("DACoutChSelet", static_cast<int>(chan));
+      SetDeviceValue("DACoutChSelect", static_cast<int>(chan));
     }
     /**
      * getVGAGain
@@ -2375,9 +2375,9 @@ static const std::map<VX2750Pha::Endpoint, std::string> endpointToString = {
      *                    is enabled.
      */
     bool
-    VX2750Pha::isOffsetCalibrationEnabled(unsigned chan) const
+    VX2750Pha::isOffsetCalibrationEnabled() const
     {
-        return GetChanBool(chan, "EnOffsetCalibration");
+        return GetDeviceBool("EnOffsetCalibration");
     }
     /**
      * enableOffsetCalibration
@@ -2385,9 +2385,9 @@ static const std::map<VX2750Pha::Endpoint, std::string> endpointToString = {
      *    @param enable  - True to enable, false to disable.
      */
     void
-    VX2750Pha::enableOffsetCalibration(unsigned chan, bool enable) const
+    VX2750Pha::enableOffsetCalibration(bool enable) const
     {
-        SetChanValue(chan, "EnOffsetCalibration", enable);
+        SetDeviceValue("EnOffsetCalibration", enable);
     }
     /**
      * isChannelEnabled
@@ -3824,7 +3824,7 @@ static const std::map<VX2750Pha::Endpoint, std::string> endpointToString = {
      *      @note this is used in stringToEnum to do case blind searches.
      */
     std::string
-    toUpper(const std::string& s)
+    VX2750Pha::toUpper(const std::string& s)
     {
         std::string result;
         result.reserve(s.size());

@@ -446,11 +446,12 @@ public:
     void          setRunDelay(std::uint32_t ns) const;
     bool          isAutoDisarmEnabled() const;
     void          setAutoDisarmEnabled(bool state) const;
+private:   // deprecated.
     bool          isMultiWindowRunEnabled() const;
     void          setMultiWindowRunEnable(bool state) const;
     bool          isPauseTimestampHoldEnabled() const;
     void          setPauseTimestampHold(bool enable) const;
-    
+public:
     std::uint32_t      getLEDStatus() const;
     std::uint32_t      getAcquisitionStatus() const;
     std::uint32_t      getMaxRawDataSize() const;
@@ -564,8 +565,8 @@ public:
     double        getVGAGain(unsigned group) const;
     void          setVGAGain(unsigned group, double value) const;
     
-    bool          isOffsetCalibrationEnabled(unsigned chan) const;
-    void          enableOffsetCalibration(unsigned chan, bool enable) const;
+    bool          isOffsetCalibrationEnabled() const;
+    void          enableOffsetCalibration(bool enable) const;
     bool          isChannelEnabled(unsigned chan) const;
     void          enableChannel(unsigned chan, bool enable) const;
     int           getSelfTriggerRate(unsigned chan) const;
@@ -697,8 +698,8 @@ private:
     void checkInclusiveRange(int low, int high, int value) const;
     std::string appendNumber(const char* base, unsigned number) const;
     Json::Value createScalar(const char* name, const char* type) const;
-    Json::Value createArray(const char* name, const char* type, unsigned dimension) const
-    static std::string toUpper(conts std::string& s);
+    Json::Value createArray(const char* name, const char* type, unsigned dimension) const;
+    static std::string toUpper(const std::string& s);
   
 };
 

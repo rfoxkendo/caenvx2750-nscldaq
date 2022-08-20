@@ -365,14 +365,14 @@ VX2750PHAModuleConfiguration::configureAcquisitionTriggerOptions(VX2750Pha& modu
   module.setBoardVetoPolarity(VX2750Pha::stringToVetoPolarity.find(cget("boardvetopolarity"))->second);
   module.setRunDelay(getIntegerParameter("rundelay"));
   module.setAutoDisarmEnabled(getBoolParameter("autodisarm"));
-  module.setMultiWindowRunEnable(getBoolParameter("multiwindow"));
+  // module.setMultiWindowRunEnable(getBoolParameter("multiwindow"));
   bool hold;
   if (cget("pausetimestamp") == "hold") {
     hold = true;
   } else {
     hold = false;
   }
-  module.setPauseTimestampHold(hold);
+  // module.setPauseTimestampHold(hold);
   module.setVolatileClockDelay(getFloatParameter("volclkoutdelay"));
   module.setPermanentClockDelay(getFloatParameter("permclkoutdelay"));
                                                  
@@ -650,7 +650,7 @@ void
 VX2750PHAModuleConfiguration::defineInputConditioningOptions()
 {
     addIntListParameter("vgagain", 0, 40, 0, 4, 4, 0);
-    addBoolListParameter("offsetcalibrationenable", 0, 64, true, 64);
+    addBooleanParameter("offsetcalibrationenable", true);
     addBoolListParameter("chanelenables", 0, 64, true, 64);
     addFloatListParameter("dcoffsets", 0.0, 100.0, 0, 64, 64, 50.0);
     addIntListParameter("triggerthresholds", 0, 8191, 0, 64, 64, 1023);
@@ -679,15 +679,17 @@ VX2750PHAModuleConfiguration::configureInputConditioning(VX2750Pha& module)
   }
   // The remainder are all per channel parameters:
   
-  auto enableOffsetCalibration = getBoolList("offsetcalibrationenable");
+  auto enableOffsetCalibration = getBoolParameter("offsetcalibrationenable");
   auto channelEnables  = getBoolList("channelenables");
   auto dcOffsets  = getFloatList("dcoffsets");
   auto thresholds = getIntegerList("triggerthresholds");
   auto inputPolarities = getList("inputpolarities");
   
+  module.enableOffsetCalibration(enableOffsetCalibration);
+  
   int nch = module.channelCount();
   for (int i =0; i < nch; i++) {
-    module.enableOffsetCalibration(i, enableOffsetCalibration[i]);
+    
     module.enableChannel(i, channelEnables[i]);
     module.setDCOffset(i, dcOffsets[i]);
     module.setTriggerThreshold(i, thresholds[i]);
