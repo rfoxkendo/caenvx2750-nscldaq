@@ -2665,7 +2665,7 @@ static const std::map<VX2750Pha::Endpoint, std::string> endpointToString = {
     void
     VX2750Pha::setCoincidenceNs(unsigned chan, std::uint32_t ns) const
     {
-      SetChanValue(chan, "ConcidenceLengthT", static_cast<int>(ns));
+      SetChanValue(chan, "CoincidenceLengthT", static_cast<int>(ns));
     }
     /**
      * getTimeFilterRiseTime
@@ -2726,7 +2726,7 @@ static const std::map<VX2750Pha::Endpoint, std::string> endpointToString = {
     std::uint32_t
     VX2750Pha::getTimeFilterRetriggerGuardSamples(unsigned chan) const
     {
-        return GetChanInteger(chan, "TimeFilterRetriggerGaurdS");
+        return GetChanInteger(chan, "TimeFilterRetriggerGuardS");
     }
     /**
      * setTimeFilterRetriggerGuardTime
@@ -2935,7 +2935,7 @@ static const std::map<VX2750Pha::Endpoint, std::string> endpointToString = {
     bool
     VX2750Pha::isEnergyFilterFLimitationEnabled(unsigned chan) const
     {
-        int value = GetChanInteger(chan, "EnergyFilterFLimitation");
+        int value = GetChanInteger(chan, "EnergyFilterLFLimitation");
         switch ( value ) {
         case 1:
             return true;
@@ -2944,7 +2944,7 @@ static const std::map<VX2750Pha::Endpoint, std::string> endpointToString = {
         default:
             {
                 std::stringstream strMsg;
-                strMsg << "Got an unrecognized value for EnergyFilterFlimitiation: "
+                strMsg << "Got an unrecognized value for EnergyFilterFlimitation: "
                     << value;
                 std::string emsg = strMsg.str();
                 throw std::runtime_error(emsg);
@@ -2960,7 +2960,7 @@ static const std::map<VX2750Pha::Endpoint, std::string> endpointToString = {
     void
     VX2750Pha::enableEnergyFilterFLimitation(unsigned chan, bool enable) const
     {
-        SetChanValue(chan, "EnergyFilterFLimitation", enable ? 1 : 0);
+        SetChanValue(chan, "EnergyFilterLFLimitation", enable ? 1 : 0);
     }
     /** getEnergyFilterBaselineAverage
      *      Returns an enum value that indicates the number of samples that are averaged
