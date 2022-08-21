@@ -602,36 +602,47 @@ public:
     std::uint32_t  getTimeFilterRiseSamples(unsigned chan) const;
     void           setTimeFilterRiseTime(unsigned chan, std::uint32_t ns) const;
     void           setTimeFilterRiseSamples(unsigned chan, std::uint32_t samples) const;
+    
     std::uint32_t  getTimeFilterRetriggerGuardTime(unsigned chan) const;
     std::uint32_t  getTimeFilterRetriggerGuardSamples(unsigned chan) const;
     void           setTimeFilterRetriggerGuardTime(unsigned chan, std::uint32_t ns) const;
     void           setTimeFilterRetriggerGuardSamples(unsigned chan, std::uint32_t samples) const;
+    
     std::uint32_t  getEnergyFilterRiseTime(unsigned chan) const;
     std::uint32_t  getEnergyFilterRiseSamples(unsigned chan) const;
     void           setEnergyFilterRiseTime(unsigned chan, std::uint32_t ns) const;
     void           setEnergyFilterRiseSamples(unsigned chan, std::uint32_t samples) const;
+    
     std::uint32_t  getEnergyFilterFlatTopTime(unsigned chan) const;
     std::uint32_t  getEnergyFilterFlatTopSamples(unsigned chan) const;
     void           setEnergyFilterFlatTopTime(unsigned chan, std::uint32_t ns) const;
     void           setEnergyFilterFlatTopSamples(unsigned chan, std::uint32_t samples) const;
+    
     std::uint32_t  getEnergyFilterPeakingPosition(unsigned chan) const;
     void           setEnergyFilterPeakingPosition(unsigned chan, std::uint32_t pct) const;
+    
     EnergyPeakingAverage getEnergyFilterPeakingAverage(unsigned chan) const;
     void          setEnergyFilterPeakingAverage(unsigned chan, EnergyPeakingAverage sel) const;
+    
     std::uint32_t getEnergyFilterPoleZeroTime(unsigned chan) const;
     std::uint32_t getEnergyFilterPoleZeroSamples(unsigned chan) const;
     void          setEnergyFilterPoleZeroTime(unsigned chan, std::uint32_t ns) const;
     void          setEnergyFilterPoleZeroSamples(unsigned chan, std::uint32_t samples) const;
+    
     double        getEnergyFilterFineGain(unsigned chan) const;
     void          setEnergyFilterFineGain(unsigned chan, double gain) const;
+    
     bool          isEnergyFilterFLimitationEnabled(unsigned chan) const;
     void          enableEnergyFilterFLimitation(unsigned chan, bool enable) const;
+    
     EnergyFilterBaselineAverage getEnergyFilterBaselineAverage(unsigned chan) const;
     void          setEnergyFilterBaselineAverage(unsigned chan, EnergyFilterBaselineAverage sel) const;
+    
     std::uint32_t getEnergyFilterBaselineGuardTime(unsigned chan) const;
     std::uint32_t getEnergyFilterBaselineGuardSamples(unsigned chan) const;
     void          setEnergyFilterBaselineGuardTime(unsigned chan, std::uint32_t ns) const;
     void          setEnergyFilterBaselineGuardSamples(unsigned chan, std::uint32_t samples) const;
+    
     std::uint32_t getEnergyFilterPileupGuardTime(unsigned chan) const;
     std::uint32_t getEnergyFilterPileupGuardSamples(unsigned chan) const;
     void          setEnergyFilterPileupGuardTime(unsigned chan, std::uint32_t ns) const;

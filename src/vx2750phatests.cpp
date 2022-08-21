@@ -81,7 +81,7 @@ class vx2750phatest : public CppUnit::TestFixture {
     CPPUNIT_TEST(wdatasource);
     CPPUNIT_TEST(recl);
     CPPUNIT_TEST(wresolution);
-//    CPPUNIT_TEST(aprobe);
+//    CPPUNIT_TEST(aprobe);   // does not recognize parameter name.
     CPPUNIT_TEST(dprobe);
     CPPUNIT_TEST(pretrigger);
     CPPUNIT_TEST(tpulseperiod);
@@ -113,6 +113,22 @@ class vx2750phatest : public CppUnit::TestFixture {
     CPPUNIT_TEST(threshold);
     CPPUNIT_TEST(polarity);
     CPPUNIT_TEST(egate);
+    
+    CPPUNIT_TEST(evsel);
+    CPPUNIT_TEST(chcoincmask);
+    CPPUNIT_TEST(clen);
+    CPPUNIT_TEST(tfrise);
+    CPPUNIT_TEST(tfretrig);
+    CPPUNIT_TEST(efrise);
+    CPPUNIT_TEST(efflat);
+    CPPUNIT_TEST(efpeak);
+    CPPUNIT_TEST(efpeakavg);
+    CPPUNIT_TEST(efpole0);
+    CPPUNIT_TEST(effg);
+    CPPUNIT_TEST(lffilt);
+    CPPUNIT_TEST(efblavg);
+    CPPUNIT_TEST(efblguard);
+    CPPUNIT_TEST(efpupguard);
     CPPUNIT_TEST_SUITE_END();
     
 private:
@@ -206,7 +222,24 @@ protected:
     void threshold();
     void polarity();
     void egate();
+    
+    void evsel();
+    void chcoincmask();
+    void clen();
+    void tfrise();
+    void tfretrig();
+    void efrise();
+    void efflat();
+    void efpeak();
+    void efpeakavg();
+    void efpole0();
+    void effg();
+    void lffilt();
+    void efblavg();
+    void efblguard();
+    void efpupguard();
 };
+
 
 CPPUNIT_TEST_SUITE_REGISTRATION(vx2750phatest);
 
@@ -1363,5 +1396,448 @@ void vx2750phatest::egate() {
         
         m_pModule->setEnergySkimHighDiscriminator(i, oldhigh);
         m_pModule->setEnergySkimLowDiscriminator(i, oldlow);
+    }
+}
+
+// event and waveform selection:
+
+void vx2750phatest::eselect()
+{
+    std::vector<VX2750Pha::EventSelection> selectors = {
+        VX2750Pha::All, VX2750Pha::Pileup, VX2750Pha::EnergySkim
+    };
+    VX2750Pha::EventSelection old;
+    
+    
+    
+    int nch = m_pModule->channelCount();
+    for (int i = 0; i < nch; i++) {
+        // Event:
+        
+        CPPUNIT_ASSERT_NO_THROW(old = m_pModule->getEventSelector(i));
+        for (auto s : selectors) {
+            CPPUNIT_ASSERT_NO_THROW(m_pModule->setEventSelector(i, s));
+            EQ(s, m_pModule->getEventSelector(i);        
+        }
+        m_pModule->setEventSelector(i, old);
+        
+        // wave:
+        
+        CPPUNIT_ASSERT_NO_THROW(old = m_pModule->getWaveformSelector(i));
+        for (auto s : selectors) {
+            CPPUNIT_ASSERT_NO_THROW(m_pModule->setWaveformSelector(i, s));
+            EQ(s, m_pModule->getWaveformSelector(i);        
+        }
+        m_pModule->setWaveformSelector(i, old);
+    }
+    
+}
+// channel coincidence/anit-coincidence mask:
+
+void vx2750phatest::chcoincmask()
+{
+    std::vector<VX2750Pha::CoincidenceMask> selections = {
+        VX2750Pha::Coincidence_Disabled, VX2750Pha::Ch64Trigger,
+        VX2750Pha::Coincidence_TRGIN, VX2750Pha::Coincidence_GlobalTriggerSource,
+        VX2750Pha::Coincidence_ITLA, Coincidence_ITLB
+    };
+    
+    VX2750Pha::CoincidenceMask oldc;
+    VX2750Pha::CoincidenceMask olda;
+    int nch = m_pModule->channelCount();
+    
+    for (int i =0; i < nch; i++) {
+        oldc = CPPUNIT_ASSERT_NO_THROW(m_pModule->getCoincidenceMask(i));
+        olda = CPPUNIT_ASSERT_NO_THROW(m_pModule->getAntiCoincidenceMask(i));
+        
+        for (s : selections) {
+            CPPUNIT_ASSERT_NO_THROW(m_pModule-setCoincidenceMask(i, s)):
+            EQ(s, m_pModule->getCoincidenceMask(i));
+            
+            CPUNIT_ASSERT_NO_THROW(m_pModule->setAntiCoincidencMask(i, s));
+            EQ(s, m_pMOdule->getAnitCoincenceMask(i));
+                                
+        }
+        
+        m_pModule->setCoincidenceMask(i, oldc);
+        m_pModule->setAntiCoincidenceMask(i, oldc);
+    }
+}
+void vx2750phatest::clen()
+{
+    std::uint32_t mint = 8;
+    std::uint32_t mins = 1;
+    std::uint32_t maxt = 524280;
+    std::uint32_t maxs = 65535;
+    
+    std::uint32_t olds;
+    
+    int nch = m_pModule->channelCount();
+    for(int i =0; i < nch; i++) {
+        CPPUNIT_ASSERT_NO_THROW(olds = m_pModule->getCoincidenceSamples(i));
+    
+        // Note we assume a granularity of 8ns for time:
+        
+        CPPUNIT_ASSERT_NO_THROW(m_pModule->setCoincidenceNs(i, mint));
+        CPPUNIT_ASSERT_NO_THROW(
+            ASSERT((std::labs(std::int32_t(mint) - std::int32_t(m_pModule->getCoincidenceNs(i)))) <= 8)
+        );
+        m_pModule->setCoincdenceNs(i, maxt);
+        ASSERT(std::labs(std::int32_t(maxt) - std::int32_t(m_pModule->getCoincidenceNs(i))) <= 8);
+        
+        // Samples is exact however:
+        
+        CPPUNT_ASSERT_NO_THROW(m_pModule->setCoincidenceSamples(i, mins));
+        EQ(mins, m_pModule->getCoincidenceSamples(i));
+        m_pModule->setCoincidenceSamples(i, maxs);
+        EQ(maxs, m_pModule->getCoincidenceSamples(i));
+        
+        m_pModule->setCoincidenceSamples(i, olds);
+    }
+}
+// Timing filter rise time:
+
+void vx2750phatest::tfrise()
+{
+    std::uint32_t mint = 32;
+    std::uint32_t maxt = 2000;
+    std::uint32_t mins = 4;
+    std::uint32_t maxs = 250;
+    
+    std::uint32_t olds;
+    unsigned nch = m_pModule->channelCount();
+    
+    for (int i =0; i < nch; i++) {
+        CPPUNIT_ASSERT_NO_THROW(olds = m_pModule->getTimeFilterRiseSamples(i));
+        
+        // Samples are exact
+        
+        CPPUNIT_ASSERT_NO_THROW(m_pModule->setTimeFilterRiseSamples(i, mins));
+        EQ(mins, m_pModule->getTimeFilterRiseSamples(i));
+        m_pModule->setTimeFilterRiseSamples(i, maxs);
+        EQ(maxs, m_pModule->getTimeFilterRiseSamples(i));
+        
+        // time has granularity of 8:
+        
+        CPPUNIT_ASSERT_NO_THROW(m_pModule->setTimeFilterRiseTime(i, mint));
+        CPPUNIT_ASSERT_NO_THROW(
+            ASSERT(std::labs(std::int32_t(mint) - std::int32(m_pModule->getTimeFilterRiseTime(i))) < 8)
+        );
+        m_pModule->setTimeFilterRiseTime(i, maxt);
+        ASSERT(std::labs(std::int32_t(maxt) - std::int32_t(m_pModule->getTimeFilterRiseTime(i))) < 8);
+        
+        m_pModule->setTimeFitlerRiseSamples(i, olds);
+    }
+}
+// Retrigger guard time/samples
+
+void vx2750phatest::tfretrig()
+{
+    std::int32_t mins =0;
+    std::int32_t maxs = 1000;
+    std::int32_t mint = 0;
+    std::int32_t maxt = 8000;
+    
+    std::uint32_t olds;
+    unsigned nch = m_pModule->channelCount();
+    
+    for (int i =0; i < nch) {
+        CPPUNIT_ASSERT_NO_THROW(olds = m_pModule->getTimeFilterRetriggerGuardSamples(i));
+        
+         // Samples are exact:
+         
+         CPPUNIT_ASSERT_NO_THROW(m_pModule->setTimeFilterRetriggerGuardSamples(i, mins));
+         EQ(mins, m_pModule->getTimeFilterRetriggerGuardSamples(i));
+         CPPUNIT_ASSERT_NO_THROW(m_pModule->setTimeFilterRetriggerGuardSamples(i, maxs));
+         EQ(maxs, m_pModule->getTimeFilterRetriggerGuardSamples(i));
+         
+         // ns has 8 ns granularity:
+         
+         CPPUNIT_ASSERT_NO_THROW(m_pModule->setTimeFilterRetriggerGuardTime(i, mint));
+         CPPUNIT_ASSERT_NO_THROW(
+            ASSERT(std::labs(mint - std::int32_t(m_pModule->setTimeFilterRetriggerGuardTime(i))))
+         );
+         CPPUNIT_ASSERT_NO_THROW(m_pModule->setTimeFilterRetriggerGuardTime(i, maxt));
+         CPPUNIT_ASSERT_NO_THROW(
+            ASSERT(std::labs(maxt - std::int32_t(m_pModule->setTimeFilterRetriggerGuardTime(i))))
+         );                      
+        
+        m_pModule->setTimeFilterRetriggerGuardSamples(i);
+    }
+}
+// Energy filter rise time/samples.
+void vx2750phatest::efrise()
+{
+    std::int32_t mins = 4;
+    std::int32_t maxs = 1625;
+    std::int32_t mint = 32;
+    std::int32_t maxt = 13000;
+    
+    std::uint32_t old;      // THese are the same parameter actually just diff units.
+    int nch  = m_pModule->channelCount();
+    for (int i= 0; i < nch; i++) {
+        CPPUNIT_ASSERT_NO_THROW(old = m_pModule->getEnergyFilterRiseSamples(i));
+        
+        // Samples are exact.
+        
+        CPPUNIT_ASSERT_NO_THROW(m_pModule->setEnergyFilterRiseSamples(i, mins));
+        EQ(mins, m_pModule->getEnergyFilterRiseSamples());
+        m_pModule->setEnergyFilterRiseSamples(i, maxs);
+        EQ(maxs, m_pModule->getEnergyFilterRiseSamples(i));
+        
+        // Times are granular in 8ns units
+        
+        CPPUNIT_ASSERT_NO_THROW(m_pModule->setEnergyFilterRiseTime(i, mint));
+        CPPUNIT_ASSERT_NO_THROW(
+            ASSERT(std::labs(mint - std::int32_t(m_pModule->getEnergyFilterRiseTime(i))) < 8)
+        );
+        
+        CPPUNIT_ASSERT_NO_THROW(m_pModule->setEnergyFilterRiseTime(i, maxt));
+        CPPUNIT_ASSERT_NO_THROW(
+            ASSERT(std::labs(maxt - std::int32_t(m_pModule->getEnergyFilterRiseTime(i))) < 8)
+        );
+        
+        m_pModule->setEnergyFilterRiseSamples();
+    }
+}
+// energy filter flattop time/samples.
+
+void vx2750phatest::efflat()
+{
+    std::int32_t mins = 4;
+    std::int32_t maxs = 375;
+    std::int32_t mint = 32;
+    std::int32_t maxt = 3000;
+    
+    std::int32_t old;    // Samples and T are just different units of the same thing.
+    int nch = m_pModule->channelCount();
+    
+    for (int i =0; i < nch; i++) {
+        CPPUNIT_ASSERT_NO_THROW(old = m_pModule->getEnergyFilterFlatTopSamples(i));
+        
+        // Samples (exact)
+        
+        CPPUNIT_ASSERT_NO_THROW(m_pModule->setEnergyFilterFlatTopSamples(i, mins));
+        EQ(mins, m_pModule->getEnergyFilterFlattopSamples(i));
+        CPPUNIT_ASSERT_NO_THROW(m_pModule->setEnergyFilterFlatTopSamples(i, maxs));
+        EQ(maxs, m_pModule->getEnergyFilterFlattopSamples(i));
+                
+        // time (8ns steps)
+        
+        CPPUNIT_ASSERT_NO_THROW(m_pModule->setEnergyFIlterFlatTopTime(i, mint));
+        CPPUNIT_ASSERT_NO_THROW(
+            ASSERT(std::labs(mint - std::int32_t(m_pModule->getEnergyFilterFlatTopTime(i))) < 8)
+        );
+        CPPUNIT_ASSERT_NO_THROW(m_pModule->setEnergyFIlterFlatTopTime(i, maxt));
+        CPPUNIT_ASSERT_NO_THROW(
+            ASSERT(std::labs(maxt - std::int32_t(m_pModule->getEnergyFilterFlatTopTime(i))) < 8)
+        );
+        
+        m_pModule->setEnergyFilterFLatTopSamples(i, old);
+    }
+}
+// peaking pos.
+void vx2750phatest::efpeak()
+{
+    // Good to 1%?
+    
+    double old;
+    int nch = m_pModule->channelCount();
+    for (int i =0; i < nch; i++)  {
+        CPPUNIT_ASSERT_NO_THROW(old = m_pModule->getEnergyFilterPeakingPosition(i));
+        
+        CPPUNIT_ASSERT_NO_THROW(m_pModule->setEnergyFilterPeakingPosition(i, 0.0));
+        ASSERT(std::abs(0.0 - m_pModule->getEnergyFilterPeakingPosition(i)) < 1.0);
+        CPPUNIT_ASSERT_NO_THROW(m_pModule->setEnergyFilterPeakingPosition(i, 100.0));
+        ASSERT(std::abs(100.0 - m_pModule->getEnergyFilterPeakingPosition(i)) < 1.0);
+        
+        m_pModule->setEnergyFilterPeakingPosition (i, old);
+    }
+}
+// Averaging in peaking:
+
+void vx2750phatest::efpeakavg()
+{
+    std::vector<VX2750Pha::EnergyPeakingAverage> = options {
+        VX2750Pha::Average1, VX2750Pha::Average4, VX2750Pha::EPeakAvg_Average16,
+        VX2750Pha::EPeakAvg_Average64
+    };
+    VX2750Pha::EnergyPeakingAverage old;
+    int nch = m_pModule->channelCount();
+
+    for (int i =0; i < nch; i++) {
+        CPPUNIT_ASSERT_NO_THROW(m_pModule->getEnergyFilterPeakingAverage(i));
+        
+        for (auto o : options) {
+            CPPUNI_ASSERT_THROW(m_pModule->setEnergyFilterPeakingAverage(i, o));
+            EQ(o, m_pModule->getEnergyFilterPeakingAverage(i));
+        }
+        m_pModule->setEnergyFilterPeakingAverage(i, old);
+    }
+}
+
+// pole zero correction:
+
+void vx2750phatest::efpole0()
+{
+    std::int32_t mins = 4;
+    std::int32_t maxs = 65500;
+    std::int32_t mint = 32;
+    std::int32_t maxt = 524000;
+    
+    std::int32_t olds;         // Samples times - just different units.
+    int nch = m_pModule->channelCount();
+    
+    for (int i =0; i < nch; i++) {
+        CPPUNIT_ASSERT_NO_THROW(olds = m_pModule->getEnergyFilterPoleZeroSamples(i));
+        
+        CPPUNIT_ASSERT_NO_THROW(m_pModule>setEnergyFilterPoleZeroSamples(i, mins));
+        EQ(mins, m_pModule->getEnergyFlterPoleZeroSamples(i));
+        CPPUNIT_ASSERT_NO_THROW(m_pModule>setEnergyFilterPoleZeroSamples(i, maxs));
+        EQ(maxs, m_pModule->getEnergyFlterPoleZeroSamples(i));
+        
+        CPPUNIT_ASSERT_NO_THROW(m_pModule->setEnergyFilterPoleZeroTime(i, mint));
+        CPPUNIT_ASSERT_NO_THROW(
+            ASSERT(std::labs(mint - std::int32_t(m_pModule->getEnergyFilterPoleZeroTime(i))) < 8)
+        );
+        CPPUNIT_ASSERT_NO_THROW(m_pModule->setEnergyFilterPoleZeroTime(i, maxt));
+        CPPUNIT_ASSERT_NO_THROW(
+            ASSERT(std::labs(maxt - std::int32_t(m_pModule->getEnergyFilterPoleZeroTime(i))) < 8)
+        );
+        
+        m_pModule->setEnergyFilterPoleZeroSamples(i, olds);
+    }
+}
+// Energy filter fine gain
+
+void vx2750phatest::effg()
+{
+    double ming = 1.0;
+    double maxg = 10.0;
+    
+    double old;
+    int nch = m_pModule->channelCount();
+    
+    for (int i =0; i < nch; i++) {
+        CPPUNIT_ASSERT_NO_THROW(old = m_pModule->getEnergyFilterFineGain(i));
+        
+        CPPUNI_ASSERT_NO_THROW(m_pModule->setEnergyFilterFineGain(i, ming));
+        ASSERT(std::abs(ming - m_pModule->getEnergyFilterFineGain(i)) < 1.0);
+        
+        CPPUNI_ASSERT_NO_THROW(m_pModule->setEnergyFilterFineGain(i, maxg));
+        ASSERT(std::abs(maxg - m_pModule->getEnergyFilterFineGain(i)) < 1.0);
+        
+        m_pModule->setEnergyFilterFineGain(i, old);
+    }
+}
+// enable/disable low frequency filters:
+
+void vx2750phatest::lffilt()
+{
+    bool old;
+    int nch = m_pModule->channelCount();
+    for (int i =0; i < nch; i++) {
+        CPPUNIT_ASSERT_NO_THROW(old = m_pModule->isEnergyFilterFLimitationEnabled(i));
+        
+        CPPUNIT_ASSERT_NO_THROW(m_pModule->enableEnergyFilterFLimitation(i, true));
+        ASSERT(m_pModule->isEnergyFilterFLimitationEnabled(i));
+        
+        CPPUNIT_ASSERT_NO_THROW(m_pModule->enableEnergyFilterFLimitation(i, false));
+        ASSERT(!m_pModule->isEnergyFilterFLimitationEnabled(i));
+        
+        
+        m_pModule->enableEnergyFilterFLimitation(i, old);
+    }
+}
+
+// Energy filter baseline averaging:
+
+void vx2750phatest::efblavg()
+{
+    std::vector<VX2750Pha::EnergyFilterBaselineAverage>  options = {
+        VX2750Pha::Fixed, VX2750Pha::EFilterBlineAvg_Average16,
+        VX2750Pha::EFilterBlineAvg_Average64,
+        VX2750Pha::Average256, VX2750Pha::Average1024, VX2750Pha::Average4K,
+        VX2750Pha::Average16K
+    };
+    VX2750Pha::EnergyFilterBaselineAverage old;
+    int nch = m_pModule->channelCount();
+    for (int i =0; i < nch; i++) {
+        CPPUNIT_ASSERT_NO_THROW(old = m_pModule->getEnergyFilterBaselineAverage(i));
+        
+        for (auto o : options) {
+            CPPUNIT_ASSERT_NO_THROW(m_pModule->setEnergyFilterBaselineAverage(i, o));
+            EQ(o, m_pModule->getEnergyFilterBaselineAverage(i));
+        }
+        
+        m_pModule->setEnergyFilterBaselineAverage(i, old);
+    }
+}
+
+// Energyfilter baseline guard
+
+void vx2750phatest::efblguard()
+{
+    std::int32_t mins = 0;
+    std::int32_t maxs = 1000;
+    std::int32_t mint = 0;
+    std::int32_t maxt = 8000;
+    
+    std::uint32_t old;
+    int nch = m_pModule->channelCount();
+    
+    for (int i =0; i < nch; i++) {
+        CPPUNIT_ASSERT_NO_THROW(old = m_pModule->getEnergyFilterBaselineGuardSamples(i));
+        
+        CPPUNIT_ASSERT_NO_THROW(m_pModule->setEnergyFiterBaselineGuardSamples(i, mins));
+        EQ(mins, m_pModule->getEnergyFilterBaselineGuardSamples(i));
+        CPPUNIT_ASSERT_NO_THROW(m_pModule->setEnergyFiterBaselineGuardSamples(i, maxs));
+        EQ(maxs, m_pModule->getEnergyFilterBaselineGuardSamples(i));
+        
+        // Times have a granularity of 8 ns:
+        
+        CPPUNIT_ASSERT_NO_THROW(m_pModule->setEnergyFilterBaselineGuardTime(i, mint));
+        CPPUNIT_ASSERT_NO_THROW(
+            ASSERT(std::abs(mint - std::int32_t(m_pModule->getEnergyFilterBaselineGuardTime(i))) < 8)
+        );
+        CPPUNIT_ASSERT_NO_THROW(m_pModule->setEnergyFilterBaselineGuardTime(i, maxt));
+        CPPUNIT_ASSERT_NO_THROW(
+            ASSERT(std::abs(maxt - std::int32_t(m_pModule->getEnergyFilterBaselineGuardTime(i))) < 8)
+        );
+        
+        m_pModule->setEnergyFilterBaselineGuardSamples(i, old);
+    }
+}
+
+//  energyfilter pileup guard
+
+void vx2750phatest::efpupguard()
+{
+    std::int32_t mins = 0;
+    std::int32_t maxs = 10000;
+    std::int32_t mint = 0;
+    std::int32_t maaxt = 80000;
+    
+    std::uint32_t old;
+    int nch = m_pModule->channelCount();
+    
+    for (int i =0; i < nch; i++) {
+        CPPUNIT_ASSERT_NO_THROW(old = m_pModule->getEnergyFilterPileupGuardSamples(i));
+        
+        CPPUNIT_ASSERT_NO_THROW(m_pModule->setEnergyFilterPileupGuardSamples(i, mins));
+        EQ(mins, m_pModule->getEnergyFilterPileupGuardSamples(i));
+        CPPUNIT_ASSERT_NO_THROW(m_pModule->setEnergyFilterPileupGuardSamples(i, maxs));
+        EQ(maxs, m_pModule->getEnergyFilterPileupGuardSamples(i));
+        
+        CPPUNIT_ASSERT_NO_THROW(m_pModule->setEnergyFilterPileupGuardTime(i, mint));
+        CPPUNIT_ASSERT_NO_THROW(
+            ASSERT(std::labs(mint - std::int32_t(m_pModule->getEnergyFilterPileupGuardTime(i))) < 8);
+        );
+        CPPUNIT_ASSERT_NO_THROW(m_pModule->setEnergyFilterPileupGuardTime(i, maxt));
+        CPPUNIT_ASSERT_NO_THROW(
+            ASSERT(std::labs(maxt - std::int32_t(m_pModule->getEnergyFilterPileupGuardTime(i))) < 8);
+        );
+        
+        m_pModule->setEnergyFilterPileupGuardSamples(i, old);
     }
 }
