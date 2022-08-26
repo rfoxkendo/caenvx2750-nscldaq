@@ -120,11 +120,24 @@ TEST_MODULE_CONNECTION=15236
 tests:  fejackettests
 	./fejackettests $(TEST_MODULE_CONNECTION) $(TEST_MODULE_ISUSB)
 
-fejackettests: TestRunner.cpp devtests.cpp vx2750phatests.cpp \
-	libCaenVx2750.a 
+fejackettests: TestRunner.o devtests.o vx2750phatests.o \
+	triggertests.o libCaenVx2750.a 
 	$(CXX) -g  $(CPPUNIT_CPPFLAGS) $(CPPUNIT_LDFLAGS) -o fejackettests  \
-	TestRunner.cpp devtests.cpp vx2750phatests.cpp \
-	-L. -lCaenVx2750 $(DEVTEST_LDFLAGS) $(JSON_CPPFLAGS) $(JSON_LDFLAGS)
+	TestRunner.o devtests.o vx2750phatests.o \
+	triggertests.o \
+	-L. -lCaenVx2750 $(DEVTEST_LDFLAGS) $(JSON_LDFLAGS)
+
+TestRunner.o : TestRunner.cpp
+	$(CXX) -g -c  $(CPPUNIT_CPPFLAGS) $(JSON_CPPFLAGS) TestRunner.cpp
+
+devtests.o: devtests.cpp
+	$(CXX) -g -c  $(CPPUNIT_CPPFLAGS) $(JSON_CPPFLAGS)  devtests.cpp
+
+vx2750phatests.o : vx2750phatests.cpp
+	$(CXX) -g -c  $(CPPUNIT_CPPFLAGS) $(JSON_CPPFLAGS)  vx2750phatests.cpp
+
+triggertests.o : triggertests.cpp
+	$(CXX) -g  -c $(CPPUNIT_CPPFLAGS) $(JSON_CPPFLAGS)  triggertests.cpp
 
 clean:
 	rm -f *.o *.a
