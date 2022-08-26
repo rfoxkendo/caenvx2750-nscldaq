@@ -69,7 +69,7 @@ namespace caen_nscldaq {
         void SetLVDSValue(unsigned quartet, const char* LVDSName, const char* value) const;
         void SetLVDSValue(unsigned quartet, const char* LVDSName, int value) const;
         void SetLVDSValue(unsigned quartet, const char* LVDSName, std::uint64_t value) const;
-        void SetLVDSTriggerMask(unsigned maskNo, std::uint64_t mask);
+        void SetLVDSTriggerMask(unsigned maskNo, std::uint64_t mask) const;
         
         
         
@@ -100,7 +100,7 @@ namespace caen_nscldaq {
         std::string GetLVDSValue(unsigned quartet, const char* parameterName) const;
         int         GetLVDSInteger(unsigned quartet, const char* parameterName) const;
         std::uint64_t GetLVDSULong(unsigned quartet, const char* parameterName) const;
-        std::uint64_t GetLVDSMask(unsigned maskNo);
+        std::uint64_t GetLVDSTriggerMask(unsigned maskNo) const;
 
         
         // Digitizer commands:

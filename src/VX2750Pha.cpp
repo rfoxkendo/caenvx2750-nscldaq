@@ -2250,15 +2250,8 @@ static const std::map<VX2750Pha::Endpoint, std::string> endpointToString = {
         // rather than encoding it into the path it's the initial value of the
         // buffer.
         
-        std::stringstream strnum;
-        strnum << masknum;
-        std::string smaskno = strnum.str();
-        
-        std::string strResult =  GetValue("/par/LVDSTrgMask", smaskno.c_str());
-        std::uint64_t result;
-        std::stringstream sResult(strResult);
-        sResult >> result;
-        return result;
+        return GetLVDSTriggerMask(masknum);
+       
     }
     /**
      * setLVDSTriggerMask
@@ -2268,10 +2261,8 @@ static const std::map<VX2750Pha::Endpoint, std::string> endpointToString = {
     void
     VX2750Pha::setLVDSTriggerMask(unsigned masknum, std::uint64_t mask) const
     {
-        std::stringstream strValue;
-        strValue << masknum << "=" << mask;
-        std::string value = strValue.str();
-        SetValue("/par/LVDSTrgMask", value.c_str());
+        SetLVDSTriggerMask(masknum, mask);
+    
     }
     /**
      * getDACOutMode

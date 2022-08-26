@@ -687,7 +687,7 @@ public:
     void enableAnalogProbes(bool probe1, bool probe2);
     void enableDigitalProbes(bool probe1, bool probe2, bool probe3, bool probe4);
     void enableSampleSize(bool enable);
-    void  enableRawEventSize(bool enable);
+    void enableRawEventSize(bool enable);
     
     // This sends the JSON:
     

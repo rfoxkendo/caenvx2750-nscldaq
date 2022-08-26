@@ -240,7 +240,7 @@ namespace caen_nscldaq {
      * @param mask    - 64 bit trigger mask
      */
     void
-    Dig2Device::SetLVDSTriggerMask(unsigned maskno, std::uint64_t mask)
+    Dig2Device::SetLVDSTriggerMask(unsigned maskno, std::uint64_t mask) const
     {
         auto value = encodeLVDSValue(maskno, mask);
         SetValue("/par/LVDSTrgMask", value.c_str());
@@ -413,7 +413,7 @@ namespace caen_nscldaq {
      * @result std::uint64_t - mask value
      */
     std::uint64_t
-    Dig2Device::GetLVDSMask(unsigned maskNo)
+    Dig2Device::GetLVDSTriggerMask(unsigned maskNo) const
     {
         std::string initial = encodeLVDSquartet(maskNo);  // "n= craziness"
         std::string strResult = GetValue("/par/LVDSTrgMask", initial.c_str());
