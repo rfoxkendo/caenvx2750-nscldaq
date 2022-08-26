@@ -1518,7 +1518,7 @@ static const std::map<VX2750Pha::Endpoint, std::string> endpointToString = {
     VX2750Pha::getAnalogProbe(unsigned ch, unsigned probeNum) const
     {
         checkInclusiveRange(0, 1, probeNum);         // Good probe number.
-        std::string param = appendNumber("WaveAnalogProbes", probeNum);
+        std::string param = appendNumber("WaveAnalogProbe", probeNum);
         
         std::string value = GetChanValue(ch, param.c_str());
         return stringToEnum(stringToAnalogProbe, value);
@@ -1533,7 +1533,7 @@ static const std::map<VX2750Pha::Endpoint, std::string> endpointToString = {
     VX2750Pha::setAnalogProbe(unsigned ch, unsigned probeNum, AnalogProbe selection) const
     {
         checkInclusiveRange(0, 1, probeNum);
-        std::string param = appendNumber("WaveAnalogProbes", probeNum);
+        std::string param = appendNumber("WaveAnalogProbe", probeNum);
         
         std::string value = enumToString(analogProbeToString, selection);
         SetChanValue(ch, param.c_str(), value.c_str());
