@@ -57,8 +57,8 @@ class devtest : public CppUnit::TestFixture {
   CPPUNIT_TEST(chsetfloat);
   CPPUNIT_TEST(chsetbool);
   
-  //CPPUNIT_TEST(lvdsstring);
-  //CPPUNIT_TEST(lvdsint);
+  CPPUNIT_TEST(lvdsstring);
+  CPPUNIT_TEST(lvdsint);
   
   CPPUNIT_TEST_SUITE_END();
     
@@ -344,6 +344,10 @@ void devtest::lvdsstring()
 }
 void devtest::lvdsint()
 {
+  // Set the mode to I/O register and outputs:
+  
+  m_pConnection->SetLVDSValue(0, "LVDSMode", "IORegister");
+  m_pConnection->SetLVDSValue(0, "LVDSDirection", "Output");
   int old = m_pConnection->GetLVDSInteger(0, "LVDSIOReg");
   
   CPPUNIT_ASSERT_NO_THROW(m_pConnection->SetLVDSValue(0, "LVDSIOReg", 0x5555));

@@ -81,7 +81,7 @@ class vx2750phatest : public CppUnit::TestFixture {
     CPPUNIT_TEST(wdatasource);
     CPPUNIT_TEST(recl);
     CPPUNIT_TEST(wresolution);
-//    CPPUNIT_TEST(aprobe);   // does not recognize parameter name.
+    CPPUNIT_TEST(aprobe);   
     CPPUNIT_TEST(dprobe);
     CPPUNIT_TEST(pretrigger);
     CPPUNIT_TEST(tpulseperiod);
@@ -98,8 +98,7 @@ class vx2750phatest : public CppUnit::TestFixture {
     CPPUNIT_TEST(itlmask);
     CPPUNIT_TEST(itlwidth);
     
-    // Note, can't yet test the LVDS stuff because it does not work
-    // in a way I can comprehend (setting getting).
+    // Note, Need to add LVDS tests except for IOReg which does not work?
     
     CPPUNIT_TEST(dac);
     
@@ -120,9 +119,9 @@ class vx2750phatest : public CppUnit::TestFixture {
     CPPUNIT_TEST(tfrise);
     CPPUNIT_TEST(tfretrig);
     CPPUNIT_TEST(efrise);
-    //CPPUNIT_TEST(efflat); //highly coupled with pk average.. hard to
+    CPPUNIT_TEST(efflat); //highly coupled with pk average.. hard to
     CPPUNIT_TEST(efpeak);
-    //CPPUNIT_TEST(efpeakavg); // figure out a restoring test but the functions work.
+    CPPUNIT_TEST(efpeakavg); // figure out a restoring test but the functions work.
     CPPUNIT_TEST(efpole0);
     CPPUNIT_TEST(effg);
     CPPUNIT_TEST(lffilt);
@@ -1647,10 +1646,18 @@ void vx2750phatest::efflat()
 void vx2750phatest::efpeak()
 {
     // Good to 1%?
+    // This is coupled to flattop...which must be set first.
+    // and peaking positin + avg < flattop samplesis required.
+    // I'm tired of ensuring that I restore stuff so. bag it.
     
     double old;
     int nch = m_pModule->channelCount();
     for (int i =0; i < nch; i++)  {
+        // A long energy flattop time should allow this stuff to work?
+        CPPUNIT_ASSERT_NO_THROW(m_pModule->setEnergyFilterFlatTopSamples(i, 375));   // max.
+        // Set averaging to 1 and all should work?
+        CPPUNIT_ASSERT_NO_THROW(m_pModule->setEnergyFilterPeakingAverage(i, VX2750Pha::Average1));
+        
         CPPUNIT_ASSERT_NO_THROW(old = m_pModule->getEnergyFilterPeakingPosition(i));
         // Maybe initial value can be out of range????
         // Or the whole parameter setting is just mis-implemented/
@@ -1678,10 +1685,13 @@ void vx2750phatest::efpeakavg()
     int nch = m_pModule->channelCount();
     // The peaking average samples must be longer than the flattop sample so:
     // and our biggest averaging is 64 so:
-    
     for (int i =0; i < nch; i++) {
+        // Similarly we need to set the flattop samples and the peaking position
+        // small and flattop samples big to allow the full range of the
+        // averaging to be tested:
+        CPPUNIT_ASSERT_NO_THROW(m_pModule->setEnergyFilterFlatTopSamples(i, 375)); // largest allowed.
+        CPPUNIT_ASSERT_NO_THROW(m_pModule->setEnergyFilterPeakingPosition(i, 10.0));
         oldflat = m_pModule->getEnergyFilterFlatTopSamples(i);
-        m_pModule->setEnergyFilterFlatTopSamples(i, 370);
         CPPUNIT_ASSERT_NO_THROW(m_pModule->getEnergyFilterPeakingAverage(i));
         
         for (auto o : options) {
