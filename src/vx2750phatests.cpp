@@ -98,7 +98,13 @@ class vx2750phatest : public CppUnit::TestFixture {
     CPPUNIT_TEST(itlmask);
     CPPUNIT_TEST(itlwidth);
     
-    // Note, Need to add LVDS tests except for IOReg which does not work?
+    // LVDS now mostly is understood. THe I/O register is not.
+    
+    CPPUNIT_TEST(lvdsmode);
+    CPPUNIT_TEST(ldvsdir);
+    CPPUNIT_TEST(ldvstrigmask);
+    //CPPUNIT_TEST(lvdsioreg);
+    
     
     CPPUNIT_TEST(dac);
     
@@ -128,6 +134,9 @@ class vx2750phatest : public CppUnit::TestFixture {
     CPPUNIT_TEST(efblavg);
     CPPUNIT_TEST(efblguard);
     CPPUNIT_TEST(efpupguard);
+    
+    CPPUNIT_TEST(info);
+    CPPUNIT_TEST(commands);
     CPPUNIT_TEST_SUITE_END();
     
 private:
@@ -211,6 +220,10 @@ protected:
     void itlmask();
     void itlwidth();
     
+    void lvdsmode();
+    void ldvsdir();
+    void ldvstrigmask();
+    
     void dac();
     
     void offcalib();
@@ -237,6 +250,9 @@ protected:
     void efblavg();
     void efblguard();
     void efpupguard();
+    
+    void info();
+    void commands();
 };
 
 
@@ -1216,6 +1232,70 @@ void vx2750phatest::itlwidth()
     m_pModule->setITLAGateWidth(olda);
     m_pModule->setITLBGateWidth(oldb);
 }
+
+void vx2750phatest::lvdsmode() {
+    std::vector<VX2750Pha::LVDSMode> modes = {
+        VX2750Pha::SelfTriggers, VX2750Pha::Sync, VX2750Pha::IORegister
+    };
+    VX2750Pha::LVDSMode prior;
+    
+    // there are four quartets to test:m_
+    for (int q = 0; q < 4; q++) {
+        CPPUNIT_ASSERT_NO_THROW(prior = m_pModule->getLVDSMode(q));
+        for (auto m : modes) {
+            CPPUNIT_ASSERT_NO_THROW(m_pModule->setLVDSMode(q, m));
+            EQ(m, m_pModule->getLVDSMode(q));
+        }
+        m_pModule->setLVDSMode(q, prior);
+    }
+    
+}
+void vx2750phatest::ldvsdir() {
+    std::vector<VX2750Pha::LVDSDirection> dirs = {
+        VX2750Pha::Input, VX2750Pha::Output
+    };
+    VX2750Pha::LVDSDirection prior;
+    
+    // Four quartets:
+    
+    for (int q = 0; q < 4; q++) {
+        CPPUNIT_ASSERT_NO_THROW(prior = m_pModule->getLVDSDirection(q));
+        for (auto d : dirs) {
+            CPPUNIT_ASSERT_NO_THROW(m_pModule->setLVDSDirection(q, d));
+            EQ(d, m_pModule->getLVDSDirection(q));
+        }
+        m_pModule->setLVDSDirection(q, prior);
+    }
+    
+    
+}
+void vx2750phatest::ldvstrigmask() {
+    // We're going to assume we need  to be in trigger mode to set a trigger
+    // mask (may not be so but...)
+    
+    VX2750Pha::LVDSMode prior;
+    std::uint64_t oldmask;
+    for (int q =0; q< 4; q++) {
+        prior = m_pModule->getLVDSMode(q);
+        m_pModule->setLVDSMode(q, VX2750Pha::SelfTriggers);
+        
+        CPPUNIT_ASSERT_NO_THROW(oldmask = m_pModule->getLVDSTriggerMask(q));
+        CPPUNIT_ASSERT_NO_THROW(m_pModule->setLVDSTriggerMask(q, std::uint64_t(0xffffffffffffffff)));
+        EQ(std::uint64_t(0xffffffffffffffff), m_pModule->getLVDSTriggerMask(q));
+        
+        m_pModule->setLVDSTriggerMask(q, 0);
+        EQ(std::uint64_t(0), m_pModule->getLVDSTriggerMask(q));
+        
+        m_pModule->setLVDSTriggerMask(q, std::uint64_t(0x5555555555555555));
+        EQ( std::uint64_t(0x5555555555555555), m_pModule->getLVDSTriggerMask(q));
+        
+        m_pModule->setLVDSTriggerMask(q, std::uint64_t(0xaaaaaaaaaaaaaaaa));
+        EQ(std::uint64_t(0xaaaaaaaaaaaaaaaa), m_pModule->getLVDSTriggerMask(q));
+        
+        m_pModule->setLVDSMode(q, prior);
+    }
+    
+}
 // Test various DAC control functions.
 
 void vx2750phatest::dac()
@@ -1868,4 +1948,26 @@ void vx2750phatest::efpupguard()
         
         m_pModule->setEnergyFilterPileupGuardSamples(i, old);
     }
+}
+
+// get info about the board and how it's running:
+
+void vx2750phatest::info()
+{
+    unsigned nch = m_pModule->channelCount();
+    for (int i =0; i < nch; i++) {
+        CPPUNIT_ASSERT_NO_THROW(m_pModule->getEnergyBits(i));
+        CPPUNIT_ASSERT_NO_THROW(m_pModule->getRealtime(i));
+        CPPUNIT_ASSERT_NO_THROW(m_pModule->getDeadtime(i));
+    }
+}
+// Commands except start/stop/sw trigger.....
+
+void vx2750phatest::commands()
+{
+    CPPUNIT_ASSERT_NO_THROW(m_pModule->Reset());
+    CPPUNIT_ASSERT_NO_THROW(m_pModule->Clear());
+    CPPUNIT_ASSERT_NO_THROW(m_pModule->Arm());
+    CPPUNIT_ASSERT_NO_THROW(m_pModule->Disarm());
+    CPPUNIT_ASSERT_NO_THROW(m_pModule->ReloadCalibration());
 }

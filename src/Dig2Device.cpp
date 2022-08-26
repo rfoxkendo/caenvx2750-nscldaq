@@ -435,7 +435,7 @@ namespace caen_nscldaq {
     void
     Dig2Device::Command(const char* command) const
     {
-        std::string fullPath = "cmd/";
+        std::string fullPath = "/cmd/";
         fullPath += command;
         
         if (CAEN_FELib_SendCommand(m_deviceHandle, fullPath.c_str()) != CAEN_FELib_Success)
