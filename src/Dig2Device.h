@@ -44,47 +44,32 @@ namespace caen_nscldaq {
         
         // Use overloads to make the user's life simpler:
         void SetValue(const char* parameterName, const char* value) const;
-
         void SetValue(const char* parameterName, int  value) const;
-
         void SetValue(const char* parameterName, std::uint64_t value) const;
-
         void SetValue(const char* parameterName, double value) const;
-
         void SetValue(const char* parameterName, bool value) const;
 
         
         void SetDeviceValue(const char* devParName, const char* value) const;
-
         void SetDeviceValue(const char* devParName, int value) const;
-
         void SetDeviceValue(const char* devParName, std::uint64_t value) const;
-
         void SetDeviceValue(const char* devParName, double value) const;
-
         void SetDeviceValue(const char* devParName, bool value) const;
 
         
         void SetChanValue(unsigned chan, const char* chanParName, const char* value) const;
-
         void SetChanValue(unsigned chan, const char* chanParName, int value) const;
-
         void SetChanValue(unsigned chan, const char* chanParName, std::uint64_t value) const;
-
         void SetChanValue(unsigned chan, const char* chanParName, double value) const;
-
         void SetChanValue(unsigned chan, const char* chanParName, bool value) const;
 
         /// These don't work and I'm not sure how to make them work yet.
         ///
 
         void SetLVDSValue(unsigned quartet, const char* LVDSName, const char* value) const;
-
         void SetLVDSValue(unsigned quartet, const char* LVDSName, int value) const;
-
         void SetLVDSValue(unsigned quartet, const char* LVDSName, std::uint64_t value) const;
-
-        
+        void SetLVDSTriggerMask(unsigned maskNo, std::uint64_t mask);
         
         
         
@@ -92,45 +77,30 @@ namespace caen_nscldaq {
         // C++ does not overload solely on return value type so:
         
         std::string GetValue(const char* parameterName, const char* initial = nullptr) const;
-
         int         GetInteger(const char* parameterName) const;
-
         std::uint64_t GetULong(const char* parameterName) const;
-
         double      GetReal(const char* parameterName) const;
-
         bool        GetBool(const char* parameterName) const;
 
         
         std::string GetDeviceValue(const char* parameterName) const;
-
         int         GetDeviceInteger(const char* parameterName) const;
-
         std::uint64_t GetDeviceULong(const char* parameterName) const;
-
         double      GetDeviceReal(const char* parameterName) const;
-
         bool        GetDeviceBool(const char* parameterName) const;
 
         
         std::string GetChanValue(unsigned chan, const char* parameterName) const;
-
         int         GetChanInteger(unsigned chan, const char* parameterName) const;
-
         std::uint64_t GetChanULong(unsigned chan, const char* parameterName) const;
-
         double      GetChanReal(unsigned chan, const char* parameterName) const;
-
         bool        GetChanBool(unsigned chan, const char* parameterName) const;
 
         
         std::string GetLVDSValue(unsigned quartet, const char* parameterName) const;
-
         int         GetLVDSInteger(unsigned quartet, const char* parameterName) const;
-
         std::uint64_t GetLVDSULong(unsigned quartet, const char* parameterName) const;
-
-        
+        std::uint64_t GetLVDSMask(unsigned maskNo);
 
         
         // Digitizer commands:
@@ -142,23 +112,19 @@ namespace caen_nscldaq {
         // than offered by felib IMHO.
         
         void SetActiveEndpoint(const char* ep) const;
-
         std::string GetActiveEndpoint() const;
-
         void SetReadDataFormat(const char* json) const;
+        
    // Can we hide JSON generation?
         
         bool ReadData(int timeout, int argc, void** argv) const;
-
         bool hasData() const;
                              // True if a device has data.
+                             
     private:
         std::string devPath(const char* devParName) const;
-
         std::string chanPath(unsigned chan, const char* chanParName) const;
-
-        std::string LVDSPath(const char* lvdsParName) const;
-
+        std::string LVDSPath(const char* lvdsParName, int quartet) const;
         std::string lastError() const;
         std::string encodeLVDSquartet(unsigned quartet, const char* value=0) const;
         std::string encodeLVDSValue(unsigned quartet, std::uint64_t value) const;

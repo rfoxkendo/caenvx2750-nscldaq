@@ -218,23 +218,32 @@ namespace caen_nscldaq {
     void
     Dig2Device::SetLVDSValue(unsigned quartet, const char* LVDSName, const char* value) const
     {
-        std::string path = LVDSPath(LVDSName);
-        std::string actual =encodeLVDSquartet(quartet, value);
-        SetValue(path.c_str(), actual.c_str());
+        std::string path = LVDSPath(LVDSName, quartet);
+        SetValue(path.c_str(), value);
     }
     void
     Dig2Device::SetLVDSValue(unsigned quartet, const char* LVDSName, int value) const
     {
-        std::string path = LVDSPath(LVDSName);
-        std::string actual =encodeLVDSValue(quartet, value);
-        SetValue(path.c_str(), actual.c_str());
+        std::string path = LVDSPath(LVDSName, quartet);
+        SetValue(path.c_str(), value);
     }
     void
     Dig2Device::SetLVDSValue(unsigned quartet, const char* LVDSName, std::uint64_t value) const
     {
-        std::string path = LVDSPath(LVDSName);
-        std::string actual = encodeLVDSValue(quartet, value);
-        SetValue(path.c_str(), actual.c_str());
+        std::string path = LVDSPath(LVDSName, quartet);
+        SetValue(path.c_str(), value);
+    }
+    /**
+     * SetLVDSTriggerMask - the mask is wonky. Sorry CAEN, that's the only way to describe it.
+     *
+     * @param maskno  - 0-7 selects which trigger mask to set.
+     * @param mask    - 64 bit trigger mask
+     */
+    void
+    Dig2Device::SetLVDSTriggerMask(unsigned maskno, std::uint64_t mask)
+    {
+        auto value = encodeLVDSValue(maskno, mask);
+        SetValue("/par/LVDSTrgMask", value.c_str());
     }
     
     /**
@@ -382,21 +391,40 @@ namespace caen_nscldaq {
     std::string
     Dig2Device::GetLVDSValue(unsigned quartet, const char* parameterName) const
     {
-        std::string fullPath = LVDSPath(parameterName);
-        std::string lvdsInitial = encodeLVDSquartet(quartet);
-        return GetValue(fullPath.c_str(), lvdsInitial.c_str());
+        std::string fullPath = LVDSPath(parameterName, quartet);
+        return GetValue(fullPath.c_str());
     }
     int
     Dig2Device::GetLVDSInteger(unsigned quartet, const char* parameterName) const
     {
-        std::string fullPath = LVDSPath( parameterName);
+        std::string fullPath = LVDSPath( parameterName, quartet);
         return GetInteger(fullPath.c_str());
     }
     std::uint64_t
     Dig2Device::GetLVDSULong(unsigned quartet, const char* parameterName) const
     {
-        std::string fullPath = LVDSPath(parameterName);
+        std::string fullPath = LVDSPath(parameterName, quartet);
         return GetULong(fullPath.c_str());
+    }
+    /**
+     * GetLVDSMask
+     *     Get a specific LVDS trigger mask
+     * @param maskNo  - the number of the mask to get.
+     * @result std::uint64_t - mask value
+     */
+    std::uint64_t
+    Dig2Device::GetLVDSMask(unsigned maskNo)
+    {
+        std::string initial = encodeLVDSquartet(maskNo);  // "n= craziness"
+        std::string strResult = GetValue("/par/LVDSTrgMask", initial.c_str());
+        
+        // Convert to std::uint64_t and return
+        
+        std::uint64_t result;
+        std::stringstream resultStream(strResult);
+        resultStream >> result;
+        
+        return result;
     }
     
     /**
@@ -569,10 +597,10 @@ namespace caen_nscldaq {
      *  @return std::string
      */
     std::string
-    Dig2Device::LVDSPath( const char* lvdsParName) const
+    Dig2Device::LVDSPath( const char* lvdsParName, int quartet) const
     {
         std::stringstream strPath;
-        strPath << "/par/" << lvdsParName ;
+        strPath << "/lvds/" << quartet << "/par/" << lvdsParName;
         std::string result = strPath.str();
         return result;
     }
