@@ -58,7 +58,7 @@ class devtest : public CppUnit::TestFixture {
   CPPUNIT_TEST(chsetbool);
   
   CPPUNIT_TEST(lvdsstring);
-  CPPUNIT_TEST(lvdsint);
+  //CPPUNIT_TEST(lvdsint);   There are no lvds ints.
   
   CPPUNIT_TEST_SUITE_END();
     
