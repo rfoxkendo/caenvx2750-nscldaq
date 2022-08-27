@@ -548,8 +548,8 @@ public:
     void          setLVDSMode(unsigned quartet, LVDSMode mode) const;
     LVDSDirection getLVDSDirection(unsigned quartet) const;
     void          setLVDSDirection(unsigned quartet, LVDSDirection direction) const;
-    std::uint16_t getLVDSIOReg(unsigned quartet) const;
-    void          setLVDSIOReg(unsigned quartet, std::uint16_t mask) const;
+    std::uint16_t getLVDSIOReg() const;
+    void          setLVDSIOReg(std::uint16_t mask) const;
     std::uint64_t getLVDSTriggerMask(unsigned inputNum) const;
     void          setLVDSTriggerMask(unsigned inputNum, std::uint64_t mask) const;
     

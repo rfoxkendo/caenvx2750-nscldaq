@@ -2215,26 +2215,28 @@ static const std::map<VX2750Pha::Endpoint, std::string> endpointToString = {
      *    If an LVDS register is set to IORegister mode, this will
      *    return the value of the LVDS I/O states.  This will be correct if the
      *    register has been programmed for input or output.
-     * @param quartet - the quartet to get the value of
+     *    Not sure what the bits will be of the quartets not set as i/o register
+     *    will be?
      * @return std::uint16_t - Bit mask of the I/O register.
      */
     std::uint16_t
-    VX2750Pha::getLVDSIOReg(unsigned quartet) const
+    VX2750Pha::getLVDSIOReg() const
     {
-        return GetLVDSInteger(quartet, "LVDSIOReg");
+        return GetDeviceInteger("LVDSIOReg");
     }
     /**
      * setLVDSIOReg
      *    Sets the value of an LVDS I/O register.  This is only meaningful if
      *    the mode is IORegister and the direction in output.  In that case,
      *    this sets the values of the LVDS pins per the mask value passed in.
-     * @param quartet - selects the quartet of LVDS pins to set.
+     *    presumably only the bits of the quartets that have been set to
+     *    to outputs matter.
      * @param mask    - Bit mask of LVDS outputs.
      */
     void
-    VX2750Pha::setLVDSIOReg(unsigned quartet, std::uint16_t mask) const
+    VX2750Pha::setLVDSIOReg(std::uint16_t mask) const
     {
-        SetLVDSValue(quartet, "LVDSIOReg", mask);
+        SetDeviceValue("LVDSIOReg", mask);
     }
     /**
      * getLVDSTriggerMask
@@ -2926,22 +2928,9 @@ static const std::map<VX2750Pha::Endpoint, std::string> endpointToString = {
     bool
     VX2750Pha::isEnergyFilterFLimitationEnabled(unsigned chan) const
     {
-        int value = GetChanInteger(chan, "EnergyFilterLFLimitation");
-        switch ( value ) {
-        case 1:
-            return true;
-        case 0:
-            return false;
-        default:
-            {
-                std::stringstream strMsg;
-                strMsg << "Got an unrecognized value for EnergyFilterFlimitation: "
-                    << value;
-                std::string emsg = strMsg.str();
-                throw std::runtime_error(emsg);
-            }
-        }
-            
+        std::string value = GetChanValue(chan, "EnergyFilterLFLimitation");
+        value = toUpper(value);
+        return value == "ON" ? true : false;    
     }
     /**
      * enableEnergyFilterFLimitation
@@ -2951,7 +2940,7 @@ static const std::map<VX2750Pha::Endpoint, std::string> endpointToString = {
     void
     VX2750Pha::enableEnergyFilterFLimitation(unsigned chan, bool enable) const
     {
-        SetChanValue(chan, "EnergyFilterLFLimitation", enable ? 1 : 0);
+        SetChanValue(chan, "EnergyFilterLFLimitation", enable ? "On" : "Off");
     }
     /** getEnergyFilterBaselineAverage
      *      Returns an enum value that indicates the number of samples that are averaged
