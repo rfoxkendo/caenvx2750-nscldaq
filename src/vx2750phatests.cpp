@@ -103,7 +103,7 @@ class vx2750phatest : public CppUnit::TestFixture {
     CPPUNIT_TEST(lvdsmode);
     CPPUNIT_TEST(ldvsdir);
     CPPUNIT_TEST(ldvstrigmask);
-    //CPPUNIT_TEST(lvdsioreg);
+    CPPUNIT_TEST(lvdsioreg);
     
     
     CPPUNIT_TEST(dac);
@@ -223,6 +223,7 @@ protected:
     void lvdsmode();
     void ldvsdir();
     void ldvstrigmask();
+    void lvdsioreg();
     
     void dac();
     
@@ -1295,6 +1296,35 @@ void vx2750phatest::ldvstrigmask() {
         m_pModule->setLVDSMode(q, prior);
     }
     
+}
+void vx2750phatest::lvdsioreg() {
+    
+    VX2750Pha::LVDSMode prior[4];    // for each quartet.
+    VX2750Pha::LVDSDirection dirs[4];
+    
+    // Set the mode to I/O register and the direction to output for all quartets:
+    //
+    for (int i =0; i < 4; i++) {
+        prior[i]  = m_pModule->getLVDSMode(i);
+        dirs[i]   = m_pModule->getLVDSDirection(i);
+        
+        m_pModule->setLVDSMode(i, VX2750Pha::IORegister);
+        m_pModule->setLVDSDirection(i, VX2750Pha::Output);
+    }
+    
+    // Now test the i/o reg don't bother saving:
+    
+    m_pModule->setLVDSIOReg(0xffff);
+    EQ(std::uint16_t(0xffff), m_pModule->getLVDSIOReg());
+    m_pModule->setLVDSIOReg(0x0);
+    EQ(std::uint16_t(0), m_pModule->getLVDSIOReg());
+    
+    // Restore the mode and directions:
+    
+    for (int i =0; i < 4; i++) {
+        m_pModule->setLVDSMode(i, prior[i]);
+        m_pModule->setLVDSDirection(i, dirs[i]);
+    }
 }
 // Test various DAC control functions.
 
