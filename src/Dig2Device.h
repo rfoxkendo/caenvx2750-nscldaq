@@ -128,6 +128,7 @@ namespace caen_nscldaq {
         std::string lastError() const;
         std::string encodeLVDSquartet(unsigned quartet, const char* value=0) const;
         std::string encodeLVDSValue(unsigned quartet, std::uint64_t value) const;
+        std::uint64_t getActiveEndpointHandle() const;
         
     };
 }

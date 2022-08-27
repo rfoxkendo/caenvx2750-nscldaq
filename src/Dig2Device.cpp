@@ -478,9 +478,11 @@ namespace caen_nscldaq {
     void
     Dig2Device::SetReadDataFormat(const char* json) const
     {
-        if (CAEN_FELib_SetReadDataFormat(m_deviceHandle, json) != CAEN_FELib_Success) {
+        
+        std::uint64_t endpointHandle = getActiveEndpointHandle();
+        if (CAEN_FELib_SetReadDataFormat(endpointHandle, json) != CAEN_FELib_Success) {
             std::stringstream strMessage;
-            strMessage << "Failed to set the data fromat "
+            strMessage << "Failed to set the data format "
             << lastError();
             std::string msg = strMessage.str();
             throw std::runtime_error(msg);
@@ -513,6 +515,10 @@ namespace caen_nscldaq {
      *    time check for this, alas.  We can do a run-time check and, if this
      *    all fails, we can document that uint64_t must be received via pointers.
      *
+     *    @note reads are also only allowed on active endpoints hence...
+     *          if this crap is too time expensive, then we may need to cache
+     *          the active endpoint handle in the object.
+     *
      *    @param timeout - # ms timeout.
      *    @param argc    - Number of arguments.
      *    @param argv    - Arguments themselves.
@@ -521,6 +527,10 @@ namespace caen_nscldaq {
     bool
     Dig2Device::ReadData(int timeout, int argc, void** argv) const
     {
+        // Get my endpoint handle:
+        
+        std::uint64_t endpoint = getActiveEndpointHandle();
+        
         // No point in making a constant size since we'll have to list the
         // elements explicitly in the call to ReadData.
         void* args[30];                // hopefully enough.
@@ -529,7 +539,7 @@ namespace caen_nscldaq {
             throw std::out_of_range("argc in Dig2Device:: too big maximum 20");
         }
         memcpy(args, argv, argc*sizeof(void*));
-        auto status = CAEN_FELib_ReadData(m_deviceHandle, timeout,
+        auto status = CAEN_FELib_ReadData(endpoint, timeout,
             args[0], args[1], args[2], args[3], args[4],
             args[5], args[6], args[7], args[8], args[9],
             args[10], args[11], args[12], args[13], args[14],
@@ -655,5 +665,27 @@ namespace caen_nscldaq {
         std::string result = strResult.str();
         return result;
     }
+    /**
+     * getActiveEndpointHandle
+     *    Return the handle to the active endpoint.
+     *
+     *    @return uint64_t
+     */
+    std::uint64_t
+    Dig2Device::getActiveEndpointHandle() const
+    {
+        auto endpointName = GetActiveEndpoint();
+        std::string path = "/endpoint/";
+        path += endpointName;
+        std::uint64_t endpointHandle;
+        if (CAEN_FELib_GetHandle(m_deviceHandle, path.c_str(), &endpointHandle) != CAEN_FELib_Success) {
+            std::stringstream strMessage;
+            strMessage << "Failed to get handle for endpoint path: " << path
+                << " " << lastError();
+            std::string msg = strMessage.str();
+            throw std::runtime_error(msg);
+        }
+        return endpointHandle;
+    }
     
-}
+}                                // caen_nscldaq namespace
