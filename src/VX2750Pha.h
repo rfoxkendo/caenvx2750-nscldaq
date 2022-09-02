@@ -297,6 +297,7 @@ public:
         std::uint8_t   s_digitalProbe4Type;      // s_enableDigitalProbe4
         size_t         s_samples;               // s_enableSampleCount
         bool           s_fail;                  // Always present.
+        uint32_t       s_pad;                   // Maybe bool sizes differ?
         size_t         s_eventSize;             // s_enableEventSize
         
     } DecodedEvent, *pDecodedEvent;

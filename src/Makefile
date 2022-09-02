@@ -110,15 +110,16 @@ VX2750XMLConfig.o: VX2750XMLConfig.cpp VX2750XMLConfig.h \
 	VX2750XMLConfig.h VX2750PHAConfiguration.h
 	$(CXX) $(CPPFLAGS) -c $<
 
-test_programs:  fejackettests
+test_programs:  fejackettests triggertests
 
 #  The arguments below describe the module targeted by tests:
 
 TEST_MODULE_ISUSB=1
 TEST_MODULE_CONNECTION=15236
 
-tests:  fejackettests
+tests:  fejackettests triggertests
 	./fejackettests $(TEST_MODULE_CONNECTION) $(TEST_MODULE_ISUSB)
+	./triggertests $(TEST_MODULE_CONNECTION) $(TEST_MODULE_ISUSB)
 
 fejackettests: TestRunner.o devtests.o vx2750phatests.o \
 	triggertests.o libCaenVx2750.a 
@@ -126,6 +127,12 @@ fejackettests: TestRunner.o devtests.o vx2750phatests.o \
 	TestRunner.o devtests.o vx2750phatests.o \
 	triggertests.o \
 	-L. -lCaenVx2750 $(DEVTEST_LDFLAGS) $(JSON_LDFLAGS)
+
+triggertests: TestRunner.o triggertests.o libCaenVx2750.a
+	$(CXX) -g  $(CPPUNIT_CPPFLAGS) $(CPPUNIT_LDFLAGS) -o triggertests  \
+	TestRunner.o 	triggertests.o \
+	-L. -lCaenVx2750 $(DEVTEST_LDFLAGS) $(JSON_LDFLAGS)
+
 
 TestRunner.o : TestRunner.cpp
 	$(CXX) -g -c  $(CPPUNIT_CPPFLAGS) $(JSON_CPPFLAGS) TestRunner.cpp

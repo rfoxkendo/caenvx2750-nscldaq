@@ -548,7 +548,11 @@ namespace caen_nscldaq {
             args[25], args[26], args[27], args[28], args[29]
         );
         if (status == CAEN_FELib_Timeout) return false;
-        if(status != CAEN_FELib_Success) {
+        // Note that in addition to timeout (got nothing yet) and success,
+        // if the digitizer has been stopped and we're doing the last read
+        // we'll get Stop.
+        
+        if((status != CAEN_FELib_Success) && (status != CAEN_FELib_Stop)) {
             std::stringstream strMessage;
             strMessage << "ReadData failed: " << lastError();
             std::string msg = strMessage.str();
@@ -677,7 +681,7 @@ namespace caen_nscldaq {
         auto endpointName = GetActiveEndpoint();
         std::string path = "/endpoint/";
         path += endpointName;
-        std::uint64_t endpointHandle;
+        std::uint64_t endpointHandle(0);
         if (CAEN_FELib_GetHandle(m_deviceHandle, path.c_str(), &endpointHandle) != CAEN_FELib_Success) {
             std::stringstream strMessage;
             strMessage << "Failed to get handle for endpoint path: " << path
