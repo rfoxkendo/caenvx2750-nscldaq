@@ -1952,9 +1952,9 @@ void vx2750phatest::efblguard()
 void vx2750phatest::efpupguard()
 {
     std::int32_t mins = 0;
-    std::int32_t maxs = 10000;
+    std::int32_t maxs = 8184;
     std::int32_t mint = 0;
-    std::int32_t maxt = 80000;
+    std::int32_t maxt = 65472;
     
     std::uint32_t old;
     int nch = m_pModule->channelCount();
