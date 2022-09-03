@@ -21,6 +21,8 @@
 #include "VX2750Pha.h"
 #include <cstdint>
 #include <iostream>
+#include <vector>
+#include <set>
 extern std::string connection;
 extern bool        isUsb;
 
@@ -58,6 +60,7 @@ class vx2750phatest : public CppUnit::TestFixture {
     CPPUNIT_TEST(clockout);
     CPPUNIT_TEST(startsource);
     CPPUNIT_TEST(gbltrigger);
+    CPPUNIT_TEST(gblmulti);
     CPPUNIT_TEST(wavetrigger);
     CPPUNIT_TEST(eventtrigger);
     CPPUNIT_TEST(chtrigmask);
@@ -179,6 +182,7 @@ protected:
     void clockout();
     void startsource();
     void gbltrigger();
+    void gblmulti();
     void wavetrigger();
     void eventtrigger();
     void tsresetsrc();
@@ -454,6 +458,35 @@ void vx2750phatest::gbltrigger()
     }
     m_pModule->setGlobalTriggerSource(original);
 }
+// we're allowed to set several global trigger conditions:
+
+void vx2750phatest::gblmulti()
+{
+    std::vector<std::vector<VX2750Pha::GlobalTriggerSource>> multi = {
+        {VX2750Pha::GlobalTrigger_TriggerIn, VX2750Pha::GlobalTrigger_P0},
+        {VX2750Pha::GlobalTrigger_TriggerIn, VX2750Pha::GlobalTrigger_P0,
+        VX2750Pha::GlobalTrigger_Software, VX2750Pha::GlobalTrigger_LVDS},
+        {VX2750Pha::GlobalTrigger_InternalAorB, VX2750Pha::GlobalTrigger_EncodedClockIn,
+        VX2750Pha::GlobalTrigger_GPIO,
+        VX2750Pha::GlobalTrigger_TestPulse}
+    };
+    
+    std::vector<VX2750Pha::GlobalTriggerSource> old;
+    
+    
+    for (auto v : multi) {
+        CPPUNIT_ASSERT_NO_THROW(m_pModule->setGlobalTriggerSource(v));
+        auto got = m_pModule->getGlobalTriggerSource();
+        EQ(got.size(), v.size());    // Same number of sources.
+        std::set<VX2750Pha::GlobalTriggerSource> sgot(got.begin(), got.end()); // sets are unordered:
+        for (int i =0; i < v.size(); i++) {
+            EQ(size_t(1), sgot.count(v[i]));
+        }
+    }
+    
+}
+
+
 
 // set/get wave trigger source.
 
