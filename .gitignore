@@ -5,3 +5,5 @@
 *.o
 *~
 pugixml*
+src/fejackettests
+src/triggertests
