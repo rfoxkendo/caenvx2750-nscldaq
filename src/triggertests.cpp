@@ -71,11 +71,15 @@ void triggertests::raw_1()
     }
     // I think this should give me what I want...
     
+    
+    
     m_pModule->setEventSelector(0, VX2750Pha::All);
     m_pModule->setWaveformSelector(0, VX2750Pha::All);
-    m_pModule->setGlobalTriggerSource(VX2750Pha::GlobalTrigger_Software);
-    m_pModule->setWaveTriggerSource(0, VX2750Pha::WaveTrigger_Software);
-    m_pModule->setEventTriggerSource(0, VX2750Pha::EventTrigger_Software);
+    std::vector<VX2750Pha::GlobalTriggerSource> gbltrig =
+        {VX2750Pha::GlobalTrigger_Software};
+    m_pModule->setGlobalTriggerSource(gbltrig);
+    m_pModule->setWaveTriggerSource(0, VX2750Pha::WaveTrigger_GlobalTriggerSource);
+    m_pModule->setEventTriggerSource(0, VX2750Pha::EventTrigger_GlobalTriggerSource);
     
     
     uint32_t rawSize = m_pModule->getMaxRawDataSize();
@@ -94,7 +98,7 @@ void triggertests::raw_1()
         m_pModule->Clear();
         m_pModule->Arm();
         CPPUNIT_ASSERT_NO_THROW(m_pModule->Start());
-        CPPUNIT_ASSERT_NO_THROW(m_pModule->Trigger());
+        for (int i =0; i < 500; i++) CPPUNIT_ASSERT_NO_THROW(m_pModule->Trigger());
         CPPUNIT_ASSERT_NO_THROW(hasdata = m_pModule->hasData());
         ASSERT(hasdata);
         
@@ -128,9 +132,11 @@ triggertests::cooked_1()
     
     m_pModule->setEventSelector(0, VX2750Pha::All);
     m_pModule->setWaveformSelector(0, VX2750Pha::All);
-    m_pModule->setGlobalTriggerSource(VX2750Pha::GlobalTrigger_Software);
-    m_pModule->setWaveTriggerSource(0, VX2750Pha::WaveTrigger_Software);
-    m_pModule->setEventTriggerSource(0, VX2750Pha::EventTrigger_Software);
+    std::vector<VX2750Pha::GlobalTriggerSource> gbltrig =
+        {VX2750Pha::GlobalTrigger_Software};
+    m_pModule->setGlobalTriggerSource(gbltrig);
+    m_pModule->setWaveTriggerSource(0, VX2750Pha::WaveTrigger_GlobalTriggerSource);
+    m_pModule->setEventTriggerSource(0, VX2750Pha::EventTrigger_GlobalTriggerSource);
     
     CPPUNIT_ASSERT_NO_THROW(m_pModule->setDefaultFormat());
     
@@ -151,7 +157,6 @@ triggertests::cooked_1()
         m_pModule->Arm();
         CPPUNIT_ASSERT_NO_THROW(m_pModule->Start());
         for (int i =0; i < 500; i++) CPPUNIT_ASSERT_NO_THROW(m_pModule->Trigger());
-        m_pModule->Stop();                          // bug I need to stop to get data?!?
         CPPUNIT_ASSERT_NO_THROW(hasdata = m_pModule->hasData());
         ASSERT(hasdata);
         CPPUNIT_ASSERT_NO_THROW(m_pModule->readDPPPHAEndpoint(e));
