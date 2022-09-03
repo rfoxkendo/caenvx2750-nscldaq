@@ -26,6 +26,7 @@
 #include "Dig2Device.h"
 #include <string>
 #include <map>
+#include <vector>
 #include <cstdint>
 #include <json/json.h>
 
@@ -414,8 +415,8 @@ public:
     void         setClockOutOnFP(bool state) const;
     StartSource  getStartSource() const;
     void         setStartSource(StartSource src) const;
-    GlobalTriggerSource getGlobalTriggerSource() const;
-    void         setGlobalTriggerSource(GlobalTriggerSource src) const;
+    std::vector<GlobalTriggerSource> getGlobalTriggerSource() const;
+    void         setGlobalTriggerSource(const std::vector<GlobalTriggerSource>& sources) const;
     WaveTriggerSource getWaveTriggerSource(unsigned ch) const;
     void         setWaveTriggerSource(unsigned ch, WaveTriggerSource src) const;
     EventTriggerSource getEventTriggerSource(unsigned ch) const;
@@ -712,6 +713,8 @@ private:
     Json::Value createScalar(const char* name, const char* type) const;
     Json::Value createArray(const char* name, const char* type, unsigned dimension) const;
     static std::string toUpper(const std::string& s);
+    static std::string stringListToOrList(const std::vector<std::string>& strings);
+    static std::vector<std::string> orListToStringList(std::string orlist);
   
 };
 

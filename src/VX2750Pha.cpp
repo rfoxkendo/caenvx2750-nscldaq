@@ -28,6 +28,7 @@
 #include <ctype.h>
 #include <cstring>
 #include <cstdlib>
+#include <algorithm>
 
 namespace caen_nscldaq {
 
@@ -928,23 +929,49 @@ static const std::map<VX2750Pha::Endpoint, std::string> endpointToString = {
     }
     /**
      * getGLobalTriggerSource
-     *   @return GlobalTriggerSource
+     *   @return std::vector<GlobalTriggerSource>  Returns a vector that
+     *      contains all of the global trigger sources that have been
+     *      selected.
      */
-    VX2750Pha::GlobalTriggerSource
+    std::vector<VX2750Pha::GlobalTriggerSource>
     VX2750Pha::getGlobalTriggerSource() const
     {
         std::string strValue = GetDeviceValue("GlobalTriggerSource");
-        return stringToEnum(stringToGlobalTriggerSource, strValue);
+        
+        // This string is a | separated list of trigger sources.
+        // so first we get a list of strings using orListToStringList
+        // Then we look up each string in the list:
+        
+        auto stringList = orListToStringList(strValue);
+        std::vector<GlobalTriggerSource> result;
+        for (auto s : stringList) {
+            result.push_back(stringToEnum(stringToGlobalTriggerSource, s));
+        }        
+        return result;
     }
     /**
      * setGlobalTriggerSource
-     *    @param sel - VX2750Pha::GlobalTriggerSource that selects the global
-     *                  trigger source.
+     *    @param sel - vector of VX2750Pha::GlobalTriggerSource that selects all
+     *    of the things that can fire the global trigger.  The actual trigger
+     *    is a logical or of all those sources.
      */
     void
-    VX2750Pha::setGlobalTriggerSource(GlobalTriggerSource sel) const
+    VX2750Pha::setGlobalTriggerSource(const std::vector<GlobalTriggerSource>& sel) const
     {
-        std::string strValue = enumToString(globalTriggerSourceToString, sel);
+        if (sel.size() == 0) {
+            throw std::logic_error("setGlobalTriggerSource, requires at least one trigger source");
+        }
+        // First turn the sources into a list of strings, then
+        // we can use stringListToOrList to construct what has to be sent to the
+        // device:
+        
+        std::vector<std::string> sources;
+        for (auto s : sel) {
+            sources.push_back(enumToString(globalTriggerSourceToString, s));
+        }
+        
+        
+        std::string strValue = stringListToOrList(sources);
         SetDeviceValue("GlobalTriggerSource", strValue.c_str());
     }
     /**
@@ -3813,4 +3840,71 @@ static const std::map<VX2750Pha::Endpoint, std::string> endpointToString = {
         }
         return result;
     }
+    /**
+     * stringListToOrList
+     *    Needed to support that some triggers can have multiple Or-d sources.
+     *    Takes a  vector of strings and produces a single | separated string.
+     *    E.g. {"a", "b", "c"} becomes  "a | b | c"
+     *  @param strings - vector of strings to convert.
+     *  @return std::string - the | separated result string.
+     *  @note there must be at least one string.
+     */
+    std::string
+    VX2750Pha::stringListToOrList(const std::vector<std::string>& strings) 
+    {   
+        // Need to use a counted loop since otherwise we don't know the
+        // first entry as clearly.
+        
+        std::string result;
+        for (int i= 0; i < strings.size(); i++) {
+            if (i != 0) {
+                result += " | ";      // Or separator.
+            }
+            result += strings[i];            
+        }
+        
+        return result;
+    }
+    /**
+     * oListToSTringList
+     *     Takes a string of pipe separated items and
+     *     turns it into an array of those items.  It is assumed that whitespace
+     *     is not significant.
+     *  @param orlist - the input string
+     *  @return std::vector<std::string> the elements.  Note that
+     *      we make no assumption that this is not empty, however, in practice
+     *      it should be non-empty.
+     */
+    std::vector<std::string>
+    VX2750Pha::orListToStringList(std::string orlist)
+    {
+        // Strip the whitespace with thanks to
+        // https://www.techiedelight.com/remove-whitespaces-string-cpp/
+
+        orlist.erase(
+            std::remove_if(orlist.begin(), orlist.end(), ::isspace),
+            orlist.end()
+        );
+        // Now we can split on the "|" characters:
+        // For that we steal:
+        // https://stackoverflow.com/questions/14265581/parse-split-a-string-in-c-using-string-delimiter-standard-c
+        std::vector<std::string> result;
+        std::string delim = "|";
+
+        auto start = 0U;
+        auto end = orlist.find(delim);
+        while (end != std::string::npos)
+        {
+            result.push_back(orlist.substr(start, end-start));
+            start = end + 1;
+            end = orlist.find(delim, start);
+        }
+    
+        result.push_back(orlist.substr(start));
+        
+        return result;
+        
+    }
+    
+    
 }                 // namespace

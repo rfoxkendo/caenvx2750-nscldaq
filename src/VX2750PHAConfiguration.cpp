@@ -338,7 +338,9 @@ VX2750PHAModuleConfiguration::configureAcquisitionTriggerOptions(VX2750Pha& modu
   int nch = module.channelCount();
   
   module.setStartSource(VX2750Pha::stringToStartSource.find(cget("startsource"))->second);
-  module.setGlobalTriggerSource(VX2750Pha::stringToGlobalTriggerSource.find(cget("gbltriggersrc"))->second);
+  std::vector<VX2750Pha::GlobalTriggerSource> srcs;
+  srcs.push_back(VX2750Pha::stringToGlobalTriggerSource.find(cget("gbltriggersrc"))->second);
+  module.setGlobalTriggerSource(srcs);
   
   auto waveTriggers = getList("wavetriggersrc");
   auto evtTriggers  = getList("eventtriggersrc");
