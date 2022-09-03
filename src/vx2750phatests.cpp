@@ -459,7 +459,7 @@ void vx2750phatest::wavetrigger()
         VX2750Pha::WaveTrigger_GlobalTriggerSource, VX2750Pha::WaveTrigger_TRGIN,
         VX2750Pha::ExternalInhibit,
         VX2750Pha::ADCUnderSaturation, VX2750Pha::ADCOverSaturation,
-        // VX2750Pha::WaveTrigger_Software,   // Evidently uimplemented?
+        VX2750Pha::WaveTrigger_Software, 
         VX2750Pha::WaveTrigger_ChannelSelfTrigger,
         VX2750Pha::WaveTrigger_AnyChannelSelfTrigger, VX2750Pha::WaveTrigger_Disabled
     };
@@ -483,7 +483,7 @@ void vx2750phatest::eventtrigger()
     std::vector<VX2750Pha::EventTriggerSource> possibles = {
         VX2750Pha::EventTrigger_InternalB, VX2750Pha::EventTrigger_InternalA,
         VX2750Pha::EventTrigger_GlobalTriggerSource, VX2750Pha::EventTrigger_TRGIN,
-        // VX2750Pha::EventTrigger_Software,    // evidently unimplemented?
+        VX2750Pha::EventTrigger_Software,
         VX2750Pha::EventTrigger_ChannelSelfTrigger,
         VX2750Pha::EventTrigger_AnyChannelSelfTrigger, VX2750Pha::EventTrigger_Disabled
     };
