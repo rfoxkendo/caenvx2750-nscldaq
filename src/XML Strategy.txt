@@ -1,0 +1,21 @@
+Strategy for handling XML settings file:
+
+1. Generate the configuration name from Model/serial e.g. VX2740-22983 for serial
+   number 22983 of a VX2740 module.
+   
+2. Create a default configuration from the <parameterDescriptor> keys.
+
+3.  Create a new configuration for each <board>
+   The connection iformation comes from the connection type, the IP address etc.
+   Board parameter overrides come from <parameters><entry> tags.
+   CHannel parameter overrides come from the <channel> tags.
+   
+We'll use the pugixml library as we did for the older boards but, for now,
+bake it into the library we create.
+
+On the whole we need a map of parameter names -> configuration item names.
+Types as well:  per channel, board; we don't need data types because we can
+tread all parameters as textual.  Per channels come from list indices.
+
+
+
