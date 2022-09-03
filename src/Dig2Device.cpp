@@ -46,7 +46,9 @@ namespace caen_nscldaq {
      * @throw std::runtime_error if the open failed. THe string will
      *        include textual error information from FELib.
      */
-    Dig2Device::Dig2Device(const char* hostOrPid, bool isusb) {
+    Dig2Device::Dig2Device(const char* hostOrPid, bool isusb) :
+        m_deviceHandle(0), m_endpointHandle(0)   // start with invalid values.
+    {
         std::stringstream uristream;
         uristream << scheme << "://";
         if (isusb) {
@@ -457,6 +459,8 @@ namespace caen_nscldaq {
     Dig2Device::SetActiveEndpoint(const char* ep) const
     {
         SetValue("/endpoint/par/activeendpoint", ep);
+        Dig2Device* ncThis = const_cast<Dig2Device*>(this);         // Still want this const.
+        ncThis->m_endpointHandle = getActiveEndpointHandle();
     }
     /**
      * gGtActiveEndpoint
@@ -479,7 +483,7 @@ namespace caen_nscldaq {
     Dig2Device::SetReadDataFormat(const char* json) const
     {
         
-        std::uint64_t endpointHandle = getActiveEndpointHandle();
+        std::uint64_t endpointHandle = m_endpointHandle;
         if (CAEN_FELib_SetReadDataFormat(endpointHandle, json) != CAEN_FELib_Success) {
             std::stringstream strMessage;
             strMessage << "Failed to set the data format "
@@ -529,7 +533,7 @@ namespace caen_nscldaq {
     {
         // Get my endpoint handle:
         
-        std::uint64_t endpoint = getActiveEndpointHandle();
+        std::uint64_t endpoint = m_endpointHandle;
         
         // No point in making a constant size since we'll have to list the
         // elements explicitly in the call to ReadData.
@@ -567,7 +571,8 @@ namespace caen_nscldaq {
     bool
     Dig2Device::hasData() const
     {
-        return CAEN_FELib_HasData(m_deviceHandle, 0);
+        auto status =  CAEN_FELib_HasData(m_endpointHandle, 0);
+        return (status == CAEN_FELib_Success) || (status == CAEN_FELib_Stop);
     }
     ///////////////////////////////////////////////////////////////
     // Utlity methods.

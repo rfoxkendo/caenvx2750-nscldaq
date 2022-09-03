@@ -38,6 +38,7 @@ namespace caen_nscldaq {
     class Dig2Device {
     private:
         std::uint64_t m_deviceHandle;
+        std::uint64_t m_endpointHandle;
     public:
         Dig2Device(const char* hostOrPid, bool isUsb = false);
         virtual ~Dig2Device();
