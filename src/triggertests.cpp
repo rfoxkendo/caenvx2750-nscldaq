@@ -20,11 +20,15 @@
 #include <cppunit/Asserter.h>
 #include <cstdint>
 #include <string>
+#include <unistd.h>
 
 #include "Asserts.h"
 
 extern bool isUsb;
 extern std::string connection;
+
+static const int TRIGGER_COUNT=100;
+static const int DELAY_US=1;
 
 #include "VX2750Pha.h"
 using namespace caen_nscldaq;
@@ -98,7 +102,8 @@ void triggertests::raw_1()
         m_pModule->Clear();
         m_pModule->Arm();
         CPPUNIT_ASSERT_NO_THROW(m_pModule->Start());
-        for (int i =0; i < 500; i++) CPPUNIT_ASSERT_NO_THROW(m_pModule->Trigger());
+        for (int i =0; i < TRIGGER_COUNT; i++) CPPUNIT_ASSERT_NO_THROW(m_pModule->Trigger());
+        usleep(DELAY_US);
         CPPUNIT_ASSERT_NO_THROW(hasdata = m_pModule->hasData());
         ASSERT(hasdata);
         
@@ -156,7 +161,8 @@ triggertests::cooked_1()
         m_pModule->Clear();
         m_pModule->Arm();
         CPPUNIT_ASSERT_NO_THROW(m_pModule->Start());
-        for (int i =0; i < 500; i++) CPPUNIT_ASSERT_NO_THROW(m_pModule->Trigger());
+        for (int i =0; i < TRIGGER_COUNT; i++) CPPUNIT_ASSERT_NO_THROW(m_pModule->Trigger());
+        usleep(DELAY_US);
         CPPUNIT_ASSERT_NO_THROW(hasdata = m_pModule->hasData());
         ASSERT(hasdata);
         CPPUNIT_ASSERT_NO_THROW(m_pModule->readDPPPHAEndpoint(e));
