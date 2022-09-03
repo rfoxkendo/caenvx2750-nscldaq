@@ -120,7 +120,7 @@ const std::map<std::string, VX2750Pha::WaveTriggerSource> VX2750Pha::stringToWav
      {"ExternalInhibit", VX2750Pha::ExternalInhibit},
      {"ADCUnderSaturation", VX2750Pha::ADCUnderSaturation},
      {"ADCOverSaturation", VX2750Pha::ADCOverSaturation},
-     {"SWTrigger", VX2750Pha::WaveTrigger_Software},
+     {"SWTrg", VX2750Pha::WaveTrigger_Software},
      {"ChSelfTrigger", VX2750Pha::WaveTrigger_ChannelSelfTrigger},
      {"Ch64Trigger", VX2750Pha::WaveTrigger_AnyChannelSelfTrigger},
      {"Disabled", VX2750Pha::WaveTrigger_Disabled}
@@ -133,7 +133,7 @@ static const std::map<VX2750Pha::WaveTriggerSource, std::string> waveTriggerToSt
      {VX2750Pha::ExternalInhibit, "ExternalInhibit"},
      {VX2750Pha::ADCUnderSaturation, "ADCUnderSaturation"},
      {VX2750Pha::ADCOverSaturation, "ADCOverSaturation"},
-     {VX2750Pha::WaveTrigger_Software, "SWTrigger"},
+     {VX2750Pha::WaveTrigger_Software, "SWTrg"},
      {VX2750Pha::WaveTrigger_ChannelSelfTrigger, "ChSelfTrigger"},
      {VX2750Pha::WaveTrigger_AnyChannelSelfTrigger, "Ch64Trigger"},
      {VX2750Pha::WaveTrigger_Disabled, "Disabled"}
@@ -144,7 +144,7 @@ const std::map<std::string, VX2750Pha::EventTriggerSource> VX2750Pha::stringToEv
     {"ITLA", VX2750Pha::EventTrigger_InternalA},
     {"GlobalTriggerSource", VX2750Pha::EventTrigger_GlobalTriggerSource},
     {"TRGIN", VX2750Pha::EventTrigger_TRGIN},
-    {"SWTrigger", VX2750Pha::EventTrigger_Software},
+    {"SWTrg", VX2750Pha::EventTrigger_Software},
     {"ChSelfTrigger", VX2750Pha::EventTrigger_ChannelSelfTrigger},
     {"Ch64Trigger", VX2750Pha::EventTrigger_AnyChannelSelfTrigger},
     {"Disabled", VX2750Pha::EventTrigger_Disabled}
@@ -154,7 +154,7 @@ static const std::map<VX2750Pha::EventTriggerSource, std::string> eventTriggerTo
     {VX2750Pha::EventTrigger_InternalA, "ITLA"},
     {VX2750Pha::EventTrigger_GlobalTriggerSource, "GlobalTriggerSource"},
     {VX2750Pha::EventTrigger_TRGIN, "TRGIN"},
-    {VX2750Pha::EventTrigger_Software, "SWTrigger"},
+    {VX2750Pha::EventTrigger_Software, "SWTrg"},
     {VX2750Pha::EventTrigger_ChannelSelfTrigger, "ChSelfTrigger"},
     {VX2750Pha::EventTrigger_AnyChannelSelfTrigger, "Ch64Trigger"},
     {VX2750Pha::EventTrigger_Disabled, "Disabled"}    
