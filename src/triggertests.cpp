@@ -67,15 +67,15 @@ void triggertests::raw_1()
     
     unsigned nch = m_pModule->channelCount();
     for (int c = 0; c < nch; c++) {
-        m_pModule->enableChannel(c, c == 0);
+        m_pModule->enableChannel(c, true);
     }
     // I think this should give me what I want...
     
     m_pModule->setEventSelector(0, VX2750Pha::All);
     m_pModule->setWaveformSelector(0, VX2750Pha::All);
     m_pModule->setGlobalTriggerSource(VX2750Pha::GlobalTrigger_Software);
-    //m_pModule->setWaveTriggerSource(0, VX2750Pha::WaveTrigger_Software);
-    //m_pModule->setEventTriggerSource(0, VX2750Pha::EventTrigger_Software);
+    m_pModule->setWaveTriggerSource(0, VX2750Pha::WaveTrigger_Software);
+    m_pModule->setEventTriggerSource(0, VX2750Pha::EventTrigger_Software);
     
     
     uint32_t rawSize = m_pModule->getMaxRawDataSize();
@@ -122,13 +122,16 @@ triggertests::cooked_1()
     
     unsigned nch = m_pModule->channelCount();
     for (int c = 0; c < nch; c++) {
-        m_pModule->enableChannel(c, c == 0);
+        m_pModule->enableChannel(c, true);
     }
     // I think this should give me what I want...
     
     m_pModule->setEventSelector(0, VX2750Pha::All);
     m_pModule->setWaveformSelector(0, VX2750Pha::All);
     m_pModule->setGlobalTriggerSource(VX2750Pha::GlobalTrigger_Software);
+    m_pModule->setWaveTriggerSource(0, VX2750Pha::WaveTrigger_Software);
+    m_pModule->setEventTriggerSource(0, VX2750Pha::EventTrigger_Software);
+    
     CPPUNIT_ASSERT_NO_THROW(m_pModule->setDefaultFormat());
     
     m_pModule->selectEndpoint(VX2750Pha::PHA);
