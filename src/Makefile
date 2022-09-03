@@ -122,10 +122,9 @@ tests:  fejackettests triggertests
 	./triggertests $(TEST_MODULE_CONNECTION) $(TEST_MODULE_ISUSB)
 
 fejackettests: TestRunner.o devtests.o vx2750phatests.o \
-	triggertests.o libCaenVx2750.a 
+	libCaenVx2750.a 
 	$(CXX) -g  $(CPPUNIT_CPPFLAGS) $(CPPUNIT_LDFLAGS) -o fejackettests  \
 	TestRunner.o devtests.o vx2750phatests.o \
-	triggertests.o \
 	-L. -lCaenVx2750 $(DEVTEST_LDFLAGS) $(JSON_LDFLAGS)
 
 triggertests: TestRunner.o triggertests.o libCaenVx2750.a
