@@ -441,11 +441,16 @@ void vx2750phatest::gbltrigger()
         VX2750Pha::GlobalTrigger_GPIO,
         VX2750Pha::GlobalTrigger_TestPulse
     };
-    VX2750Pha::GlobalTriggerSource original;
+    std::vector<VX2750Pha::GlobalTriggerSource> original;
     CPPUNIT_ASSERT_NO_THROW(original = m_pModule->getGlobalTriggerSource());
     for (auto source : possibles) {
-        CPPUNIT_ASSERT_NO_THROW(m_pModule->setGlobalTriggerSource(source));
-        EQ(source, m_pModule->getGlobalTriggerSource());
+        std::vector<VX2750Pha::GlobalTriggerSource> value;
+        std::vector<VX2750Pha::GlobalTriggerSource> receivedvalue;
+        value.push_back(source);
+        CPPUNIT_ASSERT_NO_THROW(m_pModule->setGlobalTriggerSource(value));
+        receivedvalue = m_pModule->getGlobalTriggerSource();
+        EQ(size_t(1), receivedvalue.size());
+        EQ(receivedvalue[0], value[0] );
     }
     m_pModule->setGlobalTriggerSource(original);
 }
