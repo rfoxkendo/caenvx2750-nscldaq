@@ -892,7 +892,7 @@ CConfigurableObject::addEnumListParameter(
     isListParameter* pConstraint =
        reinterpret_cast<isListParameter*>(malloc(sizeof(isListParameter)));
     *pConstraint = isListParameter(minlength, maxlength, TypeCheckInfo(isEnum, pV));
-    addParameter(name, isList, pConstraint);
+    addParameter(name, isList, pConstraint, defaultValue);
     
 }
 

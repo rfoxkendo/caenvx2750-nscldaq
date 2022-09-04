@@ -135,7 +135,7 @@ triggertests: TestRunner.o triggertests.o libCaenVx2750.a
 	-L. -lCaenVx2750 $(DEVTEST_LDFLAGS) $(JSON_LDFLAGS)
 
 
-configtests: TestRunner.o configtests.o
+configtests: TestRunner.o configtests.o libCaenVx2750.a
 	$(CXX) -g $(CPPUNIT_CPPFLAGS) $(CPPUNIT_LDFLAGS) -o configtests \
 		TestRunner.o configtests.o \
 		-L. -lCaenVx2750 $(DEVTEST_LDFLAGS) $(JSON_LDFLAGS) \
