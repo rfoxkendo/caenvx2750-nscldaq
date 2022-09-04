@@ -759,7 +759,7 @@ VX2750PHAModuleConfiguration::configureEventSelection(VX2750Pha& module)
   auto lowskims = getIntegerList("energyskimlow");
   auto hiskims  = getIntegerList("energyskimhigh");
   auto eventselectors = getList("eventselector");
-  auto waveselectors = getList("waveSelector");
+  auto waveselectors = getList("waveselector");
   auto coincMasks = getList("coincidencemask");
   auto anticoincMasks = getList("anticoincidencemasks");
   auto coincidencewindow = getIntegerList("coincidencelength");
