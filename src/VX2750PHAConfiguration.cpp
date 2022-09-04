@@ -670,12 +670,13 @@ VX2750PHAModuleConfiguration::defineInputConditioningOptions()
 {
     addIntListParameter("vgagain", 0, 40, 0, 4, 4, 0);
     addBooleanParameter("offsetcalibrationenable", true);
-    addBoolListParameter("chanelenables", 0, 64, true, 64);
+    addBoolListParameter("channelenables", 0, 64, true, 64);
     addFloatListParameter("dcoffsets", 0.0, 100.0, 0, 64, 64, 50.0);
     addIntListParameter("triggerthresholds", 0, 8191, 0, 64, 64, 1023);
     
     const char* polarities[] = {"Positive", "Negative", nullptr};
     addEnumListParameter("inputpolarities", polarities, "Negative", 0, 64, 64);
+    
 }
 /**
  * conifigureInputConditioning
