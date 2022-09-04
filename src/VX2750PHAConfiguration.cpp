@@ -821,7 +821,7 @@ VX2750PHAModuleConfiguration::defineFilterOptions()
 void
 VX2750PHAModuleConfiguration::configureFilter(VX2750Pha& module)
 {
-    auto triggerRiseTimes = getIntegerList("trfisetime");
+    auto triggerRiseTimes = getIntegerList("tfrisetime");
     auto triggerRetriggerGuards = getIntegerList("tfretriggerguard");
     auto energyRiseTimes = getIntegerList("efrisetime");
     auto energyFlatTopTimes = getIntegerList("efflattoptime");
