@@ -604,7 +604,7 @@ VX2750PHAModuleConfiguration::defineLVDSOptions()
   const char* lvdsdirections[] ={
     "Input", "Output", nullptr
   };
-  addEnumListParameter("lvsdirection", lvdsdirections, "Output", 4, 4, 4);
+  addEnumListParameter("lvdsirection", lvdsdirections, "Output", 4, 4, 4);
   addIntListParameter("lvdstrgmask", 0, 0xffffffffffffffff, 16, 16, 16, 0);
 }
 /**
