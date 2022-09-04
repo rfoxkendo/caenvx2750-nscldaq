@@ -452,10 +452,10 @@ VX2750PHAModuleConfiguration::defineWfInspectionOptions()
     analogProbes[0] = getList("analogprobe1");
     analogProbes[1] = getList("analogprobe2");
     std::vector<std::string> digitalProbes[4];
-    digitalProbes[0] = getList("digitlaprobe1");
-    digitalProbes[1] = getList("digitlaprobe2");
-    digitalProbes[2] = getList("digitlaprobe3");
-    digitalProbes[3] = getList("digitlaprobe4");
+    digitalProbes[0] = getList("digitalprobe1");
+    digitalProbes[1] = getList("digitalprobe2");
+    digitalProbes[2] = getList("digitalprobe3");
+    digitalProbes[3] = getList("digitalprobe4");
     auto pretrigger = getIntegerList("pretriggersamples");
     
     // Now loop over the channels setting the parameters:
