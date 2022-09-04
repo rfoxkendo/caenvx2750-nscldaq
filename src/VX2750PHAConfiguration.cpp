@@ -825,7 +825,7 @@ VX2750PHAModuleConfiguration::configureFilter(VX2750Pha& module)
     auto triggerRetriggerGuards = getIntegerList("tfretriggerguard");
     auto energyRiseTimes = getIntegerList("efrisetime");
     auto energyFlatTopTimes = getIntegerList("efflattoptime");
-    auto energyPeakingPos = getIntegerList("efpieakingpos");
+    auto energyPeakingPos = getIntegerList("efpeakingpos");
     auto peakingAverages  = getIntegerList("efpeakingavg");  // The enums all translate as integers.
     auto poleZeros       = getIntegerList("efpolezero");
     auto fineGains      =getFloatList("efpolezero");
