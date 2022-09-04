@@ -206,7 +206,7 @@ VX2750PHAModuleConfiguration::defineGeneralOptions()
        nullptr
     };
     addEnumParameter("clocksource", clockSources, "Internal");
-    addBooleanParameter("outputp0clock", false);
+    // addBooleanParameter("outputp0clock", false);
     addBooleanParameter("outputfpclock", false);
     
     
@@ -221,7 +221,7 @@ VX2750PHAModuleConfiguration::configureGeneralOptions(VX2750Pha& module)
 {
   auto src = VX2750Pha::stringToClockSource.find(cget("clocksource"))->second;
   module.setClockSource(src);
-  module.setClockOutOnP0(getBoolParameter("outputp0clock"));
+  //module.setClockOutOnP0(getBoolParameter("outputp0clock"));
   module.setClockOutOnFP(getBoolParameter("outputfpclock"));
                                                       
                                                       
