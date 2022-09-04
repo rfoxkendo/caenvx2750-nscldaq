@@ -244,7 +244,7 @@ VX2750PHAModuleConfiguration::defineAcqTriggerOptions()
          "ITLA_AND_ITLB", "ITLA_OR_ITLB", "EncodedCLkIn", "GPIO", "TestPulse",
           nullptr
      };
-     addEnumParameter("gbltriggersrc", globalTriggerSrcs, "TrgIn");
+     addEnumListParameter("gbltriggersrc", globalTriggerSrcs, "TrgIn", 1, 11, 1 );
      
      const char* triggerSources[] = {
           "ITLB", "ITLA", "GlobalTriggerSource", "TRGIN", "ExternalInhibit",
@@ -338,8 +338,11 @@ VX2750PHAModuleConfiguration::configureAcquisitionTriggerOptions(VX2750Pha& modu
   int nch = module.channelCount();
   
   module.setStartSource(VX2750Pha::stringToStartSource.find(cget("startsource"))->second);
+  auto globalTriggers = getList("gbltriggersrc");
   std::vector<VX2750Pha::GlobalTriggerSource> srcs;
-  srcs.push_back(VX2750Pha::stringToGlobalTriggerSource.find(cget("gbltriggersrc"))->second);
+  for (auto src: globalTriggers) {
+    srcs.push_back(VX2750Pha::stringToGlobalTriggerSource.find(src)->second);
+  }
   module.setGlobalTriggerSource(srcs);
   
   auto waveTriggers = getList("wavetriggersrc");
@@ -769,7 +772,7 @@ VX2750PHAModuleConfiguration::defineFilterOptions()
     addIntListParameter("tfretriggerguard", 0, 8000, 0, 64, 64, 0);
     addIntListParameter("efrisetime", 80, 13000, 0, 64, 64, 80);
     addIntListParameter("efflattoptime", 80, 3000, 0,64, 64, 80);
-    addIntListParameter("efpeakingpos", 0, 100, 0, 64, 64, 50);
+    addIntListParameter("efpeakingpos", 10, 90, 0, 64, 64, 50);
     
     const char* peakingaverages[] = {
       "1", "4", "16", "64", nullptr
@@ -784,7 +787,7 @@ VX2750PHAModuleConfiguration::defineFilterOptions()
     };
     addEnumListParameter("efbaselineavg", baselineaverages, "0", 0, 64, 64);
     addIntListParameter("efbaselineguardt", 0, 8000, 0, 64, 64, 0);
-    addIntListParameter("efpileupguardt", 0, 80000, 0, 64, 64, 0);
+    addIntListParameter("efpileupguardt", 0, 8184, 0, 64, 64, 0);
     
 }
 /**
@@ -814,7 +817,7 @@ VX2750PHAModuleConfiguration::configureFilter(VX2750Pha& module)
       module.setTimeFilterRetriggerGuardTime(i, triggerRetriggerGuards[i]);
       module.setEnergyFilterRiseTime(i, energyRiseTimes[i]);
       module.setEnergyFilterFlatTopTime(i, energyFlatTopTimes[i]);
-      module.setEnergyFilterFlatTopTime(i, energyPeakingPos[i]);
+      module.setEnergyFilterPeakingPosition(i, energyPeakingPos[i]);
       module.setEnergyFilterPeakingAverage(i, peakingAvgs.find(peakingAverages[i])->second);
       module.setEnergyFilterPoleZeroTime(i, poleZeros[i]);
       module.setEnergyFilterFineGain(i, fineGains[i]);
