@@ -312,7 +312,7 @@ VX2750PHAModuleConfiguration::defineAcqTriggerOptions()
         "BoardVeto", "ADCOverSaturation", "ADCUnderSaturation", "Disabled",
           nullptr
      };
-     addEnumListParameter("chanveotsrc", chanvetosources, "Disabled", 0, 64, 64);
+     addEnumListParameter("chanvetosrc", chanvetosources, "Disabled", 0, 64, 64);
      addIntListParameter("chanvetowidth", 0, 524280, 0, 64, 64, 200);
      
      addIntegerParameter("rundelay", 0, 54280, 0);
@@ -349,16 +349,22 @@ VX2750PHAModuleConfiguration::configureAcquisitionTriggerOptions(VX2750Pha& modu
   auto evtTriggers  = getList("eventtriggersrc");
   auto triggerMasks = getUnsignedList("channeltriggermasks");   // since they're uint64_ts.
   auto saveTraces   = getList("savetraces");
-  auto chanVetoSrcs = getList("chnvetosrc");
+  auto chanVetoSrcs = getList("chanvetosrc");
   auto chanVetoWidths = getIntegerList("chanvetowidth");
   
   for (int i =0; i < nch; i++) {
-    module.setWaveTriggerSource(i, VX2750Pha::stringToWaveTrigger.find(waveTriggers[i])->second);
-    module.setEventTriggerSource(i, VX2750Pha::stringToEventTrigger.find(evtTriggers[i])->second);
-      module.setChannelTriggerMask(i, triggerMasks[i]);
-      module.setTraceRecordMode(i, (saveTraces[i] == "Always") ? VX2750Pha::Always : VX2750Pha::OnRequest);
-      module.setChannelVetoSource(i, VX2750Pha::stringToChannelVeto.find(cget("chanvetosrc"))->second);
-      module.setChannelVetoWidth(i, chanVetoWidths[i]);
+    if (waveTriggers.size() < i) 
+      module.setWaveTriggerSource(i, VX2750Pha::stringToWaveTrigger.find(waveTriggers[i])->second);
+      if (evtTriggers.size() < i)
+        module.setEventTriggerSource(i, VX2750Pha::stringToEventTrigger.find(evtTriggers[i])->second);
+      if (triggerMasks.size() < i)
+        module.setChannelTriggerMask(i, triggerMasks[i]);
+      if (saveTraces.size() < i) 
+          module.setTraceRecordMode(i, (saveTraces[i] == "Always") ? VX2750Pha::Always : VX2750Pha::OnRequest);
+      if (chanVetoSrcs.size() < i) 
+        module.setChannelVetoSource(i, VX2750Pha::stringToChannelVeto.find(chanVetoSrcs[i])->second);
+      if (chanVetoWidths.size() < i)
+        module.setChannelVetoWidth(i, chanVetoWidths[i]);
   }
   // module.setTimestampResetSource(VX2750Pha::stringToTimestampReset.find(cget("tstampresetsrc"))->second);
   module.setTRGOUTMode(VX2750Pha::stringToTRGOUT.find(cget("triggeroutmode"))->second);
@@ -455,24 +461,30 @@ VX2750PHAModuleConfiguration::defineWfInspectionOptions()
     // Now loop over the channels setting the parameters:
     
     for (int i =0; i < nch; i++) {
-      module.setWaveDataSource(
-         i, VX2750Pha::stringToWaveDataSource.find((wfsources[i]))->second
-      );
-      module.setRecordSamples(i, samples[i]);
-      module.setWaveResolution(
-       i, VX2750Pha::stringToWaveResolution.find(resolutions[i])->second
-      );
-      for (int p = 0; p < 2; p++) {
-        auto& probes = analogProbes[p];
-        module.setAnalogProbe(
-	      i, p+1, VX2750Pha::stringToAnalogProbe.find(probes[i])->second
+      if (wfsources.size() < i)
+        module.setWaveDataSource(
+           i, VX2750Pha::stringToWaveDataSource.find((wfsources[i]))->second
         );
+      if (samples.size() < i)
+        module.setRecordSamples(i, samples[i]);
+      if (resolutions.size() < i)
+        module.setWaveResolution(
+          i, VX2750Pha::stringToWaveResolution.find(resolutions[i])->second
+        );
+      
+      for (int p = 0; p < 2; p++) {  // Constraints should make this <= 2
+        auto& probes = analogProbes[p];
+        if (probes.size() < i)
+          module.setAnalogProbe(
+            i , p+1, VX2750Pha::stringToAnalogProbe.find(probes[i])->second
+          );
       }
       for (int p = 0; p < 4; p++) {
         auto& probes = digitalProbes[p];
-        module.setDigitalProbe(
-          i, p+1, VX2750Pha::stringToDigitalProbe.find(probes[i])->second
-        );
+        if (probes.size() < i)
+            module.setDigitalProbe(
+              i, p+1, VX2750Pha::stringToDigitalProbe.find(probes[i])->second
+            );
       }
       module.setPreTriggerSamples(i, pretrigger[i]);
     }
@@ -569,13 +581,14 @@ VX2750PHAModuleConfiguration::configureITLOptions(VX2750Pha& module)
      int nch= module.channelCount();
      auto connections = getList("itlconnect");
      for (int i = 0; i < nch; i++) {
-        module.setITLConnect(i, VX2750Pha::stringToITLConnect.find("itlconnect")->second);
+        if (connections.size() < i) 
+          module.setITLConnect(i, VX2750Pha::stringToITLConnect.find(connections[i])->second);
   
-     }
-     module.setITLAMask(getUnsignedParameter("itlamask"));
-     module.setITLBMask(getUnsignedParameter("itlbmask"));
-     module.setITLAGateWidth(getUnsignedParameter("itlagatewidth"));
-     module.setITLBGateWidth(getUnsignedParameter("itlbgatewidth"));
+    }
+    module.setITLAMask(getUnsignedParameter("itlamask"));
+    module.setITLBMask(getUnsignedParameter("itlbmask"));
+    module.setITLAGateWidth(getUnsignedParameter("itlagatewidth"));
+    module.setITLBGateWidth(getUnsignedParameter("itlbgatewidth"));
 }
 /**
  * defineLVDSOptions
@@ -608,14 +621,15 @@ VX2750PHAModuleConfiguration::configureLVDSOptions(VX2750Pha& module)
   
   // First set the direction and mode of each quartet.
   
-  for (int i = 0; i < 4; i++) {
+  
+  for (int i = 0; i <  modes.size(); i++) {
     module.setLVDSMode(i, VX2750Pha::stringToLVDSMode.find(modes[i])->second);
     module.setLVDSDirection(i, direction[i] == "Input" ? VX2750Pha::Input : VX2750Pha::Output);
   }
   
   // Now set the per pin trigger masks.
   
-  for (int i =0; i < 16; i++) {
+  for (int i =0; i < masks.size(); i++) {
     module.setLVDSTriggerMask(i, masks[i]);
   }
 }
@@ -695,14 +709,15 @@ VX2750PHAModuleConfiguration::configureInputConditioning(VX2750Pha& module)
   int nch = module.channelCount();
   for (int i =0; i < nch; i++) {
     
-    module.enableChannel(i, channelEnables[i]);
-    module.setDCOffset(i, dcOffsets[i]);
-    module.setTriggerThreshold(i, thresholds[i]);
-    module.setPulsePolarity(
-        i,
-        (inputPolarities[i] == "Positive") ?
-          VX2750Pha::Positive : VX2750Pha::Negative
-    );
+    if (channelEnables.size() < i) module.enableChannel(i, channelEnables[i]);
+    if (dcOffsets.size() < i)      module.setDCOffset(i, dcOffsets[i]);
+    if (thresholds.size() < i)     module.setTriggerThreshold(i, thresholds[i]);
+    if (inputPolarities.size() < i)
+      module.setPulsePolarity(
+          i,
+          (inputPolarities[i] == "Positive") ?
+            VX2750Pha::Positive : VX2750Pha::Negative
+      );
   }
 }
 /**
@@ -750,13 +765,20 @@ VX2750PHAModuleConfiguration::configureEventSelection(VX2750Pha& module)
   
   int nch = module.channelCount();
   for(int i =0; i < nch; i++) {
-    module.setEnergySkimLowDiscriminator(i, lowskims[i]);
-    module.setEnergySkimHighDiscriminator(i, hiskims[i]);
-    module.setEventSelector(i, VX2750Pha::stringToEventSelection.find(eventselectors[i])->second);
-    module.setWaveformSelector(i, VX2750Pha::stringToEventSelection.find(eventselectors[i])->second);
-    module.setCoincidenceNs(i, coincidencewindow[i]);
-			       module.setCoincidenceMask(i, VX2750Pha::stringToCoincidenceMask.find(coincMasks[i])->second);
-			       module.setAntiCoincidenceMask(i, VX2750Pha::stringToCoincidenceMask.find(anticoincMasks[i])->second);
+    if (lowskims.size() < i)
+      module.setEnergySkimLowDiscriminator(i, lowskims[i]);
+    if (hiskims.size() < i)
+      module.setEnergySkimHighDiscriminator(i, hiskims[i]);
+    if (eventselectors.size() < i)
+      module.setEventSelector(i, VX2750Pha::stringToEventSelection.find(eventselectors[i])->second);
+    if (waveselectors.size() < i)
+       module.setWaveformSelector(i, VX2750Pha::stringToEventSelection.find(waveselectors[i])->second);
+    if (coincidencewindow.size() < i)
+      module.setCoincidenceNs(i, coincidencewindow[i]);
+		if (coincMasks.size() < i)
+      module.setCoincidenceMask(i, VX2750Pha::stringToCoincidenceMask.find(coincMasks[i])->second);
+		if (anticoincMasks.size() < i)
+      module.setAntiCoincidenceMask(i, VX2750Pha::stringToCoincidenceMask.find(anticoincMasks[i])->second);
   }
 }
 /**
@@ -813,18 +835,30 @@ VX2750PHAModuleConfiguration::configureFilter(VX2750Pha& module)
     
     int nch = module.channelCount();
     for (int i = 0; i < nch; i++) {
-      module.setTimeFilterRiseTime(i, triggerRiseTimes[i]);
-      module.setTimeFilterRetriggerGuardTime(i, triggerRetriggerGuards[i]);
-      module.setEnergyFilterRiseTime(i, energyRiseTimes[i]);
-      module.setEnergyFilterFlatTopTime(i, energyFlatTopTimes[i]);
-      module.setEnergyFilterPeakingPosition(i, energyPeakingPos[i]);
-      module.setEnergyFilterPeakingAverage(i, peakingAvgs.find(peakingAverages[i])->second);
-      module.setEnergyFilterPoleZeroTime(i, poleZeros[i]);
-      module.setEnergyFilterFineGain(i, fineGains[i]);
-      module.enableEnergyFilterFLimitation(i, lfEliminations[i]);
-      module.setEnergyFilterBaselineAverage(i, blaverage.find(blAveraging[i])->second);
-      module.setEnergyFilterBaselineGuardTime(i, blGuardTimes[i]);
-      module.setEnergyFilterPileupGuardTime(i, pupGuardTimes[i]);
+      if (triggerRiseTimes.size() < i)
+        module.setTimeFilterRiseTime(i, triggerRiseTimes[i]);
+      if (triggerRetriggerGuards.size() < i)
+        module.setTimeFilterRetriggerGuardTime(i, triggerRetriggerGuards[i]);
+      if (energyRiseTimes.size() < i)
+        module.setEnergyFilterRiseTime(i, energyRiseTimes[i]);
+      if (energyFlatTopTimes.size() < i)
+        module.setEnergyFilterFlatTopTime(i, energyFlatTopTimes[i]);
+      if (energyPeakingPos.size() < i)
+        module.setEnergyFilterPeakingPosition(i, energyPeakingPos[i]);
+      if (peakingAverages.size() < i)
+        module.setEnergyFilterPeakingAverage(i, peakingAvgs.find(peakingAverages[i])->second);
+      if (poleZeros.size() < i)
+        module.setEnergyFilterPoleZeroTime(i, poleZeros[i]);
+      if (fineGains.size() < i)
+        module.setEnergyFilterFineGain(i, fineGains[i]);
+      if (lfEliminations.size() < i)
+        module.enableEnergyFilterFLimitation(i, lfEliminations[i]);
+      if (blAveraging.size() < i)
+        module.setEnergyFilterBaselineAverage(i, blaverage.find(blAveraging[i])->second);
+      if (blGuardTimes.size() < i)
+        module.setEnergyFilterBaselineGuardTime(i, blGuardTimes[i]);
+      if (pupGuardTimes.size() < i)
+        module.setEnergyFilterPileupGuardTime(i, pupGuardTimes[i]);
     }
 }
 
