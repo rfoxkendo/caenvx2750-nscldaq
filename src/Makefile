@@ -27,7 +27,8 @@ TCL_LDFLAGS  = $(shell pkg-config tcl8.6 --libs)
 
 NSCLDAQROOT=/usr/opt/daq/12.0-pre3
 NSCLDAQ_CXXFLAGS=-I$(NSCLDAQROOT)/include -I$(NSCLDAQROOT)/include/sbsreadout
-NSCLDAQ_LDFLAGS=-L$(NSCLDAQROOT)/lib -Wl,-rpath=$(NSCLDAQROOT)/lib
+NSCLDAQ_LDFLAGS=-L$(NSCLDAQROOT)/lib -Wl,-rpath=$(NSCLDAQROOT)/lib \
+	-ltclPlus -lException
 
 
 ROOTSYS=/usr/opt/root/root-6.24.06
@@ -110,16 +111,17 @@ VX2750XMLConfig.o: VX2750XMLConfig.cpp VX2750XMLConfig.h \
 	VX2750XMLConfig.h VX2750PHAConfiguration.h
 	$(CXX) $(CPPFLAGS) -c $<
 
-test_programs:  fejackettests triggertests
+test_programs:  fejackettests triggertests configtests
 
 #  The arguments below describe the module targeted by tests:
 
 TEST_MODULE_ISUSB=1
 TEST_MODULE_CONNECTION=15236
 
-tests:  fejackettests triggertests
+tests:  fejackettests triggertests configtests
 	./fejackettests $(TEST_MODULE_CONNECTION) $(TEST_MODULE_ISUSB)
 	./triggertests $(TEST_MODULE_CONNECTION) $(TEST_MODULE_ISUSB)
+	./configtests $(TEST_MODULE_CONNECTION) $(TEST_MODULE_ISUSB)
 
 fejackettests: TestRunner.o devtests.o vx2750phatests.o \
 	libCaenVx2750.a 
@@ -133,6 +135,12 @@ triggertests: TestRunner.o triggertests.o libCaenVx2750.a
 	-L. -lCaenVx2750 $(DEVTEST_LDFLAGS) $(JSON_LDFLAGS)
 
 
+configtests: TestRunner.o configtests.o
+	$(CXX) -g $(CPPUNIT_CPPFLAGS) $(CPPUNIT_LDFLAGS) -o configtests \
+		TestRunner.o configtests.o \
+		-L. -lCaenVx2750 $(DEVTEST_LDFLAGS) $(JSON_LDFLAGS) \
+	$(NSCLDAQ_LDFLAGS) $(TCL_LDFLAGS)
+
 TestRunner.o : TestRunner.cpp
 	$(CXX) -g -c  $(CPPUNIT_CPPFLAGS) $(JSON_CPPFLAGS) TestRunner.cpp
 
@@ -145,6 +153,9 @@ vx2750phatests.o : vx2750phatests.cpp
 triggertests.o : triggertests.cpp
 	$(CXX) -g  -c $(CPPUNIT_CPPFLAGS) $(JSON_CPPFLAGS)  triggertests.cpp
 
+configtests.o : configtests.cpp
+	$(CXX) -g  -c $(CPPUNIT_CPPFLAGS) $(JSON_CPPFLAGS)  configtests.cpp
+
 clean:
 	rm -f *.o *.a
-	rm -f fejackettests
+	rm -f fejackettests triggertests configtests
