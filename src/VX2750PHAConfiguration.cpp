@@ -761,7 +761,7 @@ VX2750PHAModuleConfiguration::configureEventSelection(VX2750Pha& module)
   auto eventselectors = getList("eventselector");
   auto waveselectors = getList("waveselector");
   auto coincMasks = getList("coincidencemask");
-  auto anticoincMasks = getList("anticoincidencemasks");
+  auto anticoincMasks = getList("anticoincidencemask");
   auto coincidencewindow = getIntegerList("coincidencelength");
   
   int nch = module.channelCount();
