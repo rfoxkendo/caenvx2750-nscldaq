@@ -445,7 +445,7 @@ VX2750PHAModuleConfiguration::defineWfInspectionOptions()
  VX2750PHAModuleConfiguration::configureWfInspectionOptions(VX2750Pha& module)
  {
     int nch = module.channelCount();            // # of channels in the module.
-    auto wfsources = getList("wfsource");
+    auto wfsources = getList("wavesource");
     auto samples   = getIntegerList("recordsamples");
     auto resolutions = getList("waveresolutions");
     std::vector<std::string> analogProbes[2];
