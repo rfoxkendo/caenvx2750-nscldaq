@@ -202,7 +202,7 @@ void
 VX2750PHAModuleConfiguration::defineGeneralOptions()
 {
     const char* clockSources[] = {
-       "Internal", "FPClkIn", "P0ClkIn", "Link", "DIPswitchSel",
+       "Internal", "FPClkIn", // "P0ClkIn", "Link", "DIPswitchSel",
        nullptr
     };
     addEnumParameter("clocksource", clockSources, "Internal");
