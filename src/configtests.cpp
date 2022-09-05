@@ -1,0 +1,121 @@
+/*
+    This software is Copyright by the Board of Trustees of Michigan
+    State University (c) Copyright 2017.
+
+    You may use this software under the terms of the GNU public license
+    (GPL).  The terms of this license are described at:
+
+     http://www.gnu.org/licenses/gpl.txt
+
+     Authors:
+             Ron Fox
+             Giordano Cerriza
+	     FRIB
+	     Michigan State University
+	     East Lansing, MI 48824-1321
+*/
+
+/** @file:  
+ *  @brief: 
+ */
+#include <cppunit/extensions/HelperMacros.h>
+#include <cppunit/Asserter.h>
+#include "Asserts.h"
+#define private public
+#include "VX2750Pha.h"     // Base module. -- white box it.
+#undef private
+#include "VX2750PHAConfiguration.h"  // Configuration module Tcl style.
+
+extern std::string connection;
+extern bool        isUsb;
+
+
+using namespace caen_nscldaq;
+
+class cfgtest : public CppUnit::TestFixture {
+    CPPUNIT_TEST_SUITE(cfgtest);
+    CPPUNIT_TEST(default_1);
+    CPPUNIT_TEST(cfgreadout);
+    CPPUNIT_TEST_SUITE_END();
+    
+private:
+    VX2750Pha*              m_pModule;
+    VX2750PHAModuleConfiguration* m_pConfig;
+public:
+    void setUp() {
+        m_pModule = new VX2750Pha(connection.c_str(), isUsb);
+        m_pConfig = new VX2750PHAModuleConfiguration("test");
+    }
+    void tearDown() {
+        delete m_pConfig;
+        delete m_pModule;
+    }
+protected:
+    void default_1();
+    void cfgreadout();
+};
+
+CPPUNIT_TEST_SUITE_REGISTRATION(cfgtest);
+
+// Default config should, at least, be legal:
+void cfgtest::default_1()
+{
+    CPPUNIT_ASSERT_NO_THROW(m_pConfig->configureModule(*m_pModule));
+}
+// should be able to turn on and off all the optional readout flags:
+
+void cfgtest::cfgreadout()
+{
+    // turn them all on:
+    
+    m_pConfig->configure("readrawtimes", "true");
+    m_pConfig->configure("readfinetimestamps", "true");
+    m_pConfig->configure("readflags", "true");
+    m_pConfig->configure("readtimedownsampling", "true");
+    m_pConfig->configure("readanalogprobes","true true");
+    m_pConfig->configure("readdigitalprobes", "true true true true");
+    m_pConfig->configure("readsamplecount", "true");
+    m_pConfig->configure("readeventsize", "true");
+    
+    m_pConfig->configureModule(*m_pModule);
+    
+    ASSERT(m_pModule->m_dppPhaOptions.s_enableRawTimestamps);
+    ASSERT(m_pModule->m_dppPhaOptions.s_enableFineTimestamps);
+    ASSERT(m_pModule->m_dppPhaOptions.s_enableFlags);
+    ASSERT(m_pModule->m_dppPhaOptions.s_enableDownsampledTime);
+    ASSERT(m_pModule->m_dppPhaOptions.s_enableAnalogProbe1);
+    ASSERT(m_pModule->m_dppPhaOptions.s_enableAnalogProbe2);
+    ASSERT(m_pModule->m_dppPhaOptions.s_enableDigitalProbe1);
+    ASSERT(m_pModule->m_dppPhaOptions.s_enableDigitalProbe2);
+    ASSERT(m_pModule->m_dppPhaOptions.s_enableDigitalProbe3);
+    ASSERT(m_pModule->m_dppPhaOptions.s_enableDigitalProbe4);
+    ASSERT(m_pModule->m_dppPhaOptions.s_enableSampleCount);
+    ASSERT(m_pModule->m_dppPhaOptions.s_enableEventSize);
+    
+    // Turn them all off:
+
+    m_pConfig->configure("readrawtimes", "false");
+    m_pConfig->configure("readfinetimestamps", "false");
+    m_pConfig->configure("readflags", "false");
+    m_pConfig->configure("readtimedownsampling", "false");
+    m_pConfig->configure("readanalogprobes", "false false");
+    m_pConfig->configure("readdigitalprobes", "false false false false");
+    m_pConfig->configure("readsamplecount", "false");
+    m_pConfig->configure("readeventsize", "false");
+    
+    m_pConfig->configureModule(*m_pModule);
+    
+    ASSERT(!m_pModule->m_dppPhaOptions.s_enableRawTimestamps);
+    ASSERT(!m_pModule->m_dppPhaOptions.s_enableFineTimestamps);
+    ASSERT(!m_pModule->m_dppPhaOptions.s_enableFlags);
+    ASSERT(!m_pModule->m_dppPhaOptions.s_enableDownsampledTime);
+    ASSERT(!m_pModule->m_dppPhaOptions.s_enableAnalogProbe1);
+    ASSERT(!m_pModule->m_dppPhaOptions.s_enableAnalogProbe2);
+    ASSERT(!m_pModule->m_dppPhaOptions.s_enableDigitalProbe1);
+    ASSERT(!m_pModule->m_dppPhaOptions.s_enableDigitalProbe2);
+    ASSERT(!m_pModule->m_dppPhaOptions.s_enableDigitalProbe3);
+    ASSERT(!m_pModule->m_dppPhaOptions.s_enableDigitalProbe4);
+    ASSERT(!m_pModule->m_dppPhaOptions.s_enableSampleCount);
+    ASSERT(!m_pModule->m_dppPhaOptions.s_enableEventSize);
+    
+}
