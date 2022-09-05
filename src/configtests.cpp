@@ -39,6 +39,7 @@ class cfgtest : public CppUnit::TestFixture {
     CPPUNIT_TEST(default_1);
     CPPUNIT_TEST(cfgreadout);
     CPPUNIT_TEST(clock);
+    CPPUNIT_TEST(startsrc);
     CPPUNIT_TEST_SUITE_END();
     
 private:
@@ -57,6 +58,7 @@ protected:
     void default_1();
     void cfgreadout();
     void clock();
+    void startsrc();
 };
 
 CPPUNIT_TEST_SUITE_REGISTRATION(cfgtest);
@@ -145,4 +147,19 @@ void cfgtest::clock()
     m_pConfig->configureModule(*m_pModule);
     ASSERT(m_pModule->isClockOutOnFP());
     
+}
+// Test the various start sources:
+void cfgtest::startsrc()
+{
+    std::vector<std::string> srcStrings = {"EncodedClkIn", "SINlevel", "SINedge", "SWcmd", "LVDS", "P0"};
+    std::vector<VX2750Pha::StartSource> srcs = {
+        VX2750Pha::Start_EncodedClockIn, VX2750Pha::SINLevel, VX2750Pha::SINEdge, VX2750Pha::SWCommand,
+        VX2750Pha::Start_LVDS, VX2750Pha::Start_P0
+    };
+    
+    for (int i =0; i < srcStrings.size(); i++)  { // Allows us to index srcs.
+        m_pConfig->configure("startsource", srcStrings[i]);
+        m_pConfig->configureModule(*m_pModule);
+        EQ(srcs[i], m_pModule->getStartSource());
+    }
 }
