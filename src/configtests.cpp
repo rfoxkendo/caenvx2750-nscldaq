@@ -25,6 +25,8 @@
 #include "VX2750Pha.h"     // Base module. -- white box it.
 #undef private
 #include "VX2750PHAConfiguration.h"  // Configuration module Tcl style.
+#include <vector>
+#include <string>
 
 extern std::string connection;
 extern bool        isUsb;
@@ -36,6 +38,7 @@ class cfgtest : public CppUnit::TestFixture {
     CPPUNIT_TEST_SUITE(cfgtest);
     CPPUNIT_TEST(default_1);
     CPPUNIT_TEST(cfgreadout);
+    CPPUNIT_TEST(clock);
     CPPUNIT_TEST_SUITE_END();
     
 private:
@@ -53,6 +56,7 @@ public:
 protected:
     void default_1();
     void cfgreadout();
+    void clock();
 };
 
 CPPUNIT_TEST_SUITE_REGISTRATION(cfgtest);
@@ -117,5 +121,28 @@ void cfgtest::cfgreadout()
     ASSERT(!m_pModule->m_dppPhaOptions.s_enableDigitalProbe4);
     ASSERT(!m_pModule->m_dppPhaOptions.s_enableSampleCount);
     ASSERT(!m_pModule->m_dppPhaOptions.s_enableEventSize);
+    
+}
+// test the general options which are just the clock source/output.
+// note we've determined that the P0Clock won't work at least in this module.
+
+void cfgtest::clock()
+{
+    std::vector<std::string> sources = {"Internal", "FPClkIn"};
+    std::vector<VX2750Pha::ClockSource> configs = {VX2750Pha::Internal, VX2750Pha::FrontPanel};
+    
+    for (int i =0; i < sources.size(); i++) {
+        m_pConfig->configure("clocksource", sources[i]);
+        m_pConfig->configureModule(*m_pModule);
+        EQ(configs[i], m_pModule->getClockSource());
+    }
+    
+    m_pConfig->configure("outputfpclock", "false");
+    m_pConfig->configureModule(*m_pModule);
+    ASSERT(!m_pModule->isClockOutOnFP());
+    
+    m_pConfig->configure("outputfpclock", "true");
+    m_pConfig->configureModule(*m_pModule);
+    ASSERT(m_pModule->isClockOutOnFP());
     
 }
