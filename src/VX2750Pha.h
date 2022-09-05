@@ -417,10 +417,10 @@ public:
     void         setStartSource(StartSource src) const;
     std::vector<GlobalTriggerSource> getGlobalTriggerSource() const;
     void         setGlobalTriggerSource(const std::vector<GlobalTriggerSource>& sources) const;
-    WaveTriggerSource getWaveTriggerSource(unsigned ch) const;
-    void         setWaveTriggerSource(unsigned ch, WaveTriggerSource src) const;
-    EventTriggerSource getEventTriggerSource(unsigned ch) const;
-    void         setEventTriggerSource(unsigned ch, EventTriggerSource src) const;
+    std::vector<WaveTriggerSource> getWaveTriggerSource(unsigned ch) const;
+    void         setWaveTriggerSource(unsigned ch, const std::vector<WaveTriggerSource>& src) const;
+    std::vector<EventTriggerSource> getEventTriggerSource(unsigned ch) const;
+    void         setEventTriggerSource(unsigned ch, const std::vector<EventTriggerSource>& src) const;
     
     std::uint64_t getChannelTriggerMask(unsigned ch) const;
     void          setChannelTriggerMask(unsigned ch, std::uint64_t mask) const;

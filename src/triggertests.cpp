@@ -82,8 +82,10 @@ void triggertests::raw_1()
     std::vector<VX2750Pha::GlobalTriggerSource> gbltrig =
         {VX2750Pha::GlobalTrigger_Software};
     m_pModule->setGlobalTriggerSource(gbltrig);
-    m_pModule->setWaveTriggerSource(0, VX2750Pha::WaveTrigger_GlobalTriggerSource);
-    m_pModule->setEventTriggerSource(0, VX2750Pha::EventTrigger_GlobalTriggerSource);
+    std::vector<VX2750Pha::WaveTriggerSource> wt = {VX2750Pha::WaveTrigger_GlobalTriggerSource};
+    m_pModule->setWaveTriggerSource(0, wt);
+    std::vector<VX2750Pha::EventTriggerSource> et = {VX2750Pha::EventTrigger_GlobalTriggerSource};
+    m_pModule->setEventTriggerSource(0, et);
     
     
     uint32_t rawSize = m_pModule->getMaxRawDataSize();
@@ -140,8 +142,10 @@ triggertests::cooked_1()
     std::vector<VX2750Pha::GlobalTriggerSource> gbltrig =
         {VX2750Pha::GlobalTrigger_Software};
     m_pModule->setGlobalTriggerSource(gbltrig);
-    m_pModule->setWaveTriggerSource(0, VX2750Pha::WaveTrigger_GlobalTriggerSource);
-    m_pModule->setEventTriggerSource(0, VX2750Pha::EventTrigger_GlobalTriggerSource);
+    std::vector<VX2750Pha::WaveTriggerSource> wt = {VX2750Pha::WaveTrigger_GlobalTriggerSource};
+    m_pModule->setWaveTriggerSource(0, wt);
+    std::vector<VX2750Pha::EventTriggerSource> et = {VX2750Pha::EventTrigger_GlobalTriggerSource};
+    m_pModule->setEventTriggerSource(0, et);
     
     CPPUNIT_ASSERT_NO_THROW(m_pModule->setDefaultFormat());
     

@@ -119,9 +119,9 @@ TEST_MODULE_ISUSB=1
 TEST_MODULE_CONNECTION=15236
 
 tests:  fejackettests triggertests configtests
-	./fejackettests $(TEST_MODULE_CONNECTION) $(TEST_MODULE_ISUSB)
-	./triggertests $(TEST_MODULE_CONNECTION) $(TEST_MODULE_ISUSB)
-	./configtests $(TEST_MODULE_CONNECTION) $(TEST_MODULE_ISUSB)
+	- .//fejackettests $(TEST_MODULE_CONNECTION) $(TEST_MODULE_ISUSB)
+	- ./triggertests $(TEST_MODULE_CONNECTION) $(TEST_MODULE_ISUSB)
+	- ./configtests $(TEST_MODULE_CONNECTION) $(TEST_MODULE_ISUSB)
 
 fejackettests: TestRunner.o devtests.o vx2750phatests.o \
 	libCaenVx2750.a 

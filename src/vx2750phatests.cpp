@@ -62,7 +62,9 @@ class vx2750phatest : public CppUnit::TestFixture {
     CPPUNIT_TEST(gbltrigger);
     CPPUNIT_TEST(gblmulti);
     CPPUNIT_TEST(wavetrigger);
+    CPPUNIT_TEST(wavetriggermulti);
     CPPUNIT_TEST(eventtrigger);
+    CPPUNIT_TEST(eventtriggermulti);
     CPPUNIT_TEST(chtrigmask);
     CPPUNIT_TEST(tracerecordmode);
     CPPUNIT_TEST(trgoutmode);
@@ -184,7 +186,9 @@ protected:
     void gbltrigger();
     void gblmulti();
     void wavetrigger();
+    void wavetriggermulti();
     void eventtrigger();
+    void eventtriggermulti();
     void tsresetsrc();
     void chtrigmask();
     void tracerecordmode();
@@ -503,13 +507,51 @@ void vx2750phatest::wavetrigger()
     };
     
     int nch = m_pModule->channelCount();
-    VX2750Pha::WaveTriggerSource original;
+    std::vector<VX2750Pha::WaveTriggerSource> original;
+    
     for (int i = 0; i < nch; i++) {
+        std::vector<VX2750Pha::WaveTriggerSource> g;
+        
         CPPUNIT_ASSERT_NO_THROW(original = m_pModule->getWaveTriggerSource(i));
         for (auto source: possibles) {
-            CPPUNIT_ASSERT_NO_THROW(m_pModule->setWaveTriggerSource(i, source));
-            EQ(source, m_pModule->getWaveTriggerSource(i));
+            std::vector<VX2750Pha::WaveTriggerSource> v;
+            v.push_back(source);
+            CPPUNIT_ASSERT_NO_THROW(m_pModule->setWaveTriggerSource(i, v));
+            g = m_pModule->getWaveTriggerSource(i);
+            EQ(size_t(1), g.size());
+            EQ(v[0], g[0]);
         }
+        m_pModule->setWaveTriggerSource(i, original);
+    }
+}
+// Test multiple event trigger source:
+
+void vx2750phatest::wavetriggermulti()
+{
+    std::vector<std::vector<VX2750Pha::WaveTriggerSource>> sources = {
+        {VX2750Pha::WaveTrigger_InternalA, VX2750Pha::WaveTrigger_InternalB},
+        { VX2750Pha::WaveTrigger_GlobalTriggerSource, VX2750Pha::WaveTrigger_TRGIN,
+        VX2750Pha::ExternalInhibit,
+        VX2750Pha::ADCUnderSaturation, VX2750Pha::ADCOverSaturation},
+        {VX2750Pha::ADCUnderSaturation, VX2750Pha::ADCOverSaturation,
+        VX2750Pha::WaveTrigger_Software, 
+        VX2750Pha::WaveTrigger_ChannelSelfTrigger,
+        VX2750Pha::WaveTrigger_AnyChannelSelfTrigger}
+    };
+    std::vector<VX2750Pha::WaveTriggerSource> original;
+    int nch = m_pModule->channelCount();
+    for (int i =0; i < nch; i++) {                  // Test all channnels:
+        original = m_pModule->getWaveTriggerSource(i);
+        for (auto s : sources) {    // Representative vectors of values:
+            m_pModule->setWaveTriggerSource(i, s);
+            auto g = m_pModule->getWaveTriggerSource(i);
+            EQ(s.size(), g.size());
+            std::set<VX2750Pha::WaveTriggerSource> sb(s.begin(), s.end());
+            for (auto item: g) {
+                EQ(size_t(1), sb.count(item));         // Each item in g is in sb.
+            }
+        }
+        
         m_pModule->setWaveTriggerSource(i, original);
     }
 }
@@ -527,14 +569,60 @@ void vx2750phatest::eventtrigger()
     };
     // per channel parameter so:
     int nch = m_pModule->channelCount();
-    VX2750Pha::EventTriggerSource original;
+    std::vector<VX2750Pha::EventTriggerSource> original;
     
     for (int i =0; i < nch; i++) {
         CPPUNIT_ASSERT_NO_THROW(original = m_pModule->getEventTriggerSource(i));
+        std::vector<VX2750Pha::EventTriggerSource> g;
         for (auto source : possibles) {
-            CPPUNIT_ASSERT_NO_THROW(m_pModule->setEventTriggerSource(i, source));
-            EQ(source, m_pModule->getEventTriggerSource(i));
+            std::vector<VX2750Pha::EventTriggerSource> v;
+            v.push_back(source);
+            CPPUNIT_ASSERT_NO_THROW(m_pModule->setEventTriggerSource(i, v));
+            g = m_pModule->getEventTriggerSource(i);
+            EQ(size_t(1), g.size());
+            EQ(v[0], g[0]);
         }
+        m_pModule->setEventTriggerSource(i, original);
+    }
+}
+
+// Multiple values for the event trigger:
+
+void vx2750phatest::eventtriggermulti()
+{
+    std::vector<std::vector<VX2750Pha::EventTriggerSource>> sources = {
+        {VX2750Pha::EventTrigger_InternalB, VX2750Pha::EventTrigger_InternalA},
+        {VX2750Pha::EventTrigger_InternalB, VX2750Pha::EventTrigger_InternalA,
+        VX2750Pha::EventTrigger_GlobalTriggerSource, VX2750Pha::EventTrigger_TRGIN,
+        VX2750Pha::EventTrigger_Software},
+        {VX2750Pha::EventTrigger_GlobalTriggerSource, VX2750Pha::EventTrigger_TRGIN,
+        VX2750Pha::EventTrigger_Software,
+        VX2750Pha::EventTrigger_ChannelSelfTrigger,
+        VX2750Pha::EventTrigger_AnyChannelSelfTrigger}
+    };
+    std::vector<VX2750Pha::EventTriggerSource>  original;
+    
+    // Test all channels
+    
+    int nch = m_pModule->channelCount();
+    for (int i = 0; i < nch; i++) {
+        original = m_pModule->getEventTriggerSource(i);
+        
+        // Test a few represntative combinations:
+        
+        for (auto src : sources) {
+            m_pModule->setEventTriggerSource(i, src);
+            auto got = m_pModule->getEventTriggerSource(i);
+            EQ(src.size(), got.size());
+            
+            // Since order may change sets are easier to compare:
+            
+            std::set<VX2750Pha::EventTriggerSource> sb(src.begin(), src.end());
+            for (auto g : got) {
+                EQ(size_t(1), sb.count(g));
+            }
+        }
+        
         m_pModule->setEventTriggerSource(i, original);
     }
 }

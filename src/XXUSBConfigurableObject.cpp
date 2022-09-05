@@ -516,7 +516,60 @@ CConfigurableObject::getEnumParameter(std::string name, const char** pValues)
   throw msg;
   
 }
-
+/**
+ * getListOfLists
+ *     Return the value of a paramter that is a list of lists.
+ *  @param name -name of the parameter
+ *  @return std::vector<std::vector<std::string>>
+ */
+std::vector<std::vector<std::string>>
+CConfigurableObject::getListOfLists(std::string name)
+{
+  // Get the raw value:
+  
+  auto rawValue = cget(name);          // Throws if nosuch.
+  std::vector<std::vector<std::string>> result;
+  // Break up the outer list and marshall that into a vector of strings
+  // so we can immediately free the result:
+  
+  int argc;
+  const char** argv;
+  if (Tcl_SplitList(nullptr, rawValue.c_str(), &argc, &argv) != TCL_OK) {
+    std::string msg = rawValue;
+    msg += " is not a valid Tcl list";
+    throw msg;
+  
+  }
+  std::vector<std::string> outerList;
+  for (int i =0; i < argc; i++) {
+    outerList.push_back(argv[i]);
+  }
+  Tcl_Free((char*)(argv));
+  
+  // Now split each sublist:
+  
+  for (auto l : outerList) {
+    if (Tcl_SplitList(nullptr, l.c_str(), &argc, &argv) != TCL_OK) {
+      std::string msg = "sublist: " ;
+      msg += l;
+      msg += " is not a valid Tcl list";
+      throw msg;
+      
+    }
+    // Now marshall the sublist into its vector and push it into the result:
+    
+    std::vector<std::string> sublist;
+    for (int i =0; i < argc; i++) {
+      sublist.push_back(argv[i]);
+    }
+    Tcl_Free((char*)(argv));
+    result.push_back(sublist);
+  }
+  
+  return result;
+  
+  
+}
 /** 
  * Add an integer parameter to the configuration that has no limits.
  *
@@ -896,7 +949,52 @@ CConfigurableObject::addEnumListParameter(
     addParameter(name, isList, pConstraint, dList);
     
 }
-
+/**
+ * addListOfEnumLists
+ *    This one is needed for the per channel triggers sources:
+ *    The parameter is a list of lists where each sublist is a list of values
+ *    from a set of valid values. For examples [list [list GlobalTrigger SelfTrigger] ...]
+ *    would trigger a channel 0 on the or of its self trigger and the global trigger
+ *    conditions.
+ *    See the companion getListOfLists which fetches the resulting value as
+ *    a vector of vector of strings.  Where the outer vector is the outer string elements
+ *    and each inner vector contains the list for each element.
+ * @param name -parameter name.
+ * @param pValues - the values elements of each of the sublist elements can take.
+ * @param defaultValue - The default value for each list element.
+ * @param minlength - minimum length of the outer list.
+ * @param maxlength - maximum length of the outer list
+ * @param defaultSize - default list size.
+ *
+ * @note there is no constraint on the sublist sizes though the actual device
+ *       parameter may constrain that (e.g. there must be at least one
+ *       trigger condition).
+ */
+void
+CConfigurableObject::addListOfEnumLists(
+    std::string name, const char** pValues, const char* defaultValue,
+     unsigned minlen, unsigned maxlen, int defaultSize
+)
+{
+  // The constraint is really pretty much the same as the enum list but
+  // we use the element type checker isEnumlist which breaks apart the list it
+  // is given and checks each element against the enums rather than its entire argument.
+  
+   // figure out the default list of values:
+    
+    defaultSize = computeDefaultSize(minlen, maxlen, defaultSize);
+    std::string defaultList = simpleList(defaultValue, defaultSize);
+    
+    // Create the constraint object:
+    
+    auto validValues = makeEnumSet(pValues);
+    isEnumParameter* pV = new isEnumParameter(validValues);
+    isListParameter* pConstraint =
+       reinterpret_cast<isListParameter*>(malloc(sizeof(isListParameter)));
+    *pConstraint = isListParameter(minlen, maxlen, TypeCheckInfo(isEnumList, pV));
+    std::string dList = simpleList(defaultValue, defaultSize);
+    addParameter(name, isList, pConstraint, dList);
+}
 /**
  * Add a string parameter whose value is a fixed length array of strings.
  * 
@@ -1047,6 +1145,46 @@ CConfigurableObject::isEnum(string name, string value, void* values)
 
   return ((validValues.find(value) != validValues.end()) ? true : false);
 
+}
+/**
+ * validate an enumerated list  - This is used by list of enumlists.
+ * in that list each element is a list of enums whose elements must be validated.
+ * We just bust the value up into its elements and pass each one  to isEnum,
+ * requiring them all to validate.
+ *
+ * @param name - name of the parameter.
+ * @param value - value of a list element.
+ * @param values - Passed to isEnum without interpretation.
+ * @return bool - true if all list elements satisfy isEnum, false if even one of them does.
+ * @note we allow a short circuit failure.
+ */
+bool
+CConfigurableObject::isEnumList(std::string name, std::string value, void* arg)
+{
+  // First this must be a valid list:
+  
+  int argc;
+  const char** argv;
+  if (Tcl_SplitList(nullptr, value.c_str(), &argc, &argv) != TCL_OK) {
+    return false;
+  }
+  // To make the failure logic simpler we marshall the strings into a vector
+  // of strings and then free argv: vectors and strings free normally
+  
+  std::vector<std::string> listElements;
+  for (int i =0; i < argc; i++) {
+    listElements.push_back(argv[i]);
+  }
+  Tcl_Free((char*)argv);
+  
+  // Now require each string be valid:
+  
+  for (auto s : listElements) {
+    if (!isEnum(name, s, arg)) return false;    // a failure.
+  }
+  // all passed
+  
+  return true;
 }
 
 /*!
@@ -1322,6 +1460,7 @@ CConfigurableObject::isStringList(string name, string value, void* validSizes)
 
   return isList(name, value, &validator);
 }
+
 
 ////////////////////////////////////////////////////////////////////////////////////////
 // Other utilities

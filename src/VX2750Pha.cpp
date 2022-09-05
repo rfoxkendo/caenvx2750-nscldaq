@@ -977,46 +977,81 @@ static const std::map<VX2750Pha::Endpoint, std::string> endpointToString = {
     /**
      * getWaveTriggerSource
      *     @param ch  - A digitizer channel number
-     *     @return VX2750Pha::WaveTriggerSource - the wave trigger source of ch.
+     *     @return vector<VX2750Pha::WaveTriggerSource> - the wave trigger sources of ch.
      */
-    VX2750Pha::WaveTriggerSource
+    std::vector<VX2750Pha::WaveTriggerSource>
     VX2750Pha::getWaveTriggerSource(unsigned ch) const
     {
+        
         std::string strValue = GetChanValue(ch, "WaveTriggerSource");
-        return stringToEnum(stringToWaveTrigger, strValue);
+        auto stringList      = orListToStringList(strValue);
+        std::vector<WaveTriggerSource> result;
+        for (auto s: stringList ) {
+            result.push_back(stringToEnum(stringToWaveTrigger, s));
+        }
+        return result;
     }
     /**
      * setWaveTriggerSource
      *
      *    @param ch - channel number
-     *    @param selection - WaveTriggerSource  to set as thee selected value.
+     *    @param selection - vector WaveTriggerSource  to set as thee selected value.
+     *                       the or of all of the triggers sources in the vector
+     *                       is the actual trigger condition.
+     *    @note - no attempt is made to remove duplicates.
+     *    @note - At least one element must be in the selection.
      */
     void
-    VX2750Pha::setWaveTriggerSource(unsigned ch, WaveTriggerSource selection) const
+    VX2750Pha::setWaveTriggerSource(unsigned ch, const std::vector<WaveTriggerSource>& selection) const
     {
-        std::string value = enumToString(waveTriggerToString, selection);
+        if (selection.size() == 0) {
+            throw std::logic_error("At least one wave trigger source is required");
+        }
+        // conver the selection vector to a vector of enum values:
+        
+        std::vector<std::string> stringList;
+        for (auto s : selection) {
+            stringList.push_back(enumToString(waveTriggerToString, s));
+        }
+        
+        std::string value = stringListToOrList(stringList);
         SetChanValue(ch, "WaveTriggerSource", value.c_str());
     }
     /**
      * getEventTriggerSource
      *    @param ch   - a digitizer channel
-     *    @return VX2750Pha::EventTriggerSource - source of ch's event trigger.
+     *    @return std::vector<VX2750Pha::EventTriggerSource> - sources of ch's event trigger.
      */
-    VX2750Pha::EventTriggerSource
+    std::vector<VX2750Pha::EventTriggerSource>
     VX2750Pha::getEventTriggerSource(unsigned ch) const
     {
         std::string strValue = GetChanValue(ch, "EventTriggerSource");
-        return stringToEnum(stringToEventTrigger, strValue);
+        auto stringList = orListToStringList(strValue);
+        std::vector<VX2750Pha::EventTriggerSource> result;
+        for (auto s : stringList) {
+            result.push_back(stringToEnum(stringToEventTrigger, s)); 
+        }
+        return result;
     }
     /**
      * setEventTriggerSource
      *    @param ch - a digitizer channel number.
-     *    #param selection - the VX2750Pha::EventTriggerSource selected for that channel.
+     *    @param selection - the VX2750Pha::EventTriggerSources selected for that channel.
+     *          The actual trigger source is the or of the sources in the vector.
+     *          At least one trigger source must be present.
      */
     void
-    VX2750Pha::setEventTriggerSource(unsigned ch, EventTriggerSource selection) const
+    VX2750Pha::setEventTriggerSource(unsigned ch, const std::vector<EventTriggerSource>& selection) const
     {
-        std::string sel = enumToString(eventTriggerToString, selection);
+        // Make a vector of strings and then convert that to an orlist:
+        
+        std::vector<std::string> stringList;
+        for (auto s : selection) {
+            stringList.push_back(enumToString(eventTriggerToString, s));
+        }
+        
+        
+        std::string sel = stringListToOrList(stringList);;
         SetChanValue(ch, "EventTriggerSource", sel.c_str());
     }
         /**

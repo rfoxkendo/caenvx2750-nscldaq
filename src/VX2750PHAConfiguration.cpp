@@ -252,8 +252,8 @@ VX2750PHAModuleConfiguration::defineAcqTriggerOptions()
           "Ch64Trigger", "Disabled",
           nullptr
      };
-     addEnumListParameter("wavetriggersrc", triggerSources, "TRGIN", 0,64,64);
-     addEnumListParameter("eventtriggersrc", triggerSources, "TRGIN", 0,64,64);
+     addListOfEnumLists("wavetriggersrc", triggerSources, "TRGIN", 0,64,64);
+     addListOfEnumLists("eventtriggersrc", triggerSources, "TRGIN", 0,64,64);
      
      const char* resetsrcs[] = {
 	 "Start", "SIN", "GPIO", "EncodedClkIn",
@@ -345,18 +345,28 @@ VX2750PHAModuleConfiguration::configureAcquisitionTriggerOptions(VX2750Pha& modu
   }
   module.setGlobalTriggerSource(srcs);
   
-  auto waveTriggers = getList("wavetriggersrc");
-  auto evtTriggers  = getList("eventtriggersrc");
+  auto waveTriggers = getListOfLists("wavetriggersrc");
+  auto evtTriggers  = getListOfLists("eventtriggersrc");
   auto triggerMasks = getUnsignedList("channeltriggermasks");   // since they're uint64_ts.
   auto saveTraces   = getList("savetraces");
   auto chanVetoSrcs = getList("chanvetosrc");
   auto chanVetoWidths = getIntegerList("chanvetowidth");
   
   for (int i =0; i < nch; i++) {
-    if (waveTriggers.size() < i) 
-      module.setWaveTriggerSource(i, VX2750Pha::stringToWaveTrigger.find(waveTriggers[i])->second);
-      if (evtTriggers.size() < i)
-        module.setEventTriggerSource(i, VX2750Pha::stringToEventTrigger.find(evtTriggers[i])->second);
+    if (waveTriggers.size() < i) {
+      std::vector<VX2750Pha::WaveTriggerSource> srcs;
+      for (auto s : waveTriggers[i]) {
+        srcs.push_back(VX2750Pha::stringToWaveTrigger.find(s)->second);
+      }
+      module.setWaveTriggerSource(i, srcs);
+    }
+      if (evtTriggers.size() < i) {
+        std::vector<VX2750Pha::EventTriggerSource> srcs;
+        for (auto s : evtTriggers[i]) {
+          srcs.push_back(VX2750Pha::stringToEventTrigger.find(s)->second);
+        }
+        module.setEventTriggerSource(i, srcs);
+      }
       if (triggerMasks.size() < i)
         module.setChannelTriggerMask(i, triggerMasks[i]);
       if (saveTraces.size() < i) 

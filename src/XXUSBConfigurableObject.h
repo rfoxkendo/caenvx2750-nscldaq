@@ -172,6 +172,7 @@ public:
 	std::vector<double> getFloatList     (std::string name);    //
 	std::vector<bool>  getBoolList(std::string name);
   int              getEnumParameter(std::string name, const char**pValues);
+	std::vector<std::vector<std::string>> getListOfLists(std::string name);
 	
     
   // Operations:
@@ -204,6 +205,9 @@ public:
 			const char** pValues, const char* defaultValue,
 			unsigned minlength, unsigned maxlength, int defaultSize = -1
 	);
+	void addListOfEnumLists(
+		std::string name, const char** pValues, const char* defaultValue,
+		unsigned minlength, unsigned maxlength, int defaultSize = -1);
 	void addFloatParameter(std::string name, double defaultValue = 0.0);             
 	void addFloatParameter(
 			std::string name, double low, double high, double defaultValue = 0.0        
@@ -239,12 +243,14 @@ public:
   static bool isInteger(std::string name, std::string value, void* arg);
   static bool isBool(   std::string name, std::string value, void* arg);
   static bool isEnum(   std::string name, std::string value, void* arg);
-  static bool isFloat(  std::string name, std::string value, void* arg);
+  static bool isEnumList(std::string name, std::string value, void* arg); // elements of list of enum list
+	static bool isFloat(  std::string name, std::string value, void* arg);
   static bool isList(   std::string name, std::string value, void* arg);
   static bool isBoolList(std::string name,std::string value, void* arg);
   static bool isIntList(std::string name, std::string value, void* arg);
 	static bool isFloatList(std::string name, std::string value, void* arg);
-  static bool isStringList(std::string name, std::string value, void* arg); 
+  static bool isStringList(std::string name, std::string value, void* arg);
+	
 	
 	
 
