@@ -241,7 +241,7 @@ VX2750PHAModuleConfiguration::defineAcqTriggerOptions()
      
      const char* globalTriggerSrcs[] = {
          "TrgIn", "P0", "SwTrg", "LVDS", "ITLA", "ITLB",
-         "ITLA_AND_ITLB", "ITLA_OR_ITLB", "EncodedCLkIn", "GPIO", "TestPulse",
+         "ITLA_AND_ITLB", "ITLA_OR_ITLB", "EncodedClkIn", "GPIO", "TestPulse",
           nullptr
      };
      addEnumListParameter("gbltriggersrc", globalTriggerSrcs, "TrgIn", 1, 11, 1 );

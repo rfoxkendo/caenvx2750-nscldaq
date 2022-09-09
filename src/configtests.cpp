@@ -27,6 +27,7 @@
 #include "VX2750PHAConfiguration.h"  // Configuration module Tcl style.
 #include <vector>
 #include <string>
+#include <set>
 
 extern std::string connection;
 extern bool        isUsb;
@@ -40,6 +41,8 @@ class cfgtest : public CppUnit::TestFixture {
     CPPUNIT_TEST(cfgreadout);
     CPPUNIT_TEST(clock);
     CPPUNIT_TEST(startsrc);
+    CPPUNIT_TEST(gbltrigsrc_1);
+    CPPUNIT_TEST(gbltrigsrc_2);
     CPPUNIT_TEST_SUITE_END();
     
 private:
@@ -59,9 +62,31 @@ protected:
     void cfgreadout();
     void clock();
     void startsrc();
+    void gbltrigsrc_1();
+    void gbltrigsrc_2();
+private:
+    static std::string vecToList(const std::vector<std::string>& strings);
 };
 
 CPPUNIT_TEST_SUITE_REGISTRATION(cfgtest);
+
+/////////////////////////////////////// UTILITIES ///////////////////////////
+
+// Convert a vector of strings into a space separated list:
+
+std::string
+cfgtest::vecToList(const std::vector<std::string>& strings) {
+    std::string result;
+    
+    for (auto s : strings) {
+        result += s;
+        result += " ";                // Trailing space is harmless
+    }
+    
+    return result;
+}
+
+//////////////////////////////////////// TESTS //////////////////////////////
 
 // Default config should, at least, be legal:
 void cfgtest::default_1()
@@ -162,4 +187,63 @@ void cfgtest::startsrc()
         m_pConfig->configureModule(*m_pModule);
         EQ(srcs[i], m_pModule->getStartSource());
     }
+}
+// Test for global trigger source - individual sources:
+
+void cfgtest::gbltrigsrc_1() {
+    std::vector<std::string> sources = {
+        "TrgIn", "P0", "SwTrg", "LVDS", "ITLA", "ITLB",
+         "ITLA_AND_ITLB", "ITLA_OR_ITLB", "EncodedClkIn", "GPIO", "TestPulse",
+    };
+    std::vector<VX2750Pha::GlobalTriggerSource> enumsrcs = {
+        VX2750Pha::GlobalTrigger_TriggerIn, VX2750Pha::GlobalTrigger_P0,
+        VX2750Pha::GlobalTrigger_Software, VX2750Pha::GlobalTrigger_LVDS,
+        VX2750Pha::GlobalTrigger_InternalA,
+        VX2750Pha::GlobalTrigger_InternalB, VX2750Pha::GlobalTrigger_InternalAandB,
+        VX2750Pha::GlobalTrigger_InternalAorB, VX2750Pha::GlobalTrigger_EncodedClockIn,
+        VX2750Pha::GlobalTrigger_GPIO,
+        VX2750Pha::GlobalTrigger_TestPulse
+    };
+    auto prior = m_pModule->getGlobalTriggerSource();  // Vector of sources:
+    
+    for (int i =0; i < sources.size(); i++) {
+        std::vector<std::string> src = {sources[i]};
+        m_pConfig->configure("gbltriggersrc", vecToList(src));
+        m_pConfig->configureModule(*m_pModule);
+        auto actual = m_pModule->getGlobalTriggerSource();
+        EQ(size_t(1), actual.size());
+        EQ(enumsrcs[i], actual[0]);
+    }
+    m_pModule->setGlobalTriggerSource(prior);
+}
+// test combinations of trigger sources:
+
+void cfgtest::gbltrigsrc_2() {
+    std::vector<std::vector<std::string>> sources = {
+        {"TrgIn", "P0"}, {"SwTrg", "LVDS", "ITLA", "ITLB"},
+         {"ITLA_AND_ITLB", "ITLA_OR_ITLB", "EncodedClkIn", "GPIO", "TestPulse"}
+    };
+    std::vector<std::vector<VX2750Pha::GlobalTriggerSource>> enumsrcs = {
+        {VX2750Pha::GlobalTrigger_TriggerIn, VX2750Pha::GlobalTrigger_P0},
+        {VX2750Pha::GlobalTrigger_Software, VX2750Pha::GlobalTrigger_LVDS,
+        VX2750Pha::GlobalTrigger_InternalA,
+        VX2750Pha::GlobalTrigger_InternalB}, {VX2750Pha::GlobalTrigger_InternalAandB,
+        VX2750Pha::GlobalTrigger_InternalAorB, VX2750Pha::GlobalTrigger_EncodedClockIn,
+        VX2750Pha::GlobalTrigger_GPIO,
+        VX2750Pha::GlobalTrigger_TestPulse}
+    };
+    auto prior = m_pModule->getGlobalTriggerSource();
+    
+    for (int  i=0; i < sources.size(); i++) {
+        m_pConfig->configure("gbltriggersrc", vecToList(sources[i]));
+        m_pConfig->configureModule(*m_pModule);
+        
+        auto actual = m_pModule->getGlobalTriggerSource();
+        EQ(enumsrcs[i].size(), actual.size());
+        std::set<VX2750Pha::GlobalTriggerSource> actualSet(actual.begin(), actual.end());
+        for (auto src : enumsrcs[i]) {
+            EQ(size_t(1), actualSet.count(src));
+        }
+    }
+    m_pModule->setGlobalTriggerSource(prior);
 }
