@@ -114,8 +114,8 @@ static const std::map<VX2750Pha::GlobalTriggerSource, std::string> globalTrigger
 };
 
 const std::map<std::string, VX2750Pha::WaveTriggerSource> VX2750Pha::stringToWaveTrigger= {
-     {"ITLB", VX2750Pha::WaveTrigger_InternalA},
-     {"ITLA", VX2750Pha::WaveTrigger_InternalB},
+     {"ITLA", VX2750Pha::WaveTrigger_InternalA},
+     {"ITLB", VX2750Pha::WaveTrigger_InternalB},
      {"GlobalTriggerSource", VX2750Pha::WaveTrigger_GlobalTriggerSource},
      {"TRGIN", VX2750Pha::WaveTrigger_TRGIN},
      {"ExternalInhibit", VX2750Pha::ExternalInhibit},
@@ -127,8 +127,8 @@ const std::map<std::string, VX2750Pha::WaveTriggerSource> VX2750Pha::stringToWav
      {"Disabled", VX2750Pha::WaveTrigger_Disabled}
 };
 static const std::map<VX2750Pha::WaveTriggerSource, std::string> waveTriggerToString= {
-     {VX2750Pha::WaveTrigger_InternalA, "ITLB"},
-     {VX2750Pha::WaveTrigger_InternalB, "ITLA"},
+     {VX2750Pha::WaveTrigger_InternalA, "ITLA"},
+     {VX2750Pha::WaveTrigger_InternalB, "ITLB"},
      {VX2750Pha::WaveTrigger_GlobalTriggerSource, "GlobalTriggerSource"},
      {VX2750Pha::WaveTrigger_TRGIN, "TRGIN"},
      {VX2750Pha::ExternalInhibit, "ExternalInhibit"},

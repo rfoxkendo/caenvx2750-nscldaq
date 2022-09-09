@@ -43,6 +43,8 @@ class cfgtest : public CppUnit::TestFixture {
     CPPUNIT_TEST(startsrc);
     CPPUNIT_TEST(gbltrigsrc_1);
     CPPUNIT_TEST(gbltrigsrc_2);
+    CPPUNIT_TEST(wavetrigger_1);
+    CPPUNIT_TEST(wavetrigger_2);
     CPPUNIT_TEST_SUITE_END();
     
 private:
@@ -64,8 +66,11 @@ protected:
     void startsrc();
     void gbltrigsrc_1();
     void gbltrigsrc_2();
+    void wavetrigger_1();
+    void wavetrigger_2();
 private:
     static std::string vecToList(const std::vector<std::string>& strings);
+    static std::string vecToListOfIdenticalLists(const std::vector<std::string>& strings, size_t numReps = 64);
 };
 
 CPPUNIT_TEST_SUITE_REGISTRATION(cfgtest);
@@ -84,6 +89,22 @@ cfgtest::vecToList(const std::vector<std::string>& strings) {
     }
     
     return result;
+}
+// Make a list of identical lists from a vector of values:
+
+std::string
+cfgtest::vecToListOfIdenticalLists(
+    const std::vector<std::string>&strings, size_t numReps
+) {
+    std::string result;
+    
+    std::string listEntry = "{";
+    listEntry += vecToList(strings);   // List entry is an encoded sublist
+    listEntry += "}";
+    
+    std::vector<std::string> finalVec(numReps, listEntry);
+    
+    return vecToList(finalVec);
 }
 
 //////////////////////////////////////// TESTS //////////////////////////////
@@ -247,3 +268,91 @@ void cfgtest::gbltrigsrc_2() {
     }
     m_pModule->setGlobalTriggerSource(prior);
 }
+
+// single wave trigger source 
+void cfgtest::wavetrigger_1() {
+    std::vector<std::vector<std::string>> sources = {
+        {"ITLB"}, {"ITLA"}, {"GlobalTriggerSource"}, {"TRGIN"}, {"ExternalInhibit"},
+          {"ADCUnderSaturation"}, {"ADCOverSaturation"}, {"SWTrg"}, {"ChSelfTrigger"},
+          {"Ch64Trigger"}, {"Disabled"}
+    };
+    std::vector<std::vector<VX2750Pha::WaveTriggerSource>> enumsrcs = {
+         {VX2750Pha::WaveTrigger_InternalB},  {VX2750Pha::WaveTrigger_InternalA},
+        {VX2750Pha::WaveTrigger_GlobalTriggerSource},
+        {VX2750Pha::WaveTrigger_TRGIN}, {VX2750Pha::ExternalInhibit},
+        {VX2750Pha::ADCUnderSaturation}, {VX2750Pha::ADCOverSaturation},
+        {VX2750Pha::WaveTrigger_Software}, {VX2750Pha::WaveTrigger_ChannelSelfTrigger},
+        {VX2750Pha::WaveTrigger_AnyChannelSelfTrigger}, {VX2750Pha::WaveTrigger_Disabled}
+    };
+    EQ(sources.size(), enumsrcs.size());               // Test the test data :-)
+    
+    
+    
+    std::vector<std::vector<VX2750Pha::WaveTriggerSource>> prior;
+    for (int i =0; i < 64; i++) {
+        prior.push_back(m_pModule->getWaveTriggerSource(i));
+    }
+    
+    for (int i =0; i < sources.size(); i++) {
+        std::string cfgValue = vecToListOfIdenticalLists(sources[i]);
+        CPPUNIT_ASSERT_NO_THROW(m_pConfig->configure("wavetriggersrc", cfgValue));
+        m_pConfig->configureModule(*m_pModule);
+        
+        for (int c =0; c < 64; c++) {
+            auto actualTriggers = m_pModule->getWaveTriggerSource(c);
+            EQ(size_t(1), actualTriggers.size());
+            EQ(enumsrcs[i][0], actualTriggers[0]);
+        }
+    }
+    
+    for (int i =0; i < 64; i++) {
+        
+        m_pModule->setWaveTriggerSource(i, prior[i]);
+    }
+}
+// multi wave trigger source
+
+void cfgtest::wavetrigger_2() {
+    std::vector<std::vector<std::string>> sources = {
+        {"ITLB", "ITLA"}, {"GlobalTriggerSource", "TRGIN", "ExternalInhibit"},
+          {"ADCUnderSaturation", "ADCOverSaturation", "SWTrg", "ChSelfTrigger",
+          "Ch64Trigger"}
+    };
+    std::vector<std::vector<VX2750Pha::WaveTriggerSource>> enumsrcs = {
+        {VX2750Pha::WaveTrigger_InternalA, VX2750Pha::WaveTrigger_InternalB},
+        {VX2750Pha::WaveTrigger_GlobalTriggerSource,
+        VX2750Pha::WaveTrigger_TRGIN, VX2750Pha::ExternalInhibit},
+        {VX2750Pha::ADCUnderSaturation, VX2750Pha::ADCOverSaturation,
+        VX2750Pha::WaveTrigger_Software, VX2750Pha::WaveTrigger_ChannelSelfTrigger,
+        VX2750Pha::WaveTrigger_AnyChannelSelfTrigger}
+    };
+    EQ(sources.size(), enumsrcs.size());               // Test the test data :-)
+    
+    std::vector<std::vector<VX2750Pha::WaveTriggerSource>> prior;
+    for (int i =0; i < 64; i++) {
+        prior.push_back(m_pModule->getWaveTriggerSource(i));
+    }
+    
+    for (int i =0; i < sources.size(); i++) {
+        auto cfgValue = vecToListOfIdenticalLists(sources[i]);
+        m_pConfig->configure("wavetriggersrc", cfgValue);
+        m_pConfig->configureModule(*m_pModule);
+        
+        for (int c =0; c <64; c++) {
+            auto actual = m_pModule->getWaveTriggerSource(i);
+            EQ(enumsrcs[i].size(), actual.size());
+            
+            // All of the sources in enumsrcs[i] must be in actual
+            
+            std::set<VX2750Pha::WaveTriggerSource> sactual(actual.begin(), actual.end());
+            for (auto src : enumsrcs[i]) {
+                EQ(size_t(1), sactual.count(src));
+            }
+        }
+    }
+    
+    for (int i =0; i < 64; i++) {
+        m_pModule->setWaveTriggerSource(i, prior[i]);
+    }
+}
+
