@@ -45,7 +45,7 @@ class cfgtest : public CppUnit::TestFixture {
     CPPUNIT_TEST(gbltrigsrc_2);
     CPPUNIT_TEST(wavetrigger_1);
     CPPUNIT_TEST(wavetrigger_2);
-    CPPUNIT_TEST(evtrigger_1);
+    CPPUNIT_TEST(evttrigger_1);
     CPPUNIT_TEST(evttrigger_2);
     CPPUNIT_TEST_SUITE_END();
     
@@ -376,7 +376,7 @@ void cfgtest::evttrigger_1() {
         {VX2750Pha::EventTrigger_AnyChannelSelfTrigger}, {VX2750Pha::EventTrigger_Disabled}
     };
     
-    std::vector<std::vector<VX2750Pha::eventTriggerSource>> prior;
+    std::vector<std::vector<VX2750Pha::EventTriggerSource>> prior;
     for (int i =0; i < 64; i++) {
         prior.push_back(m_pModule->getEventTriggerSource(i));
     }
@@ -405,7 +405,7 @@ void cfgtest::evttrigger_2() {
     std::vector<std::vector<std::string>> sources = {
         {"ITLA", "ITLB"}, {"GlobalTriggerSource", "TRGIN", "SWTrg"},
         {"ChSelfTrigger",
-        "Ch64Trigger", "Disabled"}
+        "Ch64Trigger"}
     };
     
     std::vector<std::vector<VX2750Pha::EventTriggerSource>> enumsrcs = {
@@ -413,10 +413,10 @@ void cfgtest::evttrigger_2() {
         {VX2750Pha::EventTrigger_GlobalTriggerSource, VX2750Pha::EventTrigger_TRGIN,
         VX2750Pha::EventTrigger_Software},
         {VX2750Pha::EventTrigger_ChannelSelfTrigger,
-        VX2750Pha::EventTrigger_AnyChannelSelfTrigger, VX2750Pha::EventTrigger_Disabled}
+        VX2750Pha::EventTrigger_AnyChannelSelfTrigger}
     };
     
-    std::vector<std::vector<VX2750Pha::eventTriggerSource>> prior;
+    std::vector<std::vector<VX2750Pha::EventTriggerSource>> prior;
     for (int i =0; i < 64; i++) {
         prior.push_back(m_pModule->getEventTriggerSource(i));
     }
