@@ -45,6 +45,8 @@ class cfgtest : public CppUnit::TestFixture {
     CPPUNIT_TEST(gbltrigsrc_2);
     CPPUNIT_TEST(wavetrigger_1);
     CPPUNIT_TEST(wavetrigger_2);
+    CPPUNIT_TEST(evtrigger_1);
+    CPPUNIT_TEST(evttrigger_2);
     CPPUNIT_TEST_SUITE_END();
     
 private:
@@ -68,6 +70,8 @@ protected:
     void gbltrigsrc_2();
     void wavetrigger_1();
     void wavetrigger_2();
+    void evttrigger_1();
+    void evttrigger_2();
 private:
     static std::string vecToList(const std::vector<std::string>& strings);
     static std::string vecToListOfIdenticalLists(const std::vector<std::string>& strings, size_t numReps = 64);
@@ -356,3 +360,86 @@ void cfgtest::wavetrigger_2() {
     }
 }
 
+
+// single event trigger.
+void cfgtest::evttrigger_1() {
+    std::vector<std::vector<std::string>> sources = {
+        {"ITLA"}, {"ITLB"}, {"GlobalTriggerSource"}, {"TRGIN"}, {"SWTrg"},
+        {"ChSelfTrigger"},
+        {"Ch64Trigger"}, {"Disabled"}
+    };
+    
+    std::vector<std::vector<VX2750Pha::EventTriggerSource>> enumsrcs = {
+        {VX2750Pha::EventTrigger_InternalA}, {VX2750Pha::EventTrigger_InternalB},
+        {VX2750Pha::EventTrigger_GlobalTriggerSource}, {VX2750Pha::EventTrigger_TRGIN},
+        {VX2750Pha::EventTrigger_Software}, {VX2750Pha::EventTrigger_ChannelSelfTrigger},
+        {VX2750Pha::EventTrigger_AnyChannelSelfTrigger}, {VX2750Pha::EventTrigger_Disabled}
+    };
+    
+    std::vector<std::vector<VX2750Pha::eventTriggerSource>> prior;
+    for (int i =0; i < 64; i++) {
+        prior.push_back(m_pModule->getEventTriggerSource(i));
+    }
+    EQ(sources.size(), enumsrcs.size());
+    
+    for (int i =0; i < sources.size(); i++) {
+        auto cfgValue = vecToListOfIdenticalLists(sources[i]);
+        m_pConfig->configure("eventtriggersrc", cfgValue);
+        m_pConfig->configureModule(*m_pModule);
+        
+        for (int c = 0; c < 64; c++) {
+            auto actual = m_pModule->getEventTriggerSource(c);
+            EQ(enumsrcs[i].size(), actual.size());
+            EQ(enumsrcs[i][0], actual[0]);
+        }
+    }
+    
+    
+    for (int i =0; i < 64; i++) {
+        m_pModule->setEventTriggerSource(i, prior[i]);
+    }
+}
+// multi source event trigger:
+
+void cfgtest::evttrigger_2() {
+    std::vector<std::vector<std::string>> sources = {
+        {"ITLA", "ITLB"}, {"GlobalTriggerSource", "TRGIN", "SWTrg"},
+        {"ChSelfTrigger",
+        "Ch64Trigger", "Disabled"}
+    };
+    
+    std::vector<std::vector<VX2750Pha::EventTriggerSource>> enumsrcs = {
+        {VX2750Pha::EventTrigger_InternalA, VX2750Pha::EventTrigger_InternalB},
+        {VX2750Pha::EventTrigger_GlobalTriggerSource, VX2750Pha::EventTrigger_TRGIN,
+        VX2750Pha::EventTrigger_Software},
+        {VX2750Pha::EventTrigger_ChannelSelfTrigger,
+        VX2750Pha::EventTrigger_AnyChannelSelfTrigger, VX2750Pha::EventTrigger_Disabled}
+    };
+    
+    std::vector<std::vector<VX2750Pha::eventTriggerSource>> prior;
+    for (int i =0; i < 64; i++) {
+        prior.push_back(m_pModule->getEventTriggerSource(i));
+    }
+    EQ(sources.size(), enumsrcs.size());
+    
+    for (int i =0; i < sources.size(); i++) {
+        auto cfgValue = vecToListOfIdenticalLists(sources[i]);
+        m_pConfig->configure("eventtriggersrc", cfgValue);
+        m_pConfig->configureModule(*m_pModule);
+        
+        for (int c = 0; c < 64; c++) {
+            auto actual = m_pModule->getEventTriggerSource(c);
+            EQ(enumsrcs[i].size(), actual.size());
+            
+            std::set<VX2750Pha::EventTriggerSource> sactual(actual.begin(), actual.end());
+            for (auto src : enumsrcs[i]) {
+                EQ(size_t(1), sactual.count(src));
+            }
+        }
+    }
+    
+    
+    for (int i =0; i < 64; i++) {
+        m_pModule->setEventTriggerSource(i, prior[i]);
+    }
+}

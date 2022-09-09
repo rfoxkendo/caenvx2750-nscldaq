@@ -71,7 +71,7 @@ public:
     } WaveTriggerSource;
     
     typedef enum _EventTriggerSource {
-        EventTrigger_InternalB, EventTrigger_InternalA,
+        EventTrigger_InternalA, EventTrigger_InternalB,
         EventTrigger_GlobalTriggerSource, EventTrigger_TRGIN,
         EventTrigger_Software, EventTrigger_ChannelSelfTrigger,
         EventTrigger_AnyChannelSelfTrigger, EventTrigger_Disabled
