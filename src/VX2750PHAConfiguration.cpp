@@ -260,11 +260,6 @@ VX2750PHAModuleConfiguration::defineAcqTriggerOptions()
      addListOfEnumLists("wavetriggersrc", waveTriggerSources, "TRGIN", 0,64,64);
      addListOfEnumLists("eventtriggersrc", eventTriggerSources, "TRGIN", 0,64,64);
      
-     const char* resetsrcs[] = {
-	 "Start", "SIN", "GPIO", "EncodedClkIn",
-         nullptr
-     };
-     addEnumParameter("tstampresetsrc", resetsrcs, "Start");
      addIntListParameter("channeltriggermasks", 0, 64, 0, 64);
 
      const char* traceRecordModes[] = {
@@ -381,7 +376,7 @@ VX2750PHAModuleConfiguration::configureAcquisitionTriggerOptions(VX2750Pha& modu
       if (chanVetoWidths.size() > i)
         module.setChannelVetoWidth(i, chanVetoWidths[i]);
   }
-  // module.setTimestampResetSource(VX2750Pha::stringToTimestampReset.find(cget("tstampresetsrc"))->second);
+  
   module.setTRGOUTMode(VX2750Pha::stringToTRGOUT.find(cget("triggeroutmode"))->second);
   module.setGPIOMode(VX2750Pha::stringToGPIO.find(cget("gpiomode"))->second);
   module.setBusyInputSource(VX2750Pha::stringToBusyIn.find(cget("busyinsrc"))->second);
