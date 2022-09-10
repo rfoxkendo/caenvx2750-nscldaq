@@ -77,10 +77,7 @@ public:
         EventTrigger_AnyChannelSelfTrigger, EventTrigger_Disabled
     } EventTriggerSource;
     
-    typedef enum _TimestampResetSource {
-        TimestampReset_Start, Timestamp_SIN, TimestampReset_GPIO,
-        TimestampReset_EncodedClockIn
-    } TimestampResetSource;
+    
     
     typedef enum _TraceRecordMode {
         Always, OnRequest
@@ -350,7 +347,6 @@ public:
     static const  std::map<std::string, VX2750Pha::GlobalTriggerSource> stringToGlobalTriggerSource;
     static const  std::map<std::string, VX2750Pha::WaveTriggerSource> stringToWaveTrigger;
     static const  std::map<std::string, VX2750Pha::EventTriggerSource> stringToEventTrigger;
-    static const  std::map<std::string, VX2750Pha::TimestampResetSource> stringToTimestampReset;
     static const  std::map<std::string, VX2750Pha::TRGOUTMode> stringToTRGOUT;
     static const  std::map<std::string, VX2750Pha::GPIOMode>  stringToGPIO;
     static const  std::map<std::string, VX2750Pha::BusyInSource> stringToBusyIn;

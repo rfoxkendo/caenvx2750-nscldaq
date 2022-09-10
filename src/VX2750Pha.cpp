@@ -161,18 +161,7 @@ static const std::map<VX2750Pha::EventTriggerSource, std::string> eventTriggerTo
     {VX2750Pha::EventTrigger_Disabled, "Disabled"}    
 };
 
-const std::map<std::string, VX2750Pha::TimestampResetSource> VX2750Pha::stringToTimestampReset = {
-    {"Start", VX2750Pha::TimestampReset_Start},
-    {"SIN", VX2750Pha::Timestamp_SIN},
-    {"GPIO", VX2750Pha::TimestampReset_GPIO},
-    {"EncodedClkIn", VX2750Pha::TimestampReset_EncodedClockIn}
-};
-static const std::map<VX2750Pha::TimestampResetSource, std::string> timestampResetToString = {
-    {VX2750Pha::TimestampReset_Start, "Start"},
-    {VX2750Pha::Timestamp_SIN, "SIN"},
-    {VX2750Pha::TimestampReset_GPIO, "GPIO"},
-    {VX2750Pha::TimestampReset_EncodedClockIn, "EncodedClkIn"}
-};
+
 
 static const std::map<std::string, VX2750Pha::TraceRecordMode> stringToTraceRecord = {
     {"Always", VX2750Pha::Always},
