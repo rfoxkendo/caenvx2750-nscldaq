@@ -317,13 +317,7 @@ VX2750PHAModuleConfiguration::defineAcqTriggerOptions()
      
      addIntegerParameter("rundelay", 0, 54280, 0);
      addBooleanParameter("autodisarm", true);
-     addBooleanParameter("multiwindow", false);
-     
-     const char* pausetsvalues[] = {
-        "hold", "run", nullptr
-     };
-     addEnumParameter("pausetimestamp", pausetsvalues, "run");
-     
+  
      addFloatParameter("volclkoutdelay", -18888.888, 18888.888, 0);
      addFloatParameter("permclkoutdelay", -18888.888, 18888.888, 0);
     
@@ -386,14 +380,7 @@ VX2750PHAModuleConfiguration::configureAcquisitionTriggerOptions(VX2750Pha& modu
   module.setBoardVetoPolarity(VX2750Pha::stringToVetoPolarity.find(cget("boardvetopolarity"))->second);
   module.setRunDelay(getIntegerParameter("rundelay"));
   module.setAutoDisarmEnabled(getBoolParameter("autodisarm"));
-  // module.setMultiWindowRunEnable(getBoolParameter("multiwindow"));
-  bool hold;
-  if (cget("pausetimestamp") == "hold") {
-    hold = true;
-  } else {
-    hold = false;
-  }
-  // module.setPauseTimestampHold(hold);
+  
   module.setVolatileClockDelay(getFloatParameter("volclkoutdelay"));
   module.setPermanentClockDelay(getFloatParameter("permclkoutdelay"));
                                                  
