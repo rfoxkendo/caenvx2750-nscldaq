@@ -38,6 +38,7 @@ using namespace caen_nscldaq;
 
 class cfgtest : public CppUnit::TestFixture {
     CPPUNIT_TEST_SUITE(cfgtest);
+    CPPUNIT_TEST(volclkdelay);
     CPPUNIT_TEST(default_1);
     CPPUNIT_TEST(cfgreadout);
     CPPUNIT_TEST(clock);
@@ -50,8 +51,7 @@ class cfgtest : public CppUnit::TestFixture {
     CPPUNIT_TEST(evttrigger_2);
     CPPUNIT_TEST(chtrigmasks);
     CPPUNIT_TEST(savetraces);
-    CPPUNIT_TEST(trgoutmodes);
-    
+    CPPUNIT_TEST(trgoutmodes);    
     CPPUNIT_TEST(gpiomode);
     CPPUNIT_TEST(busyinsrc);
     CPPUNIT_TEST(syncoutmode);
@@ -63,6 +63,13 @@ class cfgtest : public CppUnit::TestFixture {
     CPPUNIT_TEST(autodisarm);
     CPPUNIT_TEST(volclkdelay);
     CPPUNIT_TEST(permckldelay);
+    
+    CPPUNIT_TEST(wavesource);
+    CPPUNIT_TEST(recordsamples);
+    CPPUNIT_TEST(waveres);
+    CPPUNIT_TEST(analogprobes);
+    CPPUNIT_TEST(digitalprobes);
+    CPPUNIT_TEST(pretrigger);
     CPPUNIT_TEST_SUITE_END();
     
 private:
@@ -91,7 +98,6 @@ protected:
     void chtrigmasks();
     void savetraces();
     void trgoutmodes();
-    
     void gpiomode();
     void busyinsrc();
     void syncoutmode();
@@ -103,6 +109,13 @@ protected:
     void autodisarm();
     void volclkdelay();
     void permckldelay();
+    
+    void wavesource();
+    void recordsamples();
+    void waveres();
+    void analogprobes();
+    void digitalprobes();
+    void pretrigger();
 private:
     static std::string vecToList(const std::vector<std::string>& strings);
     static std::string vecToListOfIdenticalLists(const std::vector<std::string>& strings, size_t numReps = 64);
@@ -731,11 +744,11 @@ void cfgtest::rundelay() {
     
     auto old = m_pModule->getRunDelay();
     
-    m_pConfig->configure("rundelay", itemToList("0"));
+    m_pConfig->configure("rundelay", "0");
     m_pConfig->configureModule(*m_pModule);
     EQ(std::uint32_t(0), m_pModule->getRunDelay());
     
-    m_pConfig->configure("rundelay", itemToList(strhigh));
+    m_pConfig->configure("rundelay", strhigh);
     m_pConfig->configureModule(*m_pModule);
     EQ(std::uint32_t(high), m_pModule->getRunDelay());    
     
@@ -756,11 +769,11 @@ void cfgtest::autodisarm() {
 }
 
 void cfgtest::volclkdelay() {
-    std::string strlow  = "-18888.888";
-    std::string strhigh = "18888.888";
+    std::string strlow  = "0.0";
+    std::string strhigh = "18888.0";
     
-    double low  = -18888.888;
-    double high =  18888.888;
+    double low  = 0.0;
+    double high =  18888.0;
     
     
     double old = m_pModule->getVolatileClockDelay();
@@ -779,11 +792,11 @@ void cfgtest::volclkdelay() {
     
 }
 void cfgtest::permckldelay() {
-    std::string strlow  = "-18888.888";
-    std::string strhigh = "18888.888";
+    std::string strlow  = "0.0";
+    std::string strhigh = "18888.0";
     
-    double low  = -18888.888;
-    double high =  18888.888;
+    double low  = 0.0;
+    double high =  18888.0;
     
     
     double old = m_pModule->getPermanentClockDelay();
@@ -801,3 +814,66 @@ void cfgtest::permckldelay() {
     m_pModule->setPermanentClockDelay(old);
     
 }
+
+void cfgtest::wavesource()  {
+    std::vector<std::string> sources = {
+      "ADC_DATA", "ADC_TEST_TOGGLE", "ADC_TEST_RAMP", "ADC_TEST_SIN", "IPE",
+      "Ramp", "SquareWave", "ADC_TEST_PRBS"
+    };
+    std::vector<VX2750Pha::WaveDataSource> enumsrcs = {
+        VX2750Pha::ADC_DATA, VX2750Pha::ADC_TEST_TOGGLE, VX2750Pha::ADC_TEST_RAMP,
+        VX2750Pha::ADC_SIN, VX2750Pha::WaveSource_IPE,
+        VX2750Pha::WaveSource_Ramp, VX2750Pha::SquareWave,
+        VX2750Pha::ADC_TEST_PRBS
+    };
+    
+    std::vector<VX2750Pha::WaveDataSource> old;
+    for (int c = 0; c < 64; c++) {
+        old.push_back(m_pModule->getWaveDataSource(c));
+    }
+    for (int m = 0; m < sources.size(); m++) {
+        m_pConfig->configure("wavesource", itemToList(sources[m]));
+        m_pConfig->configureModule(*m_pModule);
+        
+        for (int c =0; c < 64; c++) {
+            EQ(enumsrcs[m], m_pModule->getWaveDataSource(c));
+        }
+    }
+    
+    for (int c = 0; c < 64; c++) {
+        m_pModule->setWaveDataSource(c, old[c]);
+    }
+}
+void cfgtest::recordsamples() {
+    std::uint32_t low = 4;
+    std::string strlow = std::to_string(low);
+    
+    std::uint32_t high = 8100;
+    std::string strhigh = std::to_string(high);
+    
+    std::vector<std::uint32_t> old;
+    for (int c =0; c < 64; c++) {
+        old.push_back(m_pModule->getRecordSamples(c));
+    }
+    
+    m_pConfig->configure("recordsamples", itemToList(strlow));
+    m_pConfig->configureModule(*m_pModule);
+    for (int c =0; c < 64; c++) {
+        EQ(low, m_pModule->getRecordSamples(c));
+    }
+    
+    m_pConfig->configure("recordsamples", itemToList(strhigh));
+    m_pConfig->configureModule(*m_pModule);
+    for (int c =0; c < 64; c++) {
+        EQ(high, m_pModule->getRecordSamples(c));
+    }
+    
+    for (int c =0; c < 64; c++) {
+        m_pModule->setRecordSamples(c, old[c]);
+    }
+    
+}
+void cfgtest::waveres()  {}
+void cfgtest::analogprobes()  {}
+void cfgtest::digitalprobes()  {}
+void cfgtest::pretrigger()  {}
