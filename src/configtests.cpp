@@ -24,7 +24,7 @@
 #define private public
 #include "VX2750Pha.h"     // Base module. -- white box it.
 #undef private
-#include "VX2750PHAConfiguration.h"  // Configuration module Tcl style.
+#include "VX2750PhaConfiguration.h"  // Configuration module Tcl style.
 #include <cstdint>
 #include <vector>
 #include <string>
@@ -39,6 +39,7 @@ using namespace caen_nscldaq;
 class cfgtest : public CppUnit::TestFixture {
     CPPUNIT_TEST_SUITE(cfgtest);
     CPPUNIT_TEST(volclkdelay);
+    CPPUNIT_TEST(permckldelay);
     CPPUNIT_TEST(default_1);
     CPPUNIT_TEST(cfgreadout);
     CPPUNIT_TEST(clock);
@@ -61,8 +62,7 @@ class cfgtest : public CppUnit::TestFixture {
     CPPUNIT_TEST(chanvetowidth);
     CPPUNIT_TEST(rundelay);
     CPPUNIT_TEST(autodisarm);
-    CPPUNIT_TEST(volclkdelay);
-    CPPUNIT_TEST(permckldelay);
+    
     
     CPPUNIT_TEST(wavesource);
     CPPUNIT_TEST(recordsamples);
@@ -769,11 +769,11 @@ void cfgtest::autodisarm() {
 }
 
 void cfgtest::volclkdelay() {
-    std::string strlow  = "0.0";
-    std::string strhigh = "18888.0";
+    std::string strlow  = "0";
+    std::string strhigh = "18888.1";
     
-    double low  = 0.0;
-    double high =  18888.0;
+    double low  =  0;
+    double high =  18888.1;
     
     
     double old = m_pModule->getVolatileClockDelay();
@@ -792,11 +792,11 @@ void cfgtest::volclkdelay() {
     
 }
 void cfgtest::permckldelay() {
-    std::string strlow  = "0.0";
-    std::string strhigh = "18888.0";
+    std::string strlow  = "0";
+    std::string strhigh = "18888.1";
     
-    double low  = 0.0;
-    double high =  18888.0;
+    double low  = 0 ;
+    double high =  18888.1;
     
     
     double old = m_pModule->getPermanentClockDelay();
@@ -873,7 +873,141 @@ void cfgtest::recordsamples() {
     }
     
 }
-void cfgtest::waveres()  {}
-void cfgtest::analogprobes()  {}
-void cfgtest::digitalprobes()  {}
-void cfgtest::pretrigger()  {}
+void cfgtest::waveres()  {
+    std::vector<std::string> choices = {
+        "Res8", "Res16", "Res32", "Res64"
+    };
+    std::vector<VX2750Pha::WaveResolution> enumchoices = {
+        VX2750Pha::Res8, VX2750Pha::Res16, VX2750Pha::Res32, VX2750Pha::Res64
+    };
+    
+    std::vector<VX2750Pha::WaveResolution> old;
+    for (int i =0; i < 64; i++) {
+        old.push_back(m_pModule->getWaveResolution(i));
+    }
+    EQ(choices.size(), enumchoices.size());
+    for (int i =0;i < choices.size(); i++) {
+        m_pConfig->configure("waveresolutions", itemToList(choices[i]));
+        m_pConfig->configureModule(*m_pModule);
+        
+        for (int c = 0; c < 64; c++) {
+            EQ(enumchoices[i], m_pModule->getWaveResolution(c));
+        }        
+    }
+    for (int i =0; i < 64; i++) {
+        m_pModule->setWaveResolution(i, old[i]);
+    }
+    
+}
+void cfgtest::analogprobes()  {
+    std::vector<std::string> probes = {
+        "ADCInput", "TimeFilter", "EnergyFilter", "EnergyFilterBaseline",
+    "EnergyFilterMinusBaseline"
+    };
+    std::vector<VX2750Pha::AnalogProbe> enumprobes = {
+        VX2750Pha::ADCInput, VX2750Pha::TimeFilter, VX2750Pha::EnergyFilter,
+        VX2750Pha::EnergyFilterBaseline,
+        VX2750Pha::EnergyFilterMinusBaseline
+    };
+    
+    std::vector<VX2750Pha::AnalogProbe> p1, p2;
+    for (int i = 0; i < 64; i++) {
+        p1.push_back(m_pModule->getAnalogProbe(i, 0));
+        p2.push_back(m_pModule->getAnalogProbe(i, 1));
+    }
+    
+    EQ(probes.size(), enumprobes.size());
+    for (int p =0;  p < probes.size(); p++) {
+        std::string strprobes = itemToList(probes[p]);
+        m_pConfig->configure("analogprobe1", strprobes);
+        m_pConfig->configure("analogprobe2", strprobes);
+        m_pConfig->configureModule(*m_pModule);
+        
+        for (int c = 0; c < 64; c++) {
+            EQ(enumprobes[p], m_pModule->getAnalogProbe(c, 0));
+            EQ(enumprobes[p], m_pModule->getAnalogProbe(c, 1));
+        }
+        
+    }
+    for (int i = 0; i < 64; i++) {
+        m_pModule->setAnalogProbe(i, 0, p1[i]);
+        m_pModule->setAnalogProbe(i, 1, p2[i]);
+    }
+}
+void cfgtest::digitalprobes()  {
+    std::vector<std::string> probes = {
+        "Trigger", "TimeFilterArmed", "RetriggerGuard", "EnergyFilterBaselineFreeze",
+        "EnergyFilterPeaking", "EnergyFilterPileUpGuard", "EventPileUp", "ADCSaturation",
+        "ADCSaturationProtection", "PostSaturationEvent", "EnergyFilterSaturation",
+        "AcquisitionInhibit"
+    };
+    std::vector<VX2750Pha::DigitalProbe> enumprobes = {
+        VX2750Pha::DProbe_Trigger, VX2750Pha::TimeFilterArmed,
+        VX2750Pha::ReTriggerGuard, VX2750Pha::EneryFilterBaselineFreeze,
+        VX2750Pha::EnergyFilterPeaking, VX2750Pha::EnergyFilterPeakReady,
+        VX2750Pha::EnergyFilterPileupGuard,
+        VX2750Pha::EventPileup, VX2750Pha::ADCSaturation,
+        VX2750Pha::ADCSaturationProtection, VX2750Pha::PostSaturationEvent,
+        VX2750Pha::EnergyFilterSaturation, VX2750Pha::AcquisitionInhibit
+    };
+    
+    std::vector<VX2750Pha::DigitalProbe> p1, p2, p3, p4;
+    for (int c = 0; c < 64; c++) {
+        p1.push_back(m_pModule->getDigitalProbe(c, 0));
+        p2.push_back(m_pModule->getDigitalProbe(c, 1));
+        p3.push_back(m_pModule->getDigitalProbe(c, 2));
+        p4.push_back(m_pModule->getDigitalProbe(c, 3));
+    }
+    
+    EQ(probes.size(), enumprobes.size());
+    for (int p =0; p < probes.size(); p++) {
+        std::string sel = itemToList(probes[p]);
+        m_pConfig->configure("digitalprobe1", sel);
+        m_pConfig->configure("digitalprobe2", sel);
+        m_pConfig->configure("digitalprobe3", sel);
+        m_pConfig->configure("digitalprobe4", sel);
+        m_pConfig->configureModule(*m_pModule);
+        
+        for (int i =0; i < 64; i++) {
+            for (int j = 0; j < 4; j++) {
+                EQ(enumprobes[p], m_pModule->getDigitalProbe(i, j));
+            }
+        }
+        
+    }
+    
+    for (int c = 0; c < 64; c++) {
+        m_pModule->setDigitalProbe(c, 0, p1[c]);
+        m_pModule->setDigitalProbe(c, 1, p2[c]);
+        m_pModule->setDigitalProbe(c, 2, p3[c]);
+        m_pModule->setDigitalProbe(c, 3, p4[c]);
+    }
+}
+void cfgtest::pretrigger()  {
+    std::uint32_t low = 4;
+    std::uint32_t high = 4000;
+    std::string strlow = std::to_string(low);
+    std::string strhigh = std::to_string(high);
+    
+    std::vector<uint32_t> prior;
+    for (int i =0; i < 64; i++) {
+        prior.push_back(m_pModule->getPreTriggerSamples(i));
+    }
+    
+    m_pConfig->configure("pretriggersamples", itemToList(strlow));
+    m_pConfig->configureModule(*m_pModule);
+    for (int c =0; c < 64; c++) {
+        EQ(low, m_pModule->getPreTriggerSamples(c));
+    }
+    
+    m_pConfig->configure("pretriggersamples", itemToList(strhigh));
+    m_pConfig->configureModule(*m_pModule);
+    for (int c =0; c < 64; c++) {
+        EQ(high, m_pModule->getPreTriggerSamples(c));
+    }
+
+    for (int i =0; i < 64; i++) {
+        m_pModule->setPreTriggerSamples(i, prior[i]);
+    }
+    
+}
