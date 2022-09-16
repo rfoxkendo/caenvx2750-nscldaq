@@ -940,7 +940,8 @@ void cfgtest::analogprobes()  {
 void cfgtest::digitalprobes()  {
     std::vector<std::string> probes = {
         "Trigger", "TimeFilterArmed", "RetriggerGuard", "EnergyFilterBaselineFreeze",
-        "EnergyFilterPeaking", "EnerygFilterPeakReay"EnergyFilterPileUpGuard", "EventPileUp", "ADCSaturation",
+        "EnergyFilterPeaking", "EnerygFilterPeakReay",
+        "EnergyFilterPileUpGuard", "EventPileUp", "ADCSaturation",
         "ADCSaturationProtection", "PostSaturationEvent", "EnergyFilterSaturation",
         "AcquisitionInhibit"
     };
@@ -1034,10 +1035,10 @@ void cfgtest::svcparams() {
   
     // These may be different by 4.
     
-    EQ(std::uint64_t(10000), m_pModule->getTestPulsePeriod());
-    EQ(std::uint64_t(500), m_pModule->getTestPulseWidth());
-    EQ(std::uint32_t(100), m_pModule->getTestPulseLowLevel());
-    EQ(std::uint32_t(1000), m_pModule->getTestPulseHighLevel());
+    ASSERT(std::abs(10000  - (int)m_pModule->getTestPulsePeriod()) <= 4);
+    ASSERT(std::abs(500 - (int)m_pModule->getTestPulseWidth()) <= 4);
+    ASSERT(std::abs(100 -  (int)m_pModule->getTestPulseLowLevel()) <= 4);
+    ASSERT(std::abs(1000 - (int)m_pModule->getTestPulseHighLevel()) <= 4);
     
     EQ(VX2750Pha::TTL, m_pModule->getIOLevel());
     EQ(std::uint32_t(0xa5a5), m_pModule->getErrorFlagMask());
