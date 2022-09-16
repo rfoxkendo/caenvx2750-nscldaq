@@ -72,6 +72,12 @@ class cfgtest : public CppUnit::TestFixture {
     CPPUNIT_TEST(pretrigger);
     
     CPPUNIT_TEST(svcparams);
+    CPPUNIT_TEST(triggerlogic_1);
+    CPPUNIT_TEST(triggerlogic_2);
+    CPPUNIT_TEST(triggerlogic_3);
+    CPPUNIT_TEST(triggerlogic_4);
+    
+    
     CPPUNIT_TEST_SUITE_END();
     
 private:
@@ -119,6 +125,11 @@ protected:
     void digitalprobes();
     void pretrigger();
     void svcparams();
+    void triggerlogic_1();
+    void triggerlogic_2();
+    void triggerlogic_3();
+    void triggerlogic_4();
+    
 private:
     static std::string vecToList(const std::vector<std::string>& strings);
     static std::string vecToListOfIdenticalLists(const std::vector<std::string>& strings, size_t numReps = 64);
@@ -939,7 +950,7 @@ void cfgtest::analogprobes()  {
 }
 void cfgtest::digitalprobes()  {
     std::vector<std::string> probes = {
-        "Trigger", "TimeFilterArmed", "RetriggerGuard", "EnergyFilterBaselineFreeze",
+        "Trigger", "TimeFilterArmed", "ReTriggerGuard", "EnergyFilterBaselineFreeze",
         "EnergyFilterPeaking", "EnergyFilterPeakReady",
         "EnergyFilterPileUpGuard", "EventPileUp", "ADCSaturation",
         "ADCSaturationProtection", "PostSaturationEvent", "EnergyFilterSaturation",
@@ -1043,4 +1054,112 @@ void cfgtest::svcparams() {
     EQ(VX2750Pha::TTL, m_pModule->getIOLevel());
     EQ(std::uint32_t(0xa5a5), m_pModule->getErrorFlagMask());
     EQ(std::uint32_t(0x5a5a), m_pModule->getErrorFlagDataMask());
+}
+
+
+void cfgtest::triggerlogic_1()
+{
+    // The trigger logics where AND/OR/majority are allowed values:
+    
+    std::vector<std::string> strselections = {
+        "OR", "AND", "Majority"
+    };
+    std::vector<VX2750Pha::IndividualTriggerLogic> selections = {
+        VX2750Pha::ITL_OR, VX2750Pha::ITL_AND, VX2750Pha::Majority
+    };
+    
+    EQ(strselections.size(), selections.size());
+    for (int i =0; i < strselections.size(); i++) {
+        m_pConfig->configure("itlalogic", strselections[i]);
+        m_pConfig->configure("itlblogic", strselections[i]);
+        m_pConfig->configureModule(*m_pModule);
+        
+        EQ(selections[i], m_pModule->getITLAMainLogic());
+        EQ(selections[i], m_pModule->getITLBMainLogic());
+        
+    }
+    // Check the majority level:
+    
+    m_pConfig->configure("itlamajority", "32");
+    m_pConfig->configure("itlbmajority", "32");
+    m_pConfig->configureModule(*m_pModule);
+    
+    EQ(32U, m_pModule->getITLAMajorityLevel());
+    EQ(32U, m_pModule->getITLBMajorityLevel());
+    
+}
+void cfgtest::triggerlogic_2()
+{
+    // pair logic:
+    
+    std::vector<std::string> strselections = {
+        "AND", "OR", "None"
+    };
+    std::vector<VX2750Pha::PairTriggerLogic> selections = {
+        VX2750Pha::PTL_AND, VX2750Pha::PTL_OR, VX2750Pha::NONE
+    };
+    
+    EQ(strselections.size(), selections.size());
+    
+    for (int i =0; i < strselections.size(); i++) {
+        m_pConfig->configure("itlapairlogic", strselections[i]);
+        m_pConfig->configure("itlbpairlogic", strselections[i]);
+        m_pConfig->configureModule(*m_pModule);
+        
+        EQ(selections[i], m_pModule->getITLAPairLogic());
+        EQ(selections[i], m_pModule->getITLBPairLogic());
+    }
+}
+void cfgtest::triggerlogic_3()
+{
+    std::vector<std::string> strselections = {
+        "Direct", "Inverted"
+    };
+    std::vector<bool>  selections = {         // Correspond to enabling inversion.
+        false, true
+    };
+    
+    EQ(strselections.size(), selections.size());
+    for (int i =0; i < strselections.size(); i++) {
+        m_pConfig->configure("itlapolarity", strselections[i]);
+        m_pConfig->configure("itlbpolarity", strselections[i]);
+        
+        m_pConfig->configureModule(*m_pModule);
+        
+        EQ(bool(selections[i]), m_pModule->isITLAInverted());
+        EQ(bool(selections[i]), m_pModule->isITLBInverted());
+    }
+}
+
+void cfgtest::triggerlogic_4() {
+        std::vector<std::string> strconnections = {
+            "Disabled", "ITLA", "ITLB"
+        };
+        std::vector<VX2750Pha::ITLConnect> connections = {
+            VX2750Pha::ITL_Disabled, VX2750Pha::ITL_ITLA, VX2750Pha::ITL_ITLB   
+        };
+        EQ(strconnections.size(), connections.size());
+        
+        for (int i =0; i < strconnections.size(); i++) {
+            m_pConfig->configure("itlconnect", itemToList(strconnections[i]));
+            m_pConfig->configureModule(*m_pModule);
+            
+            for (int c =0; c < 64; c++) {
+                EQ(connections[i], m_pModule->getITLConnect(c));
+            }
+        }
+        
+        //do the masks and the widths as well
+        
+        m_pConfig->configure("itlamask", "0xa5a5a5a5a5a5a5a5");
+        m_pConfig->configure("itlbmask", "0x5a5a5a5a5a5a5a5a");
+        m_pConfig->configure("itlagatewidth", "200");
+        m_pConfig->configure("itlbgatewidth", "300");
+        
+        m_pConfig->configureModule(*m_pModule);
+        
+        EQ(std::uint64_t(0xa5a5a5a5a5a5a5a5), m_pModule->getITLAMask());
+        EQ(std::uint64_t(0x5a5a5a5a5a5a5a5a), m_pModule->getITLBMask());
+        EQ(std::uint32_t(200), m_pModule->getITLAGateWidth());
+        EQ(std::uint32_t(300), m_pModule->getITLBGateWidth());
 }

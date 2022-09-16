@@ -419,7 +419,7 @@ VX2750PHAModuleConfiguration::defineWfInspectionOptions()
   addEnumListParameter("analogprobe2", analogProbes, "TimeFilter", 0, 64, 64);
   
   const char* digitalProbes[] = {
-    "Trigger", "TimeFilterArmed", "RetriggerGuard", "EnergyFilterBaselineFreeze",
+    "Trigger", "TimeFilterArmed", "ReTriggerGuard", "EnergyFilterBaselineFreeze",
     "EnergyFilterPeaking", "EnergyFilterPeakReady", "EnergyFilterPileUpGuard", "EventPileUp", "ADCSaturation",
     "ADCSaturationProtection", "PostSaturationEvent", "EnergyFilterSaturation",
     "AcquisitionInhibit",
@@ -571,12 +571,12 @@ VX2750PHAModuleConfiguration::defineITLOptions()
 void
 VX2750PHAModuleConfiguration::configureITLOptions(VX2750Pha& module)
 {
-     module.setITLAMainLogic(VX2750Pha::stringToIndividualTriggerLogic.find("itlalogic")->second);
-     module.setITLBMainLogic(VX2750Pha::stringToIndividualTriggerLogic.find("itlblogic")->second);
+     module.setITLAMainLogic(VX2750Pha::stringToIndividualTriggerLogic.find(cget("itlalogic"))->second);
+     module.setITLBMainLogic(VX2750Pha::stringToIndividualTriggerLogic.find(cget("itlblogic"))->second);
      module.setITLAMajorityLevel(getIntegerParameter("itlamajoritylevel"));
      module.setITLBMajorityLevel(getIntegerParameter("itlbmajoritylevel"));
-     module.setITLAPairLogic(VX2750Pha::stringToPairLogic.find("itlapairlogic")->second);
-     module.setITLBPairLogic(VX2750Pha::stringToPairLogic.find("itlbpairlogic")->second);
+     module.setITLAPairLogic(VX2750Pha::stringToPairLogic.find(cget("itlapairlogic"))->second);
+     module.setITLBPairLogic(VX2750Pha::stringToPairLogic.find(cget("itlbpairlogic"))->second);
      module.setITLAInverted(cget("itlapolarity") == "Inverted" ? true : false);
      module.setITLBInverted(cget("itlbpolarity") == "Inverted" ? true : false);
      
@@ -658,7 +658,7 @@ VX2750PHAModuleConfiguration::defineDACOptions()
 void
 VX2750PHAModuleConfiguration::configureDACOptions(VX2750Pha& module)
 {
-  module.setDACOutMode(VX2750Pha::stringToDACOutMode.find("dacoutmode")->second);
+  module.setDACOutMode(VX2750Pha::stringToDACOutMode.find(cget("dacoutmode"))->second);
   module.setDACOutValue(getIntegerParameter("dacoutputlevel"));
   module.setDACChannel(getIntegerParameter("dacoutchannel"));
 }
