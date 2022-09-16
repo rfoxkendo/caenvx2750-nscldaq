@@ -381,8 +381,9 @@ VX2750PHAModuleConfiguration::configureAcquisitionTriggerOptions(VX2750Pha& modu
   module.setRunDelay(getIntegerParameter("rundelay"));
   module.setAutoDisarmEnabled(getBoolParameter("autodisarm"));
   
-  module.setVolatileClockDelay(getFloatParameter("volclkoutdelay"));
   module.setPermanentClockDelay(getFloatParameter("permclkoutdelay"));
+  module.setVolatileClockDelay(getFloatParameter("volclkoutdelay"));
+  
                                                  
   
 }
@@ -419,7 +420,7 @@ VX2750PHAModuleConfiguration::defineWfInspectionOptions()
   
   const char* digitalProbes[] = {
     "Trigger", "TimeFilterArmed", "RetriggerGuard", "EnergyFilterBaselineFreeze",
-    "EnergyFilterPeaking", "EnergyFilterPileUpGuard", "EventPileUp", "ADCSaturation",
+    "EnergyFilterPeaking", "EnergyFilterPeakReady", "EnergyFilterPileUpGuard", "EventPileUp", "ADCSaturation",
     "ADCSaturationProtection", "PostSaturationEvent", "EnergyFilterSaturation",
     "AcquisitionInhibit",
     nullptr
@@ -502,7 +503,7 @@ VX2750PHAModuleConfiguration::defineServiceOptions()
     "NIM", "TTL", nullptr
   };
   addEnumParameter("iolevel", iolevels, "NIM");
-  addIntegerParameter("errorlflagmask", 0, 65535, 0);
+  addIntegerParameter("errorflagmask", 0, 65535, 0);
   addIntegerParameter("errorflagdatamask", 0, 65535, 0);
 }
 /**
@@ -517,6 +518,10 @@ VX2750PHAModuleConfiguration::configureServiceOptions(VX2750Pha& module)
     module.setTestPulseWidth(getIntegerParameter("testpulsewidth"));
     module.setTestPulseLowLevel(getIntegerParameter("testpulselowlevel"));
     module.setTestPulseHighLevel(getIntegerParameter("testpulsehighlevel"));
+    
+    module.setIOLevel(cget("iolevel") == "NIM" ? VX2750Pha::NIM : VX2750Pha::TTL);
+    module.setErrorFlagMask(getIntegerParameter("errorflagmask"));
+    module.setErrorFlagDataMask(getIntegerParameter("errorflagdatamask"));
 }
 /**
  * defineITLOptions
