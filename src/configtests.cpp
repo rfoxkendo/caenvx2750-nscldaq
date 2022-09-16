@@ -940,7 +940,7 @@ void cfgtest::analogprobes()  {
 void cfgtest::digitalprobes()  {
     std::vector<std::string> probes = {
         "Trigger", "TimeFilterArmed", "RetriggerGuard", "EnergyFilterBaselineFreeze",
-        "EnergyFilterPeaking", "EnerygFilterPeakReay",
+        "EnergyFilterPeaking", "EnergyFilterPeakReady",
         "EnergyFilterPileUpGuard", "EventPileUp", "ADCSaturation",
         "ADCSaturationProtection", "PostSaturationEvent", "EnergyFilterSaturation",
         "AcquisitionInhibit"
