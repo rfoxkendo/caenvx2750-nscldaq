@@ -420,7 +420,7 @@ VX2750PHAModuleConfiguration::defineWfInspectionOptions()
   
   const char* digitalProbes[] = {
     "Trigger", "TimeFilterArmed", "ReTriggerGuard", "EnergyFilterBaselineFreeze",
-    "EnergyFilterPeaking", "EnergyFilterPeakReady", "EnergyFilterPileUpGuard", "EventPileUp", "ADCSaturation",
+    "EnergyFilterPeaking", "EnergyFilterPeakReady", "EnergyFilterPileUpGuard", "EventPileup", "ADCSaturation",
     "ADCSaturationProtection", "PostSaturationEvent", "EnergyFilterSaturation",
     "AcquisitionInhibit",
     nullptr
@@ -540,7 +540,7 @@ VX2750PHAModuleConfiguration::defineITLOptions()
   addIntegerParameter("itlbmajoritylevel", 1, 63, 1);
   
   const char* pairlogicoptions[] =  {
-    "AND", "OR", "None", nullptr
+    "AND", "OR", "NONE", nullptr
   };
   addEnumParameter("itlapairlogic", pairlogicoptions, "None");
   addEnumParameter("itlbpairlogic", pairlogicoptions, "None");

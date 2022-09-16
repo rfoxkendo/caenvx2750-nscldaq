@@ -37,7 +37,10 @@ extern bool        isUsb;
 using namespace caen_nscldaq;
 
 class cfgtest : public CppUnit::TestFixture {
+    
+
     CPPUNIT_TEST_SUITE(cfgtest);
+    CPPUNIT_TEST(triggerlogic_4);
     CPPUNIT_TEST(volclkdelay);
     CPPUNIT_TEST(permckldelay);
     CPPUNIT_TEST(default_1);
@@ -75,7 +78,6 @@ class cfgtest : public CppUnit::TestFixture {
     CPPUNIT_TEST(triggerlogic_1);
     CPPUNIT_TEST(triggerlogic_2);
     CPPUNIT_TEST(triggerlogic_3);
-    CPPUNIT_TEST(triggerlogic_4);
     
     
     CPPUNIT_TEST_SUITE_END();
@@ -952,7 +954,7 @@ void cfgtest::digitalprobes()  {
     std::vector<std::string> probes = {
         "Trigger", "TimeFilterArmed", "ReTriggerGuard", "EnergyFilterBaselineFreeze",
         "EnergyFilterPeaking", "EnergyFilterPeakReady",
-        "EnergyFilterPileUpGuard", "EventPileUp", "ADCSaturation",
+        "EnergyFilterPileUpGuard", "EventPileup", "ADCSaturation",
         "ADCSaturationProtection", "PostSaturationEvent", "EnergyFilterSaturation",
         "AcquisitionInhibit"
     };
@@ -1093,7 +1095,7 @@ void cfgtest::triggerlogic_2()
     // pair logic:
     
     std::vector<std::string> strselections = {
-        "AND", "OR", "None"
+        "AND", "OR", "NONE"
     };
     std::vector<VX2750Pha::PairTriggerLogic> selections = {
         VX2750Pha::PTL_AND, VX2750Pha::PTL_OR, VX2750Pha::NONE
