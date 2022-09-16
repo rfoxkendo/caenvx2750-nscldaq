@@ -70,6 +70,8 @@ class cfgtest : public CppUnit::TestFixture {
     CPPUNIT_TEST(analogprobes);
     CPPUNIT_TEST(digitalprobes);
     CPPUNIT_TEST(pretrigger);
+    
+    CPPUNIT_TEST(svcparams);
     CPPUNIT_TEST_SUITE_END();
     
 private:
@@ -116,6 +118,7 @@ protected:
     void analogprobes();
     void digitalprobes();
     void pretrigger();
+    void svcparams();
 private:
     static std::string vecToList(const std::vector<std::string>& strings);
     static std::string vecToListOfIdenticalLists(const std::vector<std::string>& strings, size_t numReps = 64);
@@ -937,7 +940,7 @@ void cfgtest::analogprobes()  {
 void cfgtest::digitalprobes()  {
     std::vector<std::string> probes = {
         "Trigger", "TimeFilterArmed", "RetriggerGuard", "EnergyFilterBaselineFreeze",
-        "EnergyFilterPeaking", "EnergyFilterPileUpGuard", "EventPileUp", "ADCSaturation",
+        "EnergyFilterPeaking", "EnerygFilterPeakReay"EnergyFilterPileUpGuard", "EventPileUp", "ADCSaturation",
         "ADCSaturationProtection", "PostSaturationEvent", "EnergyFilterSaturation",
         "AcquisitionInhibit"
     };
@@ -1010,4 +1013,33 @@ void cfgtest::pretrigger()  {
         m_pModule->setPreTriggerSamples(i, prior[i]);
     }
     
+}
+// all the service parametres... since the configuration of the module
+// takes so long we just do a few representative values and ensure those
+// get configured....we're also not going to bother restoring old parameters.
+void cfgtest::svcparams() {
+    // Test pulser
+    m_pConfig->configure("testpulseperiod", "10000");
+    m_pConfig->configure("testpulsewidth", "500");
+    m_pConfig->configure("testpulselowlevel", "100");
+    m_pConfig->configure("testpulsehighlevel", "1000");
+    
+    m_pConfig->configure("iolevel", "TTL");
+    m_pConfig->configure("errorflagmask", "0xa5a5");
+    m_pConfig->configure("errorflagdatamask","0x5a5a");
+    
+    m_pConfig->configureModule(*m_pModule);
+    
+    // Read back data from the module rather than the config:
+  
+    // These may be different by 4.
+    
+    EQ(std::uint64_t(10000), m_pModule->getTestPulsePeriod());
+    EQ(std::uint64_t(500), m_pModule->getTestPulseWidth());
+    EQ(std::uint32_t(100), m_pModule->getTestPulseLowLevel());
+    EQ(std::uint32_t(1000), m_pModule->getTestPulseHighLevel());
+    
+    EQ(VX2750Pha::TTL, m_pModule->getIOLevel());
+    EQ(std::uint32_t(0xa5a5), m_pModule->getErrorFlagMask());
+    EQ(std::uint32_t(0x5a5a), m_pModule->getErrorFlagDataMask());
 }
