@@ -40,9 +40,7 @@ class cfgtest : public CppUnit::TestFixture {
     
 
     CPPUNIT_TEST_SUITE(cfgtest);
-    CPPUNIT_TEST(triggerlogic_4);
-    CPPUNIT_TEST(volclkdelay);
-    CPPUNIT_TEST(permckldelay);
+    CPPUNIT_TEST(input_1);
     CPPUNIT_TEST(default_1);
     CPPUNIT_TEST(cfgreadout);
     CPPUNIT_TEST(clock);
@@ -73,12 +71,18 @@ class cfgtest : public CppUnit::TestFixture {
     CPPUNIT_TEST(analogprobes);
     CPPUNIT_TEST(digitalprobes);
     CPPUNIT_TEST(pretrigger);
+
+    CPPUNIT_TEST(volclkdelay);
+    CPPUNIT_TEST(permckldelay);
     
     CPPUNIT_TEST(svcparams);
     CPPUNIT_TEST(triggerlogic_1);
     CPPUNIT_TEST(triggerlogic_2);
     CPPUNIT_TEST(triggerlogic_3);
+    CPPUNIT_TEST(triggerlogic_4);
     
+    CPPUNIT_TEST(lvds);
+    CPPUNIT_TEST(dac);
     
     CPPUNIT_TEST_SUITE_END();
     
@@ -132,6 +136,11 @@ protected:
     void triggerlogic_3();
     void triggerlogic_4();
     
+    void lvds();
+
+    void dac();
+    
+    void input_1();
 private:
     static std::string vecToList(const std::vector<std::string>& strings);
     static std::string vecToListOfIdenticalLists(const std::vector<std::string>& strings, size_t numReps = 64);
@@ -1082,8 +1091,8 @@ void cfgtest::triggerlogic_1()
     }
     // Check the majority level:
     
-    m_pConfig->configure("itlamajority", "32");
-    m_pConfig->configure("itlbmajority", "32");
+    m_pConfig->configure("itlamajoritylevel", "32");
+    m_pConfig->configure("itlbmajoritylevel", "32");
     m_pConfig->configureModule(*m_pModule);
     
     EQ(32U, m_pModule->getITLAMajorityLevel());
@@ -1142,6 +1151,10 @@ void cfgtest::triggerlogic_4() {
         };
         EQ(strconnections.size(), connections.size());
         
+        /// Can only use ITL_CONNECT or ITL Masks.  The latter are faster to
+        // configure.
+        //
+#ifdef ITL_CONNECT        
         for (int i =0; i < strconnections.size(); i++) {
             m_pConfig->configure("itlconnect", itemToList(strconnections[i]));
             m_pConfig->configureModule(*m_pModule);
@@ -1150,7 +1163,7 @@ void cfgtest::triggerlogic_4() {
                 EQ(connections[i], m_pModule->getITLConnect(c));
             }
         }
-        
+#endif        
         //do the masks and the widths as well
         
         m_pConfig->configure("itlamask", "0xa5a5a5a5a5a5a5a5");
@@ -1162,6 +1175,125 @@ void cfgtest::triggerlogic_4() {
         
         EQ(std::uint64_t(0xa5a5a5a5a5a5a5a5), m_pModule->getITLAMask());
         EQ(std::uint64_t(0x5a5a5a5a5a5a5a5a), m_pModule->getITLBMask());
-        EQ(std::uint32_t(200), m_pModule->getITLAGateWidth());
-        EQ(std::uint32_t(300), m_pModule->getITLBGateWidth());
+        ASSERT(std::abs(200 -  (int)m_pModule->getITLAGateWidth()) <= 4);
+        ASSERT(std::abs(300 - (int)m_pModule->getITLBGateWidth()) <= 4);
+}
+
+void cfgtest::lvds()
+{
+    std::vector<std::string> strmodes = {
+        "SelfTriggers", "Sync", "IORegister"
+    };
+    std::vector<std::string> strdirections = {   // corresponding to modes
+        "Output", "Input", "Output"
+    };
+    
+    std::vector<VX2750Pha::LVDSMode> modes = {
+        VX2750Pha::SelfTriggers, VX2750Pha::Sync, VX2750Pha::IORegister
+    };
+    std::vector<VX2750Pha::LVDSDirection> directions = {
+        VX2750Pha::Output, VX2750Pha::Input, VX2750Pha::Output
+    };
+    EQ(strmodes.size(), strdirections.size());
+    EQ(modes.size(), directions.size());
+    EQ(strmodes.size(), modes.size());
+    
+    for (int i =0; i < strmodes.size(); i++) {
+        m_pConfig->configure("lvdsmode", itemToList(strmodes[i], 4));
+        m_pConfig->configure("lvdsdirection", itemToList(strdirections[i], 4));
+        
+        m_pConfig->configureModule(*m_pModule);
+        
+        for (int q =0; q < 4; q++) {
+            EQ(modes[i], m_pModule->getLVDSMode(q));
+            EQ(directions[i], m_pModule->getLVDSDirection(q));
+        }
+    }
+    
+    m_pConfig->configure("lvdsmode", itemToList("SelfTriggers",4) );
+    m_pConfig->configure("lvdsdirection", itemToList("Output", 4));
+    m_pConfig->configure("lvdstrgmask", itemToList("0xa5a5a5a5a5a5a5a5", 16));
+    m_pConfig->configureModule(*m_pModule);
+    
+    for (int i =0; i < 16; i++) {
+        EQ(std::uint64_t(0xa5a5a5a5a5a5a5a5), m_pModule->getLVDSTriggerMask(i));
+    }
+    
+    m_pConfig->configure("lvdsmode", itemToList("IORegister", 4));
+    m_pConfig->configure("lvdsoutput", "0x5a5a");
+    
+    m_pConfig->configureModule(*m_pModule);
+    
+    EQ(std::uint16_t(0x5a5a), m_pModule->getLVDSIOReg());
+    
+}
+
+void cfgtest::dac()
+{
+    std::vector<std::string> strmodes = {
+        "Static",  "ChInput", "MemOccupancy", "ChSum", "OverThrSum",
+        "Ramp", "Sin5MHz", "Square"
+    };
+    std::vector<VX2750Pha::DACOutputMode> modes = {
+        VX2750Pha::Static, VX2750Pha::DACOut_ChInput,
+        VX2750Pha::MemOccupancy, VX2750Pha::ChSum, VX2750Pha::OverThrSum,
+        VX2750Pha::DACOut_Ramp, VX2750Pha::Sine5MHz, VX2750Pha::Square
+    };
+    
+    EQ(strmodes.size(), modes.size());
+    
+    for ( int i =0; i < modes.size(); i++ ) {
+        m_pConfig->configure("dacoutmode", strmodes[i]);
+        m_pConfig->configureModule(*m_pModule);
+        EQ(modes[i], m_pModule->getDACOutMode());
+    }
+    
+    m_pConfig->configure("dacoutmode", "Static");
+    m_pConfig->configure("dacoutputlevel", "8191");
+    m_pConfig->configureModule(*m_pModule);
+    EQ(std::uint16_t(8191), m_pModule->getDACOutValue());
+    
+    m_pConfig->configure("dacoutmode", "ChInput");
+    m_pConfig->configure("dacoutchannel", "8");
+    m_pConfig->configureModule(*m_pModule);
+    EQ(unsigned(8), m_pModule->getDACChannel()); 
+}
+//
+void cfgtest::input_1()
+{
+    m_pConfig->configure("vgagain", itemToList("20", 4));
+    m_pConfig->configure("offsetcalibrationenable", "false");
+    m_pConfig->configure("channelenables", itemToList("false"));
+    m_pConfig->configure("dcoffsets", itemToList("25.0"));
+    m_pConfig->configure("triggerthresholds", itemToList("512"));
+    
+    m_pConfig->configureModule(*m_pModule);
+    
+    ASSERT(!m_pModule->isOffsetCalibrationEnabled());
+#ifdef HAVE_VGAGAIN    
+    for (int i =0; i < 4;i ++) {
+        EQ(double(20), m_pModule->getVGAGain(i));
+    }
+#endif    
+    for (int i = 0;i < 64; i++) {
+        ASSERT(!m_pModule->isChannelEnabled(i));
+        EQ(double(25.0), m_pModule->getDCOffset(i));
+        EQ(std::uint32_t(512), m_pModule->getTriggerThreshold(i));
+    }
+    std::vector<std::string> strpols = {
+        "Positive", "Negative"
+    };
+    std::vector<VX2750Pha::Polarity> pols = {
+        VX2750Pha::Positive, VX2750Pha::Negative
+    };
+    
+    for (int i =0; i < strpols.size(); i++) {
+        m_pConfig->configure("inputpolarities", itemToList(strpols[i]));
+        m_pConfig->configureModule(*m_pModule);
+        
+        for (int c = 0;c < 64; c++) {
+            EQ(pols[i], m_pModule->getPulsePolarity(c));            
+        }
+    }
+    
 }
