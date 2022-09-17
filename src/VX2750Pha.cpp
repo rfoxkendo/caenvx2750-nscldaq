@@ -2407,7 +2407,7 @@ static const std::map<VX2750Pha::Endpoint, std::string> endpointToString = {
     VX2750Pha::setVGAGain(unsigned group, double value) const
     {
         std::stringstream strParName;
-        strParName << "/vga" << group << "/par/VGAGain";
+        strParName << "/vga/" << group << "/par/VGAGain";
         std::string parname = strParName.str();
         SetValue(parname.c_str(), value);
     }
