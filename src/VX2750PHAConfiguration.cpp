@@ -554,7 +554,7 @@ VX2750PHAModuleConfiguration::defineITLOptions()
   const char* itlconnection[] = {
     "Disabled", "ITLA", "ITLB", nullptr
   };
-  addEnumListParameter("itlconnect", itlconnection, "Disabled", 0, 64, 64);
+  //addEnumListParameter("itlconnect", itlconnection, "Disabled", 0, 64, 64);
   
   addIntegerParameter("itlamask");
   addIntegerParameter("itlbmask");
@@ -581,12 +581,12 @@ VX2750PHAModuleConfiguration::configureITLOptions(VX2750Pha& module)
      module.setITLBInverted(cget("itlbpolarity") == "Inverted" ? true : false);
      
      int nch= module.channelCount();
-     auto connections = getList("itlconnect");
-     for (int i = 0; i < nch; i++) {
-        if (connections.size() > i) 
-          module.setITLConnect(i, VX2750Pha::stringToITLConnect.find(connections[i])->second);
-  
-    }
+     //auto connections = getList("itlconnect");
+     //for (int i = 0; i < nch; i++) {
+     //   if (connections.size() > i) 
+     //     module.setITLConnect(i, VX2750Pha::stringToITLConnect.find(connections[i])->second);
+    //
+     //   }
     module.setITLAMask(getUnsignedParameter("itlamask"));
     module.setITLBMask(getUnsignedParameter("itlbmask"));
     module.setITLAGateWidth(getUnsignedParameter("itlagatewidth"));
@@ -608,6 +608,7 @@ VX2750PHAModuleConfiguration::defineLVDSOptions()
   };
   addEnumListParameter("lvdsdirection", lvdsdirections, "Output", 4, 4, 4);
   addIntListParameter("lvdstrgmask", 0, 0xffffffffffffffff, 16, 16, 16, 0);
+  addIntegerParameter("lvdsoutput", 0, 0xffff, 0);
 }
 /**
  * configureLVDSOptions
@@ -634,6 +635,7 @@ VX2750PHAModuleConfiguration::configureLVDSOptions(VX2750Pha& module)
   for (int i =0; i < masks.size(); i++) {
     module.setLVDSTriggerMask(i, masks[i]);
   }
+  module.setLVDSIOReg(getUnsignedParameter("lvdsoutput"));
 }
 /**
  * defineDACOptions
@@ -661,6 +663,7 @@ VX2750PHAModuleConfiguration::configureDACOptions(VX2750Pha& module)
   module.setDACOutMode(VX2750Pha::stringToDACOutMode.find(cget("dacoutmode"))->second);
   module.setDACOutValue(getIntegerParameter("dacoutputlevel"));
   module.setDACChannel(getIntegerParameter("dacoutchannel"));
+
 }
 /**
  * defineInputConditioningOptions
