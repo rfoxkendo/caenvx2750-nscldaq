@@ -141,6 +141,7 @@ VX2750PHAModuleConfiguration::configureModule(VX2750Pha& module)
   configureServiceOptions(module);
   configureITLOptions(module);
   configureLVDSOptions(module);
+  configureDACOptions(module);
   configureInputConditioning(module);
   configureEventSelection(module);
   configureFilter(module);
