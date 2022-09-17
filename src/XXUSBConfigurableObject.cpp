@@ -901,18 +901,29 @@ CConfigurableObject::addFloatListParameter(
     // First build the value constraint so that it can be applied to the list
     // constraint:
     
-    FloatingLimits& range = *(new FloatingLimits);
-    range.first.s_checkMe = true;
-    range.first.s_value = low;
-    range.second.s_checkMe = true;
-    range.second.s_value = high;
+    FloatingLimits* range =
+      reinterpret_cast<FloatingLimits*>(malloc(sizeof(FloatingLimits)));
+    range->first.s_checkMe = true;
+    range->first.s_value = low;
+    range->second.s_checkMe = true;
+    range->second.s_value = high;
+    DynamicConstraint c = {                  // Ensure this gets destroyed.
+       free,
+       reinterpret_cast<void*>(range)
+     };
+     m_constraints.push_back(c);
     
     // now the list length constraint with the added range constraint:
     
-    isListParameter* pConstraint = new isListParameter(
-        minlen, maxlen, TypeCheckInfo(isFloat, &range)  
-    );
-    addParameter(name, isFloatList, pConstraint, defaultList);
+    isListParameter* pConstraint =
+      reinterpret_cast<isListParameter*>(malloc(sizeof(isListParameter)));
+    *pConstraint = isListParameter(minlen, maxlen, TypeCheckInfo(isFloat, range));
+      DynamicConstraint l = {
+        free, reinterpret_cast<void*>(pConstraint)
+      };
+      m_constraints.push_back(l);
+    
+     addParameter(name, isFloatList, pConstraint, defaultList);
 }
 
 
@@ -1421,7 +1432,8 @@ CConfigurableObject::isFloatList(std::string name, std::string value, void* chec
     validator.s_checker.second = NULL;   // no range requirement.
     validator.s_allowedSize    = unconstrainedSize;  // if not provided.
     if  (checker) {
-      validator.s_checker.second  = checker;  // Includes element checker and value range
+      ListSizeConstraint& limits(*static_cast<ListSizeConstraint*>(checker));
+      validator.s_allowedSize = limits;
     }
     
     return isList(name, value, &validator);
