@@ -40,7 +40,7 @@ class cfgtest : public CppUnit::TestFixture {
     
 
     CPPUNIT_TEST_SUITE(cfgtest);
-    CPPUNIT_TEST(filter_2);    
+    CPPUNIT_TEST(filter_3);
     
     CPPUNIT_TEST(default_1);
     CPPUNIT_TEST(cfgreadout);
@@ -91,6 +91,7 @@ class cfgtest : public CppUnit::TestFixture {
     CPPUNIT_TEST(eselection_3);
     
     CPPUNIT_TEST(filter_1);
+    CPPUNIT_TEST(filter_2);    
     CPPUNIT_TEST_SUITE_END();
     
 private:
@@ -155,6 +156,7 @@ protected:
     
     void filter_1();
     void filter_2();
+    void filter_3();
 private:
     static std::string vecToList(const std::vector<std::string>& strings);
     static std::string vecToListOfIdenticalLists(const std::vector<std::string>& strings, size_t numReps = 64);
@@ -1450,6 +1452,31 @@ void cfgtest::filter_2()
         
         for (int c =0; c < 64; c++) {
             EQ(avgs[i], m_pModule->getEnergyFilterPeakingAverage(c));
+        }
+    }
+}
+// test the baseline averaging.
+
+void cfgtest::filter_3()
+{
+    std::vector<std::string> stravgs = {
+        "0", "16", "64", "256", "1024", "4096", "16384"
+    };
+    std::vector<VX2750Pha::EnergyFilterBaselineAverage> avgs = {
+        VX2750Pha::Fixed, VX2750Pha::EFilterBlineAvg_Average16,
+        VX2750Pha::EFilterBlineAvg_Average64,
+        VX2750Pha::Average256, VX2750Pha::Average1024, VX2750Pha::Average4K,
+        VX2750Pha::Average16K
+    };
+    EQ(stravgs.size(), avgs.size());
+    
+    for (int i =0; i < stravgs.size(); i++) {
+        m_pConfig->configure("efbaselineavg", itemToList(stravgs[i]));
+        m_pConfig->configureModule(*m_pModule);
+        
+        for (int c =0; c < 64; c++) {
+            EQ(avgs[i], m_pModule->getEnergyFilterBaselineAverage(c));
+                            
         }
     }
 }
