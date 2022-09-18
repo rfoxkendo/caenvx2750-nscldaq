@@ -40,7 +40,7 @@ class cfgtest : public CppUnit::TestFixture {
     
 
     CPPUNIT_TEST_SUITE(cfgtest);
-    CPPUNIT_TEST(input_1);
+    CPPUNIT_TEST(eselection_3);
     CPPUNIT_TEST(default_1);
     CPPUNIT_TEST(cfgreadout);
     CPPUNIT_TEST(clock);
@@ -83,7 +83,10 @@ class cfgtest : public CppUnit::TestFixture {
     
     CPPUNIT_TEST(lvds);
     CPPUNIT_TEST(dac);
-    
+    CPPUNIT_TEST(input_1);
+
+    CPPUNIT_TEST(eselection_1);
+    CPPUNIT_TEST(eselection_2);
     CPPUNIT_TEST_SUITE_END();
     
 private:
@@ -141,6 +144,10 @@ protected:
     void dac();
     
     void input_1();
+    
+    void eselection_1();
+    void eselection_2();
+    void eselection_3();
 private:
     static std::string vecToList(const std::vector<std::string>& strings);
     static std::string vecToListOfIdenticalLists(const std::vector<std::string>& strings, size_t numReps = 64);
@@ -1296,4 +1303,72 @@ void cfgtest::input_1()
         }
     }
     
+}
+// event selection criteria:
+
+// Simple parameters:
+
+void cfgtest::eselection_1()
+{
+    m_pConfig->configure("energyskimlow", itemToList("1024"));
+    m_pConfig->configure("energyskimhigh", itemToList("32767"));
+    m_pConfig->configure("coinidecnelength", itemToList("1023"));
+    
+    m_pConfig->configureModule(*m_pModule);
+    
+    for (int i = 0;i < 64; i++) {
+        EQ(std::uint16_t(1024), m_pModule->getEnergySkimLowDiscriminator(i));
+        EQ(std::uint16_t(32767), m_pModule->getEnergySkimHighDiscriminator(i));
+        EQ(std::uint32_t(1023), m_pModule->getCoincidenceNs(i));
+    }
+}
+// Event/wave selector:
+
+void cfgtest::eselection_2() {
+    std::vector<std::string> strsel = {
+        "All", "Pileup", "EnergySkim"
+    };
+    
+    std::vector<VX2750Pha::EventSelection> sel = {
+        VX2750Pha::All, VX2750Pha::Pileup, VX2750Pha::EnergySkim
+    };
+    
+    EQ(strsel.size(), sel.size());
+    
+    for (int i =0; i < strsel.size(); i++) {
+        m_pConfig->configure("eventselector", itemToList(strsel[i]));
+        m_pConfig->configure("waveselector", itemToList(strsel[i]));
+        m_pConfig->configureModule(*m_pModule);
+        
+        for (int c = 0; c < 64; c++) {
+            EQ(sel[i], m_pModule->getEventSelector(c));
+            EQ(sel[i], m_pModule->getWaveformSelector(c));
+        }
+    }
+}
+// coincidence/anti masks:
+
+void cfgtest::eselection_3()
+{
+    std::vector<std::string> strsel = {
+        "Disabled", "Ch64Trigger", "TRGIN", "GlobalTriggerSource", "ITLA", "ITLB"
+    };
+    std::vector<VX2750Pha::CoincidenceMask> sel = {
+        VX2750Pha::Coincidence_Disabled, VX2750Pha::Ch64Trigger,
+        VX2750Pha::Coincidence_TRGIN, VX2750Pha::Coincidence_GlobalTriggerSource,
+        VX2750Pha::Coincidence_ITLA, VX2750Pha::Coincidence_ITLB
+    };
+    
+    EQ(strsel.size(), sel.size());
+    
+    for (int i = 0; i < strsel.size(); i++) {
+        m_pConfig->configure("coincidencemask", itemToList(strsel[i]));
+        m_pConfig->configure("anticoincidencemask", itemToList(strsel[i]));
+        m_pConfig->configureModule(*m_pModule);
+        
+        for (int c = 0; c < 64; c++) {
+            EQ(sel[i], m_pModule->getCoincidenceMask(c));
+            EQ(sel[i], m_pModule->getAntiCoincidenceMask(c));
+        }
+    }
 }
