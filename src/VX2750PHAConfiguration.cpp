@@ -716,16 +716,16 @@ VX2750PHAModuleConfiguration::configureInputConditioning(VX2750Pha& module)
   
   int nch = module.channelCount();
   for (int i =0; i < nch; i++) {
-    
-    if (channelEnables.size() > i) module.enableChannel(i, channelEnables[i]);
-    if (dcOffsets.size() > i)      module.setDCOffset(i, dcOffsets[i]);
-    if (thresholds.size() > i)     module.setTriggerThreshold(i, thresholds[i]);
     if (inputPolarities.size() > i)
       module.setPulsePolarity(
           i,
           (inputPolarities[i] == "Positive") ?
             VX2750Pha::Positive : VX2750Pha::Negative
       );
+    if (channelEnables.size() > i) module.enableChannel(i, channelEnables[i]);
+    if (dcOffsets.size() > i)      module.setDCOffset(i, dcOffsets[i]);
+    if (thresholds.size() > i)     module.setTriggerThreshold(i, thresholds[i]);
+    
   }
 }
 /**
