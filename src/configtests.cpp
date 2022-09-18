@@ -40,6 +40,7 @@ class cfgtest : public CppUnit::TestFixture {
     
 
     CPPUNIT_TEST_SUITE(cfgtest);
+    CPPUNIT_TEST(filter_1);
     CPPUNIT_TEST(eselection_3);
     CPPUNIT_TEST(default_1);
     CPPUNIT_TEST(cfgreadout);
@@ -148,6 +149,8 @@ protected:
     void eselection_1();
     void eselection_2();
     void eselection_3();
+    
+    void filter_1();
 private:
     static std::string vecToList(const std::vector<std::string>& strings);
     static std::string vecToListOfIdenticalLists(const std::vector<std::string>& strings, size_t numReps = 64);
@@ -1370,5 +1373,50 @@ void cfgtest::eselection_3()
             EQ(sel[i], m_pModule->getCoincidenceMask(c));
             EQ(sel[i], m_pModule->getAntiCoincidenceMask(c));
         }
+    }
+}
+// Energy/trigger filter tests.
+
+// Numeric parameters - note that we need to set the peaking average to ensure
+// peaking pos + peaking avg < flattop samples
+
+void cfgtest::filter_1()
+{
+    m_pConfig->configure("efpeakingavg", itemToList("1"));   // best chances for success.
+    
+    // Trigger filter parameters:
+    
+    m_pConfig->configure("tfrisetime", itemToList("128"));
+    m_pConfig->configure("tfretriggerguard", itemToList("8"));
+    
+    
+    // energy filter parameters
+    
+    m_pConfig->configure("efrisetime", itemToList("160"));
+    m_pConfig->configure("efflattoptime", itemToList("160"));
+    m_pConfig->configure("efpeakingpos", itemToList("60"));
+    m_pConfig->configure("efpolezero", itemToList("90"));
+    m_pConfig->configure("effinegain", itemToList("1.0"));
+    m_pConfig->configure("eflflimitation", itemToList("true"));
+    
+    // baseline/pileup:
+    
+    m_pConfig->configure("efbaselineguardt", itemToList("20"));
+    m_pConfig->configure("efpileupguardt", itemToList("4"));
+    
+    m_pConfig->configureModule(*m_pModule);
+    
+    // Note peaking average is tested in the next test...
+    
+    for (int i = 0; i < 64; i++) {
+        EQ(std::uint32_t(128), m_pModule->getTimeFilterRiseTime(i));
+        EQ(std::uint32_t(8), m_pModule->getTimeFilterRetriggerGuardTime(i));
+        
+        EQ(std::uint32_t(160), m_pModule->getEnergyFilterRiseTime(i));
+        EQ(std::uint32_t(160), m_pModule->getEnergyFilterFlatTopTime(i));
+        EQ(std::uint32_t(60), m_pModule->getEnergyFilterPeakingPosition(i));
+        ASSERT(std::abs(90 -  (int)m_pModule->getEnergyFilterPoleZeroTime(i)) < 4);
+        EQ(double(1.0), m_pModule->getEnergyFilterFineGain(i));
+        ASSERT(m_pModule->isEnergyFilterFLimitationEnabled(i));
     }
 }
