@@ -40,8 +40,8 @@ class cfgtest : public CppUnit::TestFixture {
     
 
     CPPUNIT_TEST_SUITE(cfgtest);
-    CPPUNIT_TEST(filter_1);
-    CPPUNIT_TEST(eselection_3);
+    CPPUNIT_TEST(filter_2);    
+    
     CPPUNIT_TEST(default_1);
     CPPUNIT_TEST(cfgreadout);
     CPPUNIT_TEST(clock);
@@ -88,6 +88,9 @@ class cfgtest : public CppUnit::TestFixture {
 
     CPPUNIT_TEST(eselection_1);
     CPPUNIT_TEST(eselection_2);
+    CPPUNIT_TEST(eselection_3);
+    
+    CPPUNIT_TEST(filter_1);
     CPPUNIT_TEST_SUITE_END();
     
 private:
@@ -151,6 +154,7 @@ protected:
     void eselection_3();
     
     void filter_1();
+    void filter_2();
 private:
     static std::string vecToList(const std::vector<std::string>& strings);
     static std::string vecToListOfIdenticalLists(const std::vector<std::string>& strings, size_t numReps = 64);
@@ -1418,5 +1422,34 @@ void cfgtest::filter_1()
         ASSERT(std::abs(90 -  (int)m_pModule->getEnergyFilterPoleZeroTime(i)) < 4);
         EQ(double(1.0), m_pModule->getEnergyFilterFineGain(i));
         ASSERT(m_pModule->isEnergyFilterFLimitationEnabled(i));
+    }
+}
+// test the peaking averaging parameter
+
+void cfgtest::filter_2()
+{
+    std::vector<std::string> stravgs = {
+        "1", "4", "16", "64"
+    };
+    std::vector<VX2750Pha::EnergyPeakingAverage> avgs = {
+        VX2750Pha::Average1, VX2750Pha::Average4,
+        VX2750Pha::EPeakAvg_Average16, VX2750Pha::EPeakAvg_Average64
+    };
+    
+    EQ( stravgs.size(), avgs.size());
+    
+    // Ensure the relationship between flattoptime, peaking position and
+    // averaging can be met:
+    
+    m_pConfig->configure("efflattoptime", itemToList("3000"));
+    m_pConfig->configure("efpeakingpos", itemToList("10"));
+    
+    for (int i = 0; i < stravgs.size(); i++) {
+        m_pConfig->configure("efpeakingavg", itemToList(stravgs[i]));
+        m_pConfig->configureModule(*m_pModule);
+        
+        for (int c =0; c < 64; c++) {
+            EQ(avgs[i], m_pModule->getEnergyFilterPeakingAverage(c));
+        }
     }
 }
