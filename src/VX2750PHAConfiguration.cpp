@@ -134,6 +134,7 @@ VX2750PHAModuleConfiguration::operator!=(const VX2750PHAModuleConfiguration& rhs
 void
 VX2750PHAModuleConfiguration::configureModule(VX2750Pha& module)
 {
+  module.Reset();                   // Else we may get complaints about the default config.
   configureReadoutOptions(module);
   configureGeneralOptions(module);
   configureAcquisitionTriggerOptions(module);
