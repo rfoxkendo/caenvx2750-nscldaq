@@ -40,7 +40,8 @@ class cfgtest : public CppUnit::TestFixture {
     
 
     CPPUNIT_TEST_SUITE(cfgtest);
-    CPPUNIT_TEST(filter_3);
+    CPPUNIT_TEST(input_1);
+    
     
     CPPUNIT_TEST(default_1);
     CPPUNIT_TEST(cfgreadout);
@@ -84,14 +85,15 @@ class cfgtest : public CppUnit::TestFixture {
     
     CPPUNIT_TEST(lvds);
     CPPUNIT_TEST(dac);
-    CPPUNIT_TEST(input_1);
+    
 
     CPPUNIT_TEST(eselection_1);
     CPPUNIT_TEST(eselection_2);
     CPPUNIT_TEST(eselection_3);
     
     CPPUNIT_TEST(filter_1);
-    CPPUNIT_TEST(filter_2);    
+    CPPUNIT_TEST(filter_2);
+    CPPUNIT_TEST(filter_3);
     CPPUNIT_TEST_SUITE_END();
     
 private:

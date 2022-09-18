@@ -2078,7 +2078,7 @@ void vx2750phatest::efblguard()
 void vx2750phatest::efpupguard()
 {
     std::int32_t mins = 0;
-    std::int32_t maxs = 8184;
+    std::int32_t maxs = 8000;
     std::int32_t mint = 0;
     std::int32_t maxt = 65472;
     
