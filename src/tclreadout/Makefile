@@ -25,7 +25,7 @@ USERLDFLAGS=
 #  This is a list of the objects that go into making the application
 #  Make, in most cases will figure out how to build them:
 
-OBJECTS=Skeleton.o
+OBJECTS=Skeleton.o DynamicMultiTrigger.o
 
 Readout: $(OBJECTS)
 	$(CXXLD) -o Readout $(OBJECTS) $(USERLDFLAGS) $(LDFLAGS)
