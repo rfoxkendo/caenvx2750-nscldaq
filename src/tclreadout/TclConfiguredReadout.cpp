@@ -30,6 +30,8 @@
 #include <Exception.h>
 #include <VX2750TclConfig.h>
 #include <TCLInterpreter.h>
+#include <stdexcept>
+#include <iostream>
 
 using namespace caen_nscldaq;
 
@@ -137,37 +139,7 @@ TclConfiguredReadout::onBegin()
     
 }
 
-//////////////////////////////////////////////////////////////////////////////
-// Private utilities:
 
-/**
- * deleteTrigger
- *    Deleteing the trigger also implies deleting the modules it holds.
- *    @note this may be called when thee is no current trigger
- *
- */
-void
-TclConfiguredReadout::deleteTrigger()  {
-    if (m_pCurrentTrigger) {
-        auto modules = m_pCurrentTrigger->getModules();
-        for (auto m: modules) {
-            delete m;
-        }
-        delete m_pCurrentTrigger;
-        m_pCurrentTrigger = nullptr;
-    }
-    
-    readConfiguration();         // Won't return on error
-    checkModuleConfiguration();  // won't return on error.
-    createTrigger();             // also create the modules in the trigger.
-    
-    m_pCurrentEventSegment = new VX2750MultiModuleEventSegment(m_pExperiment, m_pCurrentTrigger);
-    
-    m_pTrigger->clear();
-    m_pTrigger->addTrigger(m_pCurrentTrigger);
-    
-    m_pCurrentEventSegment->onBegin();
-}
 /**
  * initialize
  *    Called just prior to data taking to do hardware initialization.
@@ -218,4 +190,75 @@ TclConfiguredReadout::onResume()
 size_t
 TclConfiguredReadout::read(void* pBuffer, size_t maxwords) {
     return m_pCurrentEventSegment->read(pBuffer, maxwords);
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// Private utilities:
+
+/**
+ * deleteTrigger
+ *    Deleteing the trigger also implies deleting the modules it holds.
+ *    @note this may be called when thee is no current trigger
+ *
+ */
+void
+TclConfiguredReadout::deleteTrigger()  {
+    if (m_pCurrentTrigger) {
+        auto modules = m_pCurrentTrigger->getModules();
+        for (auto m: modules) {
+            delete m;
+        }
+        delete m_pCurrentTrigger;
+        m_pCurrentTrigger = nullptr;
+    }
+    
+    readConfiguration();         // Won't return on error
+    checkModuleConfiguration();  // won't return on error.
+    createTrigger();             // also create the modules in the trigger.
+    
+    m_pCurrentEventSegment = new VX2750MultiModuleEventSegment(m_pExperiment, m_pCurrentTrigger);
+    
+    m_pTrigger->clear();
+    m_pTrigger->addTrigger(m_pCurrentTrigger);
+    
+    m_pCurrentEventSegment->onBegin();
+}
+/**
+ * readConfiguration
+ *    - Create a CTCLInterpreter.
+ *    - Create the current cofiguration (on the interpreter).
+ *    - Source the file to create the configuration.
+ *
+ * @note we do this all in a try/catch block and, if an error/exception
+ *      occurs, we catch and delete anything we've made so far and
+ *      rethrow
+ */
+void
+TclConfiguredReadout::readConfiguration() {
+    try {
+        CTCLInterpreter interp;
+        m_pCurrentConfiguration = new VX2750TclConfig(interp, "container");
+        interp.EvalFile(m_configFile);
+        
+    }
+    catch (CException& e) {
+        delete m_pCurrentConfiguration;
+        std::cerr << e.ReasonText() << std::endl;
+        throw;
+    }
+    catch (std::string s) {
+        delete m_pCurrentConfiguration;
+        std::cerr << s << std::endl;
+        throw;
+    }
+    catch (std::exception& e) {
+        delete m_pCurrentConfiguration;
+        std::cerr << e.what() << std::endl;
+        throw;
+    }
+    catch (...) {
+        delete m_pCurrentConfiguration;
+        std::cerr << "Unanticipated exception type caught while processing the configuration file.\n";
+        throw;
+    }
 }
