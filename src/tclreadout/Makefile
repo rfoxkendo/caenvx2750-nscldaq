@@ -7,6 +7,9 @@ INSTDIR=/usr/opt/daq/12.0-pre3
 
 include $(INSTDIR)/etc/SBSRdoMakeIncludes
 
+JSON_CPPFLAGS = $(shell pkg-config jsoncpp --cflags)
+JSON_LDFLAGS  = $(shell pkg-config jsoncpp  --libs)
+
 
 #
 #  The following allow you to add flags to all the default C and C++ compilation
@@ -14,18 +17,18 @@ include $(INSTDIR)/etc/SBSRdoMakeIncludes
 #
 #
 
-USERCCFLAGS= -I..
+USERCCFLAGS= -I.. $(JSON_CPPFLAGS)
 USERCXXFLAGS=$(USERCCFLAGS)
 
 #  If you have additional load flags (e.g. library dirs and libs):
 
-USERLDFLAGS=-L.. -lCaenVx2750
+USERLDFLAGS=-L.. -lCaenVx2750 $(JSON_LDFLAGS)
 
 #
 #  This is a list of the objects that go into making the application
 #  Make, in most cases will figure out how to build them:
 
-OBJECTS=Skeleton.o DynamicMultiTrigger.o
+OBJECTS=Skeleton.o DynamicMultiTrigger.o TclConfiguredReadout.o
 
 Readout: $(OBJECTS)
 	$(CXXLD) -o Readout $(OBJECTS) $(USERLDFLAGS) $(LDFLAGS)
