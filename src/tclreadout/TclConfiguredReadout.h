@@ -84,10 +84,12 @@ private:
    caen_nscldaq::VX2750MultiModuleEventSegment* m_pCurrentEventSegment;
    std::string                                  m_configFile;
 public:
-    TclConfiguredReadout(const char* configFile, CExperiment* m_pExperiment);
+    TclConfiguredReadout(const char* configFile, CExperiment* pExperiment);
     virtual ~TclConfiguredReadout();
     
-    void addModule(const char* name, const char* connectionString, bool isUsb);
+    void addModule(
+         const char* name, const char* connectionString, bool isUsb = false
+    );
     CEventTrigger* getTrigger();
     
     // Event segment interface:
@@ -99,6 +101,7 @@ public:
     virtual void onResume();
     virtual size_t read(void*pBuffer, size_t maxwords);
 private:
+   void deleteTrigger();
 };
 
 
