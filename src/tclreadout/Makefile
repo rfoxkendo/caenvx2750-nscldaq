@@ -7,6 +7,11 @@ INSTDIR=/usr/opt/daq/12.0-pre3
 
 include $(INSTDIR)/etc/SBSRdoMakeIncludes
 
+FELIB_CPPFLAGS=
+FELIB_LDFLAGS=-lCAEN_FELib
+
+
+
 JSON_CPPFLAGS = $(shell pkg-config jsoncpp --cflags)
 JSON_LDFLAGS  = $(shell pkg-config jsoncpp  --libs)
 
@@ -17,12 +22,12 @@ JSON_LDFLAGS  = $(shell pkg-config jsoncpp  --libs)
 #
 #
 
-USERCCFLAGS= -I.. $(JSON_CPPFLAGS)
+USERCCFLAGS= -I.. $(JSON_CPPFLAGS) $(FELIB_CPPFLAGS)
 USERCXXFLAGS=$(USERCCFLAGS)
 
 #  If you have additional load flags (e.g. library dirs and libs):
 
-USERLDFLAGS=-L.. -lCaenVx2750 $(JSON_LDFLAGS)
+USERLDFLAGS=-L.. -lCaenVx2750 $(JSON_LDFLAGS) $(FELIB_LDFLAGS)
 
 #
 #  This is a list of the objects that go into making the application
