@@ -14,12 +14,12 @@ include $(INSTDIR)/etc/SBSRdoMakeIncludes
 #
 #
 
-USERCCFLAGS=
+USERCCFLAGS= -I..
 USERCXXFLAGS=$(USERCCFLAGS)
 
 #  If you have additional load flags (e.g. library dirs and libs):
 
-USERLDFLAGS=
+USERLDFLAGS=-L.. -lCaenVx2750
 
 #
 #  This is a list of the objects that go into making the application
