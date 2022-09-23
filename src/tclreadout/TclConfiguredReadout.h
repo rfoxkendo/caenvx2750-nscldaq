@@ -94,14 +94,17 @@ public:
     
     // Event segment interface:
     
+    virtual void onBegin();
     virtual void initialize();
     virtual void disable();
-    virtual void onBegin();
     virtual void onPause();
     virtual void onResume();
-    virtual size_t read(void*pBuffer, size_t maxwords);
+    virtual size_t read(void *pBuffer, size_t maxwords);
 private:
    void deleteTrigger();
+   void readConfiguration();
+   void checkModuleConfiguration();
+   void createTrigger();
 };
 
 
