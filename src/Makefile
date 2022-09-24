@@ -1,4 +1,4 @@
-##
+#
 # Tentative Makefile (hardcoded paths etc)
 # Note this will be replaced with something more configurable.
 # The assumption is that we're not out of tree:
@@ -15,6 +15,7 @@ CPPUNIT_LDFLAGS=$(shell pkg-config cppunit --libs)
 FELIB_CPPFLAGS=
 FELIB_LDFLAGS=-lCAEN_FELib 
 
+TRACING=-DENABLE_TRACING
 
 DIG2_CPPFLAGS=
 DIG2_LDFLAGS= #  -lCAEN_Dig2 
@@ -28,7 +29,7 @@ TCL_LDFLAGS  = $(shell pkg-config tcl8.6 --libs)
 NSCLDAQROOT=/usr/opt/daq/12.0-pre3
 NSCLDAQ_CXXFLAGS=-I$(NSCLDAQROOT)/include -I$(NSCLDAQROOT)/include/sbsreadout
 NSCLDAQ_LDFLAGS=-L$(NSCLDAQROOT)/lib -Wl,-rpath=$(NSCLDAQROOT)/lib \
-	-ltclPlus -lException
+	-ltclPlus -lException -ldaqthreads $(TCL_LDFLAGS)
 
 
 ROOTSYS=/usr/opt/root/root-6.24.06
@@ -39,14 +40,13 @@ PUGI_CXXFLAGS=-I$(HERE)../pugixml/include
 PUGI_LDFLAGS=-L$(HERE)../pugixml/lib -lpugixml
 
 
-
+BOOST_LOG_LDFLAGS= -lboost_log -lboost_log_setup  -lboost_thread -lboost_system
 
 CPPFLAGS=$(FELIB_CPPFLAGS) $(DIG2_CPPFLAGS) $(JSON_CPPFLAGS) \
 	$(NSCLDAQ_CXXFLAGS) \
-	$(TCL_CPPFLAGS) $(PUGI_CXXFLAGS) -g
-
+	$(TCL_CPPFLAGS) $(PUGI_CXXFLAGS) -g $(TRACING) -DBOOST_ALL_DYN_LINK
 DEVTEST_LDFLAGS=$(CPPUNIT_LDFLAGS) $(FELIB_LDFLAGS) $(DIG2_LDFLAGS) \
-	$(JSON_LDFLAGS)
+	$(JSON_LDFLAGS) $(NSCLDAQ_LDFLAGS) -lpthread $(BOOST_LOG_LDFLAGS)
 
 all: libCaenVx2750.a libCaenVxUnpackers.a test_programs
 
@@ -71,11 +71,13 @@ VX2750EventBuiltEventProcessor.o: VX2750EventBuiltEventProcessor.cpp \
 libCaenVx2750.a:  Dig2Device.o VX2750Pha.o XXUSBConfigurableObject.o VX2750PHAConfiguration.o \
 	VX2750TclConfig.o CAENVX2750PhaTrigger.o  VX2750MultiTrigger.o \
 	VX2750EventSegment.o VX2750MultiModuleEventSegment.o \
-	VX2750XMLConfig.o
+	VX2750XMLConfig.o NSCLDAQLog.o
 	ar -ruv $@ $?
 
+NSCLDAQLog.o: NSCLDAQLog.cpp
+
 Dig2Device.o: Dig2Device.cpp Dig2Device.h
-	$(CXX) $(CPPFLAGS) -c $<
+	$(CXX) $(CPPFLAGS) -c $< 
 
 VX2750Pha.o: VX2750Pha.cpp VX2750Pha.h Dig2Device.h
 	$(CXX) $(CPPFLAGS) -c $<
