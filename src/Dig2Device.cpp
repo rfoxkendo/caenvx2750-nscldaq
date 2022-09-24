@@ -27,12 +27,33 @@
 #include <sstream>
 #include <assert.h>
 #include <string.h>
+#ifdef ENABLE_TRACING
+#include "NSCLDAQLog.h"
+static bool logfile_established(false);
+static const char* logfile("Dig2Device.log");
+static bool enableTracing(false);
+#endif
 
 static const char* scheme="dig2";
 
+
+
 static const char* usbhost="caendgtz-usb-";
 
+
 namespace caen_nscldaq {
+
+void set_tracing(bool onoff) {   // always legal but no-op if no tracing compiled.
+#ifdef ENABLE_TRACING
+    enableTracing = onoff;
+    if (enableTracing && (!logfile_established)) {
+        daqlog::setLogFile(logfile);
+        daqlog::setLogLevel(daqlog::Trace);
+        logfile_established = true;
+    }
+#endif
+}
+
     /**
      * constructor
      *    Fills in the m_deviceHandle member from the successful result of
@@ -58,6 +79,20 @@ namespace caen_nscldaq {
         
         std::string uri = uristream.str();
         auto status = CAEN_FELib_Open(uri.c_str(), &m_deviceHandle);
+#ifdef ENABLE_TRACING
+        if (enableTracing) {
+            std::stringstream log;
+            log << "CAEN_FELib_Open for " << uri;
+            if (status != CAEN_FELib_Success) {
+                log << " failed with: " << lastError();
+            } else {
+                log << "success handle: " << m_deviceHandle;
+            }
+            std::string logmsg(log.str());
+            daqlog::trace(logmsg);
+        }
+        
+#endif
         if (status != CAEN_FELib_Success) {
             std::string msg("Failed to open device: ");
             msg += uri;
@@ -73,7 +108,19 @@ namespace caen_nscldaq {
      */
     Dig2Device::~Dig2Device() 
     {
-        CAEN_FELib_Close(m_deviceHandle);
+        
+        auto status = CAEN_FELib_Close(m_deviceHandle);
+#ifdef ENABLE_TRACING
+        if (enableTracing) {
+            std::stringstream log;
+            log << "CAEN_FELib_Close for handle: " << m_deviceHandle;
+            if (status != CAEN_FELib_Success) {
+                log << " Failed with : " << lastError();
+            }
+            std::string logmsg(log.str());
+            daqlog::trace(logmsg);
+        }
+#endif
     }
     ////////////////////////////////////////////////////////////////////////////
     // Make device settings:
@@ -89,7 +136,20 @@ namespace caen_nscldaq {
     void
     Dig2Device::SetValue(const char* parameterName, const char* value) const
     {
-        if (CAEN_FELib_SetValue(m_deviceHandle, parameterName, value) != CAEN_FELib_Success) {
+        auto status = CAEN_FELib_SetValue(m_deviceHandle, parameterName, value);
+#ifdef ENABLE_TRACING
+        if (enableTracing) {
+            std::stringstream log;
+            log << "CAEN_FELib_SetValue on " << m_deviceHandle << " "
+                << parameterName << " set to " << value;
+            if (status != CAEN_FELib_Success) {
+                log << " failed with " << lastError();
+            }
+            std::string logmsg(log.str());
+            daqlog::trace(logmsg);
+        }
+#endif
+        if (status != CAEN_FELib_Success) {
             std::stringstream failmsg;
             failmsg << " Failed to set value: " << parameterName
                 << " to : " <<  value << " : " << lastError();
@@ -264,8 +324,27 @@ namespace caen_nscldaq {
         char buffer[256];           // Max value according to lib docs.
         if (initial) {
             strcpy(buffer, initial);
+        } else {
+            buffer[0] = '\0';
         }
-        if (CAEN_FELib_GetValue(m_deviceHandle, parameterName, buffer) != CAEN_FELib_Success) {
+        auto status = CAEN_FELib_GetValue(m_deviceHandle, parameterName, buffer);
+#ifdef ENABLE_TRACING
+        if (enableTracing) {
+            std::stringstream log;
+            log << "CAEN_FELib_GetValue on " << m_deviceHandle << " for " << parameterName;
+            if (initial) {
+                log << " initial value: " << buffer;
+            }
+            if (status != CAEN_FELib_Success) {
+                log << " failed " << lastError();
+            } else {
+                log <<  " retrieved: " << buffer;
+            }
+            std::string logmsg(log.str());
+            daqlog::trace(logmsg);
+        }
+#endif
+        if (status != CAEN_FELib_Success) {
             std::stringstream strMessage;
             strMessage << "GetValue failed for " << parameterName 
                 << " : "    << lastError();
@@ -440,7 +519,19 @@ namespace caen_nscldaq {
         std::string fullPath = "/cmd/";
         fullPath += command;
         
-        if (CAEN_FELib_SendCommand(m_deviceHandle, fullPath.c_str()) != CAEN_FELib_Success)
+        auto status = CAEN_FELib_SendCommand(m_deviceHandle, fullPath.c_str());
+#ifdef ENABLE_TRACING
+        if (enableTracing) {
+            std::stringstream log;
+            log << "Sent command " << m_deviceHandle << " " << fullPath;
+            if (status != CAEN_FELib_Success) {
+                log << " failed: " << lastError();
+            }
+            std::string logmsg(log.str());
+            daqlog::trace(logmsg);
+        }
+#endif
+        if (status  != CAEN_FELib_Success)
         {
             std::stringstream strMessage;
             strMessage << " Failed to send digitizer " << command
@@ -461,8 +552,16 @@ namespace caen_nscldaq {
         SetValue("/endpoint/par/activeendpoint", ep);
         Dig2Device* ncThis = const_cast<Dig2Device*>(this);         // Still want this const.
         ncThis->m_endpointHandle = getActiveEndpointHandle();
+#ifdef ENABLE_TRACING
+        if (enableTracing) {
+            std::stringstream log;
+            log << "Caching the active endpoint handle as " << m_endpointHandle;
+            std::string logmsg(log.str());
+            daqlog::trace(logmsg);
+        }
+#endif
     }
-    /**
+        /**
      * gGtActiveEndpoint
      *   Return the string name of the selected endpoint :
      */
@@ -484,7 +583,20 @@ namespace caen_nscldaq {
     {
         
         std::uint64_t endpointHandle = m_endpointHandle;
-        if (CAEN_FELib_SetReadDataFormat(endpointHandle, json) != CAEN_FELib_Success) {
+        auto status = CAEN_FELib_SetReadDataFormat(endpointHandle, json);
+#ifdef ENABLE_TRACING
+        if (enableTracing) {
+            std::stringstream log;
+            log << "CAEN_FELib_SetReadDataFormat endpoint handle: " << endpointHandle << std::endl
+            << "JSON: " << json << std::endl;
+            if (status != CAEN_FELib_Success) {
+                log << "Failed: " << lastError();
+            }
+            std::string logmsg(log.str());
+            daqlog::trace(logmsg);
+        }
+#endif
+        if (status != CAEN_FELib_Success) {
             std::stringstream strMessage;
             strMessage << "Failed to set the data format "
             << lastError();
@@ -551,6 +663,22 @@ namespace caen_nscldaq {
             args[20], args[21], args[22], args[23], args[24],
             args[25], args[26], args[27], args[28], args[29]
         );
+#ifdef ENABLE_TRACING
+        if (enableTracing) {
+            std::stringstream log;
+            log << "CAEN_FELib_ReadData endpoint handle: " << endpoint
+                << " timeout: " << timeout << " with " << argc <<  " parameters:\n";
+            log << std::hex;
+            for (int i = 0; i < argc; i++) {
+                log << args[i] << ' ';    
+            }
+            if (status != CAEN_FELib_Success) {
+                log << " non success status: " << lastError();
+            }
+            std::string logmsg(log.str());
+            daqlog::trace(logmsg);
+        }
+#endif
         if (status == CAEN_FELib_Timeout) return false;
         // Note that in addition to timeout (got nothing yet) and success,
         // if the digitizer has been stopped and we're doing the last read
@@ -572,6 +700,18 @@ namespace caen_nscldaq {
     Dig2Device::hasData() const
     {
         auto status =  CAEN_FELib_HasData(m_endpointHandle, 0);
+#ifdef ENABLE_TRACING
+        if (enableTracing) {
+            std::stringstream log;
+            log << "CAEN_FELib_HasData called on endpont handle: " << m_endpointHandle;
+            log << " timeout: " << 0;
+            if (status != CAEN_FELib_Success) {
+                log << "Non success status: " << lastError();
+            }
+            std::string logmsg(log.str());
+            daqlog::trace(logmsg);
+        }
+#endif
         return (status == CAEN_FELib_Success) || (status == CAEN_FELib_Stop);
     }
     ///////////////////////////////////////////////////////////////

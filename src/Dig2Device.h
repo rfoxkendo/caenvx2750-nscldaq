@@ -28,6 +28,7 @@
 #include <cstdarg>
 
 namespace caen_nscldaq {
+    void set_tracing(bool onoff) ;
     /**
      * @class Dig2Device
      *       Encapsulates the dig2 library in a bit simpler-to-use
