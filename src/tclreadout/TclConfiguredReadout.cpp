@@ -25,13 +25,18 @@
 #include "DynamicMultiTrigger.h"
 #include <VX2750EventSegment.h>
 #include <VX2750MultiTrigger.h>
+#include <CAENVx2750PhaTrigger.h>
 #include <VX2750MultiModuleEventSegment.h>
 #include <VX2750TclConfig.h>
-#include <Exception.h>
 #include <VX2750TclConfig.h>
+
 #include <TCLInterpreter.h>
+#include <TCLVariable.h>
+#include <Exception.h>
+
 #include <stdexcept>
 #include <iostream>
+#include <set>
 
 using namespace caen_nscldaq;
 
@@ -76,16 +81,18 @@ TclConfiguredReadout::~TclConfiguredReadout() {
  *      configuration file.
  *   @param connectionString - connection string that's passed to the Dig2Device
  *      constructor when the module is created (e.g. stringified IP address).
+ *   @param sid - is the unique source id to be assigned to hits from this module.
  *   @param isUsb - true if the module is connected via USB false if by Ethernet.
  *      This parameter defaults to false (Ethernet connected module).
  */
 void
 TclConfiguredReadout::addModule(
-    const char* name, const char* connectionString, bool isUsb
+    const char* name, const char* connectionString, std::uint32_t sid, bool isUsb
 ) {
     ModuleInfo info = {
         .s_name             = name,
         .s_ConnectionString = connectionString,
+        .s_sourceId        = sid,
         .s_isUsb            = isUsb
     };
     m_modules.push_back(info);
@@ -235,30 +242,120 @@ TclConfiguredReadout::deleteTrigger()  {
  */
 void
 TclConfiguredReadout::readConfiguration() {
+    CTCLInterpreter interp;
     try {
-        CTCLInterpreter interp;
+        
         m_pCurrentConfiguration = new VX2750TclConfig(interp, "container");
         interp.EvalFile(m_configFile);
         
     }
     catch (CException& e) {
         delete m_pCurrentConfiguration;
+        m_pCurrentConfiguration = nullptr;
         std::cerr << e.ReasonText() << std::endl;
+        std::cerr << getTclTraceback(interp) << std::endl;
         throw;
     }
     catch (std::string s) {
         delete m_pCurrentConfiguration;
+        m_pCurrentConfiguration = nullptr;
         std::cerr << s << std::endl;
+        std::cerr << getTclTraceback(interp) << std::endl;
         throw;
     }
     catch (std::exception& e) {
         delete m_pCurrentConfiguration;
+        m_pCurrentConfiguration = nullptr;
         std::cerr << e.what() << std::endl;
+        std::cerr << getTclTraceback(interp) << std::endl;
         throw;
     }
     catch (...) {
         delete m_pCurrentConfiguration;
+        m_pCurrentConfiguration = nullptr;
         std::cerr << "Unanticipated exception type caught while processing the configuration file.\n";
+        std::cerr << getTclTraceback(interp) << std::endl;
         throw;
     }
+}
+/**
+ * checkModuleConfiguration
+ *    It's going to be a fatal error if not all of our modules have a configuration.
+ *    This method checks that m_pCurrentConfiguration has module names
+ *    defined for each of the modules in m_modules.  If that is not the case
+ *    we output a message to stderr and throw and std::exception.  If we
+ *    have to throw the exception, we also kill off the configuration.
+ */
+void
+TclConfiguredReadout::checkModuleConfiguration() {
+    auto configuredNames = m_pCurrentConfiguration->listModules();
+    std::set<std::string> configuredSet(configuredNames.begin(), configuredNames.end());
+    
+    // easiest to check in the set  We'll figure out all missing modules
+    // before we throw so:
+    
+    bool missing(false);
+    for (auto m : m_modules) {
+        if (configuredSet.count(m.s_name) == 0) {
+            std::cerr << m_configFile <<
+                " Does not have a configurationfor module "
+                << m.s_name << std::endl;
+            missing = true;
+        }
+    }
+    // If there were missing modules then we throw:
+    
+    if (missing) {
+        delete m_pCurrentConfiguration;
+        m_pCurrentConfiguration = nullptr;
+        throw std::string("Configuration file is invalid");
+    }
+    
+}
+/**
+ * createTrigger
+ *    At this point, we have a configuration, it has a stanza for each
+ *    module in m_modules.  We can confidently build the readout infrastructure
+ *    knowing that evertying glues together properly.
+ *    - We create a new mutlmodule trigger.
+ *    - We create a VX2750MultiModuleEventSegment
+ *    - For each module in m_modules we make a VX2750EventSegment
+ *    - We create a trigger for that module and add it to the multimodule trigger.
+ *
+ */
+void
+TclConfiguredReadout::createTrigger() {
+    m_pCurrentTrigger = new VX2750MultiTrigger;
+    m_pCurrentEventSegment =
+        new VX2750MultiModuleEventSegment(m_pExperiment, m_pCurrentTrigger);
+    for (auto m : m_modules) {
+        auto pSegment =
+            new VX2750EventSegment(
+                m_pExperiment, m.s_sourceId, m.s_name.c_str(),
+                m_pCurrentConfiguration, m.s_ConnectionString.c_str(), m.s_isUsb
+        );
+        auto pModuleTrigger = new CAENVX2750PhaTrigger(*pSegment);
+        m_pCurrentTrigger->addTrigger(pModuleTrigger);
+    }
+    
+}
+
+
+/**
+ * getTclTraceback
+ *    Pulls the value of the global errorInfo variable which is the traceback
+ *    for any Tcl error thrown in evaluating a script.
+ *  @param interp - interpreter whose traceback we're trying to get
+ *  @return std::string - value of errorInfo.
+ *  @retval "" if there's somehow no errorInfo var.
+ */
+std::string
+TclConfiguredReadout::getTclTraceback(CTCLInterpreter& interp) {
+    std::string result;
+    
+    CTCLVariable info(&interp, "errorInfo", false);
+    const char* pTrace = info.Get();
+    if (pTrace) result = pTrace;
+    
+    return result;
 }

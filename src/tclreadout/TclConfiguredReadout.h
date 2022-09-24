@@ -27,12 +27,13 @@
 
 #include <string>
 #include <vector>
-
+#include <cstdint>
 // Forward definitions:
 
 class DynamicMultiTrigger;
 class CExperiment;
 class CEventTrigger;
+class CTCLInterpreter;
 
 namespace caen_nscldaq {
     class VX2750EventSegment;
@@ -73,6 +74,7 @@ private:
    typedef struct _ModuleInfo {
       std::string s_name;
       std::string s_ConnectionString;
+      std::uint32_t s_sourceId;
       bool        s_isUsb;
    } ModuleInfo, *pModuleInfo;
 private:
@@ -88,7 +90,8 @@ public:
     virtual ~TclConfiguredReadout();
     
     void addModule(
-         const char* name, const char* connectionString, bool isUsb = false
+         const char* name, const char* connectionString, std::uint32_t sid,
+         bool isUsb = false
     );
     CEventTrigger* getTrigger();
     
@@ -105,6 +108,7 @@ private:
    void readConfiguration();
    void checkModuleConfiguration();
    void createTrigger();
+   std::string getTclTraceback(CTCLInterpreter& interp);
 };
 
 

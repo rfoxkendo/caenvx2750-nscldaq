@@ -18,7 +18,7 @@
 #include <CExperiment.h>
 #include <TCLInterpreter.h>
 #include <CTimedTrigger.h>
-
+#include "TclConfiguredReadout.h"
 /*
 /*
 ** This file is a skeleton for the production readout software for
@@ -93,12 +93,30 @@ Skeleton::SetupReadout(CExperiment* pExperiment)
 {
   CReadoutMain::SetupReadout(pExperiment);
 
-  // Establish your trigger here by creating a trigger object
-  // and establishing it.
-
-  // Create and add your event segments here, by creating them and invoking CExperiment's 
-  // AddEventSegment
-
+  // First we create a TclConfiguredReadout object and describe the
+  // connections to the modules in the system -- assigning each
+  // module a distinct source id for event building.
+  // Note that the event builder allows fragments from the same source to get
+  // grouped into the same event and each fragment is tagged with its channel..
+  // so per-module sids rather than per-channel work just fine:
+  
+  auto pSegment = new TclConfiguredReadout(
+    "configuration.tcl",            // Detailed module settings file path.
+    pExperiment                     // Pointer to experiment object.
+  );
+  pSegment->addModule(
+    "adc1",                   // Name of module in configuration.tcl
+    "15236",                   // PID for USB connection, IP If ethernet.
+    1,                        // System unique source id.
+    true                      // Indicates it's USB not Ethernet defaults to false.
+  );
+  
+  pExperiment->AddEventSegment(pSegment);
+  
+  // The event segment creates a dynamic multi trigger object which we need
+  // to fetch out and register as the trigger for the system:
+  
+  pExperiment->EstablishTrigger(pSegment->getTrigger());
   
 }
 
@@ -118,18 +136,7 @@ Skeleton::SetupReadout(CExperiment* pExperiment)
 void
 Skeleton::SetupScalers(CExperiment* pExperiment) 
 {
-  CReadoutMain::SetupScalers(pExperiment);	// Establishes the default scaler trigger.
-
-  // Sample: Set up a timed trigger at 2 second intervals.
-
-  timespec t;
-  t.tv_sec  = 2;
-  t.tv_nsec = 0;
-  CTimedTrigger* pTrigger = new CTimedTrigger(t);
-  pExperiment->setScalerTrigger(pTrigger);
-
-  // Create and add your scaler modules here.
-
+  CReadoutMain::SetupScalers(pExperiment);	// null trigger - no scalers.
 
 }
 /*!
