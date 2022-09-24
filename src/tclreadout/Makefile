@@ -27,7 +27,8 @@ USERCXXFLAGS=$(USERCCFLAGS)
 
 #  If you have additional load flags (e.g. library dirs and libs):
 
-USERLDFLAGS=-L.. -lCaenVx2750 $(JSON_LDFLAGS) $(FELIB_LDFLAGS)
+USERLDFLAGS=-L.. -lCaenVx2750 $(JSON_LDFLAGS) $(FELIB_LDFLAGS) \
+	-lboost_log -lboost_log_setup  -lboost_thread -lboost_system
 
 #
 #  This is a list of the objects that go into making the application

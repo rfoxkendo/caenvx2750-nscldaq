@@ -19,6 +19,7 @@
 #include <TCLInterpreter.h>
 #include <CTimedTrigger.h>
 #include "TclConfiguredReadout.h"
+#include <Dig2Device.h>
 /*
 /*
 ** This file is a skeleton for the production readout software for
@@ -91,8 +92,12 @@ CTCLApplication* gpTCLApplication = new Skeleton;
 void
 Skeleton::SetupReadout(CExperiment* pExperiment)
 {
+ 
   CReadoutMain::SetupReadout(pExperiment);
+  // turn on felib tracing if supported:
 
+  caen_nscldaq::set_tracing(true);
+  
   // First we create a TclConfiguredReadout object and describe the
   // connections to the modules in the system -- assigning each
   // module a distinct source id for event building.
