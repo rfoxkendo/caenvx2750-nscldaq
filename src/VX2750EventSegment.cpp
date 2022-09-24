@@ -30,6 +30,7 @@
 #include <sstream>
 #include <string.h>
 #include <CExperiment.h>
+#include <unistd.h>
 
 namespace caen_nscldaq {
 /**
@@ -116,7 +117,9 @@ VX2750EventSegment::initialize()
         // After this chunk of code the module should be able to generate triggers.
         
         m_pModule->Clear();
+        sleep(1);
         m_pModule->Arm();
+        sleep(1);
         m_pModule->Start();
         
     }
