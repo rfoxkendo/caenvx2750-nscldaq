@@ -21,7 +21,8 @@
 #include <cstdint>
 #include <string>
 #include <unistd.h>
-
+#include <stdlib.h>
+#include "Dig2Device.h"
 #include "Asserts.h"
 
 extern bool isUsb;
@@ -43,6 +44,7 @@ private:
     VX2750Pha* m_pModule;
 public:
     void setUp() {
+      caen_nscldaq::set_tracing(true);
         m_pModule = new VX2750Pha(connection.c_str(), isUsb);
     }
     void tearDown() {
@@ -102,7 +104,9 @@ void triggertests::raw_1()
     try {
         bool hasdata;
         m_pModule->Clear();
+	sleep(1);
         m_pModule->Arm();
+	sleep(1);
         CPPUNIT_ASSERT_NO_THROW(m_pModule->Start());
         for (int i =0; i < TRIGGER_COUNT; i++) CPPUNIT_ASSERT_NO_THROW(m_pModule->Trigger());
         usleep(DELAY_US);
@@ -163,7 +167,9 @@ triggertests::cooked_1()
     try {
         bool hasdata;
         m_pModule->Clear();
+	sleep(1);
         m_pModule->Arm();
+	sleep(1);
         CPPUNIT_ASSERT_NO_THROW(m_pModule->Start());
         for (int i =0; i < TRIGGER_COUNT; i++) CPPUNIT_ASSERT_NO_THROW(m_pModule->Trigger());
         usleep(DELAY_US);
