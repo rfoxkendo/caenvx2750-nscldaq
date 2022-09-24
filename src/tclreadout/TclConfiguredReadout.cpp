@@ -135,27 +135,38 @@ TclConfiguredReadout::getTrigger() {
 void
 TclConfiguredReadout::onBegin()
 {
+    
+    m_pCurrentEventSegment->onBegin();
+}
+
+
+/**
+ * initialize
+ *    Called just prior to data taking to do hardware initialization....
+ *    which is called prior to beginning the run.
+ */
+void
+TclConfiguredReadout::initialize() {
     // Kill off the previous readout stuff.
     
+    m_pTrigger->clear();
     delete m_pCurrentConfiguration;
     m_pCurrentConfiguration = nullptr;
     deleteTrigger();
     delete m_pCurrentEventSegment;
     m_pCurrentEventSegment = nullptr;
     
+    readConfiguration();         // Won't return on error
+    checkModuleConfiguration();  // won't return on error.
+    createTrigger();             // also create the modules in the trigger.
     
-}
-
-
-/**
- * initialize
- *    Called just prior to data taking to do hardware initialization.
- */
-void
-TclConfiguredReadout::initialize() {
+    m_pCurrentEventSegment = new VX2750MultiModuleEventSegment(m_pExperiment, m_pCurrentTrigger);
+    
     if (m_pCurrentEventSegment) {
         m_pCurrentEventSegment->initialize();
     }
+ 
+    m_pTrigger->addTrigger(m_pCurrentTrigger);
 }
 /**
  * disable
@@ -219,16 +230,7 @@ TclConfiguredReadout::deleteTrigger()  {
         m_pCurrentTrigger = nullptr;
     }
     
-    readConfiguration();         // Won't return on error
-    checkModuleConfiguration();  // won't return on error.
-    createTrigger();             // also create the modules in the trigger.
     
-    m_pCurrentEventSegment = new VX2750MultiModuleEventSegment(m_pExperiment, m_pCurrentTrigger);
-    
-    m_pTrigger->clear();
-    m_pTrigger->addTrigger(m_pCurrentTrigger);
-    
-    m_pCurrentEventSegment->onBegin();
 }
 /**
  * readConfiguration
@@ -245,7 +247,7 @@ TclConfiguredReadout::readConfiguration() {
     CTCLInterpreter interp;
     try {
         
-        m_pCurrentConfiguration = new VX2750TclConfig(interp, "container");
+        m_pCurrentConfiguration = new VX2750TclConfig(interp, "v27xxpha");
         interp.EvalFile(m_configFile);
         
     }
