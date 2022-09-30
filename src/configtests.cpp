@@ -1325,14 +1325,18 @@ void cfgtest::eselection_1()
 {
     m_pConfig->configure("energyskimlow", itemToList("1024"));
     m_pConfig->configure("energyskimhigh", itemToList("32767"));
-    m_pConfig->configure("coinidecnelength", itemToList("1023"));
+    m_pConfig->configure("coincidencelength", itemToList("1023"));
     
     m_pConfig->configureModule(*m_pModule);
     
     for (int i = 0;i < 64; i++) {
         EQ(std::uint16_t(1024), m_pModule->getEnergySkimLowDiscriminator(i));
         EQ(std::uint16_t(32767), m_pModule->getEnergySkimHighDiscriminator(i));
-        EQ(std::uint32_t(1023), m_pModule->getCoincidenceNs(i));
+        
+        // NS may be inexact -- let's give 4 unit slop:
+        
+        ASSERT(std::abs((double)m_pModule->getCoincidenceNs(i) - 1023.0) <= 4);
+
     }
 }
 // Event/wave selector:
