@@ -78,7 +78,8 @@ void triggertests::raw_1()
     // I think this should give me what I want...
     
     
-    
+    std::vector<VX2750Pha::StartSource> start = {VX2750Pha::SWCommand};
+    m_pModule->setStartSource(start);                         // ensure sw start is ok.
     m_pModule->setEventSelector(0, VX2750Pha::All);
     m_pModule->setWaveformSelector(0, VX2750Pha::All);
     std::vector<VX2750Pha::GlobalTriggerSource> gbltrig =
@@ -104,9 +105,7 @@ void triggertests::raw_1()
     try {
         bool hasdata;
         m_pModule->Clear();
-	sleep(1);
         m_pModule->Arm();
-	sleep(1);
         CPPUNIT_ASSERT_NO_THROW(m_pModule->Start());
         for (int i =0; i < TRIGGER_COUNT; i++) CPPUNIT_ASSERT_NO_THROW(m_pModule->Trigger());
         usleep(DELAY_US);
@@ -141,6 +140,8 @@ triggertests::cooked_1()
     }
     // I think this should give me what I want...
     
+    std::vector<VX2750Pha::StartSource> start = {VX2750Pha::SWCommand};
+    m_pModule->setStartSource(start);                         // ensure sw start is ok.
     m_pModule->setEventSelector(0, VX2750Pha::All);
     m_pModule->setWaveformSelector(0, VX2750Pha::All);
     std::vector<VX2750Pha::GlobalTriggerSource> gbltrig =
@@ -167,9 +168,9 @@ triggertests::cooked_1()
     try {
         bool hasdata;
         m_pModule->Clear();
-	sleep(1);
+	
         m_pModule->Arm();
-	sleep(1);
+	
         CPPUNIT_ASSERT_NO_THROW(m_pModule->Start());
         for (int i =0; i < TRIGGER_COUNT; i++) CPPUNIT_ASSERT_NO_THROW(m_pModule->Trigger());
         usleep(DELAY_US);

@@ -896,24 +896,39 @@ static const std::map<VX2750Pha::Endpoint, std::string> endpointToString = {
     }
     /**
      * getStartSource
-     *   @return VX2750Pha::StartSource - describes the source selected to start
+     *   @return std::vector<VX2750Pha::StartSource> - describes the sources selected to start
      *          digitizer runs.
      */
-    VX2750Pha::StartSource
+    std::vector<VX2750Pha::StartSource>
     VX2750Pha::getStartSource() const
     {
         std::string strValue = GetDeviceValue("StartSource");
-        return stringToEnum(stringToStartSource, strValue);
+        // this is a | separated list of start sources:
+        //
+        auto stringList = orListToStringList(strValue);
+        std::vector<StartSource> result;
+        for (auto s : stringList)  {
+            result.push_back(stringToEnum(stringToStartSource, s));
+        }
+        return result;
     }
     /**
      * setStartSource
-     *    @param src - VX2750Pha::StartSource that selects what will start
+     *    @param src - std::Vector<VX2750Pha::StartSource> that selects what will start
      *       data acquisition on a digitizer.
      */
     void
-    VX2750Pha::setStartSource(StartSource selection) const
+    VX2750Pha::setStartSource(const std::vector<StartSource>& src) const
     {
-        std::string strValue =  enumToString(startSourceToString, selection);
+        if (src.size() == 0) {
+            throw std::logic_error("setStartSource requires at least one source");
+        }
+        std::vector<std::string> sources;
+        for (auto s : src) {
+            sources.push_back(enumToString(startSourceToString, s));
+        }        
+        std::string strValue = stringListToOrList(sources);
+
         SetDeviceValue("StartSource", strValue.c_str());
     }
     /**
@@ -3444,7 +3459,7 @@ static const std::map<VX2750Pha::Endpoint, std::string> endpointToString = {
         description[index++] = createScalar("CHANNEL", "U8");
         description[index++] = createScalar("TIMESTAMP_NS", "U64");
         description[index++] = createScalar("ENERGY", "U16");
-        description[index++] = createScalar("BOARD_FAIL", "BOOL");
+        //description[index++] = createScalar("BOARD_FAIL", "BOOL");
             
         // Now add in any selected optional elements to the readout format:
         

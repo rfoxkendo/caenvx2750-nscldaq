@@ -427,12 +427,16 @@ void vx2750phatest::startsource()
         VX2750Pha::SWCommand, VX2750Pha::Start_LVDS, VX2750Pha::Start_P0
     };
     
-    VX2750Pha::StartSource original;
+    std::vector<VX2750Pha::StartSource> original;
     CPPUNIT_ASSERT_NO_THROW(original = m_pModule->getStartSource());
     
     for (auto source : possible) {
-        CPPUNIT_ASSERT_NO_THROW(m_pModule->setStartSource(source));
-        EQ(source, m_pModule->getStartSource());
+        std::vector<VX2750Pha::StartSource> src;
+        src.push_back(source);
+        CPPUNIT_ASSERT_NO_THROW(m_pModule->setStartSource(src));
+        auto got = m_pModule->getStartSource();
+        EQ(size_t(1), got.size());
+        EQ(source, got[0]);
     }
     m_pModule->setStartSource(original);
 }
@@ -731,7 +735,7 @@ void vx2750phatest::busyinsrc()
     };
     
     VX2750Pha::BusyInSource original;
-    CPPUNIT_ASSERT_NO_THROW(m_pModule->getBusyInputSource());
+    CPPUNIT_ASSERT_NO_THROW(original = m_pModule->getBusyInputSource());
     for (auto s : sources) {
         CPPUNIT_ASSERT_NO_THROW(m_pModule->setBusyInputSource(s));
         EQ(s, m_pModule->getBusyInputSource());
@@ -1928,7 +1932,7 @@ void vx2750phatest::efpeakavg()
         CPPUNIT_ASSERT_NO_THROW(m_pModule->setEnergyFilterFlatTopSamples(i, 375)); // largest allowed.
         CPPUNIT_ASSERT_NO_THROW(m_pModule->setEnergyFilterPeakingPosition(i, 10.0));
         oldflat = m_pModule->getEnergyFilterFlatTopSamples(i);
-        CPPUNIT_ASSERT_NO_THROW(m_pModule->getEnergyFilterPeakingAverage(i));
+        CPPUNIT_ASSERT_NO_THROW(old = m_pModule->getEnergyFilterPeakingAverage(i));
         
         for (auto o : options) {
             CPPUNIT_ASSERT_NO_THROW(m_pModule->setEnergyFilterPeakingAverage(i, o));
@@ -2080,7 +2084,7 @@ void vx2750phatest::efpupguard()
     std::int32_t mins = 0;
     std::int32_t maxs = 8000;
     std::int32_t mint = 0;
-    std::int32_t maxt = 65472;
+    std::int32_t maxt = 6400;
     
     std::uint32_t old;
     int nch = m_pModule->channelCount();

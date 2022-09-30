@@ -409,8 +409,8 @@ public:
     void         setClockOutOnP0(bool state) const;
     bool         isClockOutOnFP() const;
     void         setClockOutOnFP(bool state) const;
-    StartSource  getStartSource() const;
-    void         setStartSource(StartSource src) const;
+    std::vector<StartSource>  getStartSource() const;
+    void         setStartSource(const std::vector<StartSource>& src) const;
     std::vector<GlobalTriggerSource> getGlobalTriggerSource() const;
     void         setGlobalTriggerSource(const std::vector<GlobalTriggerSource>& sources) const;
     std::vector<WaveTriggerSource> getWaveTriggerSource(unsigned ch) const;
@@ -737,6 +737,8 @@ VX2750Pha::enumToString(const std::map<T, std::string>&map, T value) const
 {
     auto p = map.find(value);
     if (p == map.end()) {
+        std::string msg = "Invalid lookup key passed to enumToString: ";
+        msg += std::to_string(value);
         throw std::invalid_argument("Invalid lookup key passed to enumToString");
     }
     return p->second;

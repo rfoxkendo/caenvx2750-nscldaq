@@ -117,10 +117,17 @@ VX2750EventSegment::initialize()
         // After this chunk of code the module should be able to generate triggers.
         
         m_pModule->Clear();
-        sleep(1);
         m_pModule->Arm();
-        sleep(1);
-        m_pModule->Start();
+        // If one of the start sources is SwCommand we need to do that:
+        //
+        auto startSources = pConfig->getList("startsource");
+        for (auto s : startSources) {
+            if (s == "Swcmd") {
+                m_pModule->Start();
+                break;                     // in case there's duplication.
+            }
+        }
+        
         
     }
     catch (std::exception& e) {

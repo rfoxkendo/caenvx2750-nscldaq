@@ -239,7 +239,7 @@ VX2750PHAModuleConfiguration::defineAcqTriggerOptions()
      const char* startSrces[]  = {
          "EncodedClkIn", "SINlevel", "SINedge", "SWcmd", "LVDS", "P0", nullptr
      };
-     addEnumParameter("startsource", startSrces, "SINedge");
+     addEnumListParameter("startsource", startSrces, "SWcmd", 1, 6, 1);
      
      const char* globalTriggerSrcs[] = {
          "TrgIn", "P0", "SwTrg", "LVDS", "ITLA", "ITLB",
@@ -333,7 +333,12 @@ VX2750PHAModuleConfiguration::configureAcquisitionTriggerOptions(VX2750Pha& modu
 {
   int nch = module.channelCount();
   
-  module.setStartSource(VX2750Pha::stringToStartSource.find(cget("startsource"))->second);
+  auto startSources = getList("startsource");
+  std::vector<VX2750Pha::StartSource>  startSourceVec;
+  for (auto src :startSources) {
+    startSourceVec.push_back(VX2750Pha::stringToStartSource.find(src)->second);
+  }
+  module.setStartSource(startSourceVec);
   auto globalTriggers = getList("gbltriggersrc");
   std::vector<VX2750Pha::GlobalTriggerSource> srcs;
   for (auto src: globalTriggers) {

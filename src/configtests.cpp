@@ -310,7 +310,9 @@ void cfgtest::startsrc()
     for (int i =0; i < srcStrings.size(); i++)  { // Allows us to index srcs.
         m_pConfig->configure("startsource", srcStrings[i]);
         m_pConfig->configureModule(*m_pModule);
-        EQ(srcs[i], m_pModule->getStartSource());
+        auto got = m_pModule->getStartSource();
+        EQ(size_t(1), got.size());
+        EQ(srcs[i], got[0]);
     }
 }
 // Test for global trigger source - individual sources:
