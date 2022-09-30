@@ -34,7 +34,9 @@ v27xxpha config adc1 eflflimitation [lrepeat 64 false] \
     efbaselineavg [lrepeat 64 256] effinegain [lrepeat 64 1.0]
 
 
+# Put analog probe 1 in the event.
 
+v27xxpha config adc1 readanalogprobes [list on off];   
     
 
 
