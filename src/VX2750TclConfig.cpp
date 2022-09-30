@@ -178,7 +178,7 @@ void VX2750TclConfig::config(CTCLInterpreter& interp, std::vector<CTCLObject>& o
     
     // Note that failures will throw too:
     
-    for (int i = 4; i < objv.size(); i += 2) {
+    for (int i = 3; i < objv.size(); i += 2) {
         std::string param =objv[i];
         std::string value = objv[i+1];
         pConfig->configure(param, value);

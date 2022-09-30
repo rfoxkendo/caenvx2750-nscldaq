@@ -94,9 +94,10 @@ Skeleton::SetupReadout(CExperiment* pExperiment)
 {
  
   CReadoutMain::SetupReadout(pExperiment);
-  // turn on felib tracing if supported:
+  
+  // turns on felib tracing if compiled with it enabled
 
-  caen_nscldaq::set_tracing(true);
+  // caen_nscldaq::set_tracing(true);
   
   // First we create a TclConfiguredReadout object and describe the
   // connections to the modules in the system -- assigning each

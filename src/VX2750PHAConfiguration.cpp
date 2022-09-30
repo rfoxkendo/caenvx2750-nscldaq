@@ -435,7 +435,7 @@ VX2750PHAModuleConfiguration::defineWfInspectionOptions()
   addEnumListParameter("digitalprobe1", digitalProbes, "Trigger", 0, 64, 64);
   addEnumListParameter("digitalprobe2", digitalProbes, "TimeFilterArmed", 0, 64, 64);
   addEnumListParameter("digitalprobe3", digitalProbes, "RetriggerGuard", 0, 64, 64);
-  addEnumListParameter("digitalprobe4", digitalProbes, "EnergyBaselineFreeze", 0, 64, 64);
+  addEnumListParameter("digitalprobe4", digitalProbes, "EnergyFilterBaselineFreeze", 0, 64, 64);
   
   addIntListParameter("pretriggersamples", 4, 4000,  0, 64, 64, 100);
   
@@ -803,17 +803,17 @@ VX2750PHAModuleConfiguration::configureEventSelection(VX2750Pha& module)
 void
 VX2750PHAModuleConfiguration::defineFilterOptions()
 {
-    addIntListParameter("tfrisetime", 80, 2000, 0, 64, 64, 80);
-    addIntListParameter("tfretriggerguard", 0, 8000, 0, 64, 64, 0);
-    addIntListParameter("efrisetime", 80, 13000, 0, 64, 64, 80);
-    addIntListParameter("efflattoptime", 80, 3000, 0,64, 64, 80);
+    addIntListParameter("tfrisetime", 4, 250, 0, 64, 64, 80);
+    addIntListParameter("tfretriggerguard", 0, 1000, 0, 64, 64, 0);
+    addIntListParameter("efrisetime", 4, 1625, 0, 64, 64, 80);
+    addIntListParameter("efflattoptime", 4, 375, 0,64, 64, 80);
     addIntListParameter("efpeakingpos", 10, 90, 0, 64, 64, 50);
     
     const char* peakingaverages[] = {
       "1", "4", "16", "64", nullptr
     };
     addEnumListParameter("efpeakingavg", peakingaverages, "1", 0, 64, 64);
-    addIntListParameter("efpolezero", 80, 524000, 0, 64, 64, 80);
+    addIntListParameter("efpolezero", 4, 65500, 0, 64, 64, 80);
     addFloatListParameter("effinegain", 0, 0.0, 10.0, 64, 64, 1.0);
     addBoolListParameter("eflflimitation", 0, 64, false, 64);
     
@@ -822,7 +822,7 @@ VX2750PHAModuleConfiguration::defineFilterOptions()
     };
     addEnumListParameter("efbaselineavg", baselineaverages, "0", 0, 64, 64);
     addIntListParameter("efbaselineguardt", 0, 8000, 0, 64, 64, 0);
-    addIntListParameter("efpileupguardt", 0, 8184, 0, 64, 64, 0);
+    addIntListParameter("efpileupguardt", 0, 8000, 0, 64, 64, 0);
     
 }
 /**
@@ -849,19 +849,19 @@ VX2750PHAModuleConfiguration::configureFilter(VX2750Pha& module)
     int nch = module.channelCount();
     for (int i = 0; i < nch; i++) {
       if (triggerRiseTimes.size() > i)
-        module.setTimeFilterRiseTime(i, triggerRiseTimes[i]);
+        module.setTimeFilterRiseSamples(i, triggerRiseTimes[i]);
       if (triggerRetriggerGuards.size() > i)
-        module.setTimeFilterRetriggerGuardTime(i, triggerRetriggerGuards[i]);
+        module.setTimeFilterRetriggerGuardSamples(i , triggerRetriggerGuards[i]);
       if (energyRiseTimes.size() > i)
-        module.setEnergyFilterRiseTime(i, energyRiseTimes[i]);
+        module.setEnergyFilterRiseSamples(i, energyRiseTimes[i]);
       if (energyFlatTopTimes.size() > i)
-        module.setEnergyFilterFlatTopTime(i, energyFlatTopTimes[i]);
+        module.setEnergyFilterFlatTopSamples(i, energyFlatTopTimes[i]);
       if (energyPeakingPos.size() > i)
         module.setEnergyFilterPeakingPosition(i, energyPeakingPos[i]);
       if (peakingAverages.size() > i)
         module.setEnergyFilterPeakingAverage(i, peakingAvgs.find(peakingAverages[i])->second);
       if (poleZeros.size() > i)
-        module.setEnergyFilterPoleZeroTime(i, poleZeros[i]);
+        module.setEnergyFilterPoleZeroSamples(i, poleZeros[i]);
       if (fineGains.size() > i)
         module.setEnergyFilterFineGain(i, fineGains[i]);
       if (lfEliminations.size() > i)
