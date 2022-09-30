@@ -3485,7 +3485,7 @@ static const std::map<VX2750Pha::Endpoint, std::string> endpointToString = {
             description[index++] = createArray("ANALOG_PROBE_1", "I32", 1);
             description[index++] = createScalar("ANALOG_PROBE_1_TYPE", "U8");
         }
-        if (m_dppPhaOptions.s_enableAnalogProbe1) {
+        if (m_dppPhaOptions.s_enableAnalogProbe2) {
             description[index++] = createArray("ANALOG_PROBE_2", "I32", 1);
             description[index++] = createScalar("ANALOG_PROBE_2_TYPE", "U8");
         }
@@ -3506,7 +3506,7 @@ static const std::map<VX2750Pha::Endpoint, std::string> endpointToString = {
             description[index++] = createScalar("DIGITAL_PROBE_4_TYPE", "U8");
         }
         if (m_dppPhaOptions.s_enableSampleCount) {
-            
+            description[index++] = createScalar("WAVEFORM_SIZE SIZE_T", "SIZE_T");
         }
         if (m_dppPhaOptions.s_enableEventSize) {
             description[index++] = createScalar("EVENT_SIZE", "SIZE_T");
@@ -3555,7 +3555,7 @@ static const std::map<VX2750Pha::Endpoint, std::string> endpointToString = {
         argv[argc++] = &(event.s_channel);
         argv[argc++] = &(event.s_nsTimestamp);
         argv[argc++] = &(event.s_energy);
-        argv[argc++] = &(event.s_fail);
+        //argv[argc++] = &(event.s_fail);
         
         // The remaining arguments depend on the values of the dpp PHA options
         // struct flags:

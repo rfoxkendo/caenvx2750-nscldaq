@@ -88,7 +88,7 @@ VX2750EventSegment::initialize()
     try {
         auto pConfig = m_pConfiguration->getModule(m_moduleName.c_str());
         m_pModule = new VX2750Pha(m_hostOrPid.c_str(), m_isUsb);
-        
+        pConfig->configureModule(*m_pModule);
         
         // We need to ask the configuration what to expect from the module:
         //    Trace lengths.
@@ -102,7 +102,7 @@ VX2750EventSegment::initialize()
         
         // The configuration takes care of initializing the module:
         
-        pConfig->configureModule(*m_pModule);
+        
         m_pModule->initDecodedBuffer(m_Event);
         m_pModule->setupDecodedBuffer(m_Event);
         
@@ -196,7 +196,7 @@ void VX2750EventSegment::onResume()
   *Event format:
   *\verbatim
   *    +------------------------------------+
-  *    | Module name (cz string)            |
+  *    | Module name (cz string)            |  oadded to unt16_5
   *    +------------------------------------+
   *    | uin16_t channel number             |
   *    +------------------------------------+
@@ -284,6 +284,7 @@ void VX2750EventSegment::onResume()
     size_t bytesNeeded =
         m_moduleName.size() + 1 + 7*sizeof(uint16_t) +
         2*sizeof(uint64_t);                                      // Fixed junk:
+    if (m_moduleName.size() % 2 == 0) bytesNeeded++;          // Round to next uint16_t
     bytesNeeded += 6*(sizeof(uint16_t) + sizeof(uint32_t));  // Always present probe stuff.
     
     // Fold in any present traces. Null pointers in the event indicate
@@ -344,6 +345,7 @@ void VX2750EventSegment::onResume()
     
     strcpy(reinterpret_cast<char*>(p.p8), m_moduleName.c_str());
     p.p8 += m_moduleName.size() + 1;
+    if (m_moduleName.size() % 2 == 0) *p.p8++ = 0;  // Pad to uint16_t
     
     // Now the fixed part... we need to do this field by field because
     // we adjust some sizes:
