@@ -31,6 +31,7 @@
 #include <string.h>
 #include <CExperiment.h>
 #include <unistd.h>
+#include <iostream>
 
 namespace caen_nscldaq {
 /**
@@ -122,7 +123,9 @@ VX2750EventSegment::initialize()
         //
         auto startSources = pConfig->getList("startsource");
         for (auto s : startSources) {
-            if (s == "Swcmd") {
+            if (s == "SWcmd") {
+                std::cout << "SWcmd is enabled as a start source for "
+                    << m_moduleName << " so invoking start\n";
                 m_pModule->Start();
                 break;                     // in case there's duplication.
             }
