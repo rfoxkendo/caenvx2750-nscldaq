@@ -108,7 +108,7 @@ namespace caen_nscldaq {
             // Defensive.
             
             VX2750EventSegment* pSeg = triggered.back();
-            size_t nRead = pSeg->read(pBuffer, maxwords);
+            nRead = pSeg->read(pBuffer, maxwords);
             triggered.pop_back();
             
             if (!triggered.empty()) {

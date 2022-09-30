@@ -3459,6 +3459,7 @@ static const std::map<VX2750Pha::Endpoint, std::string> endpointToString = {
         description[index++] = createScalar("CHANNEL", "U8");
         description[index++] = createScalar("TIMESTAMP_NS", "U64");
         description[index++] = createScalar("ENERGY", "U16");
+        
         //description[index++] = createScalar("BOARD_FAIL", "BOOL");
             
         // Now add in any selected optional elements to the readout format:
@@ -3505,7 +3506,7 @@ static const std::map<VX2750Pha::Endpoint, std::string> endpointToString = {
             description[index++] = createScalar("DIGITAL_PROBE_4_TYPE", "U8");
         }
         if (m_dppPhaOptions.s_enableSampleCount) {
-            description[index++] = createScalar("WAVEFORM_SIZE", "SIZE_T");
+            
         }
         if (m_dppPhaOptions.s_enableEventSize) {
             description[index++] = createScalar("EVENT_SIZE", "SIZE_T");
