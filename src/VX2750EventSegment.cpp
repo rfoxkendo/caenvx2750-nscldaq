@@ -26,6 +26,7 @@
 #include "VX2750TclConfig.h"
 #include "VX2750PhaConfiguration.h"
 #include "VX2750Pha.h"
+#include <CException.h>
 #include <stdexcept>
 #include <sstream>
 #include <string.h>
@@ -135,6 +136,9 @@ VX2750EventSegment::initialize()
     }
     catch (std::exception& e) {
         throw e.what();
+    }
+    catch (CException& e) {
+        throw e.ReasonText();
     }
 }
 /**

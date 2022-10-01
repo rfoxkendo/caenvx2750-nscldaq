@@ -3647,7 +3647,7 @@ static const std::map<VX2750Pha::Endpoint, std::string> endpointToString = {
         
         int nChans = channelCount();
         std::uint32_t samples = 0;
-        for (int i=0; i < samples; i++) {
+        for (int i=0; i < nChans; i++) {
             auto n = getRecordSamples(i);
             if (n > samples) samples = n;
         }
