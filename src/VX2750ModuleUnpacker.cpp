@@ -135,6 +135,7 @@ VX2750ModuleUnpacker::unpackHit(const void* pData)
         throw std::logic_error("Mismatch between data module name and unpacker module name!");
     }
     p.b += name.size() + 1;                      // +1 for null term.
+    if (((name.size()+1) % 2) == 1 ) p.b++;        // Paded out to uint16_t.
     
     std::uint16_t ch = *p.w;
     std::uint64_t m  = 1;

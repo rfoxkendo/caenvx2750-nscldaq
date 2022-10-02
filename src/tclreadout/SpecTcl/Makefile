@@ -6,7 +6,7 @@ include $(INSTDIR)/etc/SpecTcl_Makefile.include
 #  If you have any switches that need to be added to the default c++ compilation
 # rules, add them to the definition below:
 
-USERCXXFLAGS=
+USERCXXFLAGS=-I../..
 
 #  If you have any switches you need to add to the default c compilation rules,
 #  add them to the defintion below:
@@ -15,8 +15,7 @@ USERCCFLAGS=$(USERCXXFLAGS)
 
 #  If you have any switches you need to add to the link add them below:
 
-USERLDFLAGS=
-
+USERLDFLAGS=-L../.. -lCaenVxUnpackers
 #
 #   Append your objects to the definitions below:
 #

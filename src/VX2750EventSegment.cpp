@@ -26,7 +26,7 @@
 #include "VX2750TclConfig.h"
 #include "VX2750PhaConfiguration.h"
 #include "VX2750Pha.h"
-#include <CException.h>
+#include <Exception.h>
 #include <stdexcept>
 #include <sstream>
 #include <string.h>

@@ -42,7 +42,7 @@ namespace caen_spectcl {
      *  @note We don't make the base class public because  we want to forbid
      *        our direct clients from calling addEventProcessor in the base class.
      */
-    class VX2750EventBuiltEventProcessor : protected CEventBuilderEventProcessor {
+    class VX2750EventBuiltEventProcessor : public CEventBuilderEventProcessor {
     private:
         std::vector<VX2750EventProcessor*> m_eventProcessors;
         std::vector<VX2750EventProcessor*> m_createdEventProcessors;
