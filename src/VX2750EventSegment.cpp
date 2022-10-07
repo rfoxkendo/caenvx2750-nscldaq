@@ -300,8 +300,7 @@ void VX2750EventSegment::onResume()
     if (m_Event.s_pAnalogProbe2) {
         bytesNeeded += traceLength * sizeof(int32_t);
     }
-    size_t digitalProbeLength = traceLength/sizeof(uint8_t);
-    if (traceLength % sizeof(uint8_t) >0) digitalProbeLength++;
+    size_t digitalProbeLength = traceLength;   // Byte per sample...
     
     if (m_Event.s_pDigitalProbe1) {
         bytesNeeded += digitalProbeLength;
