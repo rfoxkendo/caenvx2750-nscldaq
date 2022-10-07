@@ -42,7 +42,7 @@ PUGI_LDFLAGS=-L$(HERE)../pugixml/lib -lpugixml
 
 BOOST_LOG_LDFLAGS= -lboost_log -lboost_log_setup  -lboost_thread -lboost_system
 
-CPPFLAGS=$(FELIB_CPPFLAGS) $(DIG2_CPPFLAGS) $(JSON_CPPFLAGS) \
+CPPFLAGS=-I. $(FELIB_CPPFLAGS) $(DIG2_CPPFLAGS) $(JSON_CPPFLAGS) \
 	$(NSCLDAQ_CXXFLAGS) \
 	$(TCL_CPPFLAGS) $(PUGI_CXXFLAGS) -g $(TRACING) -DBOOST_ALL_DYN_LINK
 DEVTEST_LDFLAGS=$(CPPUNIT_LDFLAGS) $(FELIB_LDFLAGS) $(DIG2_LDFLAGS) \
@@ -71,7 +71,8 @@ VX2750EventBuiltEventProcessor.o: VX2750EventBuiltEventProcessor.cpp \
 libCaenVx2750.a:  Dig2Device.o VX2750Pha.o XXUSBConfigurableObject.o VX2750PHAConfiguration.o \
 	VX2750TclConfig.o CAENVX2750PhaTrigger.o  VX2750MultiTrigger.o \
 	VX2750EventSegment.o VX2750MultiModuleEventSegment.o \
-	VX2750XMLConfig.o NSCLDAQLog.o
+	VX2750XMLConfig.o NSCLDAQLog.o TclConfiguredReadout.o \
+	DynamicMultiTrigger.o 
 	ar -ruv $@ $?
 
 NSCLDAQLog.o: NSCLDAQLog.cpp
@@ -80,6 +81,12 @@ Dig2Device.o: Dig2Device.cpp Dig2Device.h
 	$(CXX) $(CPPFLAGS) -c $< 
 
 VX2750Pha.o: VX2750Pha.cpp VX2750Pha.h Dig2Device.h
+	$(CXX) $(CPPFLAGS) -c $<
+
+TclConfiguredReadout.o: TclConfiguredReadout.cpp TclConfiguredReadout.h
+	$(CXX) $(CPPFLAGS) -c $<
+
+DynamicMultiTrigger.o: DynamicMultiTrigger.cpp DynamicMultiTrigger.h
 	$(CXX) $(CPPFLAGS) -c $<
 
 XXUSBConfigurableObject.o: XXUSBConfigurableObject.cpp XXUSBConfigurableObject.h

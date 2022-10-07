@@ -15,6 +15,9 @@ FELIB_LDFLAGS=-lCAEN_FELib
 JSON_CPPFLAGS = $(shell pkg-config jsoncpp --cflags)
 JSON_LDFLAGS  = $(shell pkg-config jsoncpp  --libs)
 
+#Where the support softare was installed.
+
+NSCL_SUPPORT_PREFIX=/usr/opt/lbnl
 
 #
 #  The following allow you to add flags to all the default C and C++ compilation
@@ -22,19 +25,20 @@ JSON_LDFLAGS  = $(shell pkg-config jsoncpp  --libs)
 #
 #
 
-USERCCFLAGS= -I.. $(JSON_CPPFLAGS) $(FELIB_CPPFLAGS)
+USERCCFLAGS= -I$(NSCL_SUPPORT_PREFIX)/include $(JSON_CPPFLAGS) $(FELIB_CPPFLAGS)
 USERCXXFLAGS=$(USERCCFLAGS)
 
 #  If you have additional load flags (e.g. library dirs and libs):
 
-USERLDFLAGS=-L.. -lCaenVx2750 $(JSON_LDFLAGS) $(FELIB_LDFLAGS) \
+USERLDFLAGS=-L$(NSCL_SUPPORT_PREFIX)/lib -lCaenVx2750 \
+	$(JSON_LDFLAGS) $(FELIB_LDFLAGS) \
 	-lboost_log -lboost_log_setup  -lboost_thread -lboost_system
 
 #
 #  This is a list of the objects that go into making the application
 #  Make, in most cases will figure out how to build them:
 
-OBJECTS=Skeleton.o DynamicMultiTrigger.o TclConfiguredReadout.o
+OBJECTS=Skeleton.o 
 
 Readout: $(OBJECTS)
 	$(CXXLD) -o Readout $(OBJECTS) $(USERLDFLAGS) $(LDFLAGS)

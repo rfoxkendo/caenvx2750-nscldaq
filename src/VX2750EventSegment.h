@@ -26,7 +26,7 @@
 #define VX2750EVENTSEGMENT_H
 #include <CEventSegment.h>
 #include <string>
-#include "VX2750PHa.h"
+#include "VX2750Pha.h"
 
 class CExperiment;
 
