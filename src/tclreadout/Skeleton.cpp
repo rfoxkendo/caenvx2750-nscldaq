@@ -18,7 +18,7 @@
 #include <CExperiment.h>
 #include <TCLInterpreter.h>
 #include <CTimedTrigger.h>
-#include "TclConfiguredReadout.h"
+#include <TclConfiguredReadout.h>
 #include <Dig2Device.h>
 /*
 /*
