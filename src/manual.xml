@@ -1,0 +1,413 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
+                      "file:///usr/share/xml/docbook/schema/dtd/4.5/docbookx.dtd
+"
+>
+<book>
+    <bookinfo>
+      <title>NSCLDAQ support for the CAEN VXxxxx series of digitizers with DPP-PHA.</title>
+      <author><firstname>Ron</firstname><surname>Fox</surname></author>
+      <revhistory>
+          <revision>
+             <revnumber>1.0</revnumber>
+             <date>October 7, 2022</date>
+             <authorinitials>RF</authorinitials>
+             <revremark>Original Release</revremark>
+             <corpcredit>CAEN Technologies</corpcredit>
+             <address><email>ron@caentechnologies.com</email></address>
+          </revision>
+      </revhistory>
+    </bookinfo>
+    <chapter id='ch.intro'>
+        <title>Introduction</title>
+        <para>
+            This document describes how to configure and use the NSCLDAQ support
+            for the new generation of CAEN VXxxxx digitizers.  I assume that:
+        </para>
+        <itemizedlist>
+            <listitem>
+               <para>
+                  You have a basic familiarity with NSCLDAQ, how to configure it
+                  and how to use its event builder.
+               </para>
+            </listitem>
+            <listitem>
+               <para>
+                  You have a basic familiarity with how to use and tailor
+                  the SpecTcl analysis package (if you choose to use this
+                  for analysis).
+               </para>
+            </listitem>
+            <listitem>
+               <para>
+                  You are familiar with the configuration parameters of the
+                  DPP-PHA firmware supported by these modules.
+               </para>
+            </listitem>
+        </itemizedlist>
+        <para>
+            Note that NSCLDAQ and SpecTcl documentation are all online at
+            <ulink url='http://docs.nscl.msu.edu/daq' />.   Problems and questions
+            about NSCLDAQ and SpecTcl (outside the scope of the CAEN Vxxxx digitizers)
+            should be addressed to <ulink url='mailto:helpme@frib.msu.edu' />.
+        </para>
+        <para>
+            The document is therefore organized into the following chapters:
+        </para>
+        <itemizedlist>
+            <listitem>
+               <para>
+                  <link linkend='ch.readout' endterm='ch.readout.title'/> describes
+                  how to create and configure a customized Readout program which
+                  will inject data from a set of ADCs into the NSCLDAQ data flow
+                  system.   Within that chapter,
+                  <link linkend='sec.rdoprogramming' endterm='sec.rdoprogramming.title' />
+                  describes the changes needed to the SBS readout skeleton.  The
+                  format of events readout by this program will also be described.
+                  <link linkend='sec.rdoconfig' endterm='rdoconfig.title' />
+                  describes how the modules are configured and how to write a
+                  configuration file for your readout software.
+               </para>
+            </listitem>
+            <listitem>
+               <para>
+                   <link linkend='ch.spectcl' endterm='ch.spectcl.title' />
+                   describes how to build a tailored version of SpecTcl to produce
+                   raw parameters from the modules  you are reading out. 
+               </para>
+            </listitem>
+        </itemizedlist>
+        <para>
+            For those interested an appendix describes the structure of the software
+            as well as items for further development.
+        </para>
+        <para>
+            The <filename>tclreadout</filename> subdirectory of the source tree
+            gives a sample tailored readout program for the readout software
+            described in <link linkend='ch.readout' endterm='ch.readout.title' />.
+            The <filename>tclreadout/SpecTcl</filename> subdirectory of the source
+            tree gives a sample tailored SpecTcl program for this example.
+        </para>
+    </chapter>
+    <chapter id='ch.readout'>
+        <title id='ch.readout.title'>Getting Data</title>
+        <para>
+            Data is read from modules using a tailored SBS readout program that
+            makes use of classes that have been written to support the new
+            CAEN VXxxxx digitizers and DPP-PHA firmware.   These modules have
+            a huge number of settable parameters.
+        </para>
+        <para>
+            To manage the settable parameters, each module is associated with a
+            <firstterm>configuration</firstterm>.  The module's configuration
+            captures the desired settings for that module.  A module is assigned
+            a name by your software and a matching named configuration is  read
+            and used to configure that module at the start of each run.  The
+            configuration is re-read each begin run so that changes can be made
+            between runs.
+        </para>
+        <para>
+            <link linkend='sec.rdoprogramming' endterm='sc.rdoprogramming.title' />
+            describe how to tailor an SBS readout skeleton to produce a readout
+            program.   <link linkend='sec.rdoconfig' endterm='sec.rdoconfig.title' />
+            describes how to create module configurations and the parameters
+            that can be set for a module.
+        </para>
+        <para>
+            A few notes:
+        </para>
+        <itemizedlist>
+            <listitem>
+               <para>
+                  While the software was developed with 12.0-pre, I believe the
+                  support software will function with 11.3 as well.
+               </para>
+            </listitem>
+            <listitem>
+               <para>
+                  Since each module is assigned a source id, when event building
+                  the readout program should be run with the
+                  <option>--no-barriers</option> optioon in order to prevent
+                  the event builder from stalling on a barrier wait at the start
+                  and end of runs.
+               </para>
+            </listitem>
+        </itemizedlist>
+        <section id='sec.rdogramming'>
+            <title id='sec.rdoprogramming.title'>Obtaining and modifying the skeleton</title>
+            <para>
+                The Readout is based on the SBS readout skeleton.  This
+                software allows for an experiment specific trigger which causes
+                experiment specific code to be run.  SBS readout skeletons, therefore
+                require tailoring to fit specific applications.
+
+            </para>
+            <para>
+                Here are the steps required to tailor that system for the
+                CAEN modules:
+            </para>
+            <orderedlist>
+                <listitem>
+                   <para>
+                      Select the version of NSCLDAQ you will use, and source in its
+                      setup file to define environment variables that will make
+                      your life easier.
+                   </para>
+                </listitem>
+                <listitem>
+                   <para>
+                      Obtain a copy of the sbs skeleton in an emtpy directory. 
+                   </para>
+                </listitem>
+                <listitem>
+                   <para>
+                      Make appropriate modifications to the
+                      <filename>Skeleton.cpp</filename>'s
+                      <methodname>Skeleton::SetupReadout</methodname> method
+                      to define the modules you will be using.
+                   </para>
+                </listitem>
+                <listitem>
+                   <para>
+                      Modify the Makefile provided with the skeleton to pull in the
+                      libraries and headers that make up support.
+                   </para>
+                </listitem>
+                <listitem>
+                   <para>
+                      Build the Readout program. 
+                   </para>
+                </listitem>
+                <listitem>
+                   <para>
+                      Write a configuration file that appropriately configures
+                      each module you defined (covered in
+                      <link linkend='sec.rdoconfig' endterm='sec.rdoconfig.title' />).
+                   </para>
+                </listitem>
+            </orderedlist>
+            <para>
+                The remainder of this section assumes you have selected
+                NSCLDAQ-12.0-pre5.    To obtain that skeleton:
+            </para>
+            <example>
+                <title>
+                    Selecting DAQ version and obtaining the skeleton:
+                </title>
+                <programlisting>
+
+source /usr/opt/daq/12.0-pre5/daqsetup.bash
+mkdir myreadout
+cd myreadout
+cp $DAQROOT/skeletons/sbs/* .
+
+                </programlisting>
+            </example>
+            <section>
+                <title>Modifying the Skeleton</title>
+                <para>
+                    In this example, the key class is:
+                    <classname>TclConfiguredReadout</classname> is a container
+                    class that is an <firstterm>CEventSegement</firstterm> that
+                    holds a set of modules to readout and constructs and appropriate
+                    trigger to drive the readout.  It will also construct
+                    and maintain objects for each module.
+                </para>
+                <para>
+                    Construction specifies a configuration file that is processed
+                    at the beginning of each run and used to program the
+                    configuration of each module.
+                </para>
+                <para>
+                    The class's <methodname>addModule</methodname> method
+                    creates a module driver for a module, providing the connection
+                    parameters for that module and associating it with a module
+                    configuration within the configuration file. Each module,
+                    so defined must be assigned a source id that is unique
+                    across the system.  This source Id is used in event building.
+                </para>
+                <para>
+                    Here are the parameter signatures for the methods you need
+                    to use:
+                </para>
+                <variablelist>
+                    <varlistentry>
+                       <term>
+                        <constructorsynopsis>
+                            <methodname>TclConfiguredReadout</methodname>
+                            <methodparam>
+                                <type>const char*</type><parameter>configfile</parameter>
+                            </methodparam>
+                            <methodparam>
+                                <type>CExperiment*</type><parameter>pExperiment</parameter>
+                            </methodparam>
+                        </constructorsynopsis>
+                       </term>
+                       <listitem>
+                           <para>
+                            Constructor.  <parameter>configfile</parameter> is the
+                            path to a file that describes configurations for each
+                            module that will be added to this event segment
+                            (see <methodnaqme>addModule</methodnaqme>).
+                           </para>
+                        </listitem>
+                    </varlistentry>
+                    <varlistentry>
+                       <term><methodsynopsis>
+                          <type>void</type>
+                          <methodname>addModule</methodname>
+                          <methodparam>
+                              <type>const char*</type><parameter>name</parameter>
+                          </methodparam>
+                          <methodparam>
+                              <type>const char*</type><parameter>connectionString</parameter>
+                          </methodparam>
+                          <methodparam>
+                              <type>std::uint32_t</type><parameter>sid</parameter>
+                          </methodparam>
+                          <methodparam>
+                              <type>bool</type><parameter>isusb</parameter>
+                              <initializer>false</initializer>
+                          </methodparam>
+                       </methodsynopsis></term>
+                       <listitem>
+                           <para>
+                                Adds a module to the readout.  <parameter>name</parameter>
+                                is the name of a module in the configuration
+                                file specified in the construtor.
+                           </para>
+                           <para>
+                            <parameter>connectionString</parameter> is a string
+                            that describes how the module is connected to the system.
+                            This string is either a dotted IP address (e.g
+                            "127.0.0.1") if ETHERNET is used or the PID of the module
+                            if USB is used.  Note that DNS lookups are not done for
+                            host names but there is nothing to stop you from doing
+                            host lookups yourself prior to calling
+                            <methodname>addModule</methodname>
+                           </para>
+                           <para>
+                            <parameter>sid</parameter> is a unique integer source id
+                            that identifies this module to the event builder.
+                           </para>
+                           <para>
+                            <parameter>isUsb</parameter> is an optional parameter
+                            that defaults to <literal>false</literal>.
+                            If <literal>true</literal>, it specifies that the
+                            <parameter>connectionString</parameter> is a module PID
+                            and that the connection is via USB.
+                           </para>
+                        </listitem>
+                    </varlistentry>
+                    <varlistentry>
+                       <term><methodsynopsis>
+                          <type>CTrigger*</type>
+                          <methodname>getTrigger</methodname>
+                          <void />
+                       </methodsynopsis></term>
+                       <listitem>
+                           <para>
+                            Returns a pointer to the trigger that the object
+                            has computed for the modules that have been added to it.
+                            This should be used to supply a trigger object to the
+                            Readout program framework.
+                           </para>
+                        </listitem>
+                    </varlistentry>
+
+                </variablelist>
+                                <para>
+                    Let's look at a simple example.  The full example is in
+                    the <filename>tclreadout</filename> subdirectory of the
+                    source tree.  If you want to use that as a starting point,
+                    simply modify the <literal>INSTDIR</literal> definition
+                    at the top of the file to point to the version of NSCLDAQ
+                    you decided to use.
+                </para>
+                <example>
+                    <title>Sample Skeleton.cpp modifications</title>
+                    <programlisting>
+#include &lt;config.h&gt;
+#include &lt;Skeleton.h&gt;
+#include &lt;CExperiment.h&gt;
+#include &lt;TCLInterpreter.h&gt;
+#include &lt;CTimedTrigger.h&gt;
+#include &lt;TclConfiguredReadout.h&gt;   <co id='rdo.classinc' />
+#include &lt;Dig2Device.h&gt;             <co id='rdo.tracinginc' />
+
+...
+
+void
+Skeleton::SetupReadout(CExperiment* pExperiment)
+{
+ 
+  CReadoutMain::SetupReadout(pExperiment);
+  
+  // turns on felib tracing if compiled with it enabled
+
+  // caen_nscldaq::set_tracing(true);    <co id='rdo.tracing' />
+  
+  // First we create a TclConfiguredReadout object and describe the
+  // connections to the modules in the system -- assigning each
+  // module a distinct source id for event building.
+  // Note that the event builder allows fragments from the same source to get
+  // grouped into the same event and each fragment is tagged with its channel..
+  // so per-module sids rather than per-channel work just fine:
+  
+  auto pSegment = new TclConfiguredReadout(   <co id='rdo.makesegment'/>
+    "configuration.tcl",            // Detailed module settings file path.
+    pExperiment                     // Pointer to experiment object.
+  );
+  pSegment-&gt;addModule(                    <co id='rdo.addmodule' />
+    "adc1",                   // Name of module in configuration.tcl
+    "15236",                   // PID for USB connection, IP If ethernet.
+    1,                        // System unique source id.
+    true                      // Indicates it's USB not Ethernet defaults to false.
+  );
+  
+  pExperiment-&gt;AddEventSegment(pSegment);   <co id='rdo.registersegment' />
+  
+  // The event segment creates a dynamic multi trigger object which we need
+  // to fetch out and register as the trigger for the system:
+  
+  pExperiment-&gt;EstablishTrigger(pSegment->getTrigger()); <co id='rdo.registertrigger' />
+  
+}
+
+
+                    </programlisting>
+                </example>
+            </section>
+        </section>
+        <section id='sec.rdoconfig'>
+            <title id='sec.rdoconfig.title'>Configuring modules</title>
+            <para>
+                To be written
+            </para>
+        </section>
+        <section id='sec.eventstruct'>
+            <title id='sec.eventstruct.title'></title>
+            <para>
+                To be written.
+            </para>
+        </section>
+    </chapter>
+    <chapter id='ch.spectcl'>
+        <title id='ch.spectcl.title'>
+            Configuring SpecTcl
+        </title>
+        <para>
+            To Be written
+        </para>
+    </chapter>
+    <appendix id='app.internals'>
+        <title>Software structure</title>
+        <para>To Be written</para>
+    </appendix>
+    <appendix>
+        <title>Class reference</title>
+        <para>
+            To Be written
+        </para>
+    </appendix>
+</book>
