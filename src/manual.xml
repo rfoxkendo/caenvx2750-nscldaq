@@ -13,10 +13,10 @@
              <date>October 7, 2022</date>
              <authorinitials>RF</authorinitials>
              <revremark>Original Release</revremark>
-             <corpcredit>CAEN Technologies</corpcredit>
-             <address><email>ron@caentechnologies.com</email></address>
           </revision>
       </revhistory>
+      <corpcredit>CAEN Technologies</corpcredit>
+      <address><email>ron@caentechnologies.com</email></address>
     </bookinfo>
     <chapter id='ch.intro'>
         <title>Introduction</title>
@@ -64,7 +64,7 @@
                   <link linkend='sec.rdoprogramming' endterm='sec.rdoprogramming.title' />
                   describes the changes needed to the SBS readout skeleton.  The
                   format of events readout by this program will also be described.
-                  <link linkend='sec.rdoconfig' endterm='rdoconfig.title' />
+                  <link linkend='sec.rdoconfig' endterm='sec.rdoconfig.title' />
                   describes how the modules are configured and how to write a
                   configuration file for your readout software.
                </para>
@@ -107,7 +107,7 @@
             between runs.
         </para>
         <para>
-            <link linkend='sec.rdoprogramming' endterm='sc.rdoprogramming.title' />
+            <link linkend='sec.rdoprogramming' endterm='sec.rdoprogramming.title' />
             describe how to tailor an SBS readout skeleton to produce a readout
             program.   <link linkend='sec.rdoconfig' endterm='sec.rdoconfig.title' />
             describes how to create module configurations and the parameters
@@ -133,7 +133,7 @@
                </para>
             </listitem>
         </itemizedlist>
-        <section id='sec.rdogramming'>
+        <section id='sec.rdoprogramming'>
             <title id='sec.rdoprogramming.title'>Obtaining and modifying the skeleton</title>
             <para>
                 The Readout is based on the SBS readout skeleton.  This
@@ -248,7 +248,7 @@ cp $DAQROOT/skeletons/sbs/* .
                             Constructor.  <parameter>configfile</parameter> is the
                             path to a file that describes configurations for each
                             module that will be added to this event segment
-                            (see <methodnaqme>addModule</methodnaqme>).
+                            (see <methodname>addModule</methodname>).
                            </para>
                         </listitem>
                     </varlistentry>
@@ -324,8 +324,8 @@ cp $DAQROOT/skeletons/sbs/* .
                     at the top of the file to point to the version of NSCLDAQ
                     you decided to use.
                 </para>
-                <example>
-                    <title>Sample Skeleton.cpp modifications</title>
+                <example id='ex.skeleton'>
+                    <title id='ex.skeleton.title'>Sample Skeleton.cpp modifications</title>
                     <programlisting>
 #include &lt;config.h&gt;
 #include &lt;Skeleton.h&gt;
@@ -377,13 +377,389 @@ Skeleton::SetupReadout(CExperiment* pExperiment)
 
                     </programlisting>
                 </example>
+                <calloutlist>
+                    <callout arearefs='rdo.classinc' >
+                        <para>
+                            This <literal>#include</literal> is needed to define
+                            the <classname>TclConfiguredReadout</classname>
+                            class.
+                        </para>
+                    </callout>
+                    <callout arearefs='rdo.tracinginc' >
+                        <para>
+                            Wrappers for the CAEN libraries support tracing the
+                            operations and responses performed on the module.
+                            This header provides definitions needed to enable
+                            this tracing.  Note that tracing must be enabled both
+                            programmatically and via a compilation option in the
+                            library Makefile.
+                        </para>
+                    </callout>
+                    <callout arearefs='rdo.tracing' >
+                        <para>
+                            If the library has been built with tracing enabled,
+                            uncommenting this line will turn that on. Note that this
+                            will create a large trace file, as well as adversely
+                            impact performance.
+                        </para>
+                    </callout>
+                    <callout arearefs='rdo.makesegment' >
+                        <para>
+                            Creates the <classname>TclConfiguredReadout</classname>
+                            object that will manage the modules we will use.
+                            At the start of each run, <filename>configuration.tcl</filename>
+                            will be processed to load the configuration for each
+                            module and each module will then be asked to configure itself
+                            in accordance with its configuration.  The
+                            <parameter>pExperiment</parameter> pointer passed in
+                            to <methodname>SetupReadout</methodname> points to
+                            an object that provides services needed.
+                        </para>
+                        <para>
+                            Note that <methodname>SetupReadout</methodname> is only
+                            called once at system startup and the lifetime of the
+                            <classname>TclConfiguredReadout</classname> will be
+                            the lifetime of the Readout program.  Therefore,
+                            the fact that the <varname>pSegment</varname>
+                            never is deleted is not a memory leak.
+                        </para>
+                    </callout>
+                    <callout arearefs='rdo.addmodule' >
+                        <para>
+                            Adds a module to the system.  The module is named
+                            <literal>adc1</literal> and will, therefore expect
+                            a configuration for <literal>adc1</literal>.
+                            It is a USB connected module with PID 
+                            <literal>15236</literal> and is assigned source id
+                            <literal>1</literal>.
+                        </para>
+                        <para>
+                            The <classname>TclConfiguredReadout</classname>
+                            will manage this module from now on.  It will also
+                            produce a part of the readout trigger based
+                            on data being available in this module.
+                        </para>
+                    </callout>
+                    <callout arearefs='rdo.registersegment' >
+                        <para>
+                            The <classname>TclConfiguredReadout</classname>
+                            event segment is registered with the experiment framework
+                            so that its methods will be invoked by that framework
+                            when appropriate.
+                        </para>
+                    </callout>
+                    <callout arearefs='rdo.registertrigger' >
+                        <para>
+                            The trigger computed by the
+                            <classname>TclConfiguredReadout</classname> event
+                            segment is fetched and established as the trigger
+                            for readout.  When a run is active this trigger is
+                            polled and, when it indicates that it has been
+                            triggered, readout will ensue.
+                        </para>
+                    </callout>
+                </calloutlist>
+            </section>
+            <section>
+                <title>Modifying the Makefile and Building Readout</title>
+                <para>
+                    The CAEN digitizer support software (NSCLDAQ and base).  The
+                    SBS skeleton readout Makefile must be edited to ensure that
+                    appropriate include directories are searched when compiling
+                    and libraries pulled in when linked:
+                </para>
+                <itemizedlist>
+                    <listitem>
+                       <para>
+                          <literal>-lCAEN_FELib</literal>  must be added
+                          to the definition of <varname>USERLDFLAGS</varname>
+                          This links in the base CAEN library that provides
+                          support for communicating with the digitizer.
+                       </para>
+                    </listitem>
+                    <listitem>
+                       <para>
+                          JavaScript Object Notation (JSON) is used to specify readout formats and a JSON
+                          support library (JSONCPP) is used to format those requests.
+                          This is a package that's installed in the containers
+                          we distribute or, if you are running native, is a
+                          debian package: <literal>libjsoncpp-dev</literal>
+                          Due to headers that are included by other headers,
+                          <literal>$(shell pkg-config jsoncpp --cflags)(</literal>
+                          must be added to <varname>USERCCFLAGS</varname>
+                          and <literal> $(shell pkg-config jsoncpp  --libs)</literal>
+                          added to <varname>USERLDFLAGS</varname>
+                       </para>
+                    </listitem>
+                    <listitem>
+                       <para>
+                          Tracing FE library calls is done via the boost logging
+                          package so
+                          <literal>-lboost_log -lboost_log_setup  -lboost_thread -lboost_syste</literal>
+                          must be added to <varname>USERLDFLAGS</varname>.
+                       </para>
+                    </listitem>
+                    <listitem>
+                       <para>
+                           Finally we need to pull in the NSCLDAQ support
+                           library.  Suppose the headers are all installed in
+                           <literal>$(CAEN_NSCLDAQ)/include</literal> and
+                           libraries in <literal>$(CAEN_NSCLDAQ)/lib</literal>.
+                           <literal>-I$(CAEN_NSCLDAQ)/include</literal>
+                           must be added to <varname>USERCCFAGS</varname> and
+                           <literal>-L$(CAEN_NSCLDAQ)/lib -lCaenVx2750</literal>
+                           to <varname>USERLDFLAGS</varname>
+                       </para>
+                    </listitem>
+                </itemizedlist>
+                <para>
+                    Once this has been done, the Readout program can be built
+                    via <command>make</command>
+                </para>
             </section>
         </section>
         <section id='sec.rdoconfig'>
             <title id='sec.rdoconfig.title'>Configuring modules</title>
             <para>
-                To be written
+                Each module must be configured to be useful.  This is done by
+                writing a configuration script.  Configuration scripts are
+                written in a domain specific language layered on top of the
+                Tcl scripting language.  Tcl is extended by adding a single command
+                ensemble: <command>v27xxpha</command> to Tcl. 
             </para>
+            <para>
+                A command ensemble in Tcl parlance is a single command that has
+                subcommands specified by the next word on the command line.  The
+                <command>v27xxpha</command> command has the following forms:
+            </para>
+            <variablelist>
+                <varlistentry>
+                   <term><command>vx27xxpha create <replaceable>module-name</replaceable></command></term>
+                   <listitem>
+                       <para>
+                        Creates a new configuration for a module <parameter>module-name</parameter>.
+                        When the Readout initializes modules it looks for configurations
+                        that match the names of modules that have been added
+                        to the <classname>TclConfiguredReadout</classname>
+                        module.
+                       </para>
+                       <para>
+                        thus in our example
+                        <link linkend='ex.skeleton' endterm='ex.skeleton.title' />
+                         <command>vx27xxpha create adc1</command> would create
+                         a configuration for the module we added.
+                       </para>
+                    </listitem>
+                </varlistentry>
+                <varlistentry>
+                   <term><command>vx27xxpha config <replaceable>module-name name value ...</replaceable></command></term>
+                   <listitem>
+                       <para>
+                        Configures one or more parameter values for the
+                        <parameter>module-name</parameter>.  Any number of
+                        parameter name/value pairs can be specified on the command.
+                        For example:
+                        <command>v27xxpha config adc1 dcoffsets [lrepeat 64 0]</command>
+                        Configures the DC offsets for all 64 channels to be 0% of
+                        full scale.
+                       </para>
+                    </listitem>
+                </varlistentry>
+                <varlistentry>
+                   <term><command>vx27xxpha cget <replaceable>module-name name</replaceable></command></term>
+                   <listitem>
+                       <para>
+                        This command returns the value of the parameter
+                        <parameter>name</parameter> from the configuration
+                        for the module <parameter>module-name</parameter>.
+                        For example:
+                        <command>puts [vx27xxpha cget adc1 dcoffsets]</command>
+                        will print 64 zeroes to stdout.
+                       </para>
+                    </listitem>
+                </varlistentry>
+                <varlistentry>
+                   <term><command>vx27xxpha delete <replaceable>module-name</replaceable></command></term>
+                   <listitem>
+                       <para>
+                        Really not necessary - this deletes the configuration
+                        for <parameter>module-name</parameter>.  Since the
+                        configuration file is processed and all configuration rebuilt
+                        from scratch at each begin run,
+                        there's really no need to delete modules.
+                       </para>
+                    </listitem>
+                </varlistentry>
+                <varlistentry>
+                   <term><command>vx25x0 list</command></term>
+                   <listitem>
+                       <para>
+                        Returns a list of the module names that have configurations.
+                        the following little script will list the modules
+                        configured, one per line to stdout:
+                       </para>
+                       <informalexample>
+                        <programlisting>
+foreach module [vx27xxpha list] {
+    puts $module
+}
+                        </programlisting>
+                       </informalexample>
+                    </listitem>
+                </varlistentry>
+            </variablelist>
+            <para>
+                A sample configuration file that goes along with the
+                sample readout program in the <filename>tclreadout</filename>
+                subdirectory of the source tree is 
+                <filename>/configuration.tcl</filename>.
+            </para>
+            <section>
+                <title>Configuration parameter reference</title>
+                <para>
+                    This section consists of several subsections.  Each
+                    subsection provides a reference for a set of configuration
+                    parameters that are related in some way.
+                    Parameters are describes as follows:
+                </para>
+                <segmentedlist>
+                    <segtitle>Name</segtitle>
+                    <segtitle>Data type</segtitle>
+                    <segtitle>Default</segtitle>
+                    <segtitle>Description</segtitle>
+                    <seglistitem><seg>Name of the parameter</seg>
+                    <seg>Data type the item must be</seg>
+                    <seg>Defeault value for the item</seg>
+                    <seg>Description of the item.</seg>
+                    </seglistitem>
+                </segmentedlist>
+                <para>
+                    A note on the boolean data type.  Any of the following are
+                    valid true values:
+                    <literal>true, yes, 1, on, enabled</literal>, while any
+                    of the following are valid false value
+                    <literal>false, no, 0, off, disabled</literal>.
+                </para>
+                <section>
+                    <title>Readout Options</title>
+                    <para>
+                        The parameters in this section are not actually digitizer
+                        parameters, the determine what is read from the
+                        digitizer at each event.  All events will read the
+                        event channel number, timestamp in nanosecods
+                        and energy from the DPP-PHA.
+                        These options allow additional available parameters/features
+                        to be read from the digitizer.
+                    </para>
+                    <para>
+                        The configuration parameters are:
+                    </para>
+                    <segmentedlist>
+                    <segtitle>Name</segtitle>
+                    <segtitle>Data type</segtitle>
+                    <segtitle>Default</segtitle>
+                    <segtitle>Description</segtitle>
+                    <seglistitem>
+                        <seg>readrawtimes</seg>
+                        <seg>boolean</seg>
+                        <seg>false</seg>
+                        <seg>If enabled, the raw time stamp counter is included
+                        in each event.  Note that the nanosecond timestamp
+                        is always used for even building as the raw timestamp
+                        may vary in frequency depending on the digitizer.</seg>
+                    </seglistitem>
+                    <seglistitem>
+                        <seg>readfinetimestamps</seg>
+                        <seg>boolean</seg>
+                        <seg>false</seg>
+                        <seg>If enabled, and if the module supports the generation
+                        of fine timing information (e.g. interpolated timing from
+                        a CFD), turning this on enables the inclusion of that fine
+                        timing information in the event.</seg>
+                    </seglistitem>
+                    <seglistitem>
+                        <seg>readflags</seg>
+                        <seg>boolean</seg>
+                        <seg>false</seg>
+                        <seg>If enabled reads various bits that report on the
+                        digitizer's state</seg>
+                    </seglistitem>
+                    <seglistitem>
+                        <seg>readtimedownsampling</seg>
+                        <seg>boolean</seg>
+                        <seg>false</seg>
+                        <seg>If enabled, reads a code that corresponds to the
+                        digitizer sampling scaledown</seg>
+                    </seglistitem>
+                    <seglistitem>
+                        <seg>readanalogprobes</seg>
+                        <seg>list of two booleans</seg>
+                        <seg>{false false}</seg>
+                        <seg>The module supports two analog probes these can be used
+                        to acquire the input waveforms as well as various diagnostic
+                        information.  The first element of the list enables/disables
+                        the inclusion of analog probe1 and the second the inclusion of
+                        analog probe 2</seg>
+                    </seglistitem>
+                    <seglistitem>
+                        <seg>readdigitalprobes</seg>
+                        <seg>list of four booleans</seg>
+                        <seg>{false false false false}</seg>
+                        <seg>The digitizer supports the inclusion of four digital probes.
+                        A digital probe has a byte per sample with a value of 0 or
+                        1.  The list can selectively enable the inclusion of data
+                        from each probe.</seg>
+                    </seglistitem>
+                    <seglistitem>
+                        <seg>readsamplecount</seg>
+                        <seg>boolean</seg>
+                        <seg>false</seg>
+                        <seg>If enabled, the number of samples read for this
+                        channel are included.</seg>
+                    </seglistitem>
+                    <seglistitem>
+                        <seg>readeventsize</seg>
+                        <seg>boolean</seg>
+                        <seg>false</seg>
+                        <seg>If enabled, the raw event size is read.</seg>
+                    </seglistitem>
+                    </segmentedlist>
+                </section>
+                <section>
+                    <title>General options</title>
+                    <para>
+                        These parameters control general module wide functionality.
+                    </para>
+                    <segmentedlist>
+                    <segtitle>Name</segtitle>
+                    <segtitle>Data type</segtitle>
+                    <segtitle>Default</segtitle>
+                    <segtitle>Description</segtitle>
+                    <seglistitem>
+                        <seg>clocksource</seg>
+                        <seg>Enumerated</seg>
+                        <seg><literal>Internal</literal></seg>
+                        <seg>Selects the source of the digitizer's clock.
+                        Valid values are <literal>Internal</literal>
+                        to use the module's internal clock or
+                        <literal>FPClkIn</literal> to use the front panel clock
+                         input.
+                        </seg>
+                    </seglistitem>
+                    <seglistitem>
+                        <seg>outputfpclock</seg>
+                        <seg>boolean</seg>
+                        <seg>false</seg>
+                        <seg>If <literal>true</literal>, the digitizer clock is output
+                        on the front panel.  This allows modules to use a single
+                        shared clock source without needed an external clock.
+                        Clock delays can then compensate for clock propagation
+                        delays as one progresses  down the clock in/clock out
+                        daisy chain.</seg>
+                    </seglistitem>
+                    </segmentedlist>
+                </section>
+            </section>
         </section>
         <section id='sec.eventstruct'>
             <title id='sec.eventstruct.title'></title>
