@@ -48,7 +48,7 @@ CPPFLAGS=$(FELIB_CPPFLAGS) $(DIG2_CPPFLAGS) $(JSON_CPPFLAGS) \
 DEVTEST_LDFLAGS=$(CPPUNIT_LDFLAGS) $(FELIB_LDFLAGS) $(DIG2_LDFLAGS) \
 	$(JSON_LDFLAGS) $(NSCLDAQ_LDFLAGS) -lpthread $(BOOST_LOG_LDFLAGS)
 
-all: libCaenVx2750.a libCaenVxUnpackers.a test_programs
+all: libCaenVx2750.a libCaenVxUnpackers.a test_programs docs
 
 libCaenVxUnpackers.a:  VX2750ModuleUnpacker.o VX2750EventProcessor.o \
 	VX2750EventBuiltEventProcessor.o
@@ -161,3 +161,21 @@ configtests.o : configtests.cpp
 clean:
 	rm -f *.o *.a
 	rm -f fejackettests triggertests configtests
+	rm -f manual.pdf
+	rm -rf html
+
+docs:    html/index.html
+
+
+html/index.html:  manual.xml
+	xmlto html  -o html manual.xml
+
+install: all
+	install -d $(PREFIX)
+	install -d $(PREFIX)/include
+	install -d $(PREFIX)/lib
+	install -d $(PREFIX)/share
+	install -d $(PREFIX)/share/html
+	install -m 0664 *.h $(PREFIX)/include
+	install -m 0664 *.a $(PREFIX)/lib
+	install -m0664 html/* $(PREFIX)/share/html
