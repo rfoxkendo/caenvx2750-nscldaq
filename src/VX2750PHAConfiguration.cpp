@@ -563,8 +563,8 @@ VX2750PHAModuleConfiguration::defineITLOptions()
   };
   //addEnumListParameter("itlconnect", itlconnection, "Disabled", 0, 64, 64);
   
-  addIntegerParameter("itlamask");
-  addIntegerParameter("itlbmask");
+  addIntegerParameter("itlamask", 0, 0xffffffffffffffff, 0xffffffffffffffff);
+  addIntegerParameter("itlbmask", 0, 0xffffffffffffffff, 0xffffffffffffffff);
   addIntegerParameter("itlagatewidth", 0, 524280, 100);
   addIntegerParameter("itlbgatewidth", 0, 524280, 100);
   

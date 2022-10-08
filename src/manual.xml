@@ -1151,6 +1151,154 @@ foreach module [vx27xxpha list] {
                     </segmentedlist>
                     
                 </section>
+                <section>
+                    <title>Internal Logic block parameters</title>
+                    <para>
+                        Triggers can be the result of sophisiticated conditions in
+                        two internal logic blocks called ITLA and ITLB.
+                        This set of parameters determine how those  logic blocks
+                        function.  Because there are two logic blocks, These
+                        parameters are  mostly in pairs, on parameter for ITLA
+                        and a second for ITLB
+                    </para>
+                    <segmentedlist>
+                        <title>
+                        </title>
+                    <segtitle>Name</segtitle>
+                    <segtitle>Data type</segtitle>
+                    <segtitle>Default</segtitle>
+                    <segtitle>Description</segtitle>
+                    <seglistitem>
+                        <seg>itlalogic, itlblogic</seg>
+                        <seg>Enumerated value</seg>
+                        <seg>OR, OR</seg>
+                        <seg>
+                            Determines how the channel inputs to the
+                            ITLA/ITLB logic blocks are interpreted to
+                            create a trigger output from that block.
+                            Options are:
+                            <literal>
+                              OR, AND, Majority
+                            </literal>
+                            Note that if <literal>Majority</literal>  is selected,
+                            <literal>itlxmarjoritylevel</literal> determines the
+                            actual majoriy level required.
+                        </seg>
+                    </seglistitem>
+                    <seglistitem>
+                        <seg>itlamajoritylevel, itlbmajoritylevel</seg>
+                        <seg>Integeer 1-63</seg>
+                        <seg>1</seg>
+                        <seg>The majority level for the specified trigger
+                        gropu.  Note this is only relevant if the corresponding
+                        trigger block is functioning in <literal>Majority</literal>
+                        mode.</seg>
+                        
+                    </seglistitem>
+                    <seglistitem>
+                        <seg>itlapairlogic, itlbparilogic</seg>
+                        <seg>Enumerated value</seg>
+                        <seg>None, None</seg>
+                        <seg>
+                            Adjacent channel pairs (0,1 2,3 etc.) can be combined
+                            as inputs to the ITLA or ITLB logic blocks. These
+                            parameters determine if and how those pairs are combined.
+                            When combined, both outputs of the pair will be the
+                            ouptput of the logic function applied (e.g. if in AND
+                            mode and only channel 0 triggers, then both inputs 0 and 1
+                            will be in the untriggered state as inputs to the logic block).
+                            Possible values are:
+                            <literal>
+                                AND, OR, NONE
+                            </literal>  Where <literal>AND</literal> as well as
+                            <literal>OR</literal> combine the inputs into a paired
+                            while <literal>NONE</literal> passes the inputs to their
+                            corresonding outputs without any pair logic.
+                        </seg>
+                    </seglistitem>
+                    <seglistitem>
+                        <seg>itlapolarity, itlbpolarity</seg>
+                        <seg>Enumerated value</seg>
+                        <seg>Direct, Direct</seg>
+                        <seg>Determines the output polarity of the specified
+                        trigger logic block.
+                        This can be either <literal>Direct</literal>
+                        or <literal>Inverted</literal>
+                        </seg>
+                    </seglistitem>
+                    <seglistitem>
+                        <seg>itlamask, itlbmask</seg>
+                        <seg>Integer 0 - 0xffffffffffffffff</seg>
+                        <seg>0xffffffffffffffff, 0xffffffffffffffff</seg>
+                        <seg>This mask has a bit for each channel, if set that channel
+                        participates in the associated internal trigger logic block.</seg>
+                    </seglistitem>
+                    <seglistitem>
+                        <seg>itlagatewidth, itlbgatewidth</seg>
+                        <seg>Integer nanoseconds 0-524280</seg>
+                        <seg>100, 100</seg>
+                        <seg>The ITLA and ITLB outputs are inputs to gate generators.
+                        These parameters determine the width of the output of that
+                        gate generator in ns.</seg>
+                    </seglistitem>
+                    </segmentedlist>
+                    
+                </section>
+                <section>
+                    <title>LVDS Options</title>
+                    <para>
+                        The 16 LVDS I/Os can be programmed in a sets of four (quartets).
+                        The parameters in this section describe how to configure them.
+                    </para>
+                    <segmentedlist>
+                        <title></title>
+                        <segtitle>Name</segtitle>
+                        <segtitle>Data type</segtitle>
+                        <segtitle>Default</segtitle>
+                        <segtitle>Description</segtitle>
+                        <seglistitem>
+                            <seg>lvdsmode</seg>
+                            <seg>List of 4 enumerated values</seg>
+                            <seg>[lrepeat IORegister 4]</seg>
+                            <seg>
+                                Determines the functionality of each of the four
+                                quartets of LVDS I/Os:
+                                <literal>SelfTriggers, Sync, IORegister</literal>.
+                            </seg>
+                        </seglistitem>
+                        <seglistitem>
+                            <seg>lvdsdirection</seg>
+                            <seg>List of four enumerate valus</seg>
+                            <seg>[lrepeat Output 4]</seg>
+                            <seg>Determines the direction of each of the four
+                            quartests of LVDS I/Os: <literal>Input, Output</literal></seg>
+                        </seglistitem>
+                        <seglistitem>
+                            <seg>lvdstrgmask</seg>
+                            <seg>List of 16 integer values 0 - 0xffffffffffffffff</seg>
+                            <seg>[lrepeate 0 16]</seg>
+                            <seg>If a quartet is in <literal>SelfTriggers</literal>
+                            mode as an <literal>Output</literal>, these masks
+                            determine which self triggers are associated with each pin
+                            of the LVDS output in that quartet.  There are 16 elements
+                            corresponding to each of the 16 LVDS I/O pins. If
+                            a pin is not in a quartet that is configured as
+                            a <literal>SelfTriggers</literal> <literal>Output</literal>
+                            it's mask is ignored.</seg>
+                        </seglistitem>
+                        <seglistitem>
+                            <seg>lvdsoutput</seg>
+                            <seg>Integer 0-0xffff</seg>
+                            <seg>0</seg>
+                            <seg>
+                                If a pin is part of a quartet that's configured for
+                                <literal>IORegister</literal>, <literal>Output</literal>,
+                                The corresponding bit of this mask determines the
+                                value of that pin.
+                            </seg>
+                        </seglistitem>
+                    </segmentedlist>
+                </section>
             </section>
         </section>
         <section id='sec.eventstruct'>
