@@ -1346,6 +1346,67 @@ foreach module [vx27xxpha list] {
                         </seglistitem>
                     </segmentedlist>
                 </section>
+                <section>
+                    <title>Input conditioning</title>
+                    <para>
+                        Describes the parameters that control the relationship
+                        between the raw ADC inputs and what the digitizers see.
+                    </para>
+                    <segmentedlist>
+                        <title></title>
+                        <segtitle>Name</segtitle>
+                        <segtitle>Data type</segtitle>
+                        <segtitle>Default</segtitle>
+                        <segtitle>Description</segtitle>
+                        <seglistitem>
+                            <seg>vgagain</seg>
+                            <seg>List of four integers 0-40</seg>
+                            <seg>0</seg>
+                            <seg>If the module is equipped with variable gain
+                            amplifiers on its input, each amplifier gain is common
+                            between 16 inputs.  This list of parameters sets the
+                            VGA Gain for groups of 16 channels.</seg>
+                        </seglistitem>
+                        <seglistitem>
+                            <seg>offsetcalibrationenable</seg>
+                            <seg>Boolean value</seg>
+                            <seg>true</seg>
+                            <seg>Enable/disable the offset calibraion for each channel.</seg>
+                        </seglistitem>
+                        <seglistitem>
+                            <seg>channelenables</seg>
+                            <seg>List of 64 booleans</seg>
+                            <seg>[lrepeat true 64]</seg>
+                            <seg>
+                                For each channel when its corresponding list element
+                                is true, the channel is enabled, otherwise it is
+                                disabled.
+                            </seg>
+                        </seglistitem>
+                        <seglistitem>
+                            <seg>dcoffsets</seg>
+                            <seg>List of 64 floats 0-100.0</seg>
+                            <seg>[lrepeat 50.0 64]</seg>
+                            <seg>For each channel, this is the DC Offset applied
+                            to the channels.</seg>
+                        </seglistitem>
+                        <seglistitem>
+                            <seg>triggerthresholds</seg>
+                            <seg>64 element list of integers 0-8191</seg>
+                            <seg>1023</seg>
+                            <seg>
+                                Channel trigger thresholds.
+                            </seg>
+                        </seglistitem>
+                        <seglistitem>
+                            <seg>inputpolarities</seg>
+                            <seg>list of 64 enums</seg>
+                            <seg>[lrepeat Negative 64]</seg>
+                            <seg>Sets the polarity of the input pulse.</seg>
+                        </seglistitem>
+                    </segmentedlist>
+                                           
+                </section>
             </section>
         </section>
         <section id='sec.eventstruct'>
