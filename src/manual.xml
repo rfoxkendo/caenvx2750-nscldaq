@@ -1091,7 +1091,65 @@ foreach module [vx27xxpha list] {
                     <title>Service options</title>
                     <para>
                         These, for the most part, have to do with the test pulser.
+                        There are also miscellaneous parameters to control
+                        error handling and the LEMO I/O levels.
                     </para>
+                    <segmentedlist>
+                        <title></title>
+                    <segtitle>Name</segtitle>
+                    <segtitle>Data type</segtitle>
+                    <segtitle>Default</segtitle>
+                    <segtitle>Description</segtitle>
+                    <seglistitem>
+                        <seg>testpulserperiod</seg>
+                        <seg>Integer ns 0-34359738360</seg>
+                        <seg>100000</seg>
+                        <seg>The period of the test puler in ns.</seg>
+                    </seglistitem>
+                    <seglistitem>
+                        <seg>testpulsewidth</seg>
+                        <seg>Integer ns 0-34359738360</seg>
+                        <seg>1000</seg>
+                        <seg>Width of the high part of the test pulser
+                        period.</seg>
+                    </seglistitem>
+                    <seglistitem>
+                        <seg>testpulselowlevel</seg>
+                        <seg>Integer 0-65535</seg>
+                        <seg>0</seg>
+                        <seg>The low level output of the pulser</seg>
+                    </seglistitem>
+                    <seglistitem>
+                        <seg>testpulsehighlevel</seg>
+                        <seg> Integer 0-65535</seg>
+                        <seg>65535</seg>
+                        <seg>The high level output of the pulser</seg>
+                    </seglistitem>
+                    <seglistitem>
+                        <seg>iolevel</seg>
+                        <seg>Enumerated value</seg>
+                        <seg>NIM</seg>
+                        <seg>The signalling level to be used by the
+                        LEMO I/O connectors.  This can be one of
+                        <literal>NIM</literal> or <literal>TTL</literal></seg>
+                    </seglistitem>
+                    <seglistitem>
+                        <seg>errorflagmask</seg>
+                        <seg>Integer 0-0xffff</seg>
+                        <seg>0</seg>
+                        <seg>Error flag bitmask that determines what lights
+                        the front panel error LED given specific error
+                        conditions</seg>
+                    </seglistitem>
+                    <seglistitem>
+                        <seg>errorflagdatamask</seg>
+                        <seg>Integer  0-0xffff</seg>
+                        <seg>0</seg>
+                        <seg>Error flag bitmask that determines which which error
+                        conditions result in an error condition in the event.</seg>
+                    </seglistitem>
+                    </segmentedlist>
+                    
                 </section>
             </section>
         </section>
