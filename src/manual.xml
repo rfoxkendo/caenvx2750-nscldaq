@@ -622,7 +622,7 @@ foreach module [vx27xxpha list] {
                     parameters that are related in some way.
                     Parameters are describes as follows:
                 </para>
-                <segmentedlist>
+                <segmentedlist><title></title>
                     <segtitle>Name</segtitle>
                     <segtitle>Data type</segtitle>
                     <segtitle>Default</segtitle>
@@ -640,6 +640,27 @@ foreach module [vx27xxpha list] {
                     of the following are valid false value
                     <literal>false, no, 0, off, disabled</literal>.
                 </para>
+                <para>
+                    A note on integer data types.  These can be expressed in base
+                    10, 16 or 8. Base 16 values should be prefixed by 0x,
+                    e.g. <literal>0x5a5a5a5a5a5a5a5a</literal>.  Base 8 values
+                    are prefixed by a leading zero e.g. 0777.
+                    
+                </para>
+                <warning>
+                    <title>WARNING</title>
+                    <para>
+                        Do not use leading zeros to align decimal values,
+                        they will be treated as octal and, in general,
+                        not have the intended effect.  This is a curse that has
+                        afflicted many a user of the Tcl language.
+                    </para>
+                </warning>
+                <para>
+                    When in doubt about the meaning of a parameter see CAEN
+                    document
+                    <literal>UM7788 --FELib PHA Parameters User Manual</literal>.
+                </para>
                 <section>
                     <title>Readout Options</title>
                     <para>
@@ -654,7 +675,7 @@ foreach module [vx27xxpha list] {
                     <para>
                         The configuration parameters are:
                     </para>
-                    <segmentedlist>
+                    <segmentedlist><title></title>
                     <segtitle>Name</segtitle>
                     <segtitle>Data type</segtitle>
                     <segtitle>Default</segtitle>
@@ -730,7 +751,7 @@ foreach module [vx27xxpha list] {
                     <para>
                         These parameters control general module wide functionality.
                     </para>
-                    <segmentedlist>
+                    <segmentedlist><title></title>
                     <segtitle>Name</segtitle>
                     <segtitle>Data type</segtitle>
                     <segtitle>Default</segtitle>
@@ -758,6 +779,319 @@ foreach module [vx27xxpha list] {
                         daisy chain.</seg>
                     </seglistitem>
                     </segmentedlist>
+                </section>
+                <section>
+                    <title>Triggerring and I/O</title>
+                    <para>
+                        The parameters control digitizer and channel level triggers
+                        as well as the LEMO connectors on the front panel.
+                    </para>
+                    <segmentedlist>
+                    <title></title>
+                    <segtitle>Name</segtitle>
+                    <segtitle>Data type</segtitle>
+                    <segtitle>Default</segtitle>
+                    <segtitle>Description</segtitle>
+                    <seglistitem>
+                        <seg>startsource</seg>
+                        <seg>List of enumerated values</seg>
+                        <seg>SWcmd</seg>
+                        <seg>The list of ways the digitizer can start a run.
+                        The digitzer is started on the or of the conditions
+                        in the list.  Usually, in a synchronized set, the
+                        'master' digitizer is stated on <literal>SWcmd</literal> and the others
+                        on e.g. <literal>SINedge</literal>.   Valid values for list elements are:
+                        <literal>EncodedClkIn, SINlevel, SINedge, SWcmd, LVDS, P0</literal></seg>
+                    </seglistitem>
+                    <seglistitem>
+                        <seg>gbltriggrsrc</seg>
+                        <seg>List of Enums</seg>
+                        <seg>TrgIn</seg>
+                        <seg>The sources of the module global trigger.  The
+                        or of the values listed makes a global trigger.
+                        Valid values are
+                        <literal>TrgIn, P0, SwTrg, LVDS, ITLA, ITLB,
+                        ITLA_AND_ITLB, ITLA_OR_ITLB, EncodedClkIn, GPIO,
+                        TestPulse</literal></seg>
+                    </seglistitem>
+                    <seglistitem>
+                        <seg>wavetriggersrc</seg>
+                        <seg>List of 64 lists of enums</seg>
+                        <seg>[lrepeat TRGIN 64]</seg>
+                        <seg>This parameter is a list of 64 trigger sources for
+                        wave acquisition.  Each element of that list is itself
+                        a list of triggers sources for that channel.  Valid
+                        values for the trigger sources are:
+                        <literal>
+                            ITLB, ITLA, GlobalTriggerSource, TRGIN, ExternalInhibit,
+                            ADCUnderSaturation, ADCOverSaturation, SWTrg, ChSelfTrigger,
+                            Ch64Trigger, Disabled
+                        </literal>
+                        </seg>
+                    </seglistitem>
+                    <seglistitem>
+                        <seg>eventtriggersrc</seg>
+                        <seg>List of 64 lists of enums</seg>
+                        <seg>[lrepeat TRGIN 64]</seg>
+                        <seg>Similar to the <literal>wavetriggersrc</literal>
+                        but provides, for each channel a list of event trigger
+                        sources.   Valid values are:
+                        <literal>
+                            ITLB, ITLA, GlobalTriggerSource, TRGIN, SWTrg, ChSelfTrigger,
+                            Ch64Trigger, Disabled
+                        </literal>
+                        </seg>
+                    </seglistitem>
+                    <seglistitem>
+                        <seg>channeltriggermasks</seg>
+                        <seg>List of 64 uint64_t</seg>
+                        <seg>[lrepeat 0 64]</seg>
+                        <seg>In <literal>Ch64Trigger</literal> mode, or coincidence
+                        triggering mode, used to define the set of channels that
+                        particpate in triggering each channel.</seg>
+                    </seglistitem>
+                    <seglistitem>
+                        <seg>savetraces</seg>
+                        <seg>List of 64 enums</seg>
+                        <seg>[lrepeat OnRequest 64]</seg>
+                        <seg>Determines when wave traces are saved for each
+                        channel.  Valid values are
+                        <literal>Always, OnRequest</literal></seg>
+                    </seglistitem>
+                    <seglistitem>
+                        <seg>triggeroutmode</seg>
+                        <seg>Enumerated value</seg>
+                        <seg>TRGIN</seg>
+                        <seg>Determines what is output on the <literal>TRGOUT</literal>
+                        LEMO output.  Valid values are:
+                        <literal>
+                            TRGIN, P0, SwTrg, LVDS, ITLA, ITLB,
+                            ITLA_AND_ITLB, ITLA_OR_ITLB, EncodedClkIn,
+                            Run, RefClk, TestPulse,
+                            Busy, Fixed0, Fixed1, SyncIn, SIN, GPIO,
+                            AcceptTrg, TrgClk
+                        </literal>
+                        </seg>
+                    </seglistitem>
+                    <seglistitem>
+                        <seg>gpiomode</seg>
+                        <seg>Enumerated value</seg>
+                        <seg>Disabled</seg>
+                        <seg>Selects the signal to output on the
+                        GIO LEMO connector.
+                        This can be one of
+                        <literal>
+                            Disabled, TrgIn, P0, SIN, LVDS, ITLA, ITLB,
+                            ITLA_AND_ITLB, ITLA_OR_ITLB, EncodedClkIn, SwTrg,
+                            Run, RefClk, TestPulse, Busy, Fixed0, Fixed1
+                        </literal>
+                        </seg>
+                    </seglistitem>
+                    <seglistitem>
+                        <seg>busyinsrc</seg>
+                        <seg>Enumerated value</seg>
+                        <seg>Disabled</seg>
+                        <seg>Determines the source of the external
+                        module busy input.  This is one of:
+                        <literal>SIN, GPIO, LVDS, Disabled</literal>
+                        </seg>
+                    </seglistitem>
+                    <seglistitem>
+                        <seg>syncoutmode</seg>
+                        <seg>Enumerated value</seg>
+                        <seg>Disabled</seg>
+                        <seg>
+                            Determines the source of the <literal>SOUT</literal>
+                            LEMO connector.  Valid values are
+                            <literal>
+                                Disabled, SyncIn, TestPulse, IntClk, Run
+                            </literal>
+                        </seg>
+                    </seglistitem>
+                    <seglistitem>
+                        <seg>boardvetosrc</seg>
+                        <seg>Enumerated value</seg>
+                        <seg>Source of the board level trigger veto. Valid values are
+                        <literal>
+                            SIN, LVDS, GPIO, P0, EncodedClkIn, Disabled
+                        </literal>
+                        </seg>
+                    </seglistitem>
+                    <seglistitem>
+                        <seg>boardvetowidth</seg>
+                        <seg>Integer nano-seconds 0 - 34359738360</seg>
+                        <seg>200</seg>
+                        <seg>Ns stretch applied to the board veto source</seg>
+                    </seglistitem>
+                    <seglistitem>
+                        <seg>boardvetopolarity</seg>
+                        <seg>Enumerated value</seg>
+                        <seg>ActiveLow</seg>
+                        <seg>
+                            Polarity of the veto input.  One of
+                            <literal>ActiveHigh, ActiveLow</literal>
+                        </seg>
+                    </seglistitem>
+                    <seglistitem>
+                        <seg>chanvetosrc</seg>
+                        <seg>list of 64 enumerated values</seg>
+                        <seg>[lrepeat Disabled 64]</seg>
+                        <seg>Veto sources for each of the channels.  Each list element
+                        can have one of the value:
+                        <literal>
+                            BoardVeto, ADCOverSaturation, ADCUnderSaturation, Disabled
+                        </literal></seg>
+                    </seglistitem>
+                    <seglistitem>
+                        <seg>chanvetowidth</seg>
+                        <seg>List of 64 integer in units of ns 0-524280</seg>
+                        <seg>[list 200 64]</seg>
+                        <seg>The stretch applied to each channel's veto source.</seg>
+                    </seglistitem>
+                    <seglistitem>
+                        <seg>rundelay</seg>
+                        <seg>Integer nanoseconds 0-54280</seg>
+                        <seg>0</seg>
+                        <seg>
+                            This value is used to fine tune the synchronized
+                            start of multi-board data taking. When the start source
+                            is true, the actual start will be delayed by the ns
+                            set in this parameter.  If, for example, the start is
+                            propagated via a SIN/SOUT daisy chain on the front panel, the
+                            final board will be delayed by 0 ns, the next to last
+                            board by the single board propagation delay and so on.
+                        </seg>
+                    </seglistitem>
+                    <seglistitem>
+                        <seg>chanvetowidth</seg>
+                        <seg>boolean</seg>
+                        <seg>true</seg>
+                        <seg>When true, the module is disarmed when data taking is
+                        stopped.</seg>
+                    </seglistitem>
+                    <seglistitem>
+                        <seg>volclkoutdelay</seg>
+                        <seg>Floating point ps -18888.8888 - 18888.8888</seg>
+                        <seg>0.0</seg>
+                        <seg>
+                            Sets the value that is programmed into the clock PLL
+                            delay.  This is used to synchronize clocks passed between
+                            boards via the CLKOUT/CLKIN daisy chain.
+                        </seg>
+                    </seglistitem>
+                    <seglistitem>
+                        <seg>permclkoutdelay</seg>
+                        <seg>volclkoutdelay</seg>
+                        <seg>Floating point ps -18888.8888 - 18888.8888</seg>
+                        <seg>0.0</seg>
+                        <seg>
+                            Sets the value that is programmed into the clock PLL
+                            delay on power up.  This is used to synchronize clocks passed between
+                            boards via the CLKOUT/CLKIN daisy chain.  Note that
+                            this value is first programmed and then the volclkoutdelay
+                            which actually controls the clock delay.
+                            In a future bit of development a parameter migth be
+                            added to select which of these two values controls
+                            the actual clock delay.
+                        </seg>
+                    </seglistitem>
+                    </segmentedlist>
+                </section>
+                <section>
+                    <title>Wave form inspection and digital probes.</title>
+                    <para>
+                        Note that whlie the waveform and digital probe values are
+                        programmed here, in order to actually include those
+                        probes in the data read from the digitizer,
+                        <literal>readanalogprobes</literal> and/or
+                        <literal>readdigitalprobes</literal> must be set
+                        accordingly.
+                    </para>
+                    <segmentedlist><title></title>
+                    <segtitle>Data type</segtitle>
+                    <segtitle>Default</segtitle>
+                    <segtitle>Description</segtitle>
+                    <seglistitem>
+                        <seg>wavesource</seg>
+                        <seg>List of enumerated values</seg>
+                        <seg>[lrepeat ADC_DATA 64]</seg>
+                        <seg>
+                            This is a list of one entry per channel that describes
+                            what the FADC for that channel sees on its input.
+                            Valid values are:
+                            <literal>
+                                ADC_DATA, ADC_TEST_TOGGLE, ADC_TEST_RAMP,
+                                ADC_TEST_SIN, IPE,
+                                 Ramp, SquareWave, ADC_TEST_PRBS
+                            </literal>
+                        </seg>
+                    </seglistitem>
+                    <seglistitem>
+                        <seg>recordsamples</seg>
+                        <seg>List of 64 integers 4-8100</seg>
+                        <seg>[lrepeat 4 64]</seg>
+                        <seg>Each element determines the number of samples that
+                        channel of the ADC will process/record.  The actual time
+                        represented depends on the value of the <literal>saveresolutions</literal>
+                        parameter for that channel.</seg>
+                    </seglistitem>
+                    <seglistitem>
+                        <seg>waveresolutions</seg>
+                        <seg>list of 64 enumerated values</seg>
+                        <seg>[lrepeat Res8 64]</seg>
+                        <seg>For each channel, selects the sampling resolution in
+                        nanoseconds.</seg>
+                    </seglistitem>
+                    <seglistitem>
+                        <seg>analogprobe1, analogprobe2</seg>
+                        <seg>List of 64 enumerated values</seg>
+                        <seg>[lrepeat ADCInput 64], [lrepeat TimeFilter 64]</seg>
+                        <seg>
+                            For each channel, the analog probes available
+                            for acquisition from that channel.   Allowed values
+                            are:
+                            <literal>
+                                ADCInput, TimeFilter, EnergyFilter,
+                                EnergyFilterBaseline,
+                                EnergyFilterMinusBaseline
+                            </literal>
+                        </seg>
+                    </seglistitem>
+                    <seglistitem>
+                        <seg>digitalprobe1, digitalprobe2, digitalprobe3, digitalprobe4</seg>
+                        <seg>list of 64 enumerated values</seg>
+                        <seg>[lrepeat Trigger 64], [lrepeat TimeFilterArmed 64],
+                        [lrepeat RetriggerGuard 64],
+                        [lrepeat EneryFilterBaselineFreeze 64]</seg>
+                        <seg>
+                            For each channel, the digital probes available for
+                            acquisition from that channel.  Valid values are:
+                            <literal>
+                                Trigger, TimeFilterArmed, ReTriggerGuard,
+                                EnergyFilterBaselineFreeze,
+                                EnergyFilterPeaking, EnergyFilterPeakReady,
+                                EnergyFilterPileUpGuard, EventPileup, ADCSaturation,
+                                ADCSaturationProtection, PostSaturationEvent,
+                                EnergyFilterSaturation,
+                                AcquisitionInhibit
+                            </literal>
+                        </seg>
+                    </seglistitem>
+                    <seglistitem>
+                        <seg>pretriggersamples</seg>
+                        <seg>List of 64 integers 4-4000</seg>
+                        <seg>[lrepeat 100 64]</seg>
+                        <seg>For each channel, the number of samples
+                        prior to the trigger that will be acquired and
+                        analyzed by the DPP-PHA firmware.</seg>
+                    </seglistitem>
+                    </segmentedlist>
+                </section>
+                <section>
+                    <title>Service options</title>
+                    <para>
+                        These, for the most part, have to do with the test pulser.
+                    </para>
                 </section>
             </section>
         </section>
