@@ -26,14 +26,14 @@ JSON_LDFLAGS  = $(shell pkg-config jsoncpp  --libs)
 TCL_CPPFLAGS = $(shell pkg-config tcl8.6 --cflags)
 TCL_LDFLAGS  = $(shell pkg-config tcl8.6 --libs) 
 
-NSCLDAQROOT=/usr/opt/daq/12.0-pre3
+NSCLDAQROOT=$(DAQROOT)
 NSCLDAQ_CXXFLAGS=-I$(NSCLDAQROOT)/include -I$(NSCLDAQROOT)/include/sbsreadout
 NSCLDAQ_LDFLAGS=-L$(NSCLDAQROOT)/lib -Wl,-rpath=$(NSCLDAQROOT)/lib \
 	-ltclPlus -lException -ldaqthreads $(TCL_LDFLAGS)
 
 
 ROOTSYS=/usr/opt/root/root-6.24.06
-SPECTCLROOT=/usr/opt/spectcl/5.10-000
+SPECTCLROOT=$(SPECTCLHOME)
 SPECTCL_CXXFLAGS=-I$(SPECTCLROOT)/include -I$(ROOTSYS)/include -c -g
 
 PUGI_CXXFLAGS=-I$(HERE)../pugixml/include
