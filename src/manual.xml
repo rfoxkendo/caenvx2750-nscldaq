@@ -1299,6 +1299,53 @@ foreach module [vx27xxpha list] {
                         </seglistitem>
                     </segmentedlist>
                 </section>
+                <section>
+                    <title>DAC  options</title>
+                    <para>
+                        Each module has a dedicated Digital to Analog Converter
+                        (DAC).  The <literal>DAC</literal> LEMO output on the
+                        module front panel reflects the output of this device.
+                        These parameters control what that is.
+                    </para>
+                    <segmentedlist>
+                        <title></title>
+                        <segtitle>Name</segtitle>
+                        <segtitle>Data type</segtitle>
+                        <segtitle>Default</segtitle>
+                        <segtitle>Description</segtitle>
+                        <seglistitem>
+                            <seg>dacoutmode</seg>
+                            <seg>Enumerated Value</seg>
+                            <seg>ChSum</seg>
+                            <seg>Determines what the input to the DAC is.
+                            Legal values are
+                            <literal>
+                                Static, IPE, ChInput, MemOccupancy, ChSum, OverThrSum,
+                                Ramp, Sin5MHz, Square
+                            </literal>
+                            </seg>
+                        </seglistitem>
+                        <seglistitem>
+                            <seg>dacoutputlevel</seg>
+                            <seg>Integer 0-16383</seg>
+                            <seg>0</seg>
+                            <seg>
+                                If the output mode is <literal>Static</literal>,
+                                the output is the DAC conversion of this value
+                                as its input.
+                            </seg>
+                        </seglistitem>
+                        <seglistitem>
+                            <seg>dacoutchannel</seg>
+                            <seg>integer 0-63</seg>
+                            <seg>0</seg>
+                            <seg>If the DAC output mode is
+                            <literal>ChInput</literal> this value selects the
+                            channel input that is echoed on the DAC output.
+                            </seg>
+                        </seglistitem>
+                    </segmentedlist>
+                </section>
             </section>
         </section>
         <section id='sec.eventstruct'>
