@@ -1631,6 +1631,25 @@ foreach module [vx27xxpha list] {
                                 fixes the baseline at zero.
                             </seg>
                         </seglistitem>
+                        <seglistitem>
+                            <seg>efbaselineguardt</seg>
+                            <seg>list of 64 integer values. 0-8000</seg>
+                            <seg>[lrepeat 0 64]</seg>
+                            <seg>
+                                The time, for each channel, after the trapezoidal
+                                filter before basline computation will resume.
+                                These values are in units of nanoseconds.
+                            </seg>
+                        </seglistitem>
+                        <seglistitem>
+                            <seg>efpileupguardt</seg>
+                            <seg>List of 64 integers 0-8000</seg>
+                            <seg>[lrepeat 0 64</seg>
+                            <seg>
+                                For each channel, specifies, in ns, the guard time
+                                that defines energy filter pileup.
+                            </seg>
+                        </seglistitem>
                     </segmentedlist>
                 </section>
             </section>
@@ -1638,7 +1657,177 @@ foreach module [vx27xxpha list] {
         <section id='sec.eventstruct'>
             <title id='sec.eventstruct.title'></title>
             <para>
-                To be written.
+                This section describes events written by the Readout program.
+                These hits are encapsulated in NSCLDAQ ringitems.  When the event
+                builder is  in use, additional event builder encapsulation
+                will occur.
+            </para>
+            <para>
+                Ring items are described in the NSCLDAQ documentation.
+                This is in the form of an annotated header for
+                <filename>DataFormat.h</filename>.  See e.g.
+                <ulink url="https://docs.nscl.msu.edu/daq/newsite/nscldaq-11.3/r22906.html" />.
+                In order to support event building, the ring items that encapslate
+                hits include a body header.  The body header includes the hit timestamp
+                and sourceid as well as a zero valued barrier type.
+            </para>
+            <para>
+                The additional event builder encapsulation is described in the
+                NSCLDAQ section on the event builder e.g.
+                <ulink url='https://docs.nscl.msu.edu/daq/newsite/nscldaq-11.3/x4509.html' />
+            </para>
+            <para>
+                This leaves to us documenting the format of the body of a hit:
+            </para>
+            <table>
+                <title>Format of event body</title>
+                <tgroup cols='2' align='left' colsep='1' rowsep='1'>
+                    <colspec colname='type' />
+                    <colspec colname='what' />
+                    <thead>
+                        <row>
+                            <entry>Data Type</entry>
+                            <entry>Contents</entry>
+                        </row>
+                    </thead>
+                    <tbody>
+                        <row>
+                            <entry>uint32_t</entry>
+                            <entry>Number of uint16_t's in the event</entry>
+                        </row>
+                        <row>
+                            <entry>Variable.</entry>
+                            <entry>Null terminated string that identifies the module</entry>
+                        </row>
+                        <row>
+                            <entry>uint16_t</entry>
+                            <entry>Channel within the module the hit came from</entry>
+                        </row>
+                        <row>
+                            <entry>uint64_t</entry>
+                            <entry>Hit timestamp in nanoseconds</entry>
+                        </row>
+                        <row>
+                            <entry>uint64_t</entry>
+                            <entry>raw timestamp only meaningful if selected</entry>
+                        </row>
+                        <row>
+                            <entry>uint16_t</entry>
+                            <entry>fine timestamp only meaningful if selected</entry>
+                        </row>
+                        <row>
+                            <entry>uint16_t</entry>
+                            <entry>Peak height (energy)</entry>
+                        </row>
+                        <row>
+                            <entry>uint16_t</entry>
+                            <entry>Low priority flags. Only meaningful if selected.</entry>
+                        </row>
+                        <row>
+                            <entry>uint16_t></entry>
+                            <entry>High priority flags. Only meaningful if selected.</entry>
+                        </row>
+                        <row>
+                            <entry>uint16_t</entry>
+                            <entry>Down sample selection code. Only meaningful if selected</entry>
+                        </row>
+                        <row>
+                            <entry>uint16_t</entry>
+                            <entry>
+                                Fail flags.  Only meaningful if selected</entry>
+                        </row>
+                        <row>
+                            <entry>uint16_t</entry>
+                            <entry>Analog probe type 1 - only meaningful if
+                            analog probe 1 is selected for readout</entry>
+                        </row>
+                        <row>
+                            <entry>
+                                uint32_t
+                            </entry>
+                            <entry>Number of samples of analog probe 1 data.
+                            This is zero if analog probe 1 is not selecte.</entry>
+                        </row>
+                        <row>
+                            <entry>variable number of uint32_t values</entry>
+                            <entry>Analog probe 1 values.</entry>
+                        </row>
+                        <row>
+                            <entry>uint16_t</entry>
+                            <entry>Analog probe type 2 - only meaningful if
+                            analog probe 2 is selected for readout</entry>
+                        </row>
+                        <row>
+                            <entry>
+                                uint32_t
+                            </entry>
+                            <entry>Number of samples of analog probe 1 data.
+                            This is zero if analog probe 2 is not selected.</entry>
+                        </row>
+                        <row>
+                            <entry>variable number of uint32_t values</entry>
+                            <entry>Analog probe 1 values.</entry>
+                        </row>
+                        <row>
+                            <entry>uint16_t</entry>
+                            <entry>Digital probe type 1 - only meaningful if digital probe 1 is selected
+                            </entry>
+                        </row>
+                        <row>
+                            <entry>uint32_t</entry>
+                            <entry>Number of samples in digital probe 1</entry>
+                        </row>
+                        <row>
+                            <entry>variable number of uint8_ts</entry>
+                            <entry>Digital probe sample.</entry>
+                        </row>
+                        <row>
+                            <entry>uint16_t</entry>
+                            <entry>Digital probe type 2 - only meaningful if digital probe 2 is selected
+                            </entry>
+                        </row>
+                        <row>
+                            <entry>uint32_t</entry>
+                            <entry>Number of samples in digital probe 2</entry>
+                        </row>
+                        <row>
+                            <entry>variable number of uint8_ts</entry>
+                            <entry>Digital probe sample.</entry>
+                        </row>
+                        <row>
+                            <entry>uint16_t</entry>
+                            <entry>Digital probe type 3 - only meaningful if digital probe 3 is selected
+                            </entry>
+                        </row>
+                        <row>
+                            <entry>uint32_t</entry>
+                            <entry>Number of samples in digital probe 3</entry>
+                        </row>
+                        <row>
+                            <entry>variable number of uint8_ts</entry>
+                            <entry>Digital probe sample.</entry>
+                        </row>
+                        <row>
+                            <entry>uint16_t</entry>
+                            <entry>Digital probe type 4 - only meaningful if digital probe 4 is selected
+                            </entry>
+                        </row>
+                        <row>
+                            <entry>uint32_t</entry>
+                            <entry>Number of samples in digital probe 4</entry>
+                        </row>
+                        <row>
+                            <entry>variable number of uint8_ts</entry>
+                            <entry>Digital probe sample.</entry>
+                        </row>
+                    </tbody>
+                </tgroup>
+            </table>
+            <para>
+                Note that if needed an additional byte will pad out the end of the
+                event to bring it to an even number of <type>uint16_t</type>.
+                However, since there are an even number of digital probes,
+                all with the same length, I don't think this padding ever happens.
             </para>
         </section>
     </chapter>
@@ -1647,8 +1836,231 @@ foreach module [vx27xxpha list] {
             Configuring SpecTcl
         </title>
         <para>
-            To Be written
+            Some classes have been written to make the unpacking of raw parameters
+            from hits within an event built event simple.
+            With SpecTcl's event processing pipeline architecture, once raw
+            events have been unpacked into parameters and accessible data structures,
+            it is simple to add additional event processors to the pipeline
+            to perform arbitrary computations.
         </para>
+        <para>
+            This chapter will describe:
+        </para>
+        <itemizedlist>
+            <listitem>
+               <para>
+                  The support classes you need to know to unpack digitizer data. 
+               </para>
+            </listitem>
+            <listitem>
+               <para>
+                  How to obtain a copy of the SpecTcl Skeleton you will modify
+                  to create a version of SpecTcl capable of analyzing the event
+                  built data.
+               </para>
+            </listitem>
+            <listitem>
+               <para>
+                  How to modify the Makefile so that the classes written to
+                  unpack data from the digitizers can be incorporated intothe built
+                  SpecTcl.
+               </para>
+            </listitem>
+        </itemizedlist>
+        <para>
+            SpecTcl documentation is available in
+            <ulink url='http://docs.nscl.msu.edu/daq' />.
+            I recommend using a release of SpecTcl version 5.12.  This version
+            has the infrastructure to unpack event built data needed by
+            the classes we'll use, as well as the new QtPi displayer as an option
+            if you want capabilities beyond those offered by <literal>Xamine</literal>.
+        </para>
+        <para>
+            Note that a complete example is provided in the <filename>tclreadout/SpecTcl</filename>
+            subdirectory of the source tree.
+            <filename></filename>
+        </para>
+        <section>
+            <title>Unpacking classes</title>
+            <para>
+                The <filename>libCaenVxUnpackers.a</filename> library provides
+                classes that understand how to unpack data from the
+                event built data for the CAEN Digitizers.  This section
+                describes those classes.
+            </para>
+            <para>
+                The two main classes you will need are
+                <classname>VX2750ModuleUnpacker</classname> and
+                <classname>VX2750EventBuiltEventProcessor</classname>.
+            </para>
+            <para>
+                <classname>VX2750ModuleUnpacker </classname> is responsible
+                for unpacking hits from a module into a set of
+                parameters and internal data.  Energies, and timestamps, for
+                example are unpacked into SpecTcl parameters and can be directly
+                histogrammed.  Analog and digital probe data, however cannot and
+                are loaded into internal data where event processors later in the
+                pipeline can fetch them, if needed, to produce parameters or,
+                in the case of traces, load them on demend into spectra, so they
+                can be visualized.
+            </para>
+            <para>
+                A class that you normally won't need to directly instantiate,
+                <classname>VX2750EventProcessor</classname> is responsible
+                for ensure that module unpackers are called with
+                a pointer to data for a hit.  The event processor is also
+                responsible for informing the unpacker when event processing begins
+                and, therefore, internal data can be cleared.
+            </para>
+            <para>
+                Separate sections will describe the methods you will need
+                to interact with both the unpacker and the event built event
+                processor.
+            </para>
+            <section>
+                <title>The <classname>VX2750ModuleUnpacker</classname> class</title>
+                <para>
+                    Given a pointer to the data from a module,
+                    <classname>VX2750ModuleUnpacker</classname> instances
+                    <methodname>unpackHit</methodname> method cumulatively
+                    unpacks hits into SpecTcl parameters and internal data until
+                    the <methodname>reset</methodname> is invoked.  Normally
+                    <methodname>reset</methodname> if invoked by framing code
+                    as processing of a new event begins.
+                </para>
+                <para>
+                    Methods provide access to internal data for subsequent
+                    stages of SpecTcl's event processing pipeline.
+                    Here are the important methods of
+                    <classname>VX2750ModuleUnpacker</classname>.
+                </para>
+                <variablelist>
+                    <varlistentry>
+                       <term><constructorsynopsis>
+                           <methodname>VX2750ModuleUnpacker</methodname>
+                           <methodparam>
+                               <type>const char*</type><parameter>moduleName</parameter>
+                           </methodparam>
+                           <methodparam>
+                               <type>const char*</type><parameter>paramBaseName</parameter>
+                           </methodparam>
+                       </constructorsynopsis></term>
+                       <listitem>
+                           <para>
+                                Constructs a new instance.  <parameter>moduleName</parameter>
+                                is the name of the module that will be unpacked.
+                                Attempting to pass data for another module to
+                                <methodname>unpackHit</methodname>
+                                will result in an exception.
+                                The <parameter>paramBaseName</parameter> parameter
+                                provides the base parameter name of the SpecTcl
+                                parameters this object will produce.
+                           </para>
+                           <para>
+                                The unpacker, when called for each hit in an event,
+                                will produce parameter arrays for the timestamp
+                                in nanoseconds, the raw timestamp and the fine timestamp
+                                as well as the energy.  Suppose, that
+                                A hit is constructed with a parameter base value
+                                of <literal>someModule</literal>;  construction
+                                will build Tree Parameter arrays, containing 64
+                                elements (one for each channel), that are named
+                                <literal>someModule.ns</literal>,
+                                <literal>someModule.rawTime</literal>,
+                                <literal>someModule.fineTime</literal> and
+                                <literal>someModule.energy</literal>.
+                           </para>
+                           <para>
+                            Note that only elements for which hits have been
+                            seen will have valid values and that SpecTcl will not
+                            histogram parameters that don't have valid values.
+                            Furthermore, with the exception of the nanosecond time and
+                            energy, the readout must have enabled readout of the other
+                            parameters for those to have meaningful values.
+                           </para>
+                        </listitem>
+                    </varlistentry>
+                    <varlistentry>
+                       <term><methodsynopsis>
+                          <type>void</type>
+                          <methodname>reset</methodname>
+                          <void />
+                       </methodsynopsis></term>
+                       <listitem>
+                           <para>
+                            Called to reset all of the internal data. Note that
+                            SpecTcl's begin event processing invalidates the
+                            tree parameter arrays in O(1) time so these are not
+                            touched by <methodname>reset</methodname>
+                           </para>
+                        </listitem>
+                    </varlistentry>
+                    <varlistentry>
+                       <term><methodsynopsis>
+                          <type>const void*</type>
+                          <methodname>unpackHit</methodname>
+                          <methodparam>
+                              <type>const void*</type><parameter>pData</parameter>
+                          </methodparam>
+                       </methodsynopsis></term>
+                       <listitem>
+                           <para>
+                            Processes data from a hit cumulatively into the
+                            Tree parameter arrays and internal data.
+                            Returns a pointer to the byte just after the hit.
+                            If the data does not point to a hit from the
+                            correct module a <classname>std::logic_error</classname>
+                            is thrown.
+                           </para>
+                        </listitem>
+                    </varlistentry>
+                    <varlistentry>
+                       <term><methodsynopsis>
+                          <type>std::uint64_t </type>
+                          <methodname>getChannelMask</methodname>
+                          <void />
+                          <modifier>const</modifier>
+                       </methodsynopsis></term>
+                       <listitem>
+                           <para>
+                            Returns a bitmask of the channels that have been
+                            passed to <methodname>unpackHit</methodname>
+                            since the last call to <methodname>reset</methodname>.
+                           </para>
+                        </listitem>
+                    </varlistentry>
+                    <varlistentry>
+                       <term><methodsynopsis>
+                          <type>std::set<unsigned> </type>
+                          <methodname>getChannelSet</methodname>
+                          <void />
+                          <modifier>const</modifier>
+                       </methodsynopsis></term>
+                       <listitem>
+                           <para>
+                            Same as <methodname>?getChannelMask</methodname>
+                            but the returned value is a set containing the
+                            numbers of all channesl that have been processed.
+                           </para>
+                        </listitem>
+                    </varlistentry>
+                </variablelist>
+            </section>
+            <section>
+                <title>The <classname>VX2750EvenBuiltEventProcessor</classname> class</title>
+                <para>
+                    To be written.
+                </para>
+            </section>
+        </section>
+        <section>
+            <title>Obtaining and modifying the skeleton</title>
+            <para>to be written</para>
+        </section>
+        <section>
+            <title>Building the tailored SpecTcl</title>
+            <para>to be written</para>
+        </section>
     </chapter>
     <appendix id='app.internals'>
         <title>Software structure</title>
