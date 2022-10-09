@@ -820,7 +820,7 @@ VX2750PHAModuleConfiguration::defineFilterOptions()
     const char* baselineaverages[] = {
       "0", "16", "64", "256", "1024", "4096", "16384", nullptr
     };
-    addEnumListParameter("efbaselineavg", baselineaverages, "0", 0, 64, 64);
+    addEnumListParameter("efbaselineavg", baselineaverages, "16", 0, 64, 64);
     addIntListParameter("efbaselineguardt", 0, 8000, 0, 64, 64, 0);
     addIntListParameter("efpileupguardt", 0, 8000, 0, 64, 64, 0);
     

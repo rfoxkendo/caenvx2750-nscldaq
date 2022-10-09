@@ -1402,10 +1402,236 @@ foreach module [vx27xxpha list] {
                             <seg>inputpolarities</seg>
                             <seg>list of 64 enums</seg>
                             <seg>[lrepeat Negative 64]</seg>
-                            <seg>Sets the polarity of the input pulse.</seg>
+                            <seg>Sets the polarity of the input pulse for each channel.
+                            Valid values are <literal>Positive</literal>
+                            and <literal>Negative</literal></seg>
                         </seglistitem>
                     </segmentedlist>
                                            
+                </section>
+                <section>
+                    <title>Event Selection Options</title>
+                    <para>
+                        The module has several post trigger event filtering options
+                        that can be set.  These options are exposed as:
+                    </para>
+                    <segmentedlist>
+                        <title></title>
+                        <segtitle>Name</segtitle>
+                        <segtitle>Data type</segtitle>
+                        <segtitle>Default</segtitle>
+                        <segtitle>Description</segtitle>
+                        <seglistitem>
+                            <seg>energyskimlow</seg>
+                            <seg>64 element integer list 0-65534</seg>
+                            <seg>[lrepeat 0 64]</seg>
+                            <seg>
+                                Events in a channel with computed energies
+                                less than this value (for that channel) are not
+                                passed to the host.
+                            </seg>
+                        </seglistitem>
+                        <seglistitem>
+                            <seg>energyskimhigh</seg>
+                            <seg>64 element integer list 0-65534</seg>
+                            <seg>[lrepeat 65534 64]</seg>
+                            <seg>
+                                Events in a channel with computed energies
+                                higher than this value (for that channel) are not
+                                passed to the host. Thus the <literal>energyskimlow</literal>
+                                and <literal>energyfilterhigh</literal> values
+                                for each channel provide an energy cut between
+                                which events are accepted and outside of which
+                                they are rejected.  See, however
+                                <literal>eventselector</literal>
+                            </seg>
+                        </seglistitem>
+                        <seglistitem>
+                            <seg>eventselector</seg>
+                            <seg>List of 64 enumerated values</seg>
+                            <seg>[lrepeat All 64</seg>
+                            <seg>
+                                Selects which events (energy values) are
+                                saved for each channel. Valid values for each
+                                element of the list are
+                                <literal>All, Pileup, EnergySkim</literal>.
+                            </seg>
+                        </seglistitem>
+                        <seglistitem>
+                            <seg>waveselector</seg>
+                           <seg>List of 64 enumerated values</seg>
+                            <seg>[lrepeat All 64</seg>
+                            <seg>
+                                Selects which waveforms are
+                                saved for each channel. Valid values for each
+                                element of the list are
+                                <literal>All, Pileup, EnergySkim</literal>.
+                            </seg>
+                        </seglistitem>
+                        <seglistitem>
+                            <seg>coincidencemask</seg>
+                            <seg>List of 64 enumerated values</seg>
+                            <seg>[lrepeat Disabled 64]</seg>
+                            <seg>
+                                Defines a concidence source for a trigger on each
+                                channel.  Valid values are:
+                                <literal>
+                                    Disabled, Ch64Trigger, TRGIN,
+                                    GlobalTriggerSource, ITLA, ITLB
+                                </literal>
+                            </seg>
+                        </seglistitem>
+                        <seglistitem>
+                            <seg>anticoincidencemask</seg>
+                            <seg>List of 64 enumerated values</seg>
+                            <seg>[lrepeate Disabled 64</seg>
+                            <seg>
+                                Defines an anticoincidence source for a trigger
+                                on each channel.  Valid values are:
+                                <literal>
+                                    Disabled, Ch64Trigger, TRGIN,
+                                    GlobalTriggerSource, ITLA, ITLB
+                                </literal>
+                            </seg>
+                        </seglistitem>
+                        <seglistitem>
+                            <seg>coincidencelength</seg>
+                            <seg>List of 64 integer values in nanoseconds 8-524280</seg>
+                            <seg>[lrepeat 100 64</seg>
+                            <seg>
+                                Defines, for each channel, the coincidence window
+                                in nanoseconds for the coincidence and anti
+                                coincidence trigger sources defined by
+                                <literal>coincidencemask</literal>
+                                and <literal>anticoincidencemask</literal>.
+                            </seg>
+                        </seglistitem>
+                    </segmentedlist>
+                </section>
+                <section>
+                    <title>DPP Processing parameters</title>
+                    <para>
+                        Firmware on the module processes raw, digitized wave forms
+                        into pulse heights (energies).  This processing includes a
+                        time filter and an energy filter.  The parameters
+                        in this section are relevant to those two filters.
+                    </para>
+                    <para>
+                        Figure 3  of the <literal>FELib PHA Parameters User Manual</literal>
+                        is a useful description of these parameters and how they
+                        drive signal processing.
+                    </para>
+                    <segmentedlist>
+                        <title></title>
+                        <segtitle>Name</segtitle>
+                        <segtitle>Data type</segtitle>
+                        <segtitle>Default</segtitle>
+                        <segtitle>Description</segtitle>
+                        <seglistitem>
+                            <seg>tfrisetime</seg>
+                            <seg>64 element list of integers 4-250</seg>
+                            <seg>[lrepeate 80 64]</seg>
+                            <seg>
+                                The rise time parameter for the time
+                                fiter for each channel
+                                expressed in digitizer samples.
+                            </seg>
+                        </seglistitem>
+                        <seglistitem>
+                            <seg>tfretriggerguard</seg>
+                            <seg>64 element list of integers 0-1000</seg>
+                            <seg>[lrepeat 0 64]</seg>
+                            <seg>
+                                The time filter retrigger guard for each
+                                channel expressed in samples. 
+                            </seg>
+                        </seglistitem>
+                        <seglistitem>
+                            <seg>efrisetime</seg>
+                            <seg>64 element list of integers 4-1625</seg>
+                            <seg>[lrepeat 80 64]</seg>
+                            <seg>
+                                The rise time parameter of the enegy filter
+                                for each channel expressed in samples.
+                            </seg>
+                        </seglistitem>
+                        <seglistitem>
+                            <seg>efflattoptime</seg>
+                            <seg>64 element list of integers 4-375</seg>
+                            <seg>[lrepeat 80 64]</seg>
+                            <seg>
+                                The energy filter flattop time parameter
+                                in units of samples for each channel.
+                            </seg>
+                        </seglistitem>
+                        <seglistitem>
+                            <seg>efpeakingpos</seg>
+                            <seg>64 element list of integers 10-90</seg>
+                            <seg>[lrepeat 50 64]</seg>
+                            <seg>
+                                The trapezoid peaking position for each channel
+                                in percentage of the flattop time.  Note the
+                                manual, at the time I'm writing this erroneously
+                                expresses the limis on this parameter
+                                at 0-100. 
+                            </seg>
+                        </seglistitem>
+                        <seglistitem>
+                            <seg>efpeakingavg</seg>
+                            <seg>list of 64 enumerated values</seg>
+                            <seg>[lrepeat 1 64]</seg>
+                            <seg>
+                                Number of samples averaged to evaluate the
+                                peak for each channel.  Legal values are
+                                <literal>
+                                    1, 4, 16, 64
+                                </literal>
+                            </seg>
+                        </seglistitem>
+                        <seglistitem>
+                            <seg>efpolezero</seg>
+                            <seg>list of 64 integers 4-65500</seg>
+                            <seg>[lrepeat 80 64]</seg>
+                            <seg>
+                                Pole zero adjustment of the digital shaping
+                                amplifier for each channel in units of samples.
+                            </seg>
+                        </seglistitem>
+                        <seglistitem>
+                            <seg>effinegain</seg>
+                            <seg>list of 64 floating point values 1.0-10.0</seg>
+                            <seg>[lrepeat 1.0 64]</seg>
+                            <seg>
+                                Sets the digital fine gain for each channel.
+                                The granularity of these values is
+                                0.001.
+                            </seg>
+                        </seglistitem>
+                        <seglistitem>
+                            <seg>eflflimitation</seg>
+                            <seg>64 element list of bools</seg>
+                            <seg>[lrepeat false 64]</seg>
+                            <seg>
+                                When enabled for a channel, a low frequency
+                                filter is applied to that channel for the
+                                energy filter.
+                            </seg>
+                        </seglistitem>
+                        <seglistitem>
+                            <seg>efbaselineavg</seg>
+                            <seg>64 element list of enumerated values</seg>
+                            <seg>[lrepeat 16 64]</seg>
+                            <seg>
+                                The number of samples averaged to compute the
+                                signal baseline prior to the start of the
+                                trapezoidal filter.  Legal values for each
+                                element are:
+                                <literal>0, 16, 64, 256, 1024, 4096, 16384</literal>.
+                                Note that a value of <literal>0</literal>
+                                fixes the baseline at zero.
+                            </seg>
+                        </seglistitem>
+                    </segmentedlist>
                 </section>
             </section>
         </section>
