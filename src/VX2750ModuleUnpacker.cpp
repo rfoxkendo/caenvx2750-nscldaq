@@ -63,7 +63,7 @@ VX2750ModuleUnpacker::VX2750ModuleUnpacker(
     }
     {
         std::stringstream finet;
-        finet << paramBaseName << ".cfdTime";
+        finet << paramBaseName << ".fineTime";
         m_fineTimestamp = new CTreeParameterArray(finet.str(), "arb", 64, 0);
     }
     {
