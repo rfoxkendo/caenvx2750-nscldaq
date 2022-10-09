@@ -207,6 +207,8 @@ VX2750ModuleUnpacker::unpackHit(const void* pData)
     memcpy(m_digitalProbe4Samples[ch].data(), p.b, nBytes);
     p.b += nBytes;
     
+    const uint8_t* pBegin = reinterpret_cast<const uint8_t*>(pData);
+    if (((p.b - pBegin) % 2) == 1) p.b++;  // Skip any padding.
     
     return p.b;              // Any field will do.
 }
