@@ -424,8 +424,10 @@ void VX2750EventSegment::onResume()
         *p.p32++ = 0;
     }
     // Compute/return the number of uint16_t's in thye buffer:
-    
-    return bytesNeeded / sizeof(uint16_t);
+    // THe + 1 below adds an extra pad byte if bytesNeeded is odd.
+    // (which I think is impossible since there are an even number
+    // of digital probes).
+    return (bytesNeeded + 1) / sizeof(uint16_t);
  }
  
  
