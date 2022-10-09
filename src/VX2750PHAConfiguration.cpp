@@ -814,7 +814,7 @@ VX2750PHAModuleConfiguration::defineFilterOptions()
     };
     addEnumListParameter("efpeakingavg", peakingaverages, "1", 0, 64, 64);
     addIntListParameter("efpolezero", 4, 65500, 0, 64, 64, 80);
-    addFloatListParameter("effinegain", 0, 0.0, 10.0, 64, 64, 1.0);
+    addFloatListParameter("effinegain", 0, 1.0, 10.0, 64, 64, 1.0);
     addBoolListParameter("eflflimitation", 0, 64, false, 64);
     
     const char* baselineaverages[] = {
