@@ -2031,7 +2031,7 @@ foreach module [vx27xxpha list] {
                     </varlistentry>
                     <varlistentry>
                        <term><methodsynopsis>
-                          <type>std::set<unsigned> </type>
+                          <type>std::set&lt;unsigned&gt;</type>
                           <methodname>getChannelSet</methodname>
                           <void />
                           <modifier>const</modifier>
@@ -2044,6 +2044,82 @@ foreach module [vx27xxpha list] {
                            </para>
                         </listitem>
                     </varlistentry>
+                    <varlistentry>
+                       <term><methodsynopsis>
+                          <type>std::uint16_t </type>
+                          <methodname>getLowPriorityFlags</methodname>
+                          <methodparam>
+                              <type>unsigned </type><parameter>channel</parameter>
+                              <modifier> const</modifier>
+                          </methodparam>
+                       </methodsynopsis></term>
+                       <listitem>
+                           <para>
+                            Gets the low priority flag value for channel
+                            <parameter>channel</parameter>.  If the channel
+                            has had a hit since the last <methodname>reset</methodname>,
+                            or if the channel value is out of range,
+                            <classname>std::invalid_argument</classname>
+                            is thrown.
+                           </para>
+                           <para>
+                            Note that if the low priority flags
+                            were not selected to be read out, this value is
+                            meaningless.
+                           </para>
+                        </listitem>
+                    </varlistentry>
+                    <varlistentry>
+                       <term><methodsynopsis>
+                          <type>std::uint16_t </type>
+                          <methodname>getHighPriorityFlags</methodname>
+                          <methodparam>
+                              <type>unsigned </type><parameter>channel</parameter>
+                              <modifier> const</modifier>
+                          </methodparam>
+                       </methodsynopsis></term>
+                       <listitem>
+                           <para>
+                            Gets the high priority flag value for channel
+                            <parameter>channel</parameter>.  If the channel
+                            has had a hit since the last <methodname>reset</methodname>,
+                            or if the channel value is out of range,
+                            <classname>std::invalid_argument</classname>
+                            is thrown.
+                           </para>
+                           <para>
+                            Note that if the low priority flags
+                            were not selected to be read out, this value is
+                            meaningless.
+                           </para>
+                        </listitem>
+                    </varlistentry>
+                    <varlistentry>
+                       <term><methodsynopsis>
+                          <type>std::uint16_t </type>
+                          <methodname>getDownSampleSelection</methodname>
+                          <methodparam>
+                              <type>unsigned </type><parameter>channel</parameter>
+                              <modifier> const</modifier>
+                          </methodparam>
+                       </methodsynopsis></term>
+                       <listitem>
+                           <para>
+                            Gets down sampling code for 
+                            <parameter>channel</parameter>.  If the channel
+                            has had a hit since the last <methodname>reset</methodname>,
+                            or if the channel value is out of range,
+                            <classname>std::invalid_argument</classname>
+                            is thrown.
+                           </para>
+                           <para>
+                            Note that if the down sampling code
+                            was not selected to be read out, this value is
+                            meaningless.
+                           </para>
+                        </listitem>
+                    </varlistentry>
+                    
                 </variablelist>
             </section>
             <section>
