@@ -2119,28 +2119,759 @@ foreach module [vx27xxpha list] {
                            </para>
                         </listitem>
                     </varlistentry>
-                    
+                    <varlistentry>
+                       <term><methodsynopsis>
+                          <type>std::uint16_t</type>
+                          <methodname>getFailFlags</methodname>
+                          <methodparam>
+                              <type>unsigned</type><parameter>channel</parameter>
+                          </methodparam>
+                       </methodsynopsis></term>
+                       <listitem>
+                           <para>
+                            Returns the fail flag bit mask for <parameter>channel</parameter>.
+                            If the event does not have a hit from
+                            <parameter>channel</parameter>, or <parameter>channel</parameter>
+                            is out of range, <classname>std::invalid_argument</classname>
+                            is thrown.  Note that if you have not enabled error
+                            flags in the event readout, this value will be meaningless.
+                           </para>
+                        </listitem>
+                    </varlistentry>
+                    <varlistentry>
+                       <term><methodsynopsis>
+                          <type>std::uint16_t</type>
+                          <methodname>getAnalogProbe1Type</methodname>
+                          <methodparam>
+                              <type>unsigned</type><parameter>channel</parameter>
+                          </methodparam>
+                       </methodsynopsis></term>
+                       <listitem>
+                           <para>
+                            Returns the type code for analog probe 1.
+                            Note that if analog probe 1 is not enabled for the
+                            event readout, this will be a meaningless value.
+                            If <parameter>channel</parameter> is not present
+                            in the event or out of range;
+                            <classname>std::invalid_argument</classname>
+                            will be thrown.
+                           </para>
+                        </listitem>
+                    </varlistentry>
+                    <varlistentry>
+                       <term><methodsynopsis>
+                          <type>const std::vector&lt;std::uint32_t&gt;&amp;</type>
+                          <methodname>getAnalogProbe1Samples</methodname>
+                          <methodparam>
+                              <type>unsigned</type><parameter>channel</parameter>
+                          </methodparam>
+                       </methodsynopsis></term>
+                       <listitem>
+                           <para>
+                            Returns the samples from analog probe 1.  If
+                            analog probe 1 is not enabled for readout, this will
+                            reference a zero length vector.  If the
+                            <parameter>channel</parameter> is out of range or has not
+                            provided a hit to this event,
+                            <classname>std::invalid_argument</classname> will
+                            be thrown.
+                           </para>
+                        </listitem>
+                    </varlistentry>
+                                        <varlistentry>
+                       <term><methodsynopsis>
+                          <type>std::uint16_t</type>
+                          <methodname>getAnalogProbe2Type</methodname>
+                          <methodparam>
+                              <type>unsigned</type><parameter>channel</parameter>
+                          </methodparam>
+                       </methodsynopsis></term>
+                       <listitem>
+                           <para>
+                            Returns the type code for analog probe 2.
+                            Note that if analog probe 2 is not enabled for the
+                            event readout, this will be a meaningless value.
+                            If <parameter>channel</parameter> is not present
+                            in the event or out of range;
+                            <classname>std::invalid_argument</classname>
+                            will be thrown.
+                           </para>
+                        </listitem>
+                    </varlistentry>
+                    <varlistentry>
+                       <term><methodsynopsis>
+                          <type>const std::vector&lt;std::uint32_t&gt;&amp;</type>
+                          <methodname>getAnalogProbe2Samples</methodname>
+                          <methodparam>
+                              <type>unsigned</type><parameter>channel</parameter>
+                          </methodparam>
+                       </methodsynopsis></term>
+                       <listitem>
+                           <para>
+                            Returns the samples from analog probe 2.  If
+                            analog probe 2 is not enabled for readout, this will
+                            reference a zero length vector.  If the
+                            <parameter>channel</parameter> is out of range or has not
+                            provided a hit to this event,
+                            <classname>std::invalid_argument</classname> will
+                            be thrown.
+                           </para>
+                        </listitem>
+                    </varlistentry>
+                    <varlistentry>
+                       <term><methodsynopsis>
+                          <type>std::uint16_t</type>
+                          <methodname>getDigitalProbe1Type</methodname>
+                          <methodparam>
+                              <type>unsigned</type><parameter>channel</parameter>
+                          </methodparam>
+                       </methodsynopsis></term>
+                       <listitem>
+                           <para>
+                            Get the probe type code for digital probe 1.
+                            If <parameter>channel</parameter> is not present
+                            or out of range <classname>std::invalid_argument</classname>
+                            is thrown.  Note that if digital probe 1 is not
+                            enabled for readout, this value will be meaningless.
+                           </para>
+                        </listitem>
+                    </varlistentry>
+                    <varlistentry>
+                       <term><methodsynopsis>
+                          <type>const std::vector&lt;std::uint8_t&gt;&amp;</type>
+                          <methodname>getDigitalProbe1Samples</methodname>
+                          <methodparam>
+                              <type>unsigned</type><parameter>channel</parameter>
+                          </methodparam>
+                       </methodsynopsis></term>
+                       <listitem>
+                           <para>
+                            Returns the samples for digital probe 1.  If
+                            digital probe 1 is not enabled for readout, this
+                            will be a reference to a zero length vector.
+                            If <parameter>channel</parameter> is out of range
+                            or not present in the event
+                            <classname>std::invalid_argument</classname>
+                            is thrown.
+                           </para>
+                        </listitem>
+                    </varlistentry>
+                    <varlistentry>
+                       <term><methodsynopsis>
+                          <type>std::uint16_t</type>
+                          <methodname>getDigitalProbe2Type</methodname>
+                          <methodparam>
+                              <type>unsigned</type><parameter>channel</parameter>
+                          </methodparam>
+                       </methodsynopsis></term>
+                       <listitem>
+                           <para>
+                            Get the probe type code for digital probe 2.
+                            If <parameter>channel</parameter> is not present
+                            or out of range <classname>std::invalid_argument</classname>
+                            is thrown.  Note that if digital probe 2 is not
+                            enabled for readout, this value will be meaningless.
+                           </para>
+                        </listitem>
+                    </varlistentry>
+                    <varlistentry>
+                       <term><methodsynopsis>
+                          <type>const std::vector&lt;std::uint8_t&gt;&amp;</type>
+                          <methodname>getDigitalProbe2Samples</methodname>
+                          <methodparam>
+                              <type>unsigned</type><parameter>channel</parameter>
+                          </methodparam>
+                       </methodsynopsis></term>
+                       <listitem>
+                           <para>
+                            Returns the samples for digital probe 2.  If
+                            digital probe 2 is not enabled for readout, this
+                            will be a reference to a zero length vector.
+                            If <parameter>channel</parameter> is out of range
+                            or not present in the event
+                            <classname>std::invalid_argument</classname>
+                            is thrown.
+                           </para>
+                        </listitem>
+                    </varlistentry>
+                    <varlistentry>
+                       <term><methodsynopsis>
+                          <type>std::uint16_t</type>
+                          <methodname>getDigitalProbe3Type</methodname>
+                          <methodparam>
+                              <type>unsigned</type><parameter>channel</parameter>
+                          </methodparam>
+                       </methodsynopsis></term>
+                       <listitem>
+                           <para>
+                            Get the probe type code for digitial probe 3.
+                            If <parameter>channel</parameter> is not present
+                            or out of range <classname>std::invalid_argument</classname>
+                            is thrown.  Note that if digital probe 3 is not
+                            enabled for readout, this value will be meaningless.
+                           </para>
+                        </listitem>
+                    </varlistentry>
+                    <varlistentry>
+                       <term><methodsynopsis>
+                          <type>const std::vector&lt;std::uint8_t&gt;&amp;</type>
+                          <methodname>getDigitalProbe4Samples</methodname>
+                          <methodparam>
+                              <type>unsigned</type><parameter>channel</parameter>
+                          </methodparam>
+                       </methodsynopsis></term>
+                       <listitem>
+                           <para>
+                            Returns the samples for digital probe 4.  If
+                            digital probe 4 is not enabled for readout, this
+                            will be a reference to a zero length vector.
+                            If <parameter>channel</parameter> is out of range
+                            or not present in the event
+                            <classname>std::invalid_argument</classname>
+                            is thrown.
+                           </para>
+                        </listitem>
+                    </varlistentry>
+                    <varlistentry>
+                       <term><methodsynopsis>
+                          <type>std::uint16_t</type>
+                          <methodname>getDigitalProbe1Type</methodname>
+                          <methodparam>
+                              <type>unsigned</type><parameter>channel</parameter>
+                          </methodparam>
+                       </methodsynopsis></term>
+                       <listitem>
+                           <para>
+                            Get the probe type code for digitial probe 1.
+                            If <parameter>channel</parameter> is not present
+                            or out of range <classname>std::invalid_argument</classname>
+                            is thrown.  Note that if digital probe 1 is not
+                            enabled for readout, this value will be meaningless.
+                           </para>
+                        </listitem>
+                    </varlistentry>
+                    <varlistentry>
+                       <term><methodsynopsis>
+                          <type>const std::vector&lt;std::uint8_t&gt;&amp;</type>
+                          <methodname>getDigitalProbe1Samples</methodname>
+                          <methodparam>
+                              <type>unsigned</type><parameter>channel</parameter>
+                          </methodparam>
+                       </methodsynopsis></term>
+                       <listitem>
+                           <para>
+                            Returns the samples for digital probe 1.  If
+                            digital probe 1 is not enabled for readout, this
+                            will be a reference to a zero length vector.
+                            If <parameter>channel</parameter> is out of range
+                            or not present in the event
+                            <classname>std::invalid_argument</classname>
+                            is thrown.
+                           </para>
+                        </listitem>
+                    </varlistentry>
                 </variablelist>
             </section>
             <section>
                 <title>The <classname>VX2750EvenBuiltEventProcessor</classname> class</title>
                 <para>
-                    To be written.
+                    Normally, you will not need to call
+                    <classname>VX2750ModuleUnpacker</classname>::<methodname>unpackHit</methodname>
+                    directly.  Since you will normally attach SpecTcl to the
+                    output of the event builder, you will instantiate
+                    <classname>VX2750ModuleUnpacker</classname> objects and register
+                    them with an instance of the
+                    <classname>VX2750EventBuiltEventProcessor</classname>.
                 </para>
+                <para>
+                    The <classname>VX2750EventBuiltEventProcessor</classname>
+                    understands the fragment wrapping of the event builder output.
+                    It processes event built events and dispatches to event
+                    processors that are registered to handle specific
+                    source ids (in this case modules).
+                </para>
+                <para>
+                    Usually you will:
+                </para>
+                <orderedlist>
+                    <listitem>
+                       <para>
+                          Construct a <classname>VX2750EventBuiltEventProcessor</classname>.
+                       </para>
+                    </listitem>
+                    <listitem>
+                       <para>
+                          For each module, associated a module name with
+                          a source id and provide a base parameter name
+                          from which all of the parameters it provides
+                          will be constructed.
+                       </para>
+                    </listitem>
+                    
+                    <listitem>
+                       <para>
+                          Register your
+                          <classname>VX2750EventBuiltEventProcessor</classname>
+                          with SpecTcl's event processing pipeline so that it
+                          will gain control for each event.
+                       </para>
+                    </listitem>
+                </orderedlist>
+                <para>
+                    Here are the signatures of the method in
+                    <classname>VX2750EventBuiltEventProcessor</classname>
+                    you'll need to use:
+                </para>
+                <variablelist>
+                    <varlistentry>
+                       <term><constructorsynopsis>
+                           <methodname> VX2750EventBuiltEventProcessor</methodname>
+                        
+                           <methodparam>
+                               <type>std::string</type><parameter>baseName</parameter>
+                           </methodparam>
+                            
+                       </constructorsynopsis></term>
+                       <listitem>
+                           <para>
+                              Constructor.  The <parameter>baseName</parameter>
+                              provides the base name for parameters that can be
+                              used for clock/synchronization diagnostics.
+                              The class is derived from the
+                              <classname>CEventBuilderEventProcessor</classname>.
+                              The diagnoistic parameters produced are
+                              described in
+                              <ulink url='https://docs.nscl.msu.edu/daq/newsite/spectcl-5.0/pgmref/r8783.html' />
+                              in the SpecTcl programming reference manual.
+                           </para>
+                        </listitem>
+                    </varlistentry>
+                    <varlistentry>
+                       <term><methodsynopsis>
+                          <type>void </type>
+                          <methodname>addEventProcessor</methodname>
+                          <methodparam>
+                              <type>unsigned </type><parameter>sourceId</parameter>
+                          </methodparam>
+                          <methodparam>
+                              <type>const std::string&amp; </type><parameter>moduleName</parameter>
+                          </methodparam>
+                          <methodparam>
+                              <type>const std::string </type><parameter>paramBasename</parameter>
+                          </methodparam>
+                       </methodsynopsis></term>
+                       <listitem>
+                           <para>
+                               This method constructs a
+                               <classname>VX2750ModuleUnpacker</classname>
+                               for the module <parameter>moduleName</parameter>.
+                               The resulting object is then wrapped in a
+                               <classname>VX2750EventProcessor</classname>
+                               which will poduce parameters with a base name
+                               <parameter>paramBasename</parameter>
+                           </para>
+                           <para>
+                            The event processor will be registered to
+                            handle fragments from <parameter>sourceId</parameter>.
+                           </para>
+                        </listitem>
+                    </varlistentry>
+                    <varlistentry>
+                       <term><methodsynopsis>
+                          <type>void </type>
+                          <methodname>addEventProcessor</methodname>
+                          <methodparam>
+                              <type>unsigned </type><parameter>sourceId</parameter>
+                          </methodparam>
+                          <methodparam>
+                              <type>VX2750ModuleUnpacker&amp;</type><parameter>unpacker</parameter>
+                          </methodparam>
+                       </methodsynopsis></term>
+                       <listitem>
+                           <para>
+                            The prior overload is the simplest way to register
+                            a module with the SpecTcl unpacking framwork.
+                            Using it, however, loses access to the additional
+                            data that is unpacked for each event that is not
+                            put in a SpecTcl parameter (e.g. the analog probes).
+                           </para>
+                           <para>
+                            This method, takes a constructed module unpacker,
+                            wraps it in an event processor that will produce
+                            parameters using the module name as the parameter base name.
+                            The resulting event processor is then registered to
+                            handle data from <parameter>sourceID</parameter>.
+                           </para>
+                           <para>
+                            Using this allows you to retain the event unpacker
+                            object for use in a later event processor.
+                           </para>
+                        </listitem>
+                    </varlistentry>
+                </variablelist>
             </section>
         </section>
         <section>
             <title>Obtaining and modifying the skeleton</title>
-            <para>to be written</para>
+            <para>
+                In this and subsequent sections we assume that your SpecTcl
+                installation top level directory is pointed to by an environment
+                variable <literal>SPECTCLHOME</literal>.  This is simply a convenience
+                to make it simpler to describe the actions you need to take.
+            </para>
+            <para>
+                To obtain a copy of the SpecTcl skeleton for your viersion:
+            </para>
+            <example>
+                <title>Obtaining a copy of the SpecTcl skeleton</title>
+                <programlisting>
+mkdir myspectcl
+cp -R $SPECTCLHOME/Skel/* .
+
+                </programlisting>
+            </example>
+            <para>
+                This should provide a number of files, many of which are used
+                to extend the QtPy display program, if desired (see e.g.
+                <ulink url='https://docs.nscl.msu.edu/daq/newsite/qtpy/index.html'/>).
+                The files we'll need to play with to tailor SpecTcl to handle our
+                data are:
+            </para>
+            <itemizedlist>
+                <listitem>
+                   <para>
+                      <filename>MySpecTclApp.cpp</filename>; a skeletal application
+                      class in whose methods SpecTcl extensions and customizations
+                      are done.
+                   </para>
+                </listitem>
+                <listitem>
+                   <para>
+                      <filename>Makefile</filename>.
+                   </para>
+                </listitem>
+            </itemizedlist>
+            <para>
+                This section will show how to modify the <filename>MySpecTclApp.cpp</filename>
+                file and the next will show modifications needed to the
+                <filename>Makefile</filename> to pull in headers and libraries
+                needed to support the modifications we've made.
+            </para>
+            <para>
+                Here is a <filename>MySpecTclApp.cpp</filename> modified to
+                analyze data from a single module.  The discussion following
+                this example will describe how to extend this to a system
+                with additional modules.  The full example is in the
+                <filename>tclreadout/SpecTcl</filename> subdirectory of the
+                source tree.
+            </para>
+            <example>
+                <title><filename>MySpecTclApp.cpp</filename> modified for a single module</title>
+                <programlisting>
+
+#include &lt;VX2750EventBuiltEventProcessor.h&gt;   <co id='spectclapp.includes' />
+#include &lt;VX2750ModuleUnpacker.h&gt;
+
+...
+
+
+void
+CMySpecTclApp::CreateAnalysisPipeline(CAnalyzer&amp; rAnalyzer)  <co id='spectclapp.pipeline' />
+{
+
+    auto pTopLevel = new                                        <co id='spectclapp.builtproc' />
+      caen_spectcl::VX2750EventBuiltEventProcessor("diagnostic");
+      
+    auto pAdc1 =                                                 <co id='spectclapp.module' />
+        new caen_spectcl::VX2750ModuleUnpacker("adc1", "adc1-params");      
+    pTopLevel-&gt;addEventProcessor(1, *pAdc1);                   <co id='spectclapp.regmodule' />
+    
+    RegisterEventProcessor(*pTopLevel, "Raw");                    <co id='spectclapp.regprocessor' />
+}
+
+
+                </programlisting>
+            </example>
+            <calloutlist>
+                <callout arearefs='spectclapp.includes' >
+                    <para>
+                        <filename>MySpecTclApp.cpp</filename>
+                        must incorporate the class definitions for the
+                        <classname>VX2750EventBuiltEventProcessor</classname>
+                        and the
+                        <classname>VX2750ModuleUnpacker</classname>.  These headers
+                        will also spur some of our
+                        <filename>Makefile</filename> modifications.
+                    </para>
+                </callout>
+                <callout arearefs='spectclapp.pipeline' >
+                    <para>
+                        In most cases, <classname>MySpecTclApp.cpp</classname>
+                        only needs to be modified to describe the
+                        <firstterm>Event analysis pipeline</firstterm>
+                        used for an application.  The event analysis
+                        pipeline is described in detail in
+                        the SpecTcl programming guide:
+                        <ulink url='https://docs.nscl.msu.edu/daq/newsite/spectcl-5.0/pgmguide/index.html' />.
+                    </para>
+                    <para>
+                        To summarize, however, the event processing pipeline is
+                        a logical sequence, pipeline, that takes as input, raw
+                        event data and produces as output parameters that SpecTcl's
+                        histogramming engine uses to increment spectra defined by
+                        the user.  Each stage of the pipeline has available, not
+                        only the raw event, but the parameters and data
+                        produced by prior elements of the pipeline.
+                    </para>
+                    <para>
+                        Elements of the event processing pipeline are called,
+                        unoriginally enough, <firstterm>Event Processors</firstterm>
+                        and are all derived, ultimately, from the
+                        <classname>CEventProcessor</classname> class.
+                        In <methodname>CreateAnalysisPipeline</methodname>,
+                        <filename>MySpecTclApp.cpp</filename> is modified to
+                        define event processors and the order in which they
+                        execute for each event.
+                    </para>
+                    <para>
+                        SpecTcl-5.0 supports dynamic event processing pipelines
+                        (composing pipelines from either compiled in event processors
+                        or event processors dynamically loaded from whared libraries
+                        at run time.)  This is beyond the scope of this document
+                        and is described in chapter 12 of the
+                        programming guide.
+                    </para>
+                </callout>
+                <callout arearefs='spectclapp.builtproc' >
+                    <para>
+                        This line creates a
+                        <classname>VX2750EventBuiltEventProcessor</classname>.
+                        As previously descdribed, this event processor knows
+                        how to dig event fragments from a built event and
+                        pass them on to processors registered for each
+                        source id.  It also maintains diagnostic parameters
+                        that allow you to monitor the synchronization of
+                        the clocks in each event source.
+                    </para>
+                    <para>
+                        Recall that in this application, each module is an
+                        event source with its own  unique source id.
+                    </para>
+                </callout>
+                <callout arearefs='spectclapp.module' >
+                    <para>
+                        A module unpacker knows how to unpack the data from a
+                        single module.  It is normally wrapped in a
+                        <classname>VX2750EventProcessor</classname> object
+                        which, given a pointer to the data for a fragment,
+                        computes the pointer to the raw data for the module
+                        and passes that to the module unpacker it wraps.
+                    </para>
+                    <para>
+                        In this line we create a <classname>VX2750ModuleUnpacker</classname>
+                        for the <literal>adc1</literal> module (the name
+                        must match the module name used in the readout program),
+                        and specify that parameters produced by this unpacker
+                        will be given names that start with
+                        <literal>adc1-params.</literal>.
+                    </para>
+                    <para>
+                        If you wanted to perform processing on data this
+                        module unpacks but does not put in parameters, you
+                        could take the pointer to the unpacker and pass it
+                        to another event processor put in the pipeline
+                        after the raw parameter unpacking.
+                    </para>
+                    
+                </callout>
+                <callout arearefs='spectclapp.regmodule' >
+                    <para>
+                        Registers the unpacker we created to handle data from
+                        source id <literal>1</literal>.  This too must match
+                        the source id specified for this module in the
+                        Readout program.
+                    </para>
+                    <para>
+                        In a system with more than one digitizer simply instantiate
+                        a module unpacker for each digitizer and register each one
+                        to process data from the source id associated with its data.
+                    </para>
+                </callout>
+                <callout arearefs='spectclapp.regprocessor' >
+                    <para>
+                        Appends the event built event processor to the event
+                        processing pipeline.  If you have additional processing
+                        stages you would create event processors for each stage
+                        and register them in the order in which they will be
+                        called.
+                    </para>
+                </callout>
+            </calloutlist>
         </section>
         <section>
             <title>Building the tailored SpecTcl</title>
-            <para>to be written</para>
+            <para>
+                The <filename>Makefile</filename> in the skeleton is
+                a starting point from which a tailored Makefile can be made.
+                In the case of the <filename>MySpecTclApp.cpp</filename>
+                we tailored in the previous section, we must:
+            </para>
+            <itemizedlist>
+                <listitem>
+                   <para>
+                      Specify the location of the additional header files
+                      that are required.
+                   </para>
+                </listitem>
+                <listitem>
+                   <para>
+                      Specify the location and name of the additional library
+                      we need to pull the classes into our SpecTcl.
+                      
+                   </para>
+                </listitem>
+            </itemizedlist>
+            <para>
+                The next example shows these modifications.  We assume that
+                the support software has been installed in
+              <filename>/usr/opt/lbnl</filename>
+            </para>
+            <example>
+                <title>
+                    Makefile for SpecTcl
+                </title>
+                <programlisting>
+INSTDIR=/usr/opt/spectcl/5.12-008
+
+CAEN_ROOT=/usr/opt/lbnl                      <co id='spmake.base' />
+
+# Skeleton makefile for 3.1
+
+include $(INSTDIR)/etc/SpecTcl_Makefile.include
+
+#  If you have any switches that need to be added to the default c++ compilation
+# rules, add them to the definition below:
+
+USERCXXFLAGS=-I$(CAEN_ROOT)/include      <co id='spmake.includes' />
+
+#  If you have any switches you need to add to the default c compilation rules,
+#  add them to the defintion below:
+
+USERCCFLAGS=$(USERCXXFLAGS)
+
+#  If you have any switches you need to add to the link add them below:
+
+USERLDFLAGS=-L$(CAEN_ROOT)/lib -lCaenVxUnpackers  <co id='spmake.libs' />
+#
+#   Append your objects to the definitions below:
+#
+
+OBJECTS=MySpecTclApp.o
+
+#
+#  Finally the makefile targets.
+#
+
+
+SpecTcl: $(OBJECTS)
+        $(CXXLD)  -o SpecTcl $(OBJECTS) $(USERLDFLAGS) \
+        $(LDFLAGS)
+
+
+clean:
+        rm -f $(OBJECTS) SpecTcl
+
+                </programlisting>
+            </example>
+            <para>
+                The SpecTcl skeleton Makefile provides three variables that,
+                in many cases, are all that need to be modified to
+                tailor the <filename>Makefile</filename>:
+            </para>
+            <itemizedlist>
+                <listitem>
+                   <para>
+                      <literal>USERCXXFLAGS</literal>  provides additional
+                      compilations flags to the C/C++ compiler used by the
+                      default compilation rules.
+                   </para>
+                </listitem>
+                <listitem>
+                   <para>
+                      <literal>USELDFLAGS</literal>, similarly, provide additional
+                      flags passed to the link step of the SpecTcl Build.
+                   </para>
+                </listitem>
+                <listitem>
+                   <para>
+                      <literal>OBJECTS</literal> is a list of objects that must
+                      be built for SpecTcl to be tailored.  without additional
+                      rules, a file specified in <literal>OBJECTS</literal> will
+                      be built from sources using the default compilation rules
+                      SpecTcl's Makefile establishes.  IF these cannot be made to
+                      work by setting <literal>USERCXXFLAGS</literal>, the user
+                      may certainl supply explicit compilation rules.
+                   </para>
+                </listitem>
+            </itemizedlist>
+            <para>
+                In our example, we don't introduce any additional compiled object.
+                So:
+            </para>
+            <calloutlist>
+                <callout arearefs='spmake.base' >
+                    <para>
+                        In order to make our definitions easy to change, we first
+                        define the Makefile varaible <literal>CAEN_ROOT</literal>
+                        to be the top level of the directory in which we
+                        installed the CAEN support software.
+                    </para>
+                </callout>
+                <callout arearefs='spmake.includes' >
+                    <para>
+                        Defines <literal>USERCXXFLAGS</literal>, the additional
+                        compilation flags we need to include the
+                        <filename>include</filename> directory of the
+                        header search path for the compilers.
+                    </para>
+                </callout>
+                <callout arearefs='spmake.libs' >
+                    <para>
+                        Defines <literal>USERLDFLAGS</literal>, the additional
+                        link flags we need to add the CAEN unpacker library directory
+                        to the library search path and explicity requests
+                        that
+                        <filename>libCaenVxUnpackers.a</filename> be searched
+                        to satisfy external references.
+                    </para>
+                    <para>
+                        If the library ever becomes a shared object we'd need
+                        to add <literal>-Wl,-rpath=$(CAEN_ROOT)/lib</literal>
+                        to the <literal>USERLDFLAGS</literal>.
+                    </para>
+                </callout>
+            </calloutlist>
         </section>
     </chapter>
     <appendix id='app.internals'>
         <title>Software structure</title>
         <para>To Be written</para>
+        <section>
+            <title>Readout Software</title>
+            <para>To Be written</para>
+        </section>
+        <section>
+            <title>SpecTcl Support</title>
+            <para>
+                To be written
+            </para>
+        </section>
+        <section>
+            <title>To Do:</title>
+            <para>
+                To be written
+            </para>
+        </section>
     </appendix>
     <appendix>
         <title>Class reference</title>

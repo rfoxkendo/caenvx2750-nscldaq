@@ -57,7 +57,7 @@ namespace caen_spectcl {
         // the set of sources can only be changed by re-doing readout e.g.
         
         void addEventProcessor(unsigned sourceId, VX2750EventProcessor& processor);
-        void addEventProcessor(unsigned soruceId, VX2750ModuleUnpacker& unpacker);
+        void addEventProcessor(unsigned sourceId, VX2750ModuleUnpacker& unpacker);
         void addEventProcessor(
             unsigned sourceId,
             const std::string& moduleName, const std::string paramBasename

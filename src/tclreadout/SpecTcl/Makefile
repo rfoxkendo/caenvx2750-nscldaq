@@ -1,4 +1,7 @@
 INSTDIR=/usr/opt/spectcl/5.12-008
+
+CAEN_ROOT=/usr/opt/lbnl
+
 # Skeleton makefile for 3.1
 
 include $(INSTDIR)/etc/SpecTcl_Makefile.include
@@ -6,7 +9,7 @@ include $(INSTDIR)/etc/SpecTcl_Makefile.include
 #  If you have any switches that need to be added to the default c++ compilation
 # rules, add them to the definition below:
 
-USERCXXFLAGS=-I../..
+USERCXXFLAGS=-I$(CAEN_ROOT)/include
 
 #  If you have any switches you need to add to the default c compilation rules,
 #  add them to the defintion below:
@@ -15,7 +18,7 @@ USERCCFLAGS=$(USERCXXFLAGS)
 
 #  If you have any switches you need to add to the link add them below:
 
-USERLDFLAGS=-L../.. -lCaenVxUnpackers
+USERLDFLAGS=-L$(CAEN_ROOT)/lib -lCaenVxUnpackers
 #
 #   Append your objects to the definitions below:
 #
