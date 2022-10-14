@@ -19,6 +19,7 @@ will be frozen and the code migrated into the mainline NSCLDAQ code base.
 ````
 4.   Build the two libraries:
 ````
+     cd src
      make all
 ````     
 5.  Install it somewhere e.g.:
