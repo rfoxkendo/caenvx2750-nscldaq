@@ -3992,7 +3992,827 @@ namespace caen_nscldaq {
                 
                 </refsect1>
             </refentry>
-            
+            <refentry>
+               <refmeta>
+                  <refentrytitle>VX2750Pha</refentrytitle>
+                  <manvolnum>3daq</manvolnum>
+               </refmeta>
+               <refnamediv>
+                  <refname>VX2750Pha</refname>
+                  <refpurpose>Provide compile time checked API to CAEN Nextgen digitizers DPP-PHA</refpurpose>
+                </refnamediv>
+                <refsynopsisdiv>
+                    <programlisting>
+#include &lt;VX2750Pha.h&gt;
+
+namespace caen_nscldaq {
+
+class VX2750Pha : public Dig2Device
+{
+public:
+    VX2750Pha(const char* hostOrPid, bool isUsb = false);
+    
+    
+    std::string  getCupVersion() const;     // Get the CUP version
+    std::string  getFpgaFWVersion() const;  // Get the firmware Version
+    FwType       getFirmwareType() const;   // Get the type of the firmware.
+    std::string  getModelCode() const;
+    std::string  getPiggyBackCode() const;
+    std::string  getModelName() const;
+    FormFactor   getFormFactor() const;
+    int          getFamilyCode() const;
+    std::string  getSerialNumber() const;
+    int          getMotherboardRev() const;
+    int          getPiggybackRev() const;
+    std::string  getLicense() const;
+    bool         isLicensed() const;
+    int          remainingUnlicensedTime() const;
+    int          channelCount() const;
+    int          bitsOfResolution() const;
+    int          sampleRate() const;
+    int          inputRange() const;
+    bool         isDifferentialInput() const;
+    int          inputImpedance() const;
+    int          ipAddress() const;
+    int          netMask() const;
+    int          gateway() const;
+    ClockSource  getClockSource() const;
+    void         setClockSource(ClockSource) const;
+    bool         isClockOutOnP0() const;
+    void         setClockOutOnP0(bool state) const;
+    bool         isClockOutOnFP() const;
+    void         setClockOutOnFP(bool state) const;
+    std::vector&lt;StartSource&gt;  getStartSource() const;
+    void         setStartSource(const std::vector&lt;StartSource&gt;&amp; src) const;
+    std::vector&lt;GlobalTriggerSource&gt; getGlobalTriggerSource() const;
+    void         setGlobalTriggerSource(const std::vector&lt;GlobalTriggerSource&gt;&amp; sources) const;
+    std::vector&lt;WaveTriggerSource&gt; getWaveTriggerSource(unsigned ch) const;
+    void         setWaveTriggerSource(unsigned ch, const std::vector&lt;WaveTriggerSource&gt;&amp; src) const;
+    std::vector&lt;EventTriggerSource&gt; getEventTriggerSource(unsigned ch) const;
+    void         setEventTriggerSource(unsigned ch, const std::vector&lt;EventTriggerSource&gt;&amp; src) const;
+    
+    std::uint64_t getChannelTriggerMask(unsigned ch) const;
+    void          setChannelTriggerMask(unsigned ch, std::uint64_t mask) const;
+    TraceRecordMode getTraceRecordMode(unsigned ch) const;
+    void           setTraceRecordMode(unsigned ch, TraceRecordMode mode) const;
+    TRGOUTMode    getTRGOUTMode() const;
+    void          setTRGOUTMode(TRGOUTMode mode) const;
+    GPIOMode      getGPIOMode() const;
+    void          setGPIOMode(GPIOMode mode) const;
+    BusyInSource   getBusyInputSource() const;
+    void          setBusyInputSource(BusyInSource src) const;
+    SyncOutMode   getSyncOutMode() const;
+    void          setSyncOutMode(SyncOutMode mode) const;
+    VetoSource    getBoardVetoSource() const;
+    void          setBoardVetoSource(VetoSource src) const;
+    std::uint64_t   getBoardVetoWidth() const;
+    void          setBoardVetoWidth(std::uint64_t ns) const;
+    VetoPolarity  getBoardVetoPolarity() const;
+    void          setBoardVetoPolarity(VetoPolarity pol) const;
+    ChannelVetoSource getChannelVetoSource(unsigned chan) const;
+    void          setChannelVetoSource(unsigned chan, ChannelVetoSource src) const;
+    std::uint32_t getChannelVetoWidth(unsigned chan) const;
+    void          setChannelVetoWidth(unsigned chan, std::uint32_t ns) const;
+    std::uint32_t getRunDelay() const;
+    void          setRunDelay(std::uint32_t ns) const;
+    bool          isAutoDisarmEnabled() const;
+    void          setAutoDisarmEnabled(bool state) const;
+    std::uint32_t      getLEDStatus() const;
+    std::uint32_t      getAcquisitionStatus() const;
+    std::uint32_t      getMaxRawDataSize() const;
+    double        getVolatileClockDelay() const;
+    void          setVolatileClockDelay(double value) const;
+    double        getPermanentClockDelay() const;
+    void          setPermanentClockDelay(double value) const;
+    WaveDataSource getWaveDataSource(unsigned chan) const;
+    void          setWaveDataSource(unsigned chan, WaveDataSource source) const;
+    std::uint32_t getRecordSamples(unsigned chan) const;
+    void          setRecordSamples(unsigned chan, std::uint32_t samples) const;
+    std::uint32_t getRecordNs(unsigned chan) const;
+    void          setRecordNs(unsigned chan, std::uint32_t ns) const;
+    WaveResolution getWaveResolution(unsigned chan) const;
+    void          setWaveResolution(unsigned chan, WaveResolution resolution) const;
+    AnalogProbe   getAnalogProbe(unsigned chan, unsigned probeNum) const;
+    void          setAnalogProbe(unsigned chan, unsigned probeNum, AnalogProbe probe) const;
+    DigitalProbe  getDigitalProbe(unsigned chan, unsigned probeNum) const;
+    void          setDigitalProbe(
+        unsigned chan, unsigned probeNum, DigitalProbe probe
+    ) const;
+    std::uint32_t getPreTriggerSamples(unsigned chan) const;
+    void          setPreTriggerSamples(unsigned chan, std::uint32_t nsamples) const;
+    std::uint32_t getPreTriggerNs(unsigned chan) const;
+    void          setPreTriggerNs(unsigned chan, std::uint32_t ns) const;
+    std::uint64_t getTestPulsePeriod() const;
+    void          setTestPulsePeriod(std::uint64_t ns) const;
+    std::uint64_t getTestPulseWidth() const;
+    void          setTestPulseWidth(std::uint64_t ns) const;
+    std::uint32_t getTestPulseLowLevel() const;
+    void          setTestPulseLowLevel(std::uint32_t counts) const;
+    std::uint32_t getTestPulseHighLevel() const;
+    void          setTestPulseHighLevel(std::uint32_t counts) const;
+    IOLevel       getIOLevel() const;
+    void          setIOLevel(IOLevel level) const;
+    double        getAirInTemp() const;
+    double        getAirOutTemp() const;
+    double        getCoreTemp() const;
+    double        getFirstADCTemp() const;         
+    double        getLastADCTemp() const;
+    double        getHottestADCTemp() const;
+    double        getADCTemp(unsigned chip) const;
+    double        getDCDCConverterTemp() const;
+    double        getDCDCConverterInputVoltage() const;
+    double        getDCDCConverterOutputVoltage() const;
+    double        getDCDCConverterAmps() const;
+    double        getDCDCConverterHz() const;
+    double        getDCDCConverterDutyCycle() const;
+    std::uint32_t getFanSpeed(unsigned fan) const;
+    std::uint32_t getErrorFlagMask() const;
+    void          setErrorFlagMask(std::uint32_t mask) const;
+    std::uint32_t getErrorFlagDataMask() const;
+    void          setErrorFlagDataMask(std::uint32_t mask) const;
+    std::uint32_t getErrorFlags() const;
+    bool          isBoardReady() const;
+    IndividualTriggerLogic getITLAMainLogic() const;
+    IndividualTriggerLogic getITLBMainLogic() const;
+    void          setITLAMainLogic(IndividualTriggerLogic sel) const;
+    void          setITLBMainLogic(IndividualTriggerLogic sel) const;
+    unsigned      getITLAMajorityLevel() const;
+    unsigned      getITLBMajorityLevel() const;
+    void          setITLAMajorityLevel(unsigned level) const;
+    void          setITLBMajorityLevel(unsigned level) const;
+    PairTriggerLogic getITLAPairLogic() const;
+    PairTriggerLogic getITLBPairLogic() const;
+    void         setITLAPairLogic(PairTriggerLogic sel) const;
+    void         setITLBPairLogic(PairTriggerLogic sel) const;
+    bool          isITLAInverted() const;
+    bool          isITLBInverted() const;
+    void          setITLAInverted(bool invert) const;
+    void          setITLBInverted(bool invert) const;
+    ITLConnect    getITLConnect(unsigned ch) const;
+    void          setITLConnect(unsigned ch, ITLConnect selection) const;
+    
+    std::uint64_t getITLAMask() const;
+    std::uint64_t getITLBMask() const;
+    void          setITLAMask(std::uint64_t mask) const;
+    void          setITLBMask(std::uint64_t mask) const;
+    
+    std::uint32_t getITLAGateWidth() const;
+    std::uint32_t getITLBGateWidth() const;
+    void          setITLAGateWidth(std::uint32_t ns) const;
+    void          setITLBGateWidth(std::uint32_t ns) const;
+    
+    LVDSMode      getLVDSMode(unsigned quartet) const;
+    void          setLVDSMode(unsigned quartet, LVDSMode mode) const;
+    LVDSDirection getLVDSDirection(unsigned quartet) const;
+    void          setLVDSDirection(unsigned quartet, LVDSDirection direction) const;
+    std::uint16_t getLVDSIOReg() const;
+    void          setLVDSIOReg(std::uint16_t mask) const;
+    std::uint64_t getLVDSTriggerMask(unsigned inputNum) const;
+    void          setLVDSTriggerMask(unsigned inputNum, std::uint64_t mask) const;  
+    void setDACOutMode(DACOutputMode mode) const;
+    DACOutputMode getDACOutMode() const;
+    std::uint16_t getDACOutValue() const;
+    void          setDACOutValue(std::uint16_t value) const;
+    unsigned      getDACChannel() const;
+    void          setDACChannel(unsigned chan) const;
+    double        getVGAGain(unsigned group) const;
+    void          setVGAGain(unsigned group, double value) const;
+    bool          isOffsetCalibrationEnabled() const;
+    void          enableOffsetCalibration(bool enable) const;
+    bool          isChannelEnabled(unsigned chan) const;
+    void          enableChannel(unsigned chan, bool enable) const;
+    int           getSelfTriggerRate(unsigned chan) const;
+    std::uint32_t getChannelStatus(unsigned chan) const;
+    double        getDCOffset(unsigned chan) const;
+    void          setDCOffset(unsigned chan, double pct) const;
+    double        getGainFactor(unsigned chan) const;
+    std::uint32_t getTriggerThreshold(unsigned chan) const;
+    void          setTriggerThreshold(unsigned chan, std::uint32_t threshold) const;
+    Polarity      getPulsePolarity(unsigned chan) const;
+    void          setPulsePolarity(unsigned chan, Polarity pol) const;
+    std::uint16_t getEnergySkimLowDiscriminator(unsigned chan) const;
+    void          setEnergySkimLowDiscriminator(unsigned chan, std::uint16_t value) const;
+    std::uint16_t getEnergySkimHighDiscriminator(unsigned chan) const;
+    void          setEnergySkimHighDiscriminator(unsigned chan, std::uint16_t value) const;
+    EventSelection getEventSelector(unsigned chan) const;
+    void           setEventSelector(unsigned chan, EventSelection sel) const;
+    EventSelection getWaveformSelector(unsigned chan) const;
+    void           setWaveformSelector(unsigned chan, EventSelection sel) const;
+    CoincidenceMask getCoincidenceMask(unsigned chan) const;
+    void           setCoincidenceMask(unsigned chan, CoincidenceMask sel) const;
+    CoincidenceMask getAntiCoincidenceMask(unsigned chan) const;
+    void           setAntiCoincidenceMask(unsigned chan, CoincidenceMask sel) const;
+    std::uint32_t  getCoincidenceSamples(unsigned chan) const;
+    void           setCoincidenceSamples(unsigned chan, std::uint32_t samples) const;
+    std::uint32_t  getCoincidenceNs(unsigned chan) const;
+    void           setCoincidenceNs(unsigned chan, std::uint32_t ns) const;
+    std::uint32_t  getTimeFilterRiseTime(unsigned chan) const;
+    std::uint32_t  getTimeFilterRiseSamples(unsigned chan) const;
+    void           setTimeFilterRiseTime(unsigned chan, std::uint32_t ns) const;
+    void           setTimeFilterRiseSamples(unsigned chan, std::uint32_t samples) const;
+    std::uint32_t  getTimeFilterRetriggerGuardTime(unsigned chan) const;
+    std::uint32_t  getTimeFilterRetriggerGuardSamples(unsigned chan) const;
+    void           setTimeFilterRetriggerGuardTime(unsigned chan, std::uint32_t ns) const;
+    void           setTimeFilterRetriggerGuardSamples(unsigned chan, std::uint32_t samples) const;
+    std::uint32_t  getEnergyFilterRiseTime(unsigned chan) const;
+    std::uint32_t  getEnergyFilterRiseSamples(unsigned chan) const;
+    void           setEnergyFilterRiseTime(unsigned chan, std::uint32_t ns) const;
+    void           setEnergyFilterRiseSamples(unsigned chan, std::uint32_t samples) const;
+    std::uint32_t  getEnergyFilterFlatTopTime(unsigned chan) const;
+    std::uint32_t  getEnergyFilterFlatTopSamples(unsigned chan) const;
+    void           setEnergyFilterFlatTopTime(unsigned chan, std::uint32_t ns) const;
+    void           setEnergyFilterFlatTopSamples(unsigned chan, std::uint32_t samples) const;
+    std::uint32_t  getEnergyFilterPeakingPosition(unsigned chan) const;
+    void           setEnergyFilterPeakingPosition(unsigned chan, std::uint32_t pct) const;
+    EnergyPeakingAverage getEnergyFilterPeakingAverage(unsigned chan) const;
+    void          setEnergyFilterPeakingAverage(unsigned chan, EnergyPeakingAverage sel) const;
+    std::uint32_t getEnergyFilterPoleZeroTime(unsigned chan) const;
+    std::uint32_t getEnergyFilterPoleZeroSamples(unsigned chan) const;
+    void          setEnergyFilterPoleZeroTime(unsigned chan, std::uint32_t ns) const;
+    void          setEnergyFilterPoleZeroSamples(unsigned chan, std::uint32_t samples) const;
+    double        getEnergyFilterFineGain(unsigned chan) const;
+    void          setEnergyFilterFineGain(unsigned chan, double gain) const;
+    bool          isEnergyFilterFLimitationEnabled(unsigned chan) const;
+    void          enableEnergyFilterFLimitation(unsigned chan, bool enable) const;
+    EnergyFilterBaselineAverage getEnergyFilterBaselineAverage(unsigned chan) const;
+    void          setEnergyFilterBaselineAverage(unsigned chan, EnergyFilterBaselineAverage sel) const;
+    std::uint32_t getEnergyFilterBaselineGuardTime(unsigned chan) const;
+    std::uint32_t getEnergyFilterBaselineGuardSamples(unsigned chan) const;
+    void          setEnergyFilterBaselineGuardTime(unsigned chan, std::uint32_t ns) const;
+    void          setEnergyFilterBaselineGuardSamples(unsigned chan, std::uint32_t samples) const;
+    std::uint32_t getEnergyFilterPileupGuardTime(unsigned chan) const;
+    std::uint32_t getEnergyFilterPileupGuardSamples(unsigned chan) const;
+    void          setEnergyFilterPileupGuardTime(unsigned chan, std::uint32_t ns) const;
+    void          setEnergyFilterPileupGuardSamples(unsigned chan, std::uint32_t samples) const;
+    std::uint8_t  getEnergyBits(unsigned chan) const;
+    std::uint64_t getRealtime(unsigned chan) const;
+    std::uint64_t getDeadtime(unsigned chan) const;
+    void          Reset();
+    void          Clear();
+    void          Arm();
+    void          Disarm();
+    void          Start();
+    void          Stop();
+    void          Trigger();
+    void          ReloadCalibration();
+    Endpoint      getEndpoint();
+    void          selectEndpoint(Endpoint selection);
+    
+    void   initializeRawEndpoint();         
+    size_t readRawEndpoint(void* pBuffer);
+    void setDefaultFormat();
+    void enableRawTimestamp(bool enable);
+    void enableFineTimestamp(bool enable);
+    void enableFlags(bool enable);
+    void enableDownsampling(bool enable);
+    void enableAnalogProbes(bool probe1, bool probe2);
+    void enableDigitalProbes(bool probe1, bool probe2, bool probe3, bool probe4);
+    void enableSampleSize(bool enable);
+    void enableRawEventSize(bool enable);
+    
+    void initializeDPPPHAReadout();
+    void readDPPPHAEndpoint(DecodedEvent&amp; event);
+    
+    void initDecodedBuffer(DecodedEvent&amp; event);
+    void setupDecodedBuffer(DecodedEvent&amp; event);
+    void freeDecodedBuffer(DecodedEvent&amp; event);
+    
+    
+   };
+}
+                    </programlisting>
+                </refsynopsisdiv>
+                <refsect1>
+                         <title>DESCRIPTION</title>
+                      <para>
+                        This class provides a generic API, with parameter values
+                        validated at compile time, to CAEN nextgen digitizers
+                        running DPP-PHA mode.  Caller error risk is mitigated
+                        several ways:
+                      </para>
+                      <itemizedlist>
+                        <listitem>
+                           <para>
+                              Enums and symbolic constants are used to avoid
+                              sending bad textual parameters to the digitizer.
+                              Maps are used to translate betweenthe parameter
+                              and the strings and back.  Extensive unit tests
+                              have validated these maps with the digitizer
+                              hardware itself.
+                           </para>
+                        </listitem>
+                        <listitem>
+                           <para>
+                              The generation of JSON to specify the data format
+                              request has been hidden behind a struct that
+                              describes the desired items.
+                           </para>
+                        </listitem>
+                        <listitem>
+                           <para>
+                              The set of pointers and what they point to have
+                              been abstracted from the read data method in order
+                              providing a read into a data structure that has a
+                              fixed layout but might be missing some items
+                              depending on the requests.
+                           </para>
+                        </listitem>
+                        <listitem>
+                           <para>
+                               Command strings are hidden behind individual
+                               methods for each command understood by the
+                               digitizer.
+                           </para>
+                        </listitem>
+                      </itemizedlist>
+                      <para>
+                        Note that this class is derived from
+                        <classname>caen_nscldaq::Dig2Device</classname>
+                        which means that any of the methods of that
+                        class can be called directly if the services of this
+                        class fall short of the application needs.
+                      </para>
+                </refsect1>
+                <refsect1>
+                    <title>METHODS CONSTRUCTORS AND DATA TYPES</title>
+                    <para>
+                        The data structures exported by this class are described
+                        by the first method that uses them rather than
+                        providing a separate data structures section to this
+                        manpage.
+                    </para>
+                    <variablelist>
+                        <varlistentry>
+                           <term><constructorsynopsis>
+                               <methodname>VX2750Pha</methodname>
+                                <methodparam>
+                                    <type>const char* </type><parameter>hostOrPid</parameter>
+                                </methodparam>
+                                <methodparam>
+                                    <type>bool </type><parameter>isUsb </parameter>
+                                    <initializer>false</initializer>
+                                </methodparam>
+                           </constructorsynopsis></term>
+                           <listitem>
+                               <para>
+                                See the constructor of
+                                <classname>caen_nscldaq::Dig2Device</classname>
+                                for the meaning of theses parameters, which
+                                describe how to form a connection with the
+                                digitizer.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>std::string  </type>
+                              <methodname>getCupVersion</methodname>
+                              <void />
+                              <modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Return the version string of the CUP firmware
+                                file running in the digitizer.  This is of
+                                the form yyyymmddnn where <literal>nn</literal>
+                                is a sequence number starting from 00 in case
+                                more than one firmware file was
+                                rolled in that day.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>std::string  </type>
+                              <methodname>getFpgaFWVersion</methodname>
+                              <void />
+                              <modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Returns a string that identifies the firmware
+                                loaded in the FPGA of the digitizer.  The
+                                format of this string is not documented.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>FwType       </type>
+                              <methodname>getFirmwareType</methodname>
+                              <void /><modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Returns the type of firmware currently running
+                                in the digitizer.   The firmware type is returned
+                                as an enumerated type
+                                <type>caen_nscldaq::VX2750Pha::FWType</type> which
+                                can have the values:
+                               </para>
+                               <itemizedlist>
+                                <listitem>
+                                   <para>
+                                      <literal>caen_nscldaq::VX2750Pha::DPP_PHA</literal>  - pulse height
+                                      anaysis firmware.
+                                   </para>
+                                </listitem>
+                                <listitem>
+                                   <para>
+                                      <literal>caen_nscldaq::VX2750Pha::DPP_ZLE</literal>  - wave forms in
+                                      run length encoding compression format.
+                                   </para>
+                                </listitem>
+                                <listitem>
+                                   <para>
+                                      <literal>caen_nscldaq::VX2750Pha::DPP_PSD</literal> - Pulse shape discrimination
+                                      firmware.
+                                   </para>
+                                </listitem>
+                                <listitem>
+                                   <para>
+                                      <literal>caen_nscldaq::VX2750Pha::DPP_DAW</literal>  - Dynamic acquisition
+                                      window wave form capture firmware.
+                                   </para>
+                                </listitem>
+                                <listitem>
+                                   <para>
+                                      <literal>caen_nscldaq::VX2750Pha::DPP_OPEN</literal>  - User written
+                                      firmware (Open FPGA).
+                                   </para>
+                                </listitem>
+                                <listitem>
+                                   <para>
+                                      <literal>caen_nscldaq::VX2750Pha::Scope </literal> - Raw waveform
+                                      capture (Oscilloscope mode).
+                                   </para>
+                                </listitem>
+                                </itemizedlist>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>std::string  </type>
+                              <methodname>getModelCode</methodname>
+                              <void />
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Returns the model code string e.g.
+                                <literal>WV2740XAAAAA.</literal>
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>std::string  </type>
+                              <methodname>getPiggyBackCode</methodname>
+                              <void /><modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Returns the CAEN daugherboard type string e.g.
+                                <literal>WA40BXAAAAAA</literal>
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>std::string  </type>
+                              <methodname>getModelName</methodname>
+                              <void /><modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Return the digitizer model string e.g.
+                                <literal>V2740</literal>
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>FormFactor   </type>
+                              <methodname>getFormFactor</methodname>
+                              <void /><modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Returns a
+                                <type>caen_nscldaq::VX2750Pha::FormFactor</type>
+                                enumerated value that represents the device
+                                formfactor.  This can have values
+                               </para>
+                               <itemizedlist>
+                                <listitem>
+                                   <para>
+                                      <literal>caen_nscldaq::VX2750Pha::VME</literal>
+                                      VME module
+                                   </para>
+                                </listitem>
+                                <listitem>
+                                   <para>
+                                      <literal>caen_nscldaq::VX2750Pha::VME64X</literal>
+                                      VME module compatible with the VME64X standard.
+                                   </para>
+                                </listitem>
+                                <listitem>
+                                   <para>
+                                      <literal>caen_nscldaq::VX2750Pha::DT</literal>
+                                      Desktop format.
+                                   </para>
+                                </listitem>
+                               </itemizedlist>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>int  </type>
+                              <methodname>getFamilyCode</methodname>
+                              <void /><modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Returns the digitizer family code.  This is an
+                                interger that is the family order number
+                                 e.g. a <literal>vx2740</literal> will return
+                                 <literal>2740</literal> for this function.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>std::string  </type>
+                              <methodname>getSerialNumber()</methodname>
+                              <void /><modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Return the digitizer's serial number string.
+                                Note that at present, serial numbers are
+                                integers, but the API documents this as returning
+                                a string so a string is what we return.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>int   </type>
+                              <methodname>getMotherboardRev</methodname>
+                              <void /> <modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Return the motherboard revision level.  This is
+                                the revision level of the circuit board.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>int   </type>
+                              <methodname>getPiggybackRev</methodname>
+                              <void /> <modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Return the revision of the daughter board's
+                                printed circuit board.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>std::string  </type>
+                              <methodname>getLicense</methodname>
+                              <void /><modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Return the product unlock code for the firmware
+                                being run.   This is instance specific.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>bool        </type>
+                              <methodname> isLicensed</methodname>
+                              <void /><modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Returns <literal>true</literal> if the firmware
+                                product is unlocked.   <literal>false</literal>
+                                if the product firmware is running in trial (time-bomb)
+                                mode.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>int   </type>
+                              <methodname>remainingUnlicensedTime</methodname>
+                              <void /> <modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                If <methodname>isLicensed</methodname>
+                                returned <literal>false</literal>, this is the
+                                number of seconds remaining before the digitizer
+                                goes catatonic (trial mode expiry).  Once that
+                                happens, the digitizer must be rebooted (e.g.
+                                power cycled).
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>int   </type>
+                              <methodname>channelCount</methodname>
+                              <void /><modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Returns the number of channels the digitizer has.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>int   </type>
+                              <methodname>bitsOfResolution</methodname>
+                             <void /><modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Returns the number of bits of ADC resolution.
+                                This  is the number of bits in the FADC not
+                                the resolution of e.g. the extracted pulse height.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>int   </type>
+                              <methodname>sampleRate</methodname>
+                              <void /><modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Returns the FADC sampling rate in MHz.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>int   </type>
+                              <methodname>inputRange</methodname>
+                              <void /> <modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Returns the input range in VPP.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>bool  </type>
+                              <methodname>isDifferentialInput</methodname>
+                              <void /><modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Returns <literal>true</literal> if the input
+                                is differential and <literal>false</literal>
+                                if single ended.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>int   </type>
+                              <methodname>inputImpedance</methodname>
+                              <void /><modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Returns the module input impedance in Ohms.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>int   </type>
+                              <methodname>ipAddress</methodname>
+                              <void /><modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Return the IP address of the module in
+                              host byte order.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>int   </type>
+                              <methodname>netMask</methodname>
+                              <void /><modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Return the netmask for the module's NIC in
+                                host byte order.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>int   </type>
+                              <methodname>gateway</methodname>
+                              <void /><modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Return the gateway address for the module in
+                                host byte order.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>ClockSource  </type>
+                              <methodname>getClockSource</methodname>
+                              <void /><modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Return the clock source selected.  This is an
+                                enumerated type:
+                                <type>caen_nscldaq::VX2750Pha::ClockSource</type>
+                                which can have the values:
+                                <itemizedlist>
+                                    <listitem>
+                                       <para>
+                                          <literal>caen_nscldaq::VX2750Pha::Internal</literal>
+                                          Internal 62.5MHz oscillator.
+                                       </para>
+                                    </listitem>
+                                    <listitem>
+                                       <para>
+                                          <literal>caen_nscldaq::VX2750Pha::FrontPanel</literal>
+                                          Front panel CLK IN.
+                                       </para>
+                                    </listitem>
+                                    <listitem>
+                                       <para>
+                                          <literal>caen_nscldaq::VX2750Pha::Clock_P0</literal>
+                                          P0 VME backplane connnector (not implemented)
+                                       </para>
+                                    </listitem>
+                                    <listitem>
+                                       <para>
+                                          <literal>caen_nscldaq::VX2750Pha::Link</literal> Regenerated from
+                                          the Ethernet (not implemented) (WR?).
+                                       </para>
+                                    </listitem>
+                                    <listitem>
+                                       <para>
+                                          <literal>caen_nscldaq::VX2750Pha::DIPSelected</literal>
+                                          Clock source selected by DIP switches
+                                          on the circuit board (not implemented).
+                                       </para>
+                                    </listitem>
+                                </itemizedlist>
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>void   </type>
+                              <methodname>setClockSource</methodname>
+                              <methodparam>
+                                  <type>ClockSource </type><parameter>src</parameter>
+                              </methodparam>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Selects the clock source.  Values are described in
+                                <methodname>getClockSource</methodname>.
+                                Note that using an unimplemented value will
+                                result in an error (exception) being thrown.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        
+                    </variablelist>
+                </refsect1>
+                <refsect1>
+                    <title>EXPORTED DATA</title>
+                    <para></para>
+                </refsect1>
+            </refentry>
         </section>
     </appendix>
 </book>
