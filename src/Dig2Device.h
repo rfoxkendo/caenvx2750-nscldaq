@@ -65,9 +65,6 @@ namespace caen_nscldaq {
         void SetChanValue(unsigned chan, const char* chanParName, double value) const;
         void SetChanValue(unsigned chan, const char* chanParName, bool value) const;
 
-        /// These don't work and I'm not sure how to make them work yet.
-        ///
-
         void SetLVDSValue(unsigned quartet, const char* LVDSName, const char* value) const;
         void SetLVDSValue(unsigned quartet, const char* LVDSName, int value) const;
         void SetLVDSValue(unsigned quartet, const char* LVDSName, std::uint64_t value) const;
