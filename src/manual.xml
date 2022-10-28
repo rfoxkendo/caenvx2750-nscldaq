@@ -3061,7 +3061,7 @@ clean:
                    <listitem>
                        <para>
                         Given a pointer to raw hit data unpacks the data from
-                        the hit.  This class produces four  parmaeters for each
+                        the hit.  This class produces four  parameters for each
                         channel that's hit:  The nanosecond time, the raw time
                         the fine timestamp and the energy.
                        </para>
@@ -3145,7 +3145,854 @@ clean:
     <appendix>
         <title>Class reference</title>
         <para>
-            To Be written
+            This appendix provides class reference material for the classes
+            that make up both the NSCLDAQ and SpecTcl support.
+            The two sections of man pages are
+            <literal>3daq</literal> which cover classes that make up the
+            DAQ support and <literal>3spectcl</literal> which provides reference
+            material for SpecTcl class support.
         </para>
+        <section>
+            <title>NSLCDAQ Support (3daq)</title>
+            <refentry>
+               <refmeta>
+                  <refentrytitle>caen_nscldaq::Dig2Device</refentrytitle>
+                  <manvolnum>3daq</manvolnum>
+               </refmeta>
+               <refnamediv>
+                  <refname>caen_nscldaq::Dig2Device</refname>
+                  <refpurpose>Low Level Access To Digitizers</refpurpose>
+                </refnamediv>
+                <refsynopsisdiv>
+                    <programlisting>
+#include &lt;Dig2Device.h&gt;
+namespace caen_nscldaq {
+    void set_tracing(bool onoff) ;
+    
+    class Dig2Device {
+    private:
+        std::uint64_t m_deviceHandle;
+        std::uint64_t m_endpointHandle;
+    public:
+        Dig2Device(const char* hostOrPid, bool isUsb = false);
+        virtual ~Dig2Device();
+        
+        
+        void SetValue(const char* parameterName, const char* value) const;
+        void SetValue(const char* parameterName, int  value) const;
+        void SetValue(const char* parameterName, std::uint64_t value) const;
+        void SetValue(const char* parameterName, double value) const;
+        void SetValue(const char* parameterName, bool value) const;
+
+        
+        void SetDeviceValue(const char* devParName, const char* value) const;
+        void SetDeviceValue(const char* devParName, int value) const;
+        void SetDeviceValue(const char* devParName, std::uint64_t value) const;
+        void SetDeviceValue(const char* devParName, double value) const;
+        void SetDeviceValue(const char* devParName, bool value) const;
+
+        
+        void SetChanValue(unsigned chan, const char* chanParName, const char* value) const;
+        void SetChanValue(unsigned chan, const char* chanParName, int value) const;
+        void SetChanValue(unsigned chan, const char* chanParName, std::uint64_t value) const;
+        void SetChanValue(unsigned chan, const char* chanParName, double value) const;
+        void SetChanValue(unsigned chan, const char* chanParName, bool value) const;
+
+        
+        void SetLVDSValue(unsigned quartet, const char* LVDSName, const char* value) const;
+        void SetLVDSValue(unsigned quartet, const char* LVDSName, int value) const;
+        void SetLVDSValue(unsigned quartet, const char* LVDSName, std::uint64_t value) const;
+        void SetLVDSTriggerMask(unsigned maskNo, std::uint64_t mask) const;
+        
+        std::string GetValue(const char* parameterName, const char* initial = nullptr) const;
+        int         GetInteger(const char* parameterName) const;
+        std::uint64_t GetULong(const char* parameterName) const;
+        double      GetReal(const char* parameterName) const;
+        bool        GetBool(const char* parameterName) const;
+
+        std::string GetDeviceValue(const char* parameterName) const;
+        int         GetDeviceInteger(const char* parameterName) const;
+        std::uint64_t GetDeviceULong(const char* parameterName) const;
+        double      GetDeviceReal(const char* parameterName) const;
+        bool        GetDeviceBool(const char* parameterName) const;
+        
+        std::string GetChanValue(unsigned chan, const char* parameterName) const;
+        int         GetChanInteger(unsigned chan, const char* parameterName) const;
+        std::uint64_t GetChanULong(unsigned chan, const char* parameterName) const;
+        double      GetChanReal(unsigned chan, const char* parameterName) const;
+        bool        GetChanBool(unsigned chan, const char* parameterName) const;
+        
+        std::string GetLVDSValue(unsigned quartet, const char* parameterName) const;
+        int         GetLVDSInteger(unsigned quartet, const char* parameterName) const;
+        std::uint64_t GetLVDSULong(unsigned quartet, const char* parameterName) const;
+        std::uint64_t GetLVDSTriggerMask(unsigned maskNo) const;
+        
+        void Command(const char* command) const;
+        
+        void SetActiveEndpoint(const char* ep) const;
+        std::string GetActiveEndpoint() const;
+        void SetReadDataFormat(const char* json) const;
+                
+        bool ReadData(int timeout, int argc, void** argv) const;
+        bool hasData() const;
+    };
+}
+
+                    </programlisting>
+                </refsynopsisdiv>
+                <refsect1>
+                         <title>DESCRIPTION</title>
+                      <para>
+                        <classname>Dig2Device</classname> provides low level
+                        access to the the device, channel and LVDS parameter spaces
+                        of a CAEN nextgen digitizer.  For parameter setting
+                        methods, method overloading provides the appearance of
+                        a single method, while, since C++ does not support overloading
+                        that is based solely on  the return type, there are separate
+                        parameter getters for each possible parameter type.
+                      </para>
+                      <para>
+                        Addditionally, digitizer commands, endpoint selection,
+                        testing for data presence and data acquisition are
+                        supported at a low level.
+                      </para>
+                      <para>
+                        Note that if the class is built with the preprocessor
+                        variable <literal>ENABLE_TRACING</literal> defined
+                        and <function>caen_nscldaq::set_tracing</function>
+                        is called with a <literal>true</literal> parameter,
+                        all interactions with the CAEN support library will
+                        be logged to the file <filename>Dig2Device.log</filename>.
+                        This causes a huge performance hit but is useful
+                        in sending information to CAEN support when questions
+                        about digitizer operation arise.
+                      </para>
+                </refsect1>
+                <refsect1>
+                    <title>
+                        METHODS and CONSTRUCTION
+                    </title>
+                    <variablelist>
+                        <varlistentry>
+                           <term><constructorsynopsis>
+                               <methodname> Dig2Device</methodname>
+                                <methodparam>
+                                    <type>const char*</type><parameter>hostOrPid</parameter>
+                                </methodparam>
+                                <methodparam>
+                                    <type>bool </type><parameter>isUsb </parameter>
+                                    <initializer>false</initializer>
+                                </methodparam>
+                           </constructorsynopsis></term>
+                           <listitem>
+                               <para>
+                                Constructing a <classname>Dig2Device</classname>
+                                requires knowing how to connect to the device.
+                                There are currently two ways to do so, direct USB
+                                connection of via ETHERNET.  The <parameter>hostOrPid</parameter>
+                                parameter should be a textual host (dotted IP address
+                                e.g. <literal>"10.0.0.2"</literal>)  or the USB
+                                PID of the module (there's a sticker on each module
+                                with the module's pid e.g. <literal>"15236"</literal>)
+                                depending on how you are connecting to the module.
+                               </para>
+                               <para>
+                                The <parameter>isUsb</parameter> parameter, which
+                                defaults to <literal>false</literal> should be
+                                <literal>true</literal> only if you are connected
+                                directly to the module via USB.
+                               </para>
+                               <para>
+                                Note that no DNS translation is attempted on the
+                                <parameter>hostOrPid</parameter> parameter if
+                                <parameter>isUsb</parameter> is false.  
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>void </type>
+                              <methodname>SetValue</methodname>
+                              <methodparam>
+                                  <type>const char* </type><parameter>parameterName</parameter>
+                              </methodparam>
+                              <methodparam>
+                                  <type> T </type><parameter>value</parameter>
+                              </methodparam>
+                              <modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                This  is the core parameter setting method.
+                                <parameter>parameterName</parameter> is a full,
+                                absolute path to the parameter being set and
+                                <parameter>value</parameter> is the value to
+                                set the parameter to.  
+                               </para>
+                               <para>
+                                The
+                                <type>T</type> data type for <parameter>value</parameter>,
+                                in this case indicates that there are several overloads
+                                for this method in which T has the type
+                                <type>const char*</type>,
+                                <type>int</type>,
+                                <type>std::uint64_t</type>,
+                                <type>double</type>
+                                and <type>bool</type>, for the various data types
+                                that parameters may take.
+                               </para>
+                               <para>
+                                    Note that the CAEN API requires stringified
+                                    versions when setting all of its parameter types,
+                                    so the various overloads eventually invoke
+                                    the <methodname>SetValue</methodname>
+                                    that accept a <type>const char*</type>
+                                    vaule.
+                                </para>
+                               <para>
+                                    Errors reported back by the CAEN FELib
+                                    are converted to
+                                    <classname>std::runtime_error</classname>
+                                    exceptions.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>void </type>
+                              <methodname>SetDeviceValue</methodname>
+                              <methodparam>
+                                  <type>const char* </type><parameter>devParName</parameter>
+                              </methodparam>
+                              <methodparam>
+                                  <type>T</type><parameter>value</parameter>
+                              </methodparam>
+                              <modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                The parameter space of the CAEN digitizers looks
+                                like a file system.  Paths to parameters look like
+                                paths to files in that file system.  The
+                                <emphasis>directory</emphasis> parts of that path
+                                determine the class of the parameter.
+                                Device level parameters have a specific and
+                                (mostly) consistent path. 
+                               </para>
+                               <para>
+                                This overloaded method (same possible types for
+                                <parameter>value</parameter> as <methodname>SetValue</methodname>)
+                                computes the path to a device level paramter given the
+                                terminal node in the path and invokes
+                                <methodname>SetValue</methodname> to set a device
+                                level parameter.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>void </type>
+                              <methodname>SetChanValue</methodname>
+                              <methodparam>
+                                  <type>unsigned </type><parameter>chan</parameter>
+                              </methodparam>
+                              <methodparam>
+                                  <type>const char*</type><parameter> chanParName</parameter>
+                              </methodparam>
+                              <methodparam>
+                                  <type>T</type><parameter>value</parameter>
+                              </methodparam>
+                              <modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                As with device parameters, per channel parameters
+                                have paths that are consistently constructed
+                                given the parameter name and channel number.
+                                This method computes the full path to a per channel
+                                parameter and sets that parameter.  It is overloaded
+                                int the same manner as <parameter>SetValue</parameter>.
+                               </para>
+                               <para>
+                                Note that the CAEN FELib API actually supports setting
+                                more than one per channel parameter to the same
+                                value if the channels involved form a contiguous
+                                range.  This is not supported in this version of the
+                                class.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>void </type>
+                              <methodname>SetLVDSValue</methodname>
+                              <methodparam>
+                                  <type>unsigned </type><parameter>quartet</parameter>
+                              </methodparam>
+                              <methodparam>
+                                  <type>const char* </type><parameter>LVDSName</parameter>
+                              </methodparam>
+                              <methodparam>
+                                  <type>T </type><parameter>value</parameter>
+                              </methodparam>
+                              <modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                The parameters that control the functionality of
+                                the front panel LVDS I/O pins is a separate part
+                                of the digitizer parameter 'filesystem' parameter
+                                space.  This is because the 16 pins are organized into
+                                4 pin quartets that can be independently programmed.
+                               </para>
+                               <para>
+                                This overloaded method computes the path
+                                to the specified parameter name and quartet and
+                                sets that parameter's value.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>void </type>
+                              <methodname>SetLVDSTriggerMask</methodname>
+                              <methodparam>
+                                  <type>unsigned </type><parameter>maskNo</parameter>
+                              </methodparam>
+                              <methodparam>
+                                  <type>std::uint64_t </type><parameter>mask</parameter>
+                              </methodparam>
+                              <modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                With apologies to my colleagues at CAEN>  THe
+                                handling of the LVDS trigger mask is just totally
+                                inconsistent with the manner in which all other
+                                parameters in the digitizer are handled.
+                                They therefore merit a separate method to set
+                                their values.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term>
+                              <methodsynopsis>
+                                 <type>std::string </type>
+                                 <methodname>GetValue</methodname>
+                                 <methodparam>
+                                     <type>const char* </type><parameter>parameterName</parameter>
+                                 </methodparam>
+                                 <methodparam>
+                                     <type>const char* </type><parameter>initial</parameter>
+                                    <initializer>nullptr</initializer>
+                                 </methodparam>
+                                 <modifier>const</modifier>
+                              </methodsynopsis>
+                           </term>
+                           <listitem>
+                               <para>
+                                Returns the raw parameter string for a digitizer
+                                parameter given its full path.  The
+                                <parameter>initial</parameter> parameter has to do
+                                with the wonky manner in which LVDS trigger masks
+                                must be set.  Ignore and use
+                                <methodname>GetLVDSTriggerMask</methodname> to
+                                retrieve those trigger masks and it will take care
+                                handling that wonkiness transparently.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>int         </type>
+                              <methodname>GetInteger</methodname>
+                              <methodparam>
+                                  <type>const char*</type><parameter> parameterName</parameter>
+                              </methodparam>
+                              <modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Invokes <methodname>GetValue</methodname> and
+                                attempts to conver the resulting string to
+                                an integer which is then returned.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>std::uint64_t </type>
+                              <methodname>GetULong</methodname>
+                              <methodparam>
+                                  <type>const char*</type><parameter> parameterName</parameter>
+                              </methodparam>
+                              <modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Calls <methodname>GetValue</methodname>, converts
+                                the returned string to a <type>std::uint64_t</type>
+                                and returns the converted value.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>double      </type>
+                              <methodname>GetReal</methodname>
+                              <methodparam>
+                                  <type>const char* </type><parameter>parameterName</parameter>
+                              </methodparam>
+                              <modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Calls <methodname>GetValue</methodname> and converts
+                                the result to a <type>double</type>
+                                which is returned.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>bool </type>
+                              <methodname>GetBool</methodname>
+                              <methodparam>
+                                  <type>const char* </type><parameter>parameterName</parameter>
+                              </methodparam>
+                              <modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Calls <methodname>GetValue</methodname> and
+                                converts the returned value to a boolean
+                                which is returned.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>std::string </type>
+                              <methodname>GetDeviceValue</methodname>
+                              <methodparam>
+                                  <type>const char* </type><parameter>parameterName</parameter>
+                              </methodparam>
+                              <modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Computes the full path to the device level parameter
+                                <parameter>parameterName</parameter> and
+                                returns
+                                the value <methodname>GetValue</methodname>
+                                returns for that path.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>int         </type>
+                              <methodname>GetDeviceInteger</methodname>
+                              <methodparam>
+                                  <type>const char* </type><parameter>parameterName</parameter>
+                              </methodparam>
+                              <modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Same as <methodname>GetDeviceValue</methodname>
+                                but calls <methodname>GetInteger</methodname>
+                                with the computed full path.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>td::uint64_t </type>
+                              <methodname>GetDeviceULong</methodname>
+                              <methodparam>
+                                  <type>const char* </type><parameter>parameterName</parameter>
+                              </methodparam>
+                              <modifier> const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Calls <methodname>GetUlong</methodname> with
+                                the computed full path to the parameter.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>double      </type>
+                              <methodname>GetDeviceReal</methodname>
+                              <methodparam>
+                                  <type>const char* </type><parameter>parameterName</parameter>
+                              </methodparam>
+                              <modifier> const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Calls <methodname>GetReal</methodname> with the
+                                fully computed path to <parameter>parameterName</parameter>.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>bool        </type>
+                              <methodname>GetDeviceBool</methodname>
+                              <methodparam>
+                                  <type>const char*</type><parameter> parameterName</parameter>
+                              </methodparam>
+                              <modifier>
+                                const
+                              </modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Calls <methodname>getBool</methodname> with the
+                                full computed path for <parameter>parameterName</parameter>.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>std::string </type>
+                              <methodname>GetChanValue</methodname>
+                              <methodparam>
+                                  <type>unsigned </type><parameter>chan</parameter>
+                              </methodparam>
+                              <methodparam>
+                                  <type>const char* </type><parameter>parameterName</parameter>
+                              </methodparam>
+                              <modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Computes the full path to
+                                the channel level parameter;
+                                <parameter>parameterName</parameter> for
+                                channel <parameter>chan</parameter> and
+                                returns the value for
+                                <methodname>getValue</methodname>.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>int         </type>
+                              <methodname>GetChanInteger</methodname>
+                              <methodparam>
+                                  <type>unsigned </type><parameter>chan</parameter>
+                              </methodparam>
+                              <methodparam>
+                                  <type>const char* </type><parameter>parameterName</parameter>
+                              </methodparam>
+                              <modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Same as <methodname>getChanValue</methodname>
+                                but returns the value of <methodname>GetInteger</methodname>
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>std::uint64_t </type>
+                              <methodname>GetChanULong</methodname>
+                              <methodparam>
+                                  <type>unsigned </type><parameter>chan</parameter>
+                              </methodparam>
+                              <methodparam>
+                                  <type>const char* </type><parameter>parameterName</parameter>
+                              </methodparam>
+                              <modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Same as <methodname>GetChanValue</methodname>
+                                but returns the value of <methodname>GetUlong</methodname>
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>double      </type>
+                              <methodname>GetChanReal</methodname>
+                              <methodparam>
+                                  <type>unsigned </type><parameter>chan</parameter>
+                              </methodparam>
+                              <methodparam>
+                                  <type>const char*</type><parameter> parameterName</parameter>
+                              </methodparam>
+                              <modifier>
+                                const
+                              </modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Same as <methodname>GetChanValue</methodname>
+                                but returns the result of <methodname>GetReal</methodname>
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>bool        </type>
+                              <methodname>GetChanBool</methodname>
+                              <methodparam>
+                                  <type>unsigned </type><parameter>chan</parameter>
+                              </methodparam>
+                              <methodparam>
+                                  <type>const char* </type><parameter>parameterName</parameter>
+                              </methodparam>
+                              <modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Same as
+                                <methodname>GetChanValue</methodname> but returns
+                                the results of <methodname>GetBool</methodname>
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>std::string </type>
+                              <methodname>GetLVDSValue</methodname>
+                              <methodparam>
+                                  <type>unsigned </type><parameter>quartet</parameter>
+                              </methodparam>
+                              <methodparam>
+                                  <type>const char* </type><parameter>parameterName</parameter>
+                              </methodparam>
+                              <modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Retrieves the value of the LVDS configuration
+                                parameter; <parameter>parameterName</parameter>
+                                for the selected
+                                <parameter>quartet</parameter> of pins.
+                                This computes the full path to that parameter
+                                and invokes <methodname>GetValue</methodname>
+                                to get the result.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>int </type>
+                              <methodname>GetLVDSInteger</methodname>
+                              <methodparam>
+                                  <type>unsigned </type><parameter>quartet</parameter>
+                              </methodparam>
+                              <methodparam>
+                                  <type>const char* </type><parameter>parameterName</parameter>
+                              </methodparam>
+                              <modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Same as <methodname>GetLVDSValue</methodname>
+                                but uses <methodname>GetInteger</methodname>
+                                to retrive the result.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>std::uint64_t </type>
+                              <methodname>GetLVDSUlong</methodname>
+                              <methodparam>
+                                  <type>unsigned </type><parameter>quartet</parameter>
+                              </methodparam>
+                              <methodparam>
+                                  <type>const char* </type><parameter>parameterName</parameter>
+                              </methodparam>
+                              <modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Same as <methodname>GetLVDSValue</methodname>
+                                but uses <methodname>GetULong</methodname>
+                                to retrive the result.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>std::uint64_t </type>
+                              <methodname>GetLVDSTriggerMask</methodname>
+                              <methodparam>
+                                  <type>unsigned </type><parameter>maskNo</parameter>
+                              </methodparam>
+                              <modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                See my rather acerbit note about LVS trigger masks
+                                in <methodname>SetLVDSTriggerMask</methodname>.
+                                This returns the value of LVDS trigger mask
+                                <parameter>maskNo</parameter>.  That is the
+                                mask to be applied to pin
+                                <parameter>maskNo</parameter>.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>void </type>
+                              <methodname>Command</methodname>
+                              <methodparam>
+                                  <type>const char*</type><parameter> command</parameter>
+                              </methodparam>
+                              <modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Sends the command specified by
+                                <parameter>command</parameter> to the digitizer.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>void </type>
+                              <methodname>SetActiveEndpoint</methodname>
+                              <methodparam>
+                                  <type>const char* </type><parameter>ep</parameter>
+                              </methodparam>
+                              <modifier> const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Digitizers have several endpoints from which data
+                                can be acquired.  In order to acquire data
+                                from an endpoint the end point must be made
+                                active and its data format configured
+                                (see <methodname>SetReadDataFormat</methodname>).
+                                Once this is  done, <methodname>hasData</methodname>
+                                and <methodname>ReadData</methodname> will,
+                                respectively, check for data on the active endpoint
+                                and read data from it.
+                               </para>
+                               <para>
+                                The set of endpoints exported by a digitizer
+                                depend on the firmware that it is running.
+                               </para>
+                               <para>
+                                This method selects the active endpoint
+                                via its name: <parameter>ep</parameter>.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type> std::string </type>
+                              <methodname>GetActiveEndpoint</methodname>
+                              <void />
+                              <modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Returns the name of the currently active
+                                digitizer endpoint.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>void </type>
+                              <methodname>SetReadDataFormat</methodname>
+                              <methodparam>
+                                  <type>const char* </type><parameter>json</parameter>
+                              </methodparam>
+                              <modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Each endpoint can, on a read, return a number of
+                                parameters, at the client's discretion.
+                                The parameters desired and the order in which
+                                they are desired is determined by a JSON
+                                (JavaScript Object Notation) string that is passed
+                                as <parameter>json</parameter> to  this method.
+                               </para>
+                               <para>
+                                The method determines what is returned by
+                                <methodname>ReadData</methodname> for the active
+                                endpoint.  It also, implicitly detemrines the
+                                number and type of parameters to be passed to
+                                <methodname>ReadData</methodname>.
+                               </para>
+                               <para>
+                                The specific set of parameters and each parameter
+                                type depends on the firmware running in the digitizer
+                                and the current endpoint.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>bool</type>
+                              <methodname>ReadData</methodname>
+                              <methodparam>
+                                  <type>int</type><parameter>timeout</parameter>
+                              </methodparam>
+                              <methodparam>
+                                  <type>int </type><parameter>argc</parameter>
+                              </methodparam>
+                              <methodparam>
+                                  <type>void** </type><parameter>argv</parameter>
+                              </methodparam>
+                              <modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Attempts to read data from the active endpoint.
+                                If no data is available within
+                                <parameter>timeout</parameter> millisconds of
+                                initiating the read, the method returns
+                                <literal>false</literal>,  If data is available,
+                                then the method returns <literal>true</literal>
+                               </para>
+                               <para>
+                                <parameter>argc</parameter> is the number of
+                                parameters in the argument array <parameter>argv</parameter>.
+                                <parameter>argv</parameter>, in general is an
+                                array of pointers to buffers for the items
+                                sequentially requested in the JSON passed to
+                                <methodname>SetReadDataFormat</methodname>
+                                for the active endpoint.  The data types to
+                                which the pointers point, again, is determined
+                                by the JSON passed to the endpoint.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>bool</type>
+                              <methodname>hasData</methodname>
+                              <void />
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Returns <literal>true</literal> if the digitizer
+                                has data on the currently selected endpoint
+                                or <literal>false</literal> if not.
+                                This returns immediately either way.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                    </variablelist>
+                
+                </refsect1>
+            </refentry>
+            
+        </section>
     </appendix>
 </book>
