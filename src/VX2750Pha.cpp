@@ -42,7 +42,7 @@ static const std::map<std::string, VX2750Pha::FwType> stringToFwType = {
     { "DPP_PHA", VX2750Pha::DPP_PHA},
     { "DPP_ZLE", VX2750Pha::DPP_ZLE},
     { "DPP_PSD", VX2750Pha::DPP_PSD},
-    { "DPP_DAQ", VX2750Pha::DPP_DAQ},
+    { "DPP_DAW", VX2750Pha::DPP_DAQ},
     { "DPP_OPEN", VX2750Pha::DPP_OPEN},
     {"Scope", VX2750Pha::Scope}
 };

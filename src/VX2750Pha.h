@@ -40,7 +40,7 @@ class VX2750Pha : public Dig2Device
 {
 public:
     typedef enum _FwType {
-        DPP_PHA, DPP_ZLE, DPP_PSD, DPP_DAQ, DPP_OPEN, Scope
+        DPP_PHA, DPP_ZLE, DPP_PSD, DPP_DAW, DPP_OPEN, Scope
     } FwType;
     typedef enum _FormFactor {
         VME, VME64X, DT
