@@ -3382,7 +3382,7 @@ namespace caen_nscldaq {
                                <para>
                                 This overloaded method (same possible types for
                                 <parameter>value</parameter> as <methodname>SetValue</methodname>)
-                                computes the path to a device level paramter given the
+                                computes the path to a device level parameter given the
                                 terminal node in the path and invokes
                                 <methodname>SetValue</methodname> to set a device
                                 level parameter.
@@ -4802,6 +4802,770 @@ public:
                                 <methodname>getClockSource</methodname>.
                                 Note that using an unimplemented value will
                                 result in an error (exception) being thrown.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>bool  </type>
+                              <methodname>isClockOutOnP0</methodname>
+                              <void /><modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Return <literal>true</literal>
+                                if the clock has been enabled to
+                                be output on the P0 VME connector.
+                                <literal>false</literal> if not.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>void  </type>
+                              <methodname>setClockOutOnP0</methodname>
+                              <methodparam>
+                                  <type>bool </type><parameter>state</parameter>
+                              </methodparam>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                If <parameter>state</parameter> is
+                                <literal>true</literal> the clock will be
+                                enabled to be output on the P0 connector.
+                                Otherwise, not.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>bool  </type>
+                              <methodname>isClockOutOnFP</methodname>
+                              <void /><modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Returne <literal>true</literal> if the
+                                clock is enabled to be output on the CLK OUT
+                                front panel connector (for the clock
+                                daisy chain).
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>void  </type>
+                              <methodname>setClockOutOnFP</methodname>
+                              <methodparam>
+                                  <type>bool </type><parameter>state</parameter>
+                              </methodparam>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                If <parameter>state</parameter> is
+                                <literal>true</literal>, the module clock source
+                                will be echoed to the CLK OUT front panel
+                                connector.  This is the most common way to
+                                run the modules synchronized with a common
+                                clock/timestamp.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>std::vector&lt;StartSource&gt; </type>
+                              <methodname>getStartSource</methodname>
+                              <void /><modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                The module may have several start sources enabled.
+                                The start source is what actually determines
+                                both, when the module starts taking data, and the
+                                timestamp zero of the clock.  Getting the
+                                start source right is an essential part of running
+                                serveral modules with a synchronized time stamp.
+                               </para>
+                               <para>
+                                Several start sources may be selected
+                                (see <methodname>setStartSource</methodname> below).
+                                The return value is a vector whose members
+                                include all selected start sources.
+                                The members of the vector are of enumerated type:
+                                <type>caen_nscldaq::VX2750Pha::StartSource</type>
+                                Which can have any of the values:
+                                <literal>caen_nscldaq::VX2750Pha::Start_EncodedClockIn</literal>,
+                                <literal>caen_nscldaq::VX2750Pha::SIN_Level</literal>,
+                                <literal>caen_nscldaq::VX2750Pha::SIN_Edge</literal>,
+                                <literal>caen_nscldaq::VX2750Pha::SWCommand</literal>,
+                                <literal>caen_nscldaq::VX2750Pha::Start_LVDS</literal>,
+                                or <literal>caen_nscldaq::VX2750Pha::Start_P0</literal>.
+                                
+                               </para>
+                               <para>
+                                    One way to get synchronized operation is to
+                                    program all but the master module to start
+                                    on <literal>SIN_Edget</literal>, program
+                                    the master module to start on <literal>SWCommand</literal>,
+                                    program the GPIO to be <literal>GPIO_Run</literal>
+                                    for all modules and make a daisy chain of GPIO -> SIN
+                                    from the master down the chain of modules.
+                                    In this way, whent he master is given the software
+                                    start, it's run will propagate as the SIN to all
+                                    modules in the chain.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>void  </type>
+                              <methodname>setStartSource</methodname>
+                              <methodparam>
+                                  <type>const std::vector&lt;StartSource&gt;&amp;</type><parameter> src</parameter>
+                              </methodparam><modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Progams the module's start sources.  See
+                                <methodname>getStartSource</methodname>.
+                                <parameter>src</parameter> references a vector
+                                that contains all of the desired start sources
+                                for the module.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>std::vector&lt;GlobalTriggerSource&gt;</type>
+                              <methodname>getGlobalTriggerSource</methodname>
+                              <void /><modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                The module can have several global trigger sources.
+                                This method returns a vector whose members
+                                are the selected global trigger sources.
+                                See <methodname>setGlobalTriggerSource</methodname>.
+                               </para>
+                               <para>
+                                Each element of the returned vector is of type
+                                <type>caen_nscldaq::VX2750Pha::GlobalTriggerSource</type>.
+                                This is an enumerated type that can be one of:
+                                <literal>caen_nscldaq::VX2750Pha::GlobalTrigger_TriggerIn</literal>,
+                                <literal>caen_nscldaq::VX2750Pha::GlobalTrigger_P0</literal>,
+                                <literal>caen_nscldaq::VX2750Pha::GlobalTrigger_Software</literal>,
+                                <literal>caen_nscldaq::VX2750Pha::GlobalTrigger_LVDS</literal>,
+                                <literal>caen_nscldaq::VX2750Pha::GlobalTrigger_InternalA</literal>,
+                                <literal>caen_nscldaq::VX2750Pha::GlobalTrigger_InternalB</literal>
+                                <literal>caen_nscldaq::VX2750Pha::GlobalTrigger_InternalAandB</literal>,
+                                <literal>caen_nscldaq::VX2750Pha::GlobalTrigger_InternalAorB</literal>,
+                                <literal>caen_nscldaq::VX2750Pha::GlobalTrigger_EncodedClkIn</literal>,
+                                <literal>caen_nscldaq::VX2750Pha::GlobalTrigger_GPIO</literal>,
+                                or
+                                <literal>caen_nscldaq::VX2750Pha::GlobalTrigger_TestPulse</literal>.
+                                </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>void  </type>
+                              <methodname>setGlobalTriggerSource</methodname>
+                              <methodparam>
+                                  <type>const std::vector&lt;GlobalTriggerSource&gt;&amp;</type><parameter> sources</parameter>
+                              </methodparam>
+                              <modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                The board can accept several global trigger sources,
+                                see <methodname>getGlobalGriggerSource</methodname>.
+                                This method selects the global trigger sources
+                                the board recognizes.  The <parameter>sources</parameter>
+                                parameter references a vector whose elements are the
+                                set of desired global trigger sources.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>std::vector&lt;WaveTriggerSource&gt;</type>
+                              <methodname>getWaveTriggerSource</methodname>
+                              <methodparam>
+                                  <type>unsigned </type><parameter>ch</parameter>
+                              </methodparam>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                The wave trigger source for a channel determines
+                                when a channel will produce not only timestamp
+                                and energy information but make availalbe (should
+                                the readout select it), the waveform.  As with
+                                the global trigger, several wave trigger sources
+                                can be selected.  The return value is a vector
+                                that contains all of the wave trigger sources
+                                selected for channel <parameter>ch.</parameter>
+                               </para>
+                               <para>
+                                Elements of the vector are of the enumerated
+                                type:
+                                <type>caen_nscldaq::VX2750Pha::WaveTriggerSource</type>
+                                which can have any of the following values:
+                                <literal>caen_nscldaq::VX2750Pha::WaveTrigger_InternalA</literal>,
+                                <literal>caen_nscldaq::VX2750Pha::WaveTrigger_InternalB</literal>,
+                                <literal>caen_nscldaq::VX2750Pha::WaveTrigger_GlobalTriggerSource</literal>,
+                                <literal>caen_nscldaq::VX2750Pha::WaveTrigger_TRGIN</literal>,
+                                <literal>caen_nscldaq::VX2750Pha::ExternalInhibit</literal>,
+                                <literal>caen_nscldaq::VX2750Pha::ADCUnderSaturation</literal>,
+                                <literal>caen_nscldaq::VX2750Pha::ADCOverSaturation</literal>,
+                                <literal>caen_nscldaq::VX2750Pha::WaveTrigger_Software</literal>,
+                                <literal>caen_nscldaq::VX2750Pha::WaveTrigger_ChannelSelfTrigger</literal>,
+                                <literal>caen_nscldaq::VX2750Pha::WaveTrigger_AnyChannelSelfTrigger</literal>,
+                                or
+                                <literal>caen_nscldaq::VX2750Pha::WaveTrigger_Disabled</literal>.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>void  </type>
+                              <methodname>setWaveTriggerSource</methodname>
+                              <methodparam>
+                                  <type>unsigned </type><parameter>ch</parameter>
+                              </methodparam>
+                              <methodparam>
+                                  <type>const std::vector&lt;WaveTriggerSource&gt;&amp; </type><parameter>src</parameter>
+                              </methodparam>
+                              <modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Sets the desired wave trigger sources for
+                                channel <parameter>ch</parameter> to the
+                                sources in the vector
+                                <parameter>src</parameter>.  See
+                                <methodname>getWaveTriggerSource</methodname>
+                                for a description of the
+                                <type>caen_nscldaq:VX2750Pha::WaveTriggerSource</type>
+                                data type.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>std::vector&lt;EventTriggerSource&gt;</type>
+                              <methodname> getEventTriggerSource</methodname>
+                              <methodparam>
+                                  <type>unsigned </type><parameter>ch</parameter>
+                              </methodparam>
+                              <modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                The event trigger source for a channel determines when
+                                the digitizer sends only the energy and timing
+                                information for an event.  Several  event
+                                trigger sources can be specified.
+                                The elements of the returned value are the
+                                selected event trigger sources.
+                               </para>
+                               <para>
+                                The elements of the returned value are of the
+                                enumerated type:
+                                <type>caen_nscldaq::VX2750Pha::EventTriggerSource</type>
+                                and can have the following values:
+                                <literal>caen_nscldaq::VX2750Pha::EventTrigger_InternalA</literal>,
+                                <literal>caen_nscldaq::VX2750Pha::EventTrigger_InternalB</literal>,
+                                <literal>caen_nscldaq::VX2750Pha::EventTrigger_GlobalTriggerSource</literal>,
+                                <literal>caen_nscldaq::VX2750Pha::EventTrigger_TRGIN</literal>,
+                                <literal>caen_nscldaq::VX2750Pha::EventTrigger_Software</literal>,
+                                <literal>caen_nscldaq::VX2750Pha::EventTrigger_ChannelSelfTrigger</literal>,
+                                <literal>caen_nscldaq::VX2750Pha::EventTrigger_AnyChannelSelfTrigger</literal>,
+                                or
+                                <literal>caen_nscldaq::VX2750Pha::EventTrigger_Disabled</literal>.
+                                </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>void  </type>
+                              <methodname>setEventTriggerSource</methodname>
+                              <methodparam>
+                                  <type>unsigned </type><parameter>ch</parameter>
+                              </methodparam>
+                              <methodparam>
+                                   <type>const std::vector&lt;EventTriggerSource&gt;&amp;</type><parameter> src</parameter>
+                              </methodparam>
+                              <modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Sets the event trigger sources for channel
+                                <parameter>ch</parameter> to be the sources that
+                                are elements of <parameter>src</parameter>.
+                                See <methodname>getEventTriggerSource</methodname>
+                                for information about the
+                                <type>caen_nscldaq::VX2750Pha::EventTriggerSource</type>
+                                data type and the values it can have.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>std::uint64_t </type>
+                              <methodname>getChannelTriggerMask</methodname>
+                              <methodparam>
+                                  <type>unsigned</type><parameter> ch</parameter>
+                              </methodparam>
+                              <modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Returns the channel trigger mask for
+                                channel number <parameter>ch</parameter>.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type> void </type>
+                              <methodname>setChannelTriggerMask</methodname>
+                              <methodparam>
+                                  <type>unsigned </type><parameter>ch, </parameter>
+                              </methodparam>
+                              <methodparam>
+                                  <type>std::uint64_t</type><parameter> mask</parameter>
+                              </methodparam>
+                              <modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Sets the channel trigger mask for
+                                channel <parameter>ch</parameter> to be
+                                <parameter>mask</parameter>
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>TraceRecordMode </type>
+                              <methodname>getTraceRecordMode</methodname>
+                              <methodparam>
+                                  <type>unsigned </type><parameter>ch</parameter>
+                              </methodparam>
+                              <modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Returns when a channel;
+                                <parameter>ch</parameter> will make traces available
+                                to the host (which must then request it in the
+                                event format). Values returned are
+                                <type>caen_nscldaq::VX2750Pha::TraceRecordMode</type>
+                                enumerated types which ave the possible values:
+                                <literal>caen_nscldaq::VX2750Pha::Always</literal>
+                                and <literal>caen_nscldaq::VX2750Pha::OnRequest</literal>.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>void  </type>
+                              <methodname>setTraceRecordMode</methodname>
+                              <methodparam>
+                                  <type>unsigned </type><parameter>ch</parameter>
+                              </methodparam>
+                              <methodparam>
+                                  <type>TraceRecordMode </type><parameter>mode</parameter>
+                              </methodparam>
+                              <modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Sets the trace recording mode for channel
+                                <parameter>ch</parameter> to
+                                <parameter>mode</parameter>.
+                                See <methodname>getTraceRecordMode</methodname>
+                                for a description of the <parameter>mode</parameter>
+                                parameter values.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>TRGOUTMode    getTRGOUTMode</type>
+                              <methodname>getTRGOUTMode</methodname>
+                              <void /><modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Return the signal that has been selected to be
+                                output on the TRGOUT NIM output.  The value
+                                returned is of the enumerated type
+                                <type>caen_nscldaq::VX2750Pha::TRGOUTMode</type>
+                                which can have the following values:
+                               </para>
+                               <itemizedlist>
+                                <listitem>
+                                   <para>
+                                      <literal>caen_nscldaq::VX2750Pha::TriggerOut_TRGIN</literal>
+                                      The front panel TRGIN is propagated to TRGOUT.
+                                   </para>
+                                </listitem>
+                                <listitem>
+                                   <para>
+                                      <literal>caen_nscldaq::VX2750Pha::TriggerOut_P0</literal>
+                                      the P0 trigger is propagated to the TRGOUT.
+                                      This is not (yet) implemented in the hardware/firmware.
+                                   </para>
+                                </listitem>
+                                <listitem>
+                                   <para>
+                                      <literal>caen_nscldaq::VX2750Pha::TriggerOut_Software</literal>
+                                      Software triggers are propagated as pulses to the TRGOUT
+                                   </para>
+                                </listitem>
+                                <listitem>
+                                   <para>
+                                      <literal>caen_nscldaq::VX2750Pha::TriggerOut_LVDS</literal>
+                                      Trigger inputs from the LVDS pins
+                                      are propagated to TRGOUT.
+                                   </para>
+                                </listitem>
+                                <listitem>
+                                   <para>
+                                      <literal>caen_nscldaq::VX2750Pha::TriggerOut_InternalA</literal>
+                                      the output of trigger logic block A is
+                                      propagated to TRGOUT.
+                                   </para>
+                                </listitem>
+                                <listitem>
+                                   <para>
+                                      <literal>caen_nscldaq::VX2750Pha::TriggerOut_InternalB</literal>
+                                      the output of trigger block B is propagated to
+                                      TRGOUT
+                                   </para>
+                                </listitem>
+                                <listitem>
+                                   <para>
+                                      <literal>caen_nscldaq::VX2750Pha::TriggerOut_InternalAandInternalB</literal>
+                                      outputs the boolean and of the outputs of the
+                                      internal trigger logic blocks A and B.
+                                   </para>
+                                </listitem>
+                                <listitem>
+                                   <para>
+                                      <literal>caen_nscldaq::VX2750Pha::TriggerOut_InternalAorInternalB</literal>
+                                      outputs the boolean or of the outputs of the internal
+                                      trigger logic blocks A and B.
+                                   </para>
+                                </listitem>
+                               <listitem>
+                                  <para>
+                                     <literal>caen_nscldaq::VX2750Pha::TriggerOut_EncodedClockIn</literal>
+                                     The CLK-In is proppagated to TRGOUT.  Can be used
+                                     to extend the clock daisy chain to NIM.
+                                  </para>
+                               </listitem>
+                               <listitem>
+                                  <para>
+                                     <literal>caen_nscldaq::VX2750Pha::TriggerOut_Run</literal>
+                                     True when the digitizer is running.  This output is
+                                     timed prior to applying the Run delay time.
+                                  </para>
+                               </listitem>
+                               <listitem>
+                                  <para>
+                                     <literal>caen_nscldaq::VX2750Pha::TriggerOut_ReferenceClock</literal>
+                                     Monitors the internal 62.5MHz internal clock.
+                                  </para>
+                               </listitem>
+                               <listitem>
+                                  <para>
+                                     <literal>caen_nscldaq::VX2750Pha::TriggerOut_TestPulse</literal>
+                                     monitors test pulse timing.  
+                                  </para>
+                               </listitem>
+                               <listitem>
+                                  <para>
+                                    <literal>caen_nscldaq::VX2750Pha::TriggerOut_Busy</literal>
+                                    monitors the digitizer's busy.
+                                  </para>
+                               </listitem>
+                               <listitem>
+                                  <para>
+                                     <literal>caen_nscldaq::VX2750Pha::TriggerOut_Zero</literal>
+                                     Constantly deasserted.
+                                  </para>
+                               </listitem>
+                               <listitem>
+                                  <para>
+                                     <literal>caen_nscldaq::VX2750Pha::TriggerOut_One</literal>
+                                     Constantly asserted.
+                                  </para>
+                               </listitem>
+                               <listitem>
+                                  <para>
+                                     <literal>caen_nscldaq::VX2750Pha::TriggerOut_SynchIn</literal>
+                                     reflects the Synch in signal.
+                                  </para>
+                               </listitem>
+                               <listitem>
+                                  <para>
+                                     <literal>caen_nscldaq::VX2750Pha::TriggerOut_SIN</literal>
+                                     Reflects the SIN input.
+                                  </para>
+                               </listitem>
+                               <listitem>
+                                  <para>
+                                     <literal>caen_nscldaq::VX2750Pha::TriggerOut_GPIO</literal>
+                                     Reflects the GPIO as an input.
+                                  </para>
+                               </listitem>
+                               <listitem>
+                                  <para>
+                                     <literal>caen_nscldaq::VX2750Pha::AcceptedTrigger</literal>
+                                     Indicates a trigger was accepted.
+                                  </para>
+                               </listitem>
+                               <listitem>
+                                  <para>
+                                     <literal>caen_nscldaq::VX2750Pha::TriggerClock</literal>
+                                     Reflects the clock which determines the
+                                     resolution of trigger timing.
+                                  </para>
+                               </listitem>
+			     </itemizedlist>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>void  </type>
+                              <methodname>setTRGOUTMode</methodname>
+                              <methodparam>
+                                  <type>TRGOUTMode </type><parameter>mode</parameter>
+                              </methodparam>
+                              <modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Selects the functionality of the
+                                TRGOUT NIM output.
+                                See <methodname>getTRGOUTMode</methodname> for
+                                a description of the possible values you can
+                                supply for <parameter>mode</parameter>.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>GPIOMode </type>
+                              <methodname>getGPIOMode</methodname>
+                              <void /><modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Returns the functionality selected for the
+                                GPIO connector if it is aNIM output.  The returned value is
+                                a <type>caen_nscldaq::VX2750Pha::GPIOMode</type>
+                                enumerated value which can be one of:
+                               </para>
+                               <itemizedlist>
+                                <listitem>
+                                   <para>
+                                      <literal>caen_nscldaq::VX2750Pha::GPIOMode_Disabled</literal>,
+                                      The GPIO is not used.
+                                   </para>
+                                </listitem>
+                                <listitem>
+                                   <para>
+                                      <literal>caen_nscldaq::VX2750Pha::GPIOMode_TriggerIn</literal>
+                                      The GPIO is an output that reflects the TRGIN
+                                      signal.
+                                   </para>
+                                </listitem>
+                                <listitem>
+                                   <para>
+                                      <literal>caen_nscldaq::VX2750Pha::GPIOMode_P0</literal>
+                                      The GPIO is an output that reflects the
+                                      backplane P0 trigger (not yet implemented I believe).
+                                   </para>
+                                </listitem>
+                                <listitem>
+                                   <para>
+                                      <literal>caen_nscldaq::VX2750Pha::GPIOMode_SIN</literal>
+                                      Propagates the value of the SIN NIM input
+                                      as an output.
+                                   </para>
+                                </listitem>
+                                <listitem>
+                                   <para>
+                                      <literal>caen_nscldaq::VX2750Pha::GPIOMode_LVDS</literal>
+                                      Propagates the LVDS trigger inputs if they
+                                      are selected as such.
+                                   </para>
+                                </listitem>
+                                <listitem>
+                                   <para>
+                                      <literal>caen_nscldaq::VX2750Pha::GPIOMode_InternalA</literal>
+                                      reflects the output of internal trigger logic
+                                      block A
+                                   </para>
+                                </listitem>
+                                <listitem>
+                                   <para>
+                                      <literal>caen_nscldaq::VX2750Pha::GPIOMode_InternalB</literal>
+                                      reflects the output of internal trigger logic
+                                      block B
+                                   </para>
+                                </listitem>
+                                <listitem>
+                                   <para>
+                                       <literal>caen_nscldaq::VX2750Pha::GPIOMode_InternalAandInternalB</literal>
+                                       reflects the boolean and of the outputs of the
+                                       two internal trigger logic blocks.
+                                   </para>
+                                </listitem>
+                                <listitem>
+                                   <para>
+                                      <literal>caen_nscldaq::VX2750Pha::GPIOMode_InternalAorInternalB</literal>
+                                      reflects the boolean or of the output sof the
+                                      two internal triger logic blocks.
+                                   </para>
+                                </listitem>
+                                <listitem>
+                                   <para>
+                                      <literal>caen_nscldaq::VX2750Pha::GPIOMode_EncodedClockIn</literal>
+                                      Propagates the CLK-IN (Not yet implemented).
+                                   </para>
+                                </listitem>
+                                <listitem>
+                                   <para>
+                                      <literal>caen_nscldaq::VX2750Pha::GPIOMode_SoftwareTrigger</literal>
+                                      Pulses when the board is given a software trigger
+                                      command.
+                                   </para>
+                                </listitem>
+                                <listitem>
+                                   <para>
+                                      <literal>caen_nscldaq::VX2750Pha::GPIOMode_Run</literal>
+                                      Reflects the digitizer Run state.
+                                   </para>
+                                </listitem>
+                                <listitem>
+                                   <para>
+                                      <literal>caen_nscldaq::VX2750Pha::GPIOMode_RefernceClock</literal>
+                                      Reflects the internal 62.5Mhz oscillator.
+                                   </para>
+                                </listitem>
+                                <listitem>
+                                   <para>
+                                      <literal>caen_nscldaq::VX2750Pha::GPIOMode_TestPulse</literal>
+                                      reflects the test pulser timing.
+                                   </para>
+                                </listitem>
+                                <listitem>
+                                   <para>
+                                      <literal>caen_nscldaq::VX2750Pha::GPIOMode_Busy</literal>
+                                      Reflects the board busy state.
+                                   </para>
+                                </listitem>
+                                <listitem>
+                                   <para>
+                                      <literal>caen_nscldaq::VX2750Pha::GPIOMode_Zero</literal>
+                                      constantly deasserted.
+                                   </para>
+                                </listitem>
+                                <listitem>
+                                   <para>
+                                      <literal>caen_nscldaq::VX2750Pha::GPIOMode_One</literal>
+                                      constantly asserted.
+                                   </para>
+                                </listitem>
+                               </itemizedlist>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>void  </type>
+                              <methodname>setGPIOMode</methodname>
+                              <methodparam>
+                                  <type>GPIOMode </type><parameter>mode</parameter>
+                              </methodparam>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Selects the functionality of the
+                                GPIO if used as an output.  The values for the
+                                <parameter>mode</parameter> parameter are
+                                described above in the documentation of
+                                <methodname>getGPIOMode</methodname>.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>BusyInSource   </type>
+                              <methodname>getBusyInputSource</methodname>
+                              <void /><modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                In a lock-step trigger system, all boards may need
+                                to run with a common busy in order to prevent
+                                some boards from triggering while others are busy.
+                                This method returns the source of the external busy
+                                for the board.
+                               </para>
+                               <para>
+                                The result is a
+                                <type>caen_nscldaq::VX2750Pha::BusyInSource</type>
+                                enumerated type which can have the values:
+                               </para>
+                               <itemizedlist>
+                                <listitem>
+                                   <para>
+                                      <literal>caen_nscldaq::VX2750Pha::BusyIn_SIN</literal>
+                                      The SIN NIM input forces the board busy.
+                                   </para>
+                                </listitem>
+                                <listitem>
+                                   <para>
+                                      <literal>caen_nscldaq::VX2750Pha::BusyIn_GPIO</literal>
+                                      The NIM GPIO connector is programmed as an
+                                      input and it can force the board busy.
+                                   </para>
+                                </listitem>
+                                <listitem>
+                                   <para>
+                                      <literal>caen_nscldaq::VX2750Pha::BusyIn_LVDS</literal>
+                                      LVDS inputs can be used as a busy.
+                                   </para>
+                                </listitem>
+                                <listitem>
+                                   <para>
+                                      <literal>caen_nscldaq::VX2750Pha::BusyIn_Disabled</literal>
+                                      The board has no external busy source.
+                                   </para>
+                                </listitem>
+                               </itemizedlist>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>void </type>
+                              <methodname>setBusyInputSource</methodname>
+                              <methodparam>
+                                  <type>BusyInSource</type><parameter> src</parameter>
+                              </methodparam>
+                              <modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Sets the board external busy source.
+                                See the documentation for
+                                <methodname>getBusyInputSource</methodname>
+                                for possible values of the <parameter>src</parameter>
+                                parameter.
                                </para>
                             </listitem>
                         </varlistentry>
