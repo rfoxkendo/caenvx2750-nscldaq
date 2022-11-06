@@ -5569,7 +5569,358 @@ public:
                                </para>
                             </listitem>
                         </varlistentry>
-                        
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>SyncOutMode </type>
+                              <methodname>getSyncOutMode</methodname>
+                              <void /><modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Returns the selection for the signal source of
+                                the SYNC OUT NIM output.  The Possible values are
+                                an enumerated type: <type>caen_nscldaq::VX2750Pha::SyncOut</type>
+                                which can have the one of the values:
+                                <literal>caen_nscldaq::VX2750Pha::SyncOut_Disabled</literal>,
+                                <literal>caen_nscldaq::VX2750Pha::SyncOut_SynchIn</literal>,
+                                <literal>caen_nscldaq::VX2750Pha::SyncOut_TestPulse</literal>,
+                                <literal>caen_nscldaq::VX2750Pha::InternalClock</literal>
+                                or
+                                <literal>caen_nscldaq::VX2750Pha::SyncOut_Run</literal>.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>void  </type>
+                              <methodname>setSyncOutMode</methodname>
+                              <methodparam>
+                                  <type>SyncOutMode </type><parameter>mode</parameter>
+                              </methodparam>
+                              <modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Sets the source of the SYNC OUT NIM output.
+                                Valid values for <parameter>mode</parameter>
+                                have been listed above in the description
+                                for <methodname>getSyncOutMode</methodname>.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>VetoSource    </type>
+                              <methodname>getBoardVetoSource</methodname>
+                              <void /><modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Return the source of the board level trigger veto.
+                                The value retunred is of type
+                                <type>caen_nscldaq::VX2750Pha::VetoSource</type>
+                                which is an enumerated type with the following
+                                allowed values:
+                                <literal>caen_nscldaq::VX2750Pha::Veto_SIN</literal>,
+                                <literal>caen_nscldaq::VX2750Pha::Veto_LVDS</literal>,
+                                <literal>caen_nscldaq::VX2750Pha::Veto_GPIO</literal>,
+                                <literal>caen_nscldaq::VX2750Pha::Veto_P0</literal>,
+                                <literal>caen_nscldaq::VX2750Pha::Veto_EncodedClock</literal>,
+                                or <literal>caen_nscldaq::VX2750Pha::Veto_Disabled</literal>
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>void  </type>
+                              <methodname> setBoardVetoSource</methodname>
+                              <methodparam>
+                                  <type>VetoSource </type><parameter>src</parameter>
+                              </methodparam>
+                              <modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Select the board veto source.  The legal values for
+                                <parameter>src</parameter> are listed in the
+                                documentation for
+                                <methodname>getBoardVetoSource</methodname>.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>std::uint64_t </type>
+                              <methodname>getBoardVetoWidth</methodname>
+                              <void /><modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Returnth width of the number of ns the board level
+                                veto is stretched after the veto condition is removed.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term>
+                               <methodsynopsis>
+                                   <type>void   </type>
+                                   <methodname>setBoardVetoWidth</methodname>
+                                   <methodparam>
+                                       <type>std::uint64_t </type><parameter>ns</parameter>
+                                   </methodparam>
+                                   <modifier>const</modifier>
+                                </methodsynopsis>
+                           </term>
+                           <listitem>
+                               <para>
+                                Sets the number of nanoseconds the board veto
+                                is stretched after the veto condition is removed to
+                                <parameter>ns</parameter>.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>VetoPolarity  </type>
+                              <methodname>getBoardVetoPolarity</methodname>
+                              <void /><modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Returns the polarity of the board level veto.
+                                If the value is <literal>caen_nscldaq::VX2750Pha::ActiveHigh</literal>,
+                                the veto serves as an inhibit of the trigger.
+                                If the value is <literal>caen_nscldaq::VX2750Pha::ActiveLow</literal>,
+                                the veto serves as a gate for the board level trigger.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term>
+                                <methodsynopsis>
+                                   <type>void  </type>
+                                   <methodname>setBoardVetoPolarity</methodname>
+                                   <methodparam>
+                                       <type>VetoPolarity </type><parameter>pol</parameter>
+                                   </methodparam>
+                                </methodsynopsis>
+                           </term>
+                           <listitem>
+                               <para>
+                                Sets the polarity of the board veto source
+                                to <parameter>pol</parameter>. Possible values
+                                 are described in <methodname>getBoardVetoPolarity</methodname>
+                                 above.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>ChannelVetoSource </type>
+                              <methodname>getChannelVetoSource</methodname>
+                              <methodparam>
+                                  <type>unsigned</type><parameter>chan</parameter>
+                              </methodparam>
+                              <modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                In addition to a board level veto/gate, each channel
+                                has a veto/gate.  This method returns the source
+                                for the veto for channel <parameter>chan</parameter>.
+                                The type is <type>caen_nscldaq::VX2750Pha::ChannelVetoSource</type>
+                                which is an enumerated type with the following possible
+                                values:
+                                <literal>caen_nscldaq::VX2750Pha::BoardVeto</literal>,
+                                <literal>caen_nscldaq::VX2750Pha::OverSaturation</literal>,
+                                <literal>caen_nscldaq::VX2750Pha::Undersaturation</literal>,
+                                or <literal>caen_nscldaq::VX2750Pha::ChanVeto_Disabled</literal>.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                            <term>
+                                <methodsynopsis>
+                                   <type>void</type>
+                                   <methodname>setChannelVetoSource</methodname>
+                                   <methodparam>
+                                       <type>unsigned</type><parameter>chan</parameter>
+                                   </methodparam>
+                                   <methodparam>
+                                       <type>ChannelVetoSource</type><parameter>src</parameter>
+                                   </methodparam>
+                                   <modifier>const</modifier>
+                                </methodsynopsis>
+                            </term>
+                            <listitem>  
+                                <para>
+                                    Sets the veto source for channel
+                                    <parameter>chan</parameter> to be
+                                    <parameter>src</parameter>.  Valid values
+                                    for <parameter>src</parameter> are described
+                                    in the documentaiton for
+                                    <methodname>getChannelVeotSource</methodname>
+                                    above.
+                                </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term>
+                            <methodsynopsis>
+                               <type>std::uint32_t </type>
+                               <methodname>getChannelVetoWidth</methodname>
+                               <methodparam>
+                                   <type>unsigned</type><parameter>chan</parameter>
+                               </methodparam>
+                               <modifier>const</modifier>
+                            </methodsynopsis>
+                           </term>
+                           <listitem>
+                               <para>
+                                Each channel veto can be stretched a number of
+                                nanoseconds beyond when the veto condition ends.
+                                This method returns the stretch in nanoseconds of
+                                the veto from channel <parameter>chan</parameter>.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>void  </type>
+                              <methodname>setChannelVetoWidth</methodname>
+                              <methodparam>
+                                  <type>unsigned </type><parameter>chan</parameter>
+                              </methodparam>
+                              <methodparam>
+                                  <type>std::uint32_t</type><parameter> ns</parameter>
+                              </methodparam>
+                              <modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Sets the stretch for the veto for channel
+                                <parameter>chan</parameter> to
+                                <parameter>ns</parameter> nanoseconds.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>std::uint32_t </type>
+                              <methodname>getRunDelay</methodname>
+                              <void />
+                              <modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                When the start of run is controlled by a RUN
+                                signal that is propagated in daisy chain between
+                                the boards (for instance
+                                through the ClkIn-ClkOut or SIN-GPIO sync chain),
+                                it is necessary to compensate for the propagation
+                                delay in order for the
+                                boards to start exactly at the same time,
+                                since it is the start which zeroes the boards
+                                timestamp clock.
+                                The Run Delay parameter delays the start of the run
+                                given number of nanoseconds with respect to the
+                                rising edge of the RUN signal
+                               </para>
+                               <para>
+                                This method returns the run delay parameter in
+                                nanoseconds.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>void  </type>
+                              <methodname>setRunDelay</methodname>
+                              <methodparam>
+                                  <type>std::uint32_t </type><parameter>ns</parameter>
+                              </methodparam>
+                              <modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Sets the run start delay to
+                                <parameter>ns</parameter> nanoseconds.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>bool  </type>
+                              <methodname>isAutoDisarmEnabled</methodname>
+                              <void /> <modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                If external signals are used to start/stop
+                                acquisition, it may be necessary to disable
+                                restart until the software is ready.
+                                Auto disarm mode disarms the digitizer when the
+                                run stops making it insensitive to subsequent
+                                starts until re-armed.  This method
+                                retuns <literal>true</literal> if auto-disarm
+                                was enabled.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>void  </type>
+                              <methodname>setAutoDisarmEnabled</methodname>
+                              <methodparam>
+                                  <type>bool </type><parameter>state</parameter>
+                              </methodparam>
+                              <modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Sets the state of the digitizer auto-disam.
+                                If <parameter>state</parameter> is <literal>true</literal>,
+                                auto disarm is enabled.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term>
+                            <methodsynopsis>
+                               <type>std::unit32_t</type>
+                               <methodname>getLEDStatus</methodname>
+                               <void /> <modifier>const</modifier>
+                            </methodsynopsis>
+                           </term>
+                           <listitem>
+                               <para>
+                                Returns the state of the front panel LEDs.
+                                The bits in the returned mask have
+                                symbolic definition of the form:
+                                <literal>caen_nscldaq::VX2750Pha::LEDFP_xxxxx</literal>:
+                                <literal>LEDFP_JESD_Y_PASS = 1</literal>,
+                                <literal>LEDFP_JESD_H_PASS = 2</literal>,
+                                <literal>LEDFP_DDR4_0_PASS = 4</literal>,
+                                <literal>LEDFP_DDR4_1_PASS = 8</literal>,
+                                <literal>LEDFP_DDR4_2_PASS = 0x10</literal>,
+                                <literal>LEDFP_FAIL = 0x20</literal>,
+                                <literal>LEDFP_NIM = 0x40</literal>,
+                                <literal>LEDFP_TTL = 0x80</literal>,
+                                <literal>LEDFP_DTLOSS = 0x100</literal>,
+                                <literal>LEDFP_DTRDY  = 0x200</literal>,
+                                <literal>LEDFP_TRG = 0x400</literal>,
+                                <literal>LEDFP_RUN = 0x800</literal>,
+                                 <literal>LEDFP_PLL_LOCK  = 0x1000</literal>,
+                                 <literal>LEDFP_CLKOUT = 0x2000</literal>,
+                                 <literal>LEDFP_CLKIN     = 0x4000</literal>,
+                                 <literal>LEDFP_USB       = 0x8000</literal>,
+                                 <literal>LEDFP_SFP_SD    = 0x10000</literal>,
+                                 <literal>LEDFP_SFP_ACT   = 0x20000</literal>,
+                                 and <literal>LEDFP_ACT  = 0x40000</literal>
+                               </para>
+                            </listitem>
+                        </varlistentry>
                     </variablelist>
                 </refsect1>
                 <refsect1>
