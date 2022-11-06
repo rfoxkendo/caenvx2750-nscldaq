@@ -5921,6 +5921,421 @@ public:
                                </para>
                             </listitem>
                         </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>std::uint32_t </type>
+                              <methodname>getAcquisitionStatus</methodname>
+                              <void /><modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Returns a 32 bit mask that contains acquisition
+                                status bits.  The header defines several
+                                <literal>caen_nscldaq::VX2750Pha::ACQ_xxxx</literal>
+                                symbolic constants for the bits:
+                                <literal>ACQ_ARMED = 1</literal>,
+                                <literal>ACQ_RUN = 2</literal>,
+                                <literal>ACQ_RUN_MW = 4</literal>,
+                                <literal>ACQ_JESD_CLK_VALID = 8</literal>,
+                                <literal>ACQ_BUSY = 0x10</literal>,
+                                <literal>ACQ_PRETRIGGER_READY = 0x20</literal>,
+                                and <literal>ACQ_LICENSE_FAIL = 0x40</literal>.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>std::uint32_t </type>
+                              <methodname>getMaxRawDataSize</methodname>
+                              <void /><modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                This should be called after the raw endoint
+                                data format has been described.  It will return
+                                the size of the data buffer that should be
+                                declared to receive data from the raw endpoint.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type> double        </type>
+                              <methodname>getVolatileClockDelay</methodname>
+                              <void /> <modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Retrieves the current clock edge delay in picoseconds.
+                                This delay compensates for the phases drift in the
+                                clock daisy chain as the clock propagates from module
+                                to module.  
+                               </para>
+                               <para>
+                                Note that there are two clock delay parameters.  The
+                                volatile clock delay is delay currently in effect.
+                                It may differ from the permanent clock delay which
+                                is what is programmed in at board power up. One
+                                normally plays with the volatile clock delay until
+                                the clock phases are aligned on all boards and
+                                then, finally, sets the good value to be the
+                                new permanent clock delay so that the power up value
+                                of the clock delay is correct.
+                                </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>void  </type>
+                              <methodname>setVolatileClockDelay</methodname>
+                              <methodparam>
+                                  <type>double </type><parameter>value</parameter>
+                              </methodparam>
+                              <modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Sets the volatile clock delay parameter to
+                                <parameter>value</parameter> picoseconds.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>double        </type>
+                              <methodname>getPermanentClockDelay</methodname>
+                              <void /><modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Returns the clock delay that was programmed
+                                in at power up.  Units are picoseconds.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>void  </type>
+                              <methodname>setPermanentClockDelay</methodname>
+                              <methodparam>
+                                  <type>double</type><parameter> value</parameter>
+                              </methodparam><modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Programs the power up (permanent) clock delay
+                                to <parameter>value</parameter> picoseconds.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>WaveDataSource </type>
+                              <methodname>getWaveDataSource</methodname>
+                              <methodparam>
+                                  <type>unsigned </type><parameter>chan</parameter>
+                              </methodparam><modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                While normally the data into the DPP-PHA
+                                firmware is directly the digitized inputs to the
+                                 ADC, it is possible to program the digitizing
+                                 circuitry to use different data sources for
+                                 each channel.  This method
+                                 returns the DPP-PHA waveform input to channel
+                                 <parameter>chan</parameter>.
+                               </para>
+                               <para>
+                                The resturn value is one of the values
+                                of the enumerated type
+                                <type>caen_nscldaq::VX2750Pha::WaveDataSource</type>
+                                which can have one of the following values:
+                                <literal>caen_nscldaq::VX2750Pha::ADC_DATA</literal>,
+                                <literal>caen_nscldaq::VX2750Pha::ADC_TEST_TOGGLE</literal>,
+                                <literal>caen_nscldaq::VX2750Pha::ADC_TEST_RAMP</literal>,
+                                 <literal>caen_nscldaq::VX2750Pha::ADC_SIN</literal>,
+                                 <literal>caen_nscldaq::VX2750Pha::WaveSource_IPE</literal>,
+                                 <literal>caen_nscldaq::VX2750Pha::WaveSource_Ramp</literal>,
+                                 <literal>caen_nscldaq::VX2750Pha::SquareWave</literal>,
+                                 and
+                                 <literal>caen_nscldaq::VX2750Pha::WaveDataSource::ADC_TEST_PRBS</literal>
+                                </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>void  </type>
+                              <methodname>setWaveDataSource</methodname>
+                              <methodparam>
+                                  <type>unsigned </type><parameter>chan</parameter>
+                              </methodparam>
+                              <methodparam>
+                                  <type>WaveDataSource </type><parameter>source</parameter>
+                              </methodparam>
+                              <modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Selects the data source for the DPP-PHA firmware
+                                for channel <parameter>chan</parameter>
+                                to be <parameter>source</parameter>.  The
+                                <methodname>getWaveDataSource</methodname>
+                                method describes the valid values for
+                                <parameter>source</parameter>.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>std::uint32_t </type>
+                              <methodname>getRecordSamples</methodname>
+                              <methodparam>
+                                  <type>unsigned </type><parameter>chan</parameter>
+                              </methodparam>
+                              <modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Return the number of waveform samples that will be
+                                recorded on a trigger for channel <parameter>chan</parameter>.  This includes the samples
+                                prior to the trigger.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>void  </type>
+                              <methodname>setRecordSamples</methodname>
+                              <methodparam>
+                                  <type>unsigned </type><parameter>chan</parameter>
+                              </methodparam>
+                              <methodparam>
+                                  <type>std::uint32_t </type><parameter>samples</parameter>
+                              </methodparam>
+                              <modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Sets the totaln number of samples that will be
+                                recorded for channel <parameter>chan</parameter>
+                                to <parameter>samples</parameter>.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>std::uint32_t </type>
+                              <methodname>getRecordNs</methodname>
+                              <methodparam>
+                                  <type>unsigned</type><parameter> chan</parameter>
+                              </methodparam><modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Same as <methodname>getRecordSamples</methodname>,
+                                but the number of samples is converted to nanoseconds.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type> void </type>
+                              <methodname>setRecordNs</methodname>
+                              <methodparam>
+                                  <type>unsigned </type><parameter>chan</parameter>
+                              </methodparam>
+                              <methodparam>
+                                  <type>std::uint32_t </type><parameter>ns</parameter>
+                              </methodparam><modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Same as <methodname>setRecordSamples</methodname>
+                                but <parameter>ns</parameter> is the number of
+                                desired nanoseconds of waveform to record.
+                                This is converted to the nearest number of
+                                samples. Note that this means that calling this
+                                method and then
+                                calling <methodname>getRecordNs</methodname>
+                                may give slightly different value than the set value.
+                                
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>WaveResolution </type>
+                              <methodname>getWaveResolution</methodname>
+                              <methodparam>
+                                  <type>unsigned </type><parameter>chan</parameter>
+                              </methodparam><modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Returns the waveform resolution selected for channel
+                                <parameter>chan</parameter>.  The returned value
+                                is one of the valid values of the
+                                <type>caen_nscldaq::VX2750Pha::WaveResolution</type>
+                                enumerated data type.  The numbers in the symbols
+                                represent the resolution in nanoseconds.
+                                <literal>caen_nscldaq::VX2750Pha::Res8</literal>,
+                                <literal>caen_nscldaq::VX2750Pha::Res16</literal>,
+                                <literal>caen_nscldaq::VX2750Pha::Res32</literal>,
+                                or
+                                <literal>caen_nscldaq::VX2750Pha::Res64</literal>.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>void</type>
+                              <methodname>setWaveResolution</methodname>
+                              <methodparam>
+                                  <type>unsigned</type><parameter>chan</parameter>
+                              </methodparam>
+                              <methodparam>
+                                  <type>WaveResolution</type><parameter>resolution</parameter>
+                              </methodparam><modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Set the waveform resolution for channel
+                                <parameter>chan</parameter> to the
+                                resolution indicated by the value of
+                                <parameter>resolution</parameter>.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>AnalogProbe  </type>
+                              <methodname>getAnalogProbe</methodname>
+                              <methodparam>
+                                  <type>unsigned </type><parameter>chan</parameter>
+                              </methodparam>
+                              <methodparam>
+                                  <type>unsigned probeNum</type><parameter></parameter>
+                              </methodparam>
+                              <modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                In addition to the results of the DPP-PHA
+                                analysis of the captured waveform, an event can
+                                include zero, one or two
+                                <firstterm>analog probes</firstterm>.  This is
+                                waveform data that is included in the event.
+                               </para>
+                               <para>
+                                <methodname>getAnalogProbe</methodname>
+                                interrogates analog probe number
+                                <parameter>probeNum</parameter> for
+                                channel <parameter>chan</parameter>.
+                                The result is a value from the enumerated type
+                                <type>caen_nscldaq::VX2750Pha::AnalogProbe</type>:
+                                <literal>caen_nscldaq::VX2750Pha::ADCInput</literal>,
+                                <literal>caen_nscldaq::VX2750Pha::TimeFilter</literal>,
+                                <literal>caen_nscldaq::VX2750Pha::EnergyFilter</literal>,
+                                <literal>caen_nscldaq::VX2750Pha::EnergyFilterBaseline</literal>,
+                                <literal>caen_nscldaq::VX2750Pha::EnergyFilterMinusBaseline</literal>.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>void</type>
+                              <methodname>setAnalogProbe</methodname>
+                              <methodparam>
+                                  <type>unsigned</type><parameter>chan</parameter>
+                              </methodparam>
+                              <methodparam>
+                                  <type>unsigned</type><parameter>probeNum</parameter>
+                              </methodparam>
+                              <methodparam>
+                                  <type>AnalogProbe</type><parameter>probe</parameter>
+                              </methodparam><modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Sets analog probe number <parameter>probeNum</parameter>
+                                for channel <parameter>chan</parameter> to the
+                                probe selected by <parameter>probe</parameter>.
+                                See <methodname>getAnalogProbe</methodname> for
+                                a description of the
+                                <type>caen_nscldaq::VX2750Pha::AnalogProbe</type>
+                                data type.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term>
+                                <methodsynopsis>
+                                   <type>DigitalProbe  </type>
+                                   <methodname>getDigitalProbe</methodname>
+                                   <methodparam>
+                                       <type>unsigned chan</type><parameter></parameter>
+                                   </methodparam>
+                                   <methodparam>
+                                       <type>unsigned </type><parameter>probeNum</parameter>
+                                   </methodparam><modifier>const</modifier>
+                                </methodsynopsis>
+                                
+                           </term>
+                           <listitem>
+                               <para>
+                                Each event from a channel trigger can include
+                                up to 4 digital probes. A digital probe is just
+                                a set of boolean values aligned in time with
+                                input waveform values. Samples from a digital probe
+                                are represented by a single byte that contains
+                                either 0 or 1.
+                               </para>
+                               <para>
+                                This method returns the digital probe selected as
+                                probe number <parameter>probenum</parameter>
+                                for channel <parameter>chan</parameter>.
+                                The result is a member of the enumerated type:
+                                <type>caen_nscldaq::VX2750Pha::DigitalProbe</type>:
+                                <literal>caen_nscldaq::VX2750Pha::DProbe_Trigger</literal>,
+                                <literal>caen_nscldaq::VX2750Pha::TimeFilterArmed</literal>,
+                                <literal>caen_nscldaq::VX2750Pha::ReTriggerGuard</literal>,
+                                <literal>caen_nscldaq::VX2750Pha::EnergyFilterBaselineFreeze</literal>,
+                                <literal>caen_nscldaq::VX2750Pha::EnergyFilterPeaking</literal>,
+                                <literal>caen_nscldaq::VX2750Pha::EnergyFilterPeakReady</literal>,
+                                <literal>caen_nscldaq::VX2750Pha::EnergyFilterPileupGuard</literal>,
+                                <literal>caen_nscldaq::VX2750Pha::EventPileup</literal>,
+                                <literal>caen_nscldaq::VX2750Pha::ADCSaturation</literal>,
+                                <literal>caen_nscldaq::VX2750Pha::ADCSaturationProtection</literal>
+                                <literal>caen_nscldaq::VX2750Pha::PostSaturationEvent</literal>,
+                                <literal>caen_nscldaq::VX2750Pha::EnergyFilterSaturation</literal>,
+                                or <literal>caen_nscldaq::VX2750Pha::AcquisitionInhibit</literal>
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>void</type>
+                              <methodname>setDigitalProbe</methodname>
+                              <methodparam>
+                                  <type>unsined</type><parameter>chan</parameter>
+                              </methodparam>
+                              <methodparam>
+                                  <type>unsigned probenum</type><parameter></parameter>
+                              </methodparam>
+                              <methodparam>
+                                  <type>DigitalProbe</type><parameter>probe</parameter>
+                              </methodparam><modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Selects which digital probe, <parameter>probe</parameter>,
+                                will be used as probe number
+                                <parameter>probeNum</parameter> for channel number
+                                <parameter>chan</parameter>.
+                               </para>
+                            </listitem>
+                        </varlistentry>
                     </variablelist>
                 </refsect1>
                 <refsect1>
