@@ -129,11 +129,11 @@ public:
     
     // Led bit masks:
     
-    static const std::uint32_t LED_JESD_Y_PASS = 1;
-    static const std::uint32_t LED_JESD_H_PASS = 2;
-    static const std::uint32_t LED_DDR4_0_PASS = 4;
-    static const std::uint32_t LED_DDR4_1_PASS = 8;
-    static const std::uint32_t LED_DDR4_2_PASS = 0x10;
+    static const std::uint32_t LEDFP_JESD_Y_PASS = 1;
+    static const std::uint32_t LEDFP_JESD_H_PASS = 2;
+    static const std::uint32_t LEDFP_DDR4_0_PASS = 4;
+    static const std::uint32_t LEDFP_DDR4_1_PASS = 8;
+    static const std::uint32_t LEDFP_DDR4_2_PASS = 0x10;
     static const std::uint32_t LEDFP_FAIL      = 0x20;
     static const std::uint32_t LEDFP_NIM       = 0x40;
     static const std::uint32_t LEDFP_TTL       = 0x80;
