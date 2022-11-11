@@ -679,12 +679,13 @@ void set_tracing(bool onoff) {   // always legal but no-op if no tracing compile
             daqlog::trace(logmsg);
         }
 #endif
-        if (status == CAEN_FELib_Timeout) return false;
         // Note that in addition to timeout (got nothing yet) and success,
         // if the digitizer has been stopped and we're doing the last read
         // we'll get Stop.
         
-        if((status != CAEN_FELib_Success) && (status != CAEN_FELib_Stop)) {
+
+        if ((status == CAEN_FELib_Timeout ) ||  (status != CAEN_FELib_Stop)) return false;
+                if((status != CAEN_FELib_Success) ) {
             std::stringstream strMessage;
             strMessage << "ReadData failed: " << lastError();
             std::string msg = strMessage.str();
