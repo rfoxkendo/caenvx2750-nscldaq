@@ -1902,7 +1902,7 @@ static const std::map<VX2750Pha::Endpoint, std::string> endpointToString = {
     VX2750Pha::getFanSpeed(unsigned fan) const
     {
         checkInclusiveRange(0,1, fan);
-        std::string paramName = appendNumber("SpeedSensFan", fan);
+        std::string paramName = appendNumber("SpeedSensFan", fan+1);  // called 1/2 by CAEN.
         return GetDeviceInteger(paramName.c_str());
     }
     /**
