@@ -6336,6 +6336,406 @@ public:
                                </para>
                             </listitem>
                         </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>std::uint32_t </type>
+                              <methodname>getPreTriggerSamples</methodname>
+                              <methodparam>
+                                  <type>unsigned</type><parameter> chan</parameter>
+                              </methodparam><modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Returns the number of samples that will be collected
+                                prior to the trigger
+                                from channel <parameter>chan</parameter> and submitted to the DPP-PHA
+                                firmware.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>void  </type>
+                              <methodname>setPreTriggerSamples</methodname>
+                              <methodparam>
+                                  <type>unsigned </type><parameter>chan</parameter>
+                              </methodparam>
+                              <methodparam>
+                                  <type>std::uint32_t </type><parameter>nsamples</parameter>
+                              </methodparam><modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Sets the number of samples that will be collected
+                                prior to the trigger of channel <parameter>chan</parameter>
+                                to <parameter>nsamples</parameter>.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>std::uint32_t </type>
+                              <methodname>getPreTriggerNs</methodname>
+                              <methodparam>
+                                  <type>unsigned </type><parameter>chan</parameter>
+                              </methodparam><modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Same as <methodname>getPreTriggerSamples</methodname>,
+                                but the number of samples is converted to
+                                nanosecond units.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>void  </type>
+                              <methodname>setPreTriggerNs</methodname>
+                              <methodparam>
+                                  <type>unsigned </type><parameter>chan</parameter>
+                              </methodparam>
+                              <methodparam>
+                                  <type>std::uint32_t </type><parameter>ns</parameter>
+                              </methodparam><modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Same as <methodname>setPreTriggerSamples</methodname>
+                                but <parameter>ns</parameter> are converted from
+                                nanosecond to the nearest number of samples.
+                                Note that the actual number of nanoseconds
+                                pretrigger will can be gotten using
+                                <methodname>getPreTriggerNs</methodname>.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>std::uint64_t </type>
+                              <methodname>getTestPulsePeriod</methodname>
+                              <void /> <modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Return the period of the test pulser in nanoseconds.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>void  </type>
+                              <methodname>setTestPulsePeriod</methodname>
+                              <methodparam>
+                                  <type>std::uint64_t</type><parameter> ns</parameter>
+                              </methodparam><modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Set the test pulser period to <parameter>ns</parameter>
+                                nanoseconds.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>std::uint64_t </type>
+                              <methodname>getTestPulseWidth</methodname>
+                              <void /><modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Returns the test pulser pulse width in
+                                nanoseconds.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type> void </type>
+                              <methodname>setTestPulseWidth</methodname>
+                              <methodparam>
+                                  <type>std::uint64_t</type><parameter> ns</parameter>
+                              </methodparam><modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Set the test pulse pulse width to
+                                <parameter>ns</parameter> nanoseconds.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>std::uint32_t</type>
+                              <methodname> getTestPulseLowLevel</methodname>
+                              <void /><modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Returns the low level of the test pulser in
+                                FADC units (0-65535).
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>void   </type>
+                              <methodname>setTestPulseLowLevel</methodname>
+                              <methodparam>
+                                  <type>std::uint32_t </type><parameter>counts</parameter>
+                              </methodparam><modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Set the test pulser low level to
+                                <parameter>counts</parameter> FDAC units.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>std::uint32_t</type>
+                              <methodname> getTestPulseHighLevel</methodname>
+                              <void /><modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Returns the high level of the test pulser in
+                                FADC units (0-65535).
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>void   </type>
+                              <methodname>setTestPulseHighLevel</methodname>
+                              <methodparam>
+                                  <type>std::uint32_t </type><parameter>counts</parameter>
+                              </methodparam><modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Set the test pulser high level to
+                                <parameter>counts</parameter> FDAC units.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>IOLevel  </type>
+                              <methodname>getIOLevel</methodname>
+                              <void /> <modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Return the NIM connector signalling levels.
+                                The return value is of the enumerated type
+                                <type>caen_nscldaq::VX2750Pha::IOLevel</type>
+                                and can be one of
+                                <literal>caen_nscldaq::VX2750Pha::TTL</literal>
+                                or
+                                <literal>caen_nscldaq::VX2750Pha::NIM</literal>.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>void  </type>
+                              <methodname>setIOLevel</methodname>
+                              <methodparam>
+                                  <type>IOLevel </type><parameter>level</parameter>
+                              </methodparam><modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Sets the I/O signalling level of the front panel
+                                NIM connectors.  See
+                                <methodname>getIOLevel</methodname> for legal
+                                values of <parameter>level</parameter>.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>double</type>
+                              <methodname>getAirInTemp</methodname>
+                              <void /><modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Returns the temperature in C at the board air intake.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>double </type>
+                              <methodname>getAirOutTemp</methodname>
+                              <void /><modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Returns the temperature in C at the board outflow.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>double</type>
+                              <methodname>getCoreTemp</methodname>
+                              <void /><modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Returns the temperature at the FPGA core.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>double</type>
+                              <methodname>getFirstADCTemp</methodname>
+                              <void /><modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Returns the temperature of the first ADC along
+                                the airflow
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>double</type>
+                              <methodname>getLastADCTemp</methodname>
+                              <void /><modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Returns the temperature of the last ADC along the
+                                airflow.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>double</type>
+                              <methodname>getHottestADCTemp</methodname>
+                              <void /><modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Returns the temperature of the hottest ADC.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>double</type>
+                              <methodname>getADCTemp</methodname>
+                              <methodparam>
+                                  <type>unsigned</type><parameter>chip</parameter>
+                              </methodparam><modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Returns the temperature at the specified ADC ship.
+                                <parameter>chip</parameter> is in the inclusive
+                                range 0-7.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>double</type>
+                              <methodname>getDCDCConverterTemp</methodname>
+                              <void /><modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Returns the temperature at the DC-DC converter.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type> double </type>
+                              <methodname>getDCDCConverterInputVoltage</methodname>
+                              <void /><modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Return the input voltage (in volts) to the
+                                board's DC-DC converter.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>double  </type>
+                              <methodname>getDCDCConverterOutputVoltage</methodname>
+                              <void /><modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Return the DC-DC converter output voltage in volts.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>double </type>
+                              <methodname>getDCDCConverterAmps</methodname>
+                              <void /><modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Returns the current output of the DC-DC converter in
+                                amps.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>double  </type>
+                              <methodname>getDCDCConverterHz</methodname>
+                              <void /><modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Return the DC-DC converter frequency in Hz.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type> double</type>
+                              <methodname>getDCDCConverterDutyCycle</methodname>
+                              <void /><modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Returns the DC-DC converter duty factor in percentage.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>std::uint32_t </type>
+                              <methodname>getFanSpeed</methodname>
+                              <methodparam>
+                                  <type>unsigned</type><parameter> fan</parameter>
+                              </methodparam>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Returns the speed, in RPM of fan number
+                                <parameter>fan</parameter>.  Ther are two fans,
+                                0, and 1.
+                               </para>
+                            </listitem>
+                        </varlistentry>
                     </variablelist>
                 </refsect1>
                 <refsect1>
