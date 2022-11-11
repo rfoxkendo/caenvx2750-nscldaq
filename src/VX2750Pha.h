@@ -147,7 +147,7 @@ public:
     static const std::uint32_t LEDFP_USB       = 0x8000;
     static const std::uint32_t LEDFP_SFP_SD    = 0x10000;
     static const std::uint32_t LEDFP_SFP_ACT   = 0x20000;
-    static const std::uint32_t LEDFP_act       = 0x40000;
+    static const std::uint32_t LEDFP_ACT       = 0x40000;
     
     // Acquisition status bit mask:
     
