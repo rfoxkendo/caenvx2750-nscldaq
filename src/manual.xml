@@ -6736,6 +6736,1393 @@ public:
                                </para>
                             </listitem>
                         </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>std::uint32_t </type>
+                              <methodname>getErrorFlagMask</methodname>
+                              <void /><modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Return the value of the mask which, when ORd
+                                with the actual error conditions determines the
+                                error flag LEDs that are lit on the front panel.
+                                The bits for this mask are defined symbolically
+                                as:
+                               </para>
+                               <para>
+                               <literal>caen_nscldaq::VX2750Pha::ERR_power_fail</literal>,
+                               <literal>caen_nscldaq::ERR_board_init_fault</literal>,
+                               <literal>caen_nscldaq::ERR_si5341_unlock </literal>,
+                               <literal>caen_nscldaq::ERR_si5395_unlock</literal>,
+                               <literal>caen_nscldaq::ERR_LMK04832_unlock</literal>,
+                               <literal>caen_nscldaq::ERR_jesd_unlock</literal>,
+                               <literal>caen_nscldaq::ERR_ddr_pl_bank0_calib_fail</literal>,
+                               <literal>caen_nscldaq::ERR_ddr_pl_bank1_calib_fail</literal>,
+                               <literal>caen_nscldaq::ERR_ddr_ps_calib_fail</literal>,
+                               <literal>caen_nscldaq::ERR_fpga_config_fail</literal>,
+                               <literal>caen_nscldaq::ERR_bic_error</literal>,
+                               <literal>caen_nscldaq::ERR_adc_overtemp</literal>,
+                               <literal>caen_nscldaq::ERR_air_overtemp</literal>,
+                               <literal>caen_nscldaq::ERR_fpga_overtemp</literal>,
+                                <literal>caen_nscldaq::ERR_dcdc_overtemp</literal>,
+                                <literal>caen_nscldaq::ERR_clkin_miss</literal>,
+                                <literal>caen_nscldaq::ERR_adc_shutdown</literal>,
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>void</type>
+                              <methodname>setErrorFlagMask</methodname>
+                              <methodparam>
+                                  <type>std::uint32_t</type><parameter>mask</parameter>
+                              </methodparam><modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Set the value of the error flag mask.  See
+                                <methodname>getErrorFlagMask</methodname> for
+                                the symbolic bit definitions.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>std::uint32_t </type>
+                              <methodname>getErrorFlagDataMask</methodname>
+                              <void /><modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Fetches the value of the error flag data mask.
+                                This serves the same purpose as the error flag mask,
+                                except that it determines, along with the actual
+                                error flags, the value of the error bits in the
+                                data.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>void  </type>
+                              <methodname>setErrorFlagDataMask</methodname>
+                              <methodparam>
+                                  <type>std::uint32_t </type><parameter>mask</parameter>
+                              </methodparam><modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Sets the value of the error flag data mask.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>std::uint32_t </type>
+                              <methodname>getErrorFlags</methodname>
+                              <void /><modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Returns the actual value of the bits that define
+                                error conditions within the module.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>bool  </type>
+                              <methodname>isBoardReady</methodname>
+                              <void /><modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Returns <literal>true</literal>
+                                if the board has no error flags set.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>IndividualTriggerLogic </type>
+                              <methodname>getITLAMainLogic</methodname>
+                              <void /><modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                The module has two trigger logic blocks. ITLA
+                                and ITLB.  This retrieves the trigger setting
+                                for ITLA.  The reusult is a memboer if the enumerated
+                                type <type>caen_nscldaq:VX2750Pha::IndividualTriggerLogic</type>
+                                which can have the values:
+                                <literal>caen_nscldaq:VX2750Pha::ITL_OR</literal>,
+                                <literal>caen_nscldaq:VX2750Pha::ITL_AND</literal>,
+                                or <literal>caen_nscldaq:VX2750Pha::ITL_Majority</literal>.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>IndividualTriggerLogic </type>
+                              <methodname>getITLAMainLogic</methodname>
+                              <void /><modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Returns the trigger setting for ITLB.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                                <type>void  </type>
+                                <methodname>setITLAMainLogic</methodname>
+                                <methodparam>
+                                    <type>IndividualTriggerLogic </type><parameter>sel</parameter>
+                                </methodparam><modifier>const</modifier>
+                             </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Selects the trigger setting of ITLA to
+                                <parameter>sel</parameter>
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                                <type>void  </type>
+                                <methodname>setITLBMainLogic</methodname>
+                                <methodparam>
+                                    <type>IndividualTriggerLogic </type><parameter>sel</parameter>
+                                </methodparam><modifier>const</modifier>
+                             </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Selects the trigger setting of ITLB to
+                                <parameter>sel</parameter>
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type> unsigned  </type>
+                              <methodname>getITLAMajorityLevel</methodname>
+                              <void /> <modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Returns the majority level setting of the ITLA
+                                block.  This only has meaning if ITLA has been
+                                set to <literal>caen_nscldaq:VX2750Pha::ITL_Majority</literal>
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type> unsigned  </type>
+                              <methodname>getITLBMajorityLevel</methodname>
+                              <void /> <modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Returns the majority level setting of the ITLB
+                                block.  This only has meaning if ITLB has been
+                                set to <literal>caen_nscldaq:VX2750Pha::ITL_Majority</literal>
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>void  </type>
+                              <methodname>setITLAMajorityLevel</methodname>
+                              <methodparam>
+                                  <type>unsigned </type><parameter>level</parameter>
+                              </methodparam><modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Sets the majority level for ITLA.  This only has
+                                meaning if ITLA has been set to
+                                <literal>caen_nscldaq:VX2750Pha::ITL_Majority</literal>.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>void  </type>
+                              <methodname>setITLBMajorityLevel</methodname>
+                              <methodparam>
+                                  <type>unsigned </type><parameter>level</parameter>
+                              </methodparam><modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Sets the majority level for ITLB.  This only has
+                                meaning if ITLB has been set to
+                                <literal>caen_nscldaq:VX2750Pha::ITL_Majority</literal>.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>PairTriggerLogic </type>
+                              <methodname>getITLAPairLogic</methodname>
+                              <void /><modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Adjacent pairs of channel trigger inputs to the
+                                ITLA/ITLB logic blocks can be grouped together
+                                via a logical function.  This method returns
+                                the pair logic setting of the channel trigger
+                                inputs to ITLA.  Valid values come from the
+                                <type>caen_nscldaq:VX2750Pha::PairTriggerLogic</type>
+                                enumerated type:
+                                <literal>caen_nscldaq:VX2750Pha::PTL_AND</literal>,
+                                the two inputs for the adjacent channels both
+                                reflect the boolean and of the channels themselves.
+                                <literal>caen_nscldaq:VX2750Pha::PTL_OR</literal>,
+                                if either input is triggered, both inputs to the
+                                logic block trigger.
+                                <literal>caen_nscldaq:VX2750Pha::NONE</literal>.
+                                THe individual channel triggers in the pair
+                                are passed un-modifed to the logic block.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>PairTriggerLogic </type>
+                              <methodname>getITLBPairLogic</methodname>
+                              <void /><modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Same as <methodname>getITLAPairLogic</methodname>
+                                but for ITLB.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>void  </type>
+                              <methodname>setITLAPairLogic</methodname>
+                              <methodparam>
+                                  <type>PairTriggerLogic </type><parameter>sel</parameter>
+                              </methodparam>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Programs the channel par logic for ITLA to
+                                <parameter>sel</parameter>
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>void  </type>
+                              <methodname>setITLBPairLogic</methodname>
+                              <methodparam>
+                                  <type>PairTriggerLogic </type><parameter>sel</parameter>
+                              </methodparam>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Programs the channel par logic for ITLB to
+                                <parameter>sel</parameter>
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>bool </type>
+                              <methodname>isITLAInverted</methodname>
+                              <void /><modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Returns <literal>true</literal> if the sense of
+                                the ITLA output is inverted, that is asserted when
+                                there is no trigger condition.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                         <varlistentry>
+                           <term><methodsynopsis>
+                              <type>bool </type>
+                              <methodname>isITLBInverted</methodname>
+                              <void /><modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Returns <literal>true</literal> if the sense of
+                                the ITLB output is inverted, that is asserted when
+                                there is no trigger condition.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                            <term>
+                                <methodsynopsis>
+                                    <type>void</type><methodname>setITLAInverted</methodname>
+                                    <methodparam>
+                                        <type>bool </type><parameter>invert</parameter>
+                                    </methodparam><modifier>const</modifier>
+                                </methodsynopsis>
+                            </term>
+                            <listitem>
+                                <para>
+                                    If <parameter>invert</parameter> is
+                                    <literal>true</literal> then the ITLA output
+                                    will be inverted.
+                                </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                            <term>
+                                <methodsynopsis>
+                                    <type>void</type><methodname>setITLBInverted</methodname>
+                                    <methodparam>
+                                        <type>bool </type><parameter>invert</parameter>
+                                    </methodparam><modifier>const</modifier>
+                                </methodsynopsis>
+                            </term>
+                            <listitem>
+                                <para>
+                                    If <parameter>invert</parameter> is
+                                    <literal>true</literal> then the ITLB output
+                                    will be inverted.
+                                </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type> ITLConnect    </type>
+                              <methodname>getITLConnect</methodname>
+                              <methodparam>
+                                  <type>unsigned</type><parameter> ch</parameter>
+                              </methodparam><modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                The internal trigger logic blocks have channel by
+                                channel inputs.   This determines how a channel is
+                                connected to those logic blocks.
+                                <parameter>chan</parameter>.  Results are
+                                from the enumerated type:
+                                <type>caen_nscldaq::VX2750Pha::ITLConnect</type>
+                                and can have one of the values:
+                                <literal>caen_nscldaq::VX2750Pha::ITL_Disabled</literal>,
+                                <literal>caen_nscldaq::VX2750Pha::ITL_ITLA</literal>,
+                                <literal>caen_nscldaq::VX2750Pha::ITL_ITLB</literal>.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>void   </type>
+                              <methodname>setITLConnect</methodname>
+                              <methodparam>
+                                  <type>unsigned </type><parameter>ch</parameter>
+                              </methodparam>
+                              <methodparam>
+                                  <type>ITLConnect </type><parameter>selection</parameter>
+                              </methodparam><modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Sets the ITL connection for channel
+                                <parameter>ch</parameter> to
+                                <parameter>selection</parameter>.
+                                For more, see the description of
+                                <methodname>getITLConnect</methodname>.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>std::uint64_t </type>
+                              <methodname>getITLAMask</methodname>
+                              <void /><modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Rather than using the ITLConnect methods, it is
+                                possible to set masks for ITLA and ITLB
+                                that determine which channels participate in each
+                                trigger logic block.  Use of the trigger ITLMasks
+                                or ITLConnections are mutually exclusive.  Use only one.
+                               </para>
+                               <para>
+                                This method returns the 64 bit channel mask for ITLA
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>std::uint64_t </type>
+                              <methodname>getITLBMask</methodname>
+                              <void /><modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Returns the channel input mask for ITLB.
+                               </para>
+                           </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>void   </type>
+                              <methodname>setITLAMask</methodname>
+                              <methodparam>
+                                  <type>std::uint64_t </type><parameter>mask</parameter>
+                              </methodparam>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Sets the 64 bit channel input mask for ITLA.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>void   </type>
+                              <methodname>setITLBMask</methodname>
+                              <methodparam>
+                                  <type>std::uint64_t </type><parameter>mask</parameter>
+                              </methodparam>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Sets the 64 bit channel input mask for ITLB.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>std::uint32_t </type>
+                              <methodname>getITLAGateWidth</methodname>
+                              <void /><modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                The optput of the ITL logic blocks can be stretched.
+                                This returns the length of the ITLA output in
+                                nanoseconds.  Note that the granularity of this
+                                gate width is 8ns units.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>std::uint32_t </type>
+                              <methodname>getITLBGateWidth</methodname>
+                              <void /><modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                The optput of the ITL logic blocks can be stretched.
+                                This returns the length of the ITLB output in
+                                nanoseconds.  Note that the granularity of this
+                                gate width is 8ns units.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>void  </type>
+                              <methodname>setITLAGateWidth</methodname>
+                              <methodparam>
+                                  <type>std::uint32_t </type><parameter>ns</parameter>
+                              </methodparam>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Sets the ITLA gate width to <parameter>ns</parameter>
+                                nanoseconds.  Note that the actual gate width granularity is
+                                8ns units.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>void  </type>
+                              <methodname>setITLBGateWidth</methodname>
+                              <methodparam>
+                                  <type>std::uint32_t </type><parameter>ns</parameter>
+                              </methodparam>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Sets the ITLB gate width to <parameter>ns</parameter>
+                                nanoseconds.  Note that the actual gate width granularity is
+                                8ns units.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>LVDSMode </type>
+                              <methodname>getLVDSMode</methodname>
+                              <methodparam>
+                                  <type>unsigned </type><parameter>quartet</parameter>
+                              </methodparam><modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                The module has 16 LVDS general purpose I/O pins.
+                                The use of these can be programmed in four pin units
+                                (or quartets).  This returns the functionality selected
+                                for quarted <parameter>quartet</parameter>.
+                               </para>
+                               <para>
+                                Valid values are from the enumerated type
+                                <type>caen_nscldaq::VX2750Pha::LVDSMode</type>
+                                which can have any of the following values:
+                                <literal>caen_nscldaq::VX2750Pha::SelfTriggers</literal>
+                                <literal>caen_nscldaq::VX2750Pha::Sync</literal>,
+                                or
+                                <literal>caen_nscldaq::VX2750Pha::IORegister</literal>.
+                               </para>
+                               <para>
+                                When used in <literal>SelfTriggers</literal> mode,
+                                see <methodname>setLVDSTriggerMask</methodname>.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>void  </type>
+                              <methodname>setLVDSMode</methodname>
+                              <methodparam>
+                                  <type>unsigned </type><parameter>quartet</parameter>
+                              </methodparam>
+                              <methodparam>
+                                  <type>LVDSMode </type><parameter>mode</parameter>
+                              </methodparam>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Sets the mode of the four LVDS pins selected by
+                                <parameter>quartet</parameter> to
+                                <parameter>mode</parameter>.
+                                See <methodname>getLVDSMode</methodname> for more.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>LVDSDirection </type>
+                              <methodname>getLVDSDirection</methodname>
+                              <methodparam>
+                                  <type>unsigned </type><parameter>quartet</parameter>
+                              </methodparam><modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Returns the directionality if the <parameter>quartet</parameter>
+                                of pins. This can be one of:
+                                <literal>caen_nscldaq::VX2750Pha::Input</literal>
+                                or
+                                <literal>caen_nscldaq::VX2750Pha::Output</literal>
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>void          </type>
+                              <methodname>setLVDSDirection</methodname>
+                              <methodparam>
+                                  <type>unsigned </type><parameter>quartet</parameter>
+                              </methodparam>
+                              <methodparam>
+                                  <type>LVDSDirection </type><parameter>direction</parameter>
+                              </methodparam><modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Sets the directionality of LVDS
+                                <parameter>quartet</parameter> to <parameter>direction</parameter>.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>std::uint16_t </type>
+                              <methodname>getLVDSIOReg</methodname>
+                              <void /><modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Returns the I/O register bits of the LVDS.
+                                Note that the only meaningful bits are those for
+                                quartets in which the LVDS pins have been set to be
+                                <literal>caen_nscldaq::VX2750Pha::IORegister</literal>.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>void  </type>
+                              <methodname>setLVDSIOReg</methodname>
+                              <methodparam>
+                                  <type>std::uint16_t</type><parameter> mask</parameter>
+                              </methodparam><modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Sets the I/O register for the LVDS. This
+                                only has meaning for bits in quartets that have
+                                been set to
+                                <literal>caen_nscldaq::VX2750Pha::IORegister</literal>
+                                and the direction
+                                <literal>caen_nscldaq::VX2750Pha::Output</literal>
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>std::uint64_t </type>
+                              <methodname>getLVDSTriggerMask</methodname>
+                              <methodparam>
+                                  <type>unsigned </type><parameter>inputNum</parameter>
+                              </methodparam><modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Pins in quartets programmed as
+                                <literal>caen_nscldaq::VX2750Pha::SelfTriggers</literal>,
+                                have associated with them a trigger mask.
+                                The pin will show the boolean or of all triggers for all
+                                channels in that trigger mask.
+                               </para>
+                               <para>
+                                This returns the tigger mask for pin number
+                                <parameter>inputNum</parameter>.  Note that these
+                                pins are outputs and you can think of
+                                <parameter>inputNum</parameter> representing
+                                inputs to the register that drives those pins.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>void  </type>
+                              <methodname>setLVDSTriggerMask</methodname>
+                              <methodparam>
+                                  <type>unsigned </type><parameter>inputNum</parameter>
+                              </methodparam>
+                              <methodparam>
+                                  <type>std::uint64_t </type><parameter>mask</parameter>
+                              </methodparam><modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Sets the trigger mask for pin number
+                                <parameter>inputNum</parameter> to
+                                <parameter>mask</parameter>.  This is only
+                                meaningful if the quartet <parameter>inputNum</parameter>
+                                is a member of is  programmed to be self triggers
+                                and is an output.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>void </type>
+                              <methodname>setDACOutMode</methodname>
+                              <methodparam>
+                                  <type>DACOutputMode</type><parameter>mode</parameter>
+                              </methodparam><modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                The board as a DAC with an output on the front
+                                panel.  This method selects the input to the DAC.
+                                <parameter>mode</parameter> is of the enumerated type
+                                <type>caen_nscldaq::VX2750Pha::DACOutputMode</type>
+                                which can be one of the following values:
+                                <literal>caen_nscldaq::VX2750Pha::Static</literal>
+                                <literal>caen_nscldaq::VX2750Pha::DACOut_IPE</literal>
+                                <literal>caen_nscldaq::VX2750Pha::DACOut_ChInput</literal>
+                                <literal>caen_nscldaq::VX2750Pha::MemOccupancy</literal>
+                                <literal>caen_nscldaq::VX2750Pha::ChSum</literal>
+                                <literal>caen_nscldaq::VX2750Pha::OverThrSum</literal>
+                                <literal>caen_nscldaq::VX2750Pha::DACOut_Ramp</literal>
+                                <literal>caen_nscldaq::VX2750Pha::Sine5MHz</literal>
+                                <literal>caen_nscldaq::VX2750Pha::Square</literal>
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>DACOutputMode </type>
+                              <methodname>getDACOutMode</methodname>
+                              <void /><modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Returns the selected DAC output mode.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>std::uint16_t </type>
+                              <methodname>getDACOutValue</methodname>
+                              <void /><modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                If the DAC output mode is
+                                <literal>Static</literal> returns the value
+                                set as the input to the DAC
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>void  </type>
+                              <methodname>setDACOutValue</methodname>
+                              <methodparam>
+                                  <type>std::uint16_t </type><parameter>value</parameter>
+                              </methodparam><modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Sets the value of the input to the DAC when it is
+                                set in <literal>Static</literal> mode.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>unsigned </type>
+                              <methodname> getDACChannel</methodname>
+                              <void /><modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Returns the channel selected when the DAC mode
+                                is <literal>DACOut_ChInput</literal>
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>void   </type>
+                              <methodname>setDACChannel</methodname>
+                              <methodparam>
+                                  <type>unsigned</type><parameter> chan</parameter>
+                              </methodparam><modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Sets the channel to be monitored by the DAC
+                                when the mode is <literal>DACOUt_ChInput</literal>.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>double       </type>
+                              <methodname> getVGAGain</methodname>
+                              <methodparam>
+                                  <type>unsigned </type><parameter>group</parameter>
+                              </methodparam><modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                The 2745 digitizers have a
+                                set of variable gain amplifiers.  Each amplifier
+                                applies its gain to a gropu of 16 channels.  The
+                                gain values are floating point numbers in the range
+                                0-40.0.  This method returns the gain set
+                                for a <parameter>group</parameter> of channels.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>void   </type>
+                              <methodname>setVGAGain</methodname>
+                              <methodparam>
+                                  <type>unsigned </type><parameter>group</parameter>
+                              </methodparam>
+                              <methodparam>
+                                  <type>double</type><parameter> value</parameter>
+                              </methodparam><modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Sets the gain of the variable gain amplifier
+                                for the <parameter>group</parameter> of 16 channels
+                                to <parameter>value</parameter>.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>bool  </type>
+                              <methodname>isOffsetCalibrationEnabled</methodname>
+                              <void /><modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                The input DCoffset that determines the position
+                                of the signal baseline (zero volt) is controlled
+                                by individual channel DACs.
+                                Due to the tolerance of the components, there is
+                                some spread in the offset setting that is
+                                compensated by the offset
+                                calibration. This is normally enabled and
+                                automatically applied in the firmware of the
+                                board. The calibration can be
+                                disabled;   This method returns
+                                <literal>true</literal> if that is the case.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>void  </type>
+                              <methodname>enableOffsetCalibration</methodname>
+                              <methodparam>
+                                  <type>bool</type><parameter> enable</parameter>
+                              </methodparam><modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                If <parameter>enable</parameter> is
+                                <literal>true</literal>, disables the DC offset
+                                calibration.  Otherwise this calibration is enabled.
+                                The most normal reason to do this is to determine
+                                a new calibration fucnction as is done at the
+                                factory.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>bool  </type>
+                              <methodname> isChannelEnabled</methodname>
+                              <methodparam>
+                                  <type>unsigned </type><parameter>chan</parameter>
+                              </methodparam><modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Returns <literal>true</literal> if channel number
+                                <parameter>chan</parameter> is enabled.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>void  </type>
+                              <methodname>enableChannel</methodname>
+                              <methodparam>
+                                  <type>unsigned </type><parameter>chan</parameter>
+                              </methodparam>
+                              <methodparam>
+                                  <type>bool </type><parameter>enable</parameter>
+                              </methodparam><modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Sets the enable state of channel number
+                                <parameter>chan</parameter>.  If
+                                <parameter>enable</parameter> is
+                                <literal>true</literal> the channel is enabled.
+                                if not it is disabled.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>int   </type>
+                              <methodname>getSelfTriggerRate</methodname>
+                              <methodparam>
+                                  <type>unsigned </type><parameter>chan</parameter>
+                              </methodparam><modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Returns the self trigger rate of channel
+                                <parameter>chan</parameter> in Hz.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>std::uint32_t </type>
+                              <methodname>getChannelStatus</methodname>
+                              <methodparam>
+                                  <type>unsigned </type><parameter>chan</parameter>
+                              </methodparam><modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Returns the channel status mask.  Bits in this mask
+                                are defined symbolically by the
+                                <type>caen_nscldaq::VX2750Pha::</type><literal>CHST_xxxx</literal>
+                                sybmols in the <filename>VX2750Pha.h</filename>
+                                header file.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>double </type>
+                              <methodname>getDCOffset</methodname>
+                              <methodparam>
+                                  <type>unsigned </type><parameter>chan</parameter>
+                              </methodparam><modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Returns the DC offset applied to the input of
+                                channel number <parameter>chan</parameter>.  The
+                                offset value is returned in percentae of full-scale.
+                                The granularity is that of a 16 bit DAC.
+                                Note that if the offset calibration is enabled
+                                (normal), it is applied to linearize the DAC.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>void  </type>
+                              <methodname>setDCOffset</methodname>
+                              <methodparam>
+                                  <type>unsigned </type><parameter>chan</parameter>
+                              </methodparam>
+                              <methodparam>
+                                  <type>double </type><parameter>pct</parameter>
+                              </methodparam><modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Sets the DC offset for channel number
+                                <parameter>chan</parameter> to
+                                <parameter>pct</parameter> of full scale.
+                                If the DC offset calibration is enabled, it is
+                                applied to linearize the DAC output that applies the
+                                DC Offset.  The granularity of the <parameter>pct</parameter>
+                                parameter is that of a 16 bit ADC.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>double </type>
+                              <methodname>getGainFactor</methodname>
+                              <methodparam>
+                                  <type>unsigned</type><parameter> chan</parameter>
+                              </methodparam><modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Read the gain calibration value for the ADC associated
+                                with channel <parameter>chan</parameter>.
+                                This value is stored in internal flash memory
+                                and is determined at factory setup time.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>std::uint32_t </type>
+                              <methodname>getTriggerThreshold</methodname>
+                              <methodparam>
+                                  <type>unsigned</type><parameter> chan</parameter>
+                              </methodparam><modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Returns the trigger threshold for channel
+                                <parameter>chan</parameter>.  Note that this is
+                                applied to bipolar signal that is the output of
+                                the fast triangular filter.  The actual threshold
+                                arms the trigger which then
+                                actually fires on the zero crossing
+                                of the triangular filter output.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>void  </type>
+                              <methodname>setTriggerThreshold</methodname>
+                              <methodparam>
+                                  <type>unsigned </type><parameter>chan</parameter>
+                              </methodparam>
+                              <methodparam>
+                                  <type>std::uint32_t </type><parameter>threshold</parameter>
+                              </methodparam><modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Sets the self trigger threshold for channel number
+                                <parameter>chan</parameter> to
+                                <parameter>threshold</parameter>.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>Polarity      </type>
+                              <methodname>getPulsePolarity</methodname>
+                              <methodparam>
+                                  <type>unsigned </type><parameter>chan</parameter>
+                              </methodparam><modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Returns the pulse polarity selecte for input
+                                <parameter>chan</parameter>.  The polarity is
+                                relative to the zero determined by the DC offset.
+                               </para>
+                               <para>
+                                The value returned is an element of the
+                                enumerated type
+                                <type>caen_nscldaq::VX2750Pha::Polarity</type>
+                                and can be one of
+                                <literal>caen_nscldaq::VX2750Pha::Positive</literal>
+                                or
+                                <literal>caen_nscldaq::VX2750Pha::Negative</literal>.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>void  </type>
+                              <methodname>setPulsePolarity</methodname>
+                              <methodparam>
+                                  <type>unsigned </type><parameter>chan</parameter>
+                              </methodparam>
+                              <methodparam>
+                                <type>Polarity</type><parameter>pol</parameter>
+                              </methodparam><modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                selects the signal input polarity of the signal
+                                for channel <parameter>chan</parameter> to be
+                                <parameter>pol</parameter>.  See
+                                <methodname>getPulsePolarity</methodname> for
+                                legal values for <parameter>pol</parameter>.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>std::uint16_t </type>
+                              <methodname>getEnergySkimLowDiscriminator</methodname>
+                              <methodparam>
+                                  <type>unsigned</type><parameter> chan</parameter>
+                              </methodparam><modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                The digitizer allows a cut to be set on the
+                                computed energy of pulses - a software gate.
+                                If the computed energy of a pulse  in channel
+                                <parameter>chan</parameter> is less than the value
+                                returned by this method, it will not be transferred
+                                if the energy skim is enabled.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>void  </type>
+                              <methodname>setEnergySkimLowDiscriminator</methodname>
+                              <methodparam>
+                                  <type>unsigned </type><parameter>chan</parameter>
+                              </methodparam>
+                              <methodparam>
+                                  <type> std::uint16_t </type><parameter>value</parameter>
+                              </methodparam><modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Sets the low threshold of the energy selection window
+                                for channel <parameter>chan</parameter> to
+                                <parameter>value</parameter>.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>std::uint16_t </type>
+                              <methodname>getEnergySkimHighDiscriminator</methodname>
+                              <methodparam>
+                                  <type>unsigned </type><parameter>chan</parameter>
+                              </methodparam><modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Returns the high value of the energy acceptance
+                                window defined by the energy skim discriminator
+                                for channel <parameter>chan</parameter>.  Note
+                                again, that the energy cut is only enabled if the
+                                event selector
+                                (see <methodname>setEventSelector</methodname> and
+                                <methodname>setWaveSelector</methodname> below)
+                                is set to only accept events that fall in the energy
+                                skim
+                                window.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>void  </type>
+                              <methodname>setEnergySkimHighDiscriminator</methodname>
+                              <methodparam>
+                                  <type>unsigned </type><parameter>chan</parameter>
+                              </methodparam>
+                              <methodparam>
+                                  <type>std::uint16_t </type><parameter>value</parameter>
+                              </methodparam>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Sets the high value of the energy acceptance
+                                window on channel <parameter>chan</parameter> to
+                                <parameter>value</parameter>.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>EventSelection </type>
+                              <methodname>getEventSelector</methodname>
+                              <methodparam>
+                                  <type>unsigned </type><parameter>chan</parameter>
+                              </methodparam><modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Returns the value of the event selector.  This
+                                determine which triggers actually transfer
+                                data back to the host.  Valid values
+                                are members of the
+                                <type>caen_nscldaq::VX2750Pha::EventSelection</type>
+                                enumerated type which are:
+                                <literal>caen_nscldaq::VX2750Pha::All</literal>,
+                                <literal>caen_nscldaq::VX2750Pha::Pileup</literal>,
+                                or
+                                <literal>caen_nscldaq::VX2750Pha::EnergySkim</literal>.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>void  </type>
+                              <methodname>setEventSelector</methodname>
+                              <methodparam>
+                                  <type>unsigned </type><parameter>chan</parameter>
+                              </methodparam>
+                              <methodparam>
+                                  <type>EventSelection </type><parameter>sel</parameter>
+                              </methodparam><modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Sets the event selection criteria for
+                                input number <parameter>chan</parameter> to
+                                <parameter>sel</parameter>.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>EventSelection </type>
+                              <methodname>getWaveformSelector</methodname>
+                              <methodparam>
+                                  <type>unsigned </type><parameter>chan</parameter>
+                              </methodparam><modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Returns the event selection criteria for
+                                waveforms for channel <parameter>chan</parameter>.
+                                Presumably if an event is selected
+                                but does not meet the wave form selection
+                                criteria its energy and timing information will
+                                be returned but not it waveform.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>void  </type>
+                              <methodname>setWaveformSelector</methodname>
+                              <methodparam>
+                                  <type>unsigned </type><parameter>chan</parameter>
+                              </methodparam>
+                              <methodparam>
+                                  <type>EventSelection </type><parameter>sel</parameter>
+                              </methodparam>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Sets the waveform selection criteria
+                                for channel <parameter>chan</parameter> to
+                                <parameter>sel</parameter>.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>CoincidenceMask </type>
+                              <methodname>getCoincidenceMask</methodname>
+                              <methodparam>
+                                  <type>unsigned</type><parameter> chan</parameter>
+                              </methodparam><modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Returns the coincidence mask that generates
+                                triggers on channel <parameter>chan</parameter>.
+                                This value is from the enumerated type
+                                <type>caen_nscldaq::VX2750Pha::CoincidenceMask</type>
+                                and can have any of the following values:
+                                <literal>caen_nscldaq::VX2750Pha::Coincidence_Disabled</literal>,
+                                <literal>caen_nscldaq::VX2750Pha::Ch64Trigger</literal>,
+                                <literal>caen_nscldaq::VX2750Pha::Coincidence_TRGIN</literal>,
+                                <literal>caen_nscldaq::VX2750Pha::Coincidence_GlobalTriggerSource</literal>,
+                                <literal>caen_nscldaq::VX2750Pha::Coincidence_ILA</literal> or
+                                <literal>caen_nscldaq::VX2750Pha::Coincidence_ILB</literal>
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>void  </type>
+                              <methodname>setCoincidenceMask</methodname>
+                              <methodparam>
+                                  <type>unsigned </type><parameter>chan</parameter>
+                              </methodparam>
+                              <methodparam>
+                                  <type>CoincidenceMask </type><parameter>sel</parameter>
+                              </methodparam><modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Sets the coincidence mask for channel
+                                <parameter>chan </parameter> to
+                                <parameter>sel</parameter>
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>CoincidenceMask </type>
+                              <methodname>getAntiCoincidenceMask</methodname>
+                              <methodparam>
+                                  <type>unsigned </type><parameter>chan</parameter>
+                              </methodparam>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Returns the selection for the anit-coincidence mask
+                                for channel <parameter>chan</parameter>
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>void </type>
+                              <methodname>setAntiCoincidenceMask</methodname>
+                              <methodparam>
+                                  <type>unsigned </type><parameter>chan</parameter>
+                              </methodparam>
+                              <methodparam>
+                                  <type>CoincidenceMask </type><parameter>sel</parameter>
+                              </methodparam><modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Sets the anti-coincidencde mask for
+                                channel <parameter>chan</parameter> to be
+                                <parameter>sel</parameter>.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>std::uint32_t  </type>
+                              <methodname>getCoincidenceSamples</methodname>
+                              <methodparam>
+                                  <type>unsigned </type><parameter>chan</parameter>
+                              </methodparam><modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Returns the coincidencde window for channel
+                                <parameter>chan</parameter> in samples.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>void  </type>
+                              <methodname>setCoincidenceSamples</methodname>
+                              <methodparam>
+                                  <type>unsigned </type><parameter>chan</parameter>
+                              </methodparam>
+                              <methodparam>
+                                  <type>std::uint32_t </type><parameter>samples</parameter>
+                              </methodparam><modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Sets the coincidence window for channel nmber
+                                <parameter>chan</parameter> to
+                                <parameter>samples</parameter> digitizer
+                                samples.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>std::uint32_t  </type>
+                              <methodname>getCoincidenceNs</methodname>
+                              <methodparam>
+                                  <type>unsigned </type><parameter>chan</parameter>
+                              </methodparam><modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Same as <methodname>GetCoincidenceSamples</methodname>,
+                                but the units are nanoseconds.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>void  </type>
+                              <methodname>setCoincidenceNs</methodname>
+                              <methodparam>
+                                  <type>unsigned </type><parameter>chan</parameter>
+                              </methodparam>
+                              <methodparam>
+                                  <type>std::uint32_t </type><parameter>ns</parameter>
+                              </methodparam><modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Same as
+                                <methodname>setCoincidenceSamples</methodname>
+                                but the units of <parameter>ns</parameter> are
+                                nanoseconds.
+                               </para>
+                            </listitem>
+                        </varlistentry>
                     </variablelist>
                 </refsect1>
                 <refsect1>
