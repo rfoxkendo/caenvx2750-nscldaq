@@ -8123,6 +8123,633 @@ public:
                                </para>
                             </listitem>
                         </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>std::uint32_t  </type>
+                              <methodname>getTimeFilterRiseTime</methodname>
+                              <methodparam>
+                                  <type>unsigned</type><parameter>chan</parameter>
+                              </methodparam><modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Returns channel <parameter>chan</parameter>'s timing
+                                filter rise time in units of nanoseconds.
+                                The timing filter operates on the incoming waveform
+                                to determine the trigger and trigger timing.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>std::uint32_t  </type>
+                              <methodname>getTimeFilterRiseSamples</methodname>
+                              <methodparam>
+                                  <type>unsigned</type><parameter>chan</parameter>
+                              </methodparam><modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Returns channel <parameter>chan</parameter>'s timing
+                                filter rise time in units of FADC samples.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>void  </type>
+                              <methodname>setTimeFilterRiseTime</methodname>
+                              <methodparam>
+                                  <type>unsigned </type><parameter>chan</parameter>
+                              </methodparam>
+                              <methodparam>
+                                  <type>std::uint32_t</type><parameter> ns</parameter>
+                              </methodparam><modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Sets the timing filter rise time for channel
+                                <parameter>chan</parameter> to
+                                <parameter>ns</parameter> nanoseconds.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>void  </type>
+                              <methodname>setTimeFilterRiseSamples</methodname>
+                              <methodparam>
+                                  <type>unsigned </type><parameter>chan</parameter>
+                              </methodparam>
+                              <methodparam>
+                                  <type>std::uint32_t</type><parameter>samples</parameter>
+                              </methodparam><modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Sets the timing filter rise time for channel
+                                <parameter>chan</parameter> to
+                                <parameter>samples</parameter> FADC samples.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>std::uint32_t </type>
+                              <methodname> getTimeFilterRetriggerGuardTime</methodname>
+                              <methodparam>
+                                  <type>unsigned </type><parameter>chan</parameter>
+                              </methodparam><modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                If the time filter oscillates around the zero crossing,
+                                it is possible to have false pile up triggers.  The
+                                retrigger guard time sets a time window over which
+                                addition zero crossings in the time filter will not
+                                be considered as triggers.
+                               </para>
+                               <para>
+                                This method returns the retrigger guard time in
+                                units of nanoseconds for channel <parameter>chan</parameter>.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>std::uint32_t </type>
+                              <methodname> getTimeFilterRetriggerGuardSamples</methodname>
+                              <methodparam>
+                                  <type>unsigned </type><parameter>chan</parameter>
+                              </methodparam><modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               
+                               <para>
+                                This method returns the retrigger guard time in
+                                units of FADC samples for channel <parameter>chan</parameter>.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>void  </type>
+                              <methodname>setTimeFilterRetriggerGuardTime</methodname>
+                              <methodparam>
+                                  <type>unsigned </type><parameter>chan</parameter>
+                              </methodparam>
+                              <methodparam>
+                                  <type>std::uint32_t</type><parameter> ns</parameter>
+                              </methodparam><modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Sets the retrigger guard time for channel
+                                <parameter>chan</parameter> to
+                                <parameter>ns</parameter> nanoseconds.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>void  </type>
+                              <methodname>setTimeFilterRetriggerGuardSamples</methodname>
+                              <methodparam>
+                                  <type>unsigned </type><parameter>chan</parameter>
+                              </methodparam>
+                              <methodparam>
+                                  <type>std::uint32_t</type><parameter> samples</parameter>
+                              </methodparam><modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Sets the retrigger guard time for channel
+                                <parameter>chan</parameter> to
+                                <parameter>samples</parameter> FADC samples.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>std::uint32_t </type>
+                              <methodname>getEnergyFilterRiseTime</methodname>
+                              <methodparam>
+                                  <type>unsigned </type><parameter>chan</parameter>
+                              </methodparam><modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Returns the value set for the energy (trapezoidal)
+                                filter rise time for channel
+                                <parameter>chan</parameter> in nanoseconds.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>std::uint32_t </type>
+                              <methodname>getEnergyFilterRiseSamples</methodname>
+                              <methodparam>
+                                  <type>unsigned </type><parameter>chan</parameter>
+                              </methodparam><modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Returns the value set for the energy (trapezoidal)
+                                filter rise time for channel
+                                <parameter>chan</parameter> in FADC samples.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>void  </type>
+                              <methodname>setEnergyFilterRiseTime</methodname>
+                              <methodparam>
+                                  <type>unsigned </type><parameter>chan</parameter>
+                              </methodparam>
+                              <methodparam>
+                                  <type>std::uint32_t </type><parameter>ns</parameter>
+                              </methodparam><modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Sets the rise time of the trapezoidal energy filter
+                                for channel <parameter>chan</parameter> to
+                                <parameter>ns</parameter> nanoseconds.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>void  </type>
+                              <methodname>setEnergyFilterRiseSamples</methodname>
+                              <methodparam>
+                                  <type>unsigned </type><parameter>chan</parameter>
+                              </methodparam>
+                              <methodparam>
+                                  <type>std::uint32_t </type><parameter>samples</parameter>
+                              </methodparam><modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Sets the rise time of the trapezoidal energy filter
+                                for channel <parameter>chan</parameter> to
+                                <parameter>samples</parameter> FADC samples.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>std::uint32_t  </type>
+                              <methodname>getEnergyFilterFlatTopTime</methodname>
+                              <methodparam>
+                                  <type>unsigned </type><parameter>chan</parameter>
+                              </methodparam><modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Returns the energy filter (trapezoidal) flattop time setting
+                                for channel <parameter>chan</parameter>
+                                in nanosecond units.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>std::uint32_t  </type>
+                              <methodname>getEnergyFilterFlatTopSamples</methodname>
+                              <methodparam>
+                                  <type>unsigned </type><parameter>chan</parameter>
+                              </methodparam><modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Returns the energy filter (trapezoidal) flattop time setting
+                                for channel <parameter>chan</parameter>
+                                in FADC samples.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>void  </type>
+                              <methodname>setEnergyFilterFlatTopTime</methodname>
+                              <methodparam>
+                                  <type>unsigned </type><parameter>chan</parameter>
+                              </methodparam>
+                              <methodparam>
+                                  <type>std::uint32_t </type><parameter>ns</parameter>
+                              </methodparam>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Sets the energy filter flattop time for channel
+                                <parameter>chan</parameter> to
+                                <parameter>ns</parameter> nanoseconds.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>void  </type>
+                              <methodname>setEnergyFilterFlatTopSamples</methodname>
+                              <methodparam>
+                                  <type>unsigned </type><parameter>chan</parameter>
+                              </methodparam>
+                              <methodparam>
+                                  <type>std::uint32_t </type><parameter>samples</parameter>
+                              </methodparam>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Sets the energy filter flattop time for channel
+                                <parameter>chan</parameter> to
+                                <parameter>samples</parameter> FADC samples.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>std::uint32_t  </type>
+                              <methodname>getEnergyFilterPeakingPosition</methodname>
+                              <methodparam>
+                                  <type>unsigned </type><parameter>chan</parameter>
+                              </methodparam>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Retuns the peaking position for the energy filter
+                                of channel <parameter>chan</parameter>.  The
+                                value is in percentage of the flat top
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>void  </type>
+                              <methodname>setEnergyFilterPeakingPosition</methodname>
+                              <methodparam>
+                                  <type>unsigned </type><parameter>chan</parameter>
+                              </methodparam>
+                              <methodparam>
+                                  <type>std::uint32_t </type><parameter>pct</parameter>
+                              </methodparam>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Sets the energy filter peaking position for channel
+                                <parameter>chan</parameter> to
+                                <parameter>pct</parameter> percent of the flattop.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>EnergyPeakingAverage </type>
+                              <methodname>getEnergyFilterPeakingAverage</methodname>
+                              <methodparam>
+                                  <type>unsigned</type><parameter> chan</parameter>
+                              </methodparam><modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Returns the number of samples averaged over to determine
+                                the energy for channel <parameter>chan</parameter>.
+                                Note that the returned value is a member
+                                of the enumerated type
+                                <type>caen_nscldaq::VX2750Pha::EnergyPeakingAverage</type>
+                                which has the following values:
+                                <literal>caen_nscldaq::VX2750Pha::Average1</literal>,
+                                <literal>caen_nscldaq::VX2750Pha::Average4</literal>,
+                                <literal>caen_nscldaq::VX2750Pha::EPeakAvg_Average16</literal>
+                                <literal>caen_nscldaq::VX2750Pha::EPeakAvg_Avcerage64</literal>.
+                               </para>
+                               
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>void  </type>
+                              <methodname>setEnergyFilterPeakingAverage</methodname>
+                              <methodparam>
+                                  <type>unsigned </type><parameter>chan</parameter>
+                              </methodparam>
+                              <methodparam>
+                                  <type>EnergyPeakingAverage</type><parameter> sel</parameter>
+                              </methodparam><modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Sets the energy peaking average for channel
+                                <parameter>chan</parameter> to the value
+                                indicated by <parameter>sel</parameter>.
+                                See <methodname>getEnergyFilterPeakingAverage</methodname>
+                                for information about the values the
+                                <parameter>sel</parameter> parameter can take.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>std::uint32_t </type>
+                              <methodname>getEnergyFilterPoleZeroTime</methodname>
+                              <methodparam>
+                                  <type>unsigned </type><parameter>chan</parameter>
+                              </methodparam><modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Return the energy filter pole 0 compensation
+                                value in nanoseconds for channel <parameter>chan</parameter>
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>std::uint32_t </type>
+                              <methodname>getEnergyFilterPoleZeroSamples</methodname>
+                              <methodparam>
+                                  <type>unsigned </type><parameter>chan</parameter>
+                              </methodparam><modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Return the energy filter pole 0 compensation
+                                value in FADC samples
+                                for channel <parameter>chan</parameter>
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>void  </type>
+                              <methodname>setEnergyFilterPoleZeroTime</methodname>
+                              <methodparam>
+                                  <type>unsigned </type><parameter>chan</parameter>
+                              </methodparam>
+                              <methodparam>
+                                  <type>td::uint32_t</type><parameter> ns</parameter>
+                              </methodparam><modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Set the energy filter pole zero compensation for
+                                channel <parameter>chan</parameter> to
+                                <parameter>ns</parameter> nanoseconds.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>void  </type>
+                              <methodname>setEnergyFilterPoleZeroSamples</methodname>
+                              <methodparam>
+                                  <type>unsigned </type><parameter>chan</parameter>
+                              </methodparam>
+                              <methodparam>
+                                  <type>td::uint32_t</type><parameter> samles</parameter>
+                              </methodparam><modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Set the energy filter pole zero compensation for
+                                channel <parameter>chan</parameter> to
+                                <parameter>samples</parameter> FADC samples.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>double </type>
+                              <methodname>getEnergyFilterFineGain</methodname>
+                              <methodparam>
+                                  <type>unsigned </type><parameter>chan</parameter>
+                              </methodparam><modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Return the fine gain parameter set on channel
+                                <parameter>chan</parameter>.  Note that this is
+                                a digital multiplier of the final computed
+                                energy for a given pulse.
+                                
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>void  </type>
+                              <methodname>setEnergyFilterFineGain</methodname>
+                              <methodparam>
+                                  <type>unsigned </type><parameter>chan</parameter>
+                              </methodparam>
+                              <methodparam>
+                                  <type>double </type><parameter>gain</parameter>
+                              </methodparam><modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Sets the fine (digital) gain for channel
+                                <parameter>chan</parameter> to be the multiplier4
+                                <parameter>gain</parameter>.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>bool  </type>
+                              <methodname>isEnergyFilterFLimitationEnabled</methodname>
+                              <methodparam>
+                                  <type>unsigned </type><parameter>chan</parameter>
+                              </methodparam><modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Returns <literal>true</literal> if the
+                                low frequency energy filter for channel
+                                <parameter>chan</parameter> is enabled.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>void  </type>
+                              <methodname>enableEnergyFilterFLimitation</methodname>
+                              <methodparam>
+                                  <type>unsigned </type><parameter>chan</parameter>
+                              </methodparam>
+                              <methodparam>
+                                  <type>bool </type><parameter>enable</parameter>
+                              </methodparam><modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                If <parameter>enable</parameter> is
+                                <literal>true</literal>, enables low frequency
+                                filtering for channel <parameter>chan</parameter>.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>EnergyFilterBaselineAverage </type>
+                              <methodname>getEnergyFilterBaselineAverage</methodname>
+                              <methodparam>
+                                  <type>unsigned</type><parameter> chan</parameter>
+                              </methodparam><modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Returns the number of samples that are averaged
+                                to compute the signal baseline.  The returned value
+                                will be one of the values in the enumerated type:
+                                <type>caen_nscldaq::VX2750Pha::EnergyFilterBaselineAverage</type>.
+                                This can take one of the following values:
+                                <literal>caen_nscldaq::VX2750Pha::Fixed</literal>,
+                                <literal>caen_nscldaq::VX2750Pha::EFilterBlineAvg_Average16</literal>,
+                                <literal>caen_nscldaq::VX2750Pha::EFilterBlineAvg_Average64</literal>,
+                                <literal>caen_nscldaq::VX2750Pha::Average256</literal>,
+                                <literal>caen_nscldaq::VX2750Pha::Average1024</literal>,
+                                <literal>caen_nscldaq::VX2750Pha::Average4K</literal>,
+                                <literal>caen_nscldaq::VX2750Pha::Average16K</literal>
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>void  </type>
+                              <methodname>setEnergyFilterBaselineAverage</methodname>
+                              <methodparam>
+                                  <type>unsigned </type><parameter>chan</parameter>
+                              </methodparam>
+                              <methodparam>
+                                  <type>EnergyFilterBaselineAverage </type><parameter>sel</parameter>
+                              </methodparam><modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Sets the number of sample averaged to determine the
+                                running baseline for channel <parameter>chan</parameter>
+                                to be the number of samples indicted by
+                                <parameter>sel</parameter>.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>std::uint32_t </type>
+                              <methodname>getEnergyFilterBaselineGuardTime</methodname>
+                              <methodparam>
+                                  <type>unsigned </type><parameter>chan</parameter>
+                              </methodparam><modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Reads the number of nanoseconds the baseline computation
+                                will be frozen after the end of the trapezoid
+                                for channel <parameter>chan</parameter>.  This
+                                guard time prevents artifical bumps in the baseline
+                                that would otherwise occur if the baseline computation
+                                resumed overlapping the signal tail.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>std::uint32_t </type>
+                              <methodname>getEnergyFilterBaselineGuardSamples</methodname>
+                              <methodparam>
+                                  <type>unsigned </type><parameter>chan</parameter>
+                              </methodparam><modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Reads the number of FADC samples the baseline computation
+                                will be frozen after the end of the trapezoid
+                                for channel <parameter>chan</parameter>.  
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>oid   </type>
+                              <methodname>setEnergyFilterBaselineGuardTime</methodname>
+                              <methodparam>
+                                  <type>unsigned </type><parameter>chan</parameter>
+                              </methodparam>
+                              <methodparam>
+                                  <type>std::uint32_t </type><parameter>ns</parameter>
+                              </methodparam><modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Sets the baseline guard time for channel
+                                <parameter>chan</parameter> to
+                                <parameter>ns</parameter> nanoseconds.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>oid   </type>
+                              <methodname>setEnergyFilterBaselineGuardSamples</methodname>
+                              <methodparam>
+                                  <type>unsigned </type><parameter>chan</parameter>
+                              </methodparam>
+                              <methodparam>
+                                  <type>std::uint32_t </type><parameter>samples</parameter>
+                              </methodparam><modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Sets the baseline guard time for channel
+                                <parameter>chan</parameter> to
+                                <parameter>samples</parameter> FADC samples.
+                               </para>
+                            </listitem>
+                        </varlistentry>
                     </variablelist>
                 </refsect1>
                 <refsect1>
