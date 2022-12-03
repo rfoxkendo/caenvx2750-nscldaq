@@ -9708,6 +9708,248 @@ public:
                     </para>
                 </refsect1>
             </refentry>
+            <refentry>
+               <refmeta>
+                  <refentrytitle>VX2750PHAModuleConfiguration</refentrytitle>
+                  <manvolnum>3daq</manvolnum>
+               </refmeta>
+               <refnamediv>
+                  <refname>VX2750PHAModuleConfiguration</refname>
+                  <refpurpose>Encapsulate module configuration for CAEN Nextgen digitizers</refpurpose>
+                </refnamediv>
+                <refsynopsisdiv>
+                    <programlisting>
+#include &lt;VX2750PHAModuleConfiguration.h&gt;
+
+class VX2750PHAModuleConfiguration : public ::XXUSB::CConfigurableObject
+{
+public:
+    VX2750PHAModuleConfiguration(const char* name);
+    VX2750PHAModuleConfiguration(const VX2750PHAModuleConfiguration&amp; rhs);
+    virtual ~VX2750PHAModuleConfiguration();
+    
+    VX2750PHAModuleConfiguration&amp; operator=(const VX2750PHAModuleConfiguration&amp; rhs);
+    int operator==(const VX2750PHAModuleConfiguration&amp; rhs);
+    int operator!=(const VX2750PHAModuleConfiguration&amp; rhs);
+    
+    void configureModule(VX2750Pha&amp; module);
+    
+    // Key methods inherited from XXUSB::CConfigurableObject:
+    
+    std::string getName() const;
+	void setName(const char* pName)
+    std::string cget(std::string name) ;
+    ConfigurationArray cget();
+    void configure(std::string name, std::string value);
+    
+};
+namespace caen_nscldaq {
+
+};
+
+                    </programlisting>
+                </refsynopsisdiv>
+                <refsect1>
+                    <title>DESCRIPTION</title>
+                      <para>
+                        In NSCLDAQ's xxUSB controller support configurations
+                        are a set of name value pairs which are then programmed
+                        into the controller.  This seemed a good building block for
+                        to capture the configuration of the next generation CAEN
+                        digitizer modules.  <classname>VX2750PHAConfiguration</classname>
+                        is therefore a specialization of the <classname>XXUSB::CConfigurableObject</classname>
+                        class which provides keywords and value validation for the
+                        configuration of those modules running the DPP-PHA firmware.
+                      </para>
+                      <para>
+                        The configuration base class provides the mechanics needed
+                        to define new configuration parameter names and validity checks
+                        on the values they are assigned. 
+                      </para>
+                      <para>
+                        Primarily, two types of values are supported. Scalars
+                        and lists.  Since the xxUSBReadout software was based on a
+                        Tcl configuration language, list syntax is identical to Tcl
+                        list syntax.  Strong validation ensures that illegal values
+                        are caught at configuration time.
+                      </para>
+                      <para>
+                        The configuration class is divorced from any method
+                        of actually providing the configuration.  THe configuration
+                        can be provided by a configuration module.   We provide
+                        a configuration module that can read Tcl configuration files,
+                        one could conceive of other sources for a non-volatile configuration
+                        such as a database, XML files or even simple CSV files.
+                      </para>
+                      <para>
+                        In the following sections we will describe the methods
+                        supported by the <classname>VX2750PHAconfiguration</classname>
+                        and those inherited from <classname>XXUSB::CConfigurableObject</classname>
+                        that are relevant to clients of this class.
+                        We will then describe the configuration parameters and validations
+                        applied to them.
+                      </para>
+                </refsect1>
+                <refsect1>
+                    <title>METHODS</title>
+                    <para>
+                        Methods support both configuring the parmaeters defined
+                        by the class as well as retrieving boththe bulk configuration
+                        and specific configuration parameter values.  Finally,
+                        a method has been added that, when provided a
+                        <classname>VX2750Pha</classname> module will
+                        configure that module in accordance with the values
+                        for the configuration parameters encapsulated by the
+                        instance.
+                    </para>
+                    <para>
+                        Here are the key methods:
+                    </para>
+                    <variablelist>
+                        <varlistentry>
+                           <term><constructorsynopsis>
+                               <methodname>VX2750PHAModuleConfiguration</methodname>
+                            <methodparam>
+                                <type>const char* </type><parameter>name</parameter>
+                            </methodparam>
+                           </constructorsynopsis></term>
+                           <listitem>
+                               <para>
+                                Constructs a configuration instance. Each configuration
+                                has a name.  The use of that name is entirely up to
+                                the software hat uses this class.  For example,
+                                the Tcl configuration data source uses the name as
+                                a module identifier that must be unique.
+                                This class, however only stores the name and
+                                allows retrieval and modification.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>void </type>
+                              <methodname>configureModule</methodname>
+                              <methodparam>
+                                  <type>VX2750Pha&amp;</type><parameter> module</parameter>
+                              </methodparam>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Configures the digitizer represented by
+                                <parameter>module</parameter> in accordance
+                                with the parameter values encapsulated in the
+                                configuration.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>std::string </type>
+                              <methodname>getName</methodname>
+                              <void /><modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Returns the name of the configuration.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>void </type>
+                              <methodname>setName</methodname>
+                              <methodparam>
+                                  <type>const char* </type><parameter>pName</parameter>
+                              </methodparam>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Changes the configuration's name to <parameter>pName</parameter>.
+                                One use case for this is to have a configuration
+                                that serves as a template that is cloned as a starting
+                                point for other configurations.  After the clone,
+                                this method can be used to set the correct final
+                                name of the configuration.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>std::string </type>
+                              <methodname>cget</methodname>
+                              <methodparam>
+                                  <type>std::string </type><parameter>name</parameter>
+                              </methodparam>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Returns the string representation of the parameter
+                                <parameter>name</parameter>.  Note that the
+                                <classname>XXUSB::CConfigurableObject</classname>
+                                has a wealth of parameter fetching methods that
+                                fetch different representations.  Internally,
+                                however all parameter values are stored as strings.
+                               </para>
+                               <para>
+                                In the event that <parameter>name</parameter>
+                                is not the name of a parameter in the configuration,
+                                a <classname>std::string</classname> exception
+                                is thrown.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>ConfigurationArray </type>
+                              <methodname>cget</methodname>
+                              <void />
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Return the entire configuration.
+                                The type <type>CConfigurationArrary</type> is, in
+                                fact an alias for
+                                <type>std::vector&lt;std::pair&lt;std::string, std::string&gt; &gt;</type>
+                                where the first element o each pair is the name of a configuration
+                                parameter and the second element its value.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>void </type>
+                              <methodname>configure</methodname>
+                              <methodparam>
+                                  <type>std::string </type><parameter>name</parameter>
+                              </methodparam>
+                              <methodparam>
+                                  <type>std::string</type><parameter> value</parameter>
+                              </methodparam>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Attempts to configure the parameter named
+                                <parameter>name</parameter> with the new value
+                                <parameter>value</parameter>
+                               </para>
+                               <para>
+                                In the event that <parameter>name</parameter>
+                                does not exist, or <parameter>value</parameter>
+                                fails validation for the parameter,
+                                <classname>std::string</classname> exceptions are
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                    </variablelist>
+                </refsect1>
+                <refsect1>
+                    <title>CONFIGURATION PARAMETERS</title>
+                    <para>
+                        
+                    </para>
+                    
+                </refsect1>
+            </refentry>
         </section>
     </appendix>
 </book>
