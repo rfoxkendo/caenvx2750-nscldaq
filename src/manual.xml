@@ -8733,7 +8733,7 @@ public:
                         </varlistentry>
                         <varlistentry>
                            <term><methodsynopsis>
-                              <type>oid   </type>
+                              <type>void   </type>
                               <methodname>setEnergyFilterBaselineGuardSamples</methodname>
                               <methodparam>
                                   <type>unsigned </type><parameter>chan</parameter>
@@ -8750,11 +8750,962 @@ public:
                                </para>
                             </listitem>
                         </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>std::uint32_t </type>
+                              <methodname>getEnergyFilterPileupGuardTime</methodname>
+                              <methodparam>
+                                  <type>unsigned </type><parameter>chan</parameter>
+                              </methodparam><modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Returns the energy filter pileup guard for channel
+                                <parameter>chan</parameter> in nanosecond units.
+                                The pileup guard defines the time required in addition to the
+                                rise time and flattop time the trapezoidal filter requires
+                                additional triggers within this time are considered pileup
+                                events.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>std::uint32_t </type>
+                              <methodname>getEnergyFilterPileupGuardSamples</methodname>
+                              <methodparam>
+                                  <type>unsigned </type><parameter>chan</parameter>
+                              </methodparam><modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Returns the energy filter pileup time
+                                for channel <parameter>chan</parameter> in digitizer
+                                samples
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>void  </type>
+                              <methodname>setEnergyFilterPileupGuardTime</methodname>
+                              <methodparam>
+                                  <type>unsigned </type><parameter>chan</parameter>
+                              </methodparam>
+                              <methodparam>
+                                  <type>std::uint32_t</type><parameter> ns</parameter>
+                              </methodparam><modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Sets the energy filter pileup time for channel
+                                <parameter>chan</parameter> to
+                                <parameter>ns</parameter> nanoseconds.
+                                The actual pileup guard duration my be slightly
+                                different betcause the granluarity of the setting
+                                is determined by the FADC sampling frequency.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>void  </type>
+                              <methodname>setEnergyFilterPileupGuardSamples</methodname>
+                              <methodparam>
+                                  <type>unsigned </type><parameter>chan</parameter>
+                              </methodparam>
+                              <methodparam>
+                                  <type>std::uint32_t</type><parameter> samples</parameter>
+                              </methodparam><modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Sets the energy filter pileup time for channel
+                                <parameter>chan</parameter> to
+                                <parameter>samples</parameter> FADC samples.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>std::uint8_t  </type>
+                              <methodname>getEnergyBits</methodname>
+                              <methodparam>
+                                  <type>unsigned </type><parameter>chan</parameter>
+                              </methodparam><modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Return the number of bits of energy value for channel
+                                <parameter>chan</parameter>.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>std::uint64_t </type>
+                              <methodname>getRealtime</methodname>
+                              <methodparam>
+                                  <type>unsigned </type><parameter>chan</parameter>
+                              </methodparam><modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                returns the Real time measured by the FPGA.
+                                Note that the value is in units of 524288ns.  That
+                                is a value of 3 represents a bit more than 1.5 seconds.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>std::uint64_t </type>
+                              <methodname>getDeadtime</methodname>
+                              <methodparam>
+                                  <type>unsigned </type><parameter>chan</parameter>
+                              </methodparam><modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Return the deadtime for channel
+                                <parameter>chan</parameter>.  As with the realtime
+                                the units are 524288ns.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>void </type>
+                              <methodname>Reset</methodname>
+                              <void />
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Sends a Reset command to the digitizer.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>void   </type>
+                              <methodname>Clear</methodname>
+                              <void />
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Sends the digitizer a clear command.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>void</type>
+                              <methodname>Arm</methodname>
+                              <void />
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Arms the digitizer so that the start from  one of the
+                                start sources will start data taking.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>void</type>
+                              <methodname>Disarm</methodname>
+                              <void />
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Disarms the digitizer. so that start sources are
+                                ignored and the digitizer will remain in the stopped
+                                state.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>void</type>
+                              <methodname>Start</methodname>
+                              <void />
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Sends a start command to the digitizer.  This is
+                                only effective if the digitizer is armed and
+                                a software start is one of the start sources.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>void</type>
+                              <methodname>stop</methodname>
+                              <void />
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Sends a stop command to the digitizer.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>void</type>
+                              <methodname>Trigger</methodname>
+                              <void />
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Sends a software trigger to the digitizer. This is
+                                only effective if the digitizser is running and the
+                                software trigger is a trigger source.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>void</type>
+                              <methodname>ReloadCalibration</methodname>
+                              <void />
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Delete calibration file and reload it from flash
+                                or, if invalid, use default calibration.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>Endpoint </type>
+                              <methodname>getEndpoint</methodname>
+                              <void />
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Returns the current digitizer endpoint as a value
+                                from the enumerated type
+                                <type>caen_nscldaq:VX2750Pha::Endpoint</type>
+                                which has the following legal values:
+                                <literal>caen_nscldaq:VX2750Pha::Raw</literal>
+                                or
+                                <literal>caen_nscldaq:VX2750Pha::PHA</literal>.
+                               </para>
+                               
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>void  </type>
+                              <methodname>selectEndpoint</methodname>
+                              <methodparam>
+                                  <type>Endpoint</type><parameter>selection</parameter>
+                              </methodparam>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Sets the current end point from which data will
+                                be read. Note that once selected, the endpoint data format
+                                must be programmed.  The data from the raw endpoint is
+                                relatively fixed and is programmed
+                                by calling <methodname>initializeRawEndpoint</methodname>.
+                               </para>
+                               <para>
+                                The data from the PHA endpoint is very flexible
+                                and, rather than burdening the programer with the
+                                JSON required to set that up, we provide several methods
+                                that will be described below to enable or disable
+                                various elements.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>void</type>
+                              <methodname>initializeRawEndpoint</methodname>
+                              <void />
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                As described above, this should be called after the
+                                first time the raw endpoint is selected.
+                                It provides the JSON that describes what the
+                                raw end point should return on a read.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>void</type>
+                              <methodname>ReadRawEndpoing</methodname>
+                              <methodparam>
+                                  <type>void*</type><parameter>pBuffer</parameter>
+                              </methodparam>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Reads data from the raw endpoint to the
+                                memory pointed to by <parameter>pBuffer</parameter>.
+                                The size required for this read can be gotten by
+                                calling <methodname>getMaxRawDataSize</methodname>
+                                once <methodname>initializeRawEndpoint</methodname>
+                                has been called.
+                               </para>
+                               <para>
+                                <methodname>initializeRawEndpoint</methodname>
+                                initializes the format so that you can expect the data
+                                to begin wth a <type>size_t</type> containing the number
+                                of bytes of subsequent data.  The format of the
+                                data are described by <literal>4.2.1</literal>
+                                of the
+                                <literal>FELib PHA Parameters User Manual</literal>.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>void</type>
+                              <methodname>setDefaultFormat</methodname>
+                              <void />
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Returns the format flags for the DPP endpoint to
+                                their default values.  The default is to read the channel number,
+                                the timestamp calibrated to nanoseconds (used in event building),
+                                and the energy. See the methods below for other
+                                optional values that are available and how to
+                                enable/disable them.
+                               </para>
+                               <para>
+                                Once the format flags have been appropriately set,
+                                <methodname>initialzeDPPPHAReadout</methodname>
+                                should be called to send the appropriate JSON
+                                to the board to describe the desired data format.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>void</type>
+                              <methodname>enableRawTimestamp</methodname>
+                              <methodparam>
+                                  <type>bool</type><parameter>enable</parameter>
+                              </methodparam>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                If <parameter>enable</parameter> is <literal>true</literal>,
+                                the raw timestamp is also included in the event
+                                otherwise it is not.  Note that the raw timestamp
+                                units are module dependent. 
+                               </para>
+                               <para>
+                                Once the format flags have been appropriately set,
+                                <methodname>initialzeDPPPHAReadout</methodname>
+                                should be called to send the appropriate JSON
+                                to the board to describe the desired data format.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>void</type>
+                              <methodname>enableFineTimestamp</methodname>
+                              <methodparam>
+                                  <type>bool</type><parameter>enable</parameter>
+                              </methodparam>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                If <parameter>enable</parameter> is
+                                <literal>true</literal>, then
+                                the fine timestamp from the module fast filters
+                                will be returned in the event. If
+                                <literal>false</literal>, that information is
+                                omitted.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>void</type>
+                              <methodname>enableFlags</methodname>
+                              <methodparam>
+                                  <type>bool</type><parameter>enable</parameter>
+                              </methodparam>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                If <parameter>enable</parameter> is
+                                <literal>true</literal> status and error flags
+                                will be included with the event.  Otherwise,
+                                they wll be omitted.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>void</type>
+                              <methodname>enableDownSampling</methodname>
+                              <methodparam>
+                                  <type>bool</type><parameter>enable</parameter>
+                              </methodparam>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                If <parameter>enable</parameter> is
+                                <literal>true</literal>, the downsamping
+                                value will be included in the event.  Otherwise
+                                it will be omitted.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>void</type>
+                              <methodname>enableAnalogProbes</methodname>
+                              <methodparam>
+                                  <type>bool</type><parameter>probe1</parameter>
+                              </methodparam>
+                              <methodparam>
+                                  <type>bool</type><parameter>probe2</parameter>
+                              </methodparam>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                If <parameter>probe1</parameter> is enabled,
+                                analog probe 1 data is included in the event.
+                                If <parameter>probe2</parameter> is enabled
+                                the analog probe 2 data is included in the event.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>void</type>
+                              <methodname>enableDigitalProbes</methodname>
+                              <methodparam>
+                                  <type>bool</type><parameter>probe1</parameter>
+                              </methodparam>
+                              <methodparam>
+                                  <type>bool</type><parameter>probe2</parameter>
+                              </methodparam>
+                              <methodparam>
+                                  <type>bool</type><parameter>probe3</parameter>
+                              </methodparam>
+                              <methodparam>
+                                  <type>bool</type><parameter>probe4</parameter>
+                              </methodparam>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                The <parameter>probe</parameter>n parameters control
+                                the presence or absence of the associated digital
+                                probe in the event.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>void</type>
+                              <methodname>enableSampleSize</methodname>
+                              <methodparam>
+                                  <type>bool</type><parameter>enable</parameter>
+                              </methodparam>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Controls the presence or absence of the number of
+                                samples of acquired data in the event.  Note that since
+                                each channel can have a different sampling window,
+                                if you enable probes it's probably a good idea
+                                to enable this as well so you know how  much
+                                data is actually acquired by the probes.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>void</type>
+                              <methodname>enableRawEventSize</methodname>
+                              <methodparam>
+                                  <type>bool</type><parameter>enable</parameter>
+                              </methodparam>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Controls the presence or absence of the size of a
+                                raw event in the event.   This value is relatively
+                                useless for the DPP-PHA endpoint.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>void</type>
+                              <methodname>initializeDPPPHAReadout</methodname>
+                              <void />
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Taking the format flags that have been set/cleared,
+                                this method generates the appropriate format
+                                description JSON and sends it to the board to
+                                determine the data returned by the DPP-PHA endpoint.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>void </type>
+                              <methodname>readDPPPHAEndpoint</methodname>
+                              <methodparam>
+                                  <type>DecodedEvent&amp;</type><parameter>event</parameter>
+                              </methodparam>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Reads an event from the digitizer blocking until
+                                one is available.  Note that
+                                <classname>Dig2Device</classname>  provides
+                                the <methodname>hasData</methodname> method to
+                                test for the presence of data, if it is unacceptable
+                                for the application to block indefinitely.
+                               </para>
+                               <para>
+                                The event data is read ito a
+                                <type>caen_nscldaq::VX2750Pha::DecodedEvent</type>
+                                struct.  The fields that are actually filled in depend
+                                on the items enabled at the time the
+                                <methodname>initializeDPPPhaReadout</methodname>
+                                call was made.
+                               </para>
+                               <para>
+                                <type>DecodedEvent</type> may, depending on the
+                                enabled data, have dynamically allocated fields.
+                                The methods <methodname>initDecodedBuffer</methodname>,
+                                <methodname>setupDecodedBuffer</methodname> and
+                                <methodname>freeDecodedBuffer</methodname>
+                                should be used to initialize and maintain
+                                instances of <type>DecodedEvent</type>.
+                                See below.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                    </variablelist>
+                    <refsect2>
+                        <title>Managing DPP-PHA decoded event buffers</title>
+                        <para>
+                            Three methods are provided to manage the storage
+                            for a <type>DecodedEvent</type>.
+                            <methodname>initDecodedBuffer</methodname>,
+                            <methodname>setupDecodedBuffer</methodname>,
+                            and <methodname>freeDecodedBuffer</methodname>.
+                        </para>
+                        <para>
+                            Upon defining a <type>DecodedEvent</type> instance,
+                            the first thing you shold do is call
+                            <methodname>initDecodedBuffer</methodname> to
+                            initialize the pointers in that buffer to the
+                            deallocated values.  Once the event structure has been
+                            deinfed and <methodname>initializeDPPPHAReadou</methodname>
+                            called, use <methodname>setupDecodedBuffer</methodname>
+                            to allocate any dynamic data needed for the event.
+                            If the shape of the event is subsequently changed
+                            (through another call to e.g. <methodname>initializeDPPPHAReadou</methodname>),
+                            but you want to continue using the same decoded event,
+                            call <methodname>freeDecodedBuffer</methodname>
+                            to release dynamic memory followed by
+                            <methodname>setupDecodedBuffer</methodname> to
+                            make new appropriate allocations.
+                        </para>
+                        <para>
+                            The signatures of these methods are shown below:
+                        </para>
+                        <variablelist>
+                            <varlistentry>
+                               <term><methodsynopsis>
+                                  <type>void </type>
+                                  <methodname>initDecodedBuffer</methodname>
+                                  <methodparam>
+                                      <type>DecodedEvent&amp;</type><parameter>event</parameter>
+                                  </methodparam>
+                               </methodsynopsis></term>
+                               <listitem>
+                                   <para>
+                                    Initialize the contents of a <type>DecodedEvent</type>
+                                    prior to the initial call to
+                                    <methodname>setupDecodedBuffer</methodname>.
+                                    Among other things all pointers in the
+                                    <parameter>event</parameter> are set to
+                                    <literal>nullptr</literal> so that
+                                    <methodname>delete</methodname> calls
+                                    will behave appropriately.
+                                   </para>
+                                </listitem>
+                            </varlistentry>
+                            <varlistentry>
+                               <term><methodsynopsis>
+                                  <type>void </type>
+                                  <methodname>setupDecodedBuffer</methodname>
+                                  <methodparam>
+                                      <type>DecodedEvent&amp;</type><parameter>event</parameter>
+                                  </methodparam>
+                               </methodsynopsis></term>
+                               <listitem>
+                                   <para>
+                                    Taking into account the format flag information
+                                    that has been established, allocates appropriate
+                                    dynamic memory for the <parameter>event</parameter>.
+                                    This can mean allocating space for the analog and/or
+                                    digital probes that have been enabled.
+                                   </para>
+                                </listitem>
+                            </varlistentry>
+                            <varlistentry>
+                               <term><methodsynopsis>
+                                  <type>void </type>
+                                  <methodname>freeDecodedBuffer</methodname>
+                                  <methodparam>
+                                      <type>DecodedEvent&amp;</type><parameter>event</parameter>
+                                  </methodparam>
+                               </methodsynopsis></term>
+                               <listitem>
+                                   <para>
+                                    Dyanimcally allocated data in <parameter>event</parameter>
+                                    is freed and pointers to those data are set to
+                                    <literal>nullptr</literal> in preparation for
+                                    the next call to <methodname>setupDecodedBuffer</methodname>
+                                    for this <parameter>event</parameter>.
+                                   </para>
+                                </listitem>
+                            </varlistentry>
+                        </variablelist>
+                    </refsect2>
+                </refsect1>
+                <refsect1>
+                    <title>The DecodedEvent struct</title>
+                    <para>
+                        When acquiring data, events are read using a
+                        <type>DecodedEvent</type> struct.  This struct has fields
+                        which may or may not be set and storage that may or may not
+                        be allocated depending on the formatting flags that were
+                        set prior to the call to
+                        <methodname>initializeDPPPHAReadout</methodname>.
+                    </para>
+                    <para>
+                        This section describes the fields of this struct and when
+                        to expect them to contain valid data.
+                    </para>
+                    <variablelist>
+                        <varlistentry>
+                           <term><type>std::uint8_t</type><structfield>s_channel</structfield></term>
+                           <listitem>
+                               <para>
+                                This field is always filled in and contains the
+                                channel number (0-63) for this event.
+                                Note that events from the digitizer are data
+                                from individual channel triggers and must be
+                                assembled into physically meaningful events using
+                                e.g. the NSCLDAQ Event builder.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><type>std::uint64_t</type><structfield>s_nsTimestamp</structfield></term>
+                           <listitem>
+                               <para>
+                                This field is always filled in and contains the
+                                timestamp for the event converted to a nanosecond value.
+                                Note that in NSCLDAQ, this field is used to set the
+                                event fragment timestamp for event building so that
+                                the event builder shouild work properly across
+                                a heterogeneous set of digitizers.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><type>std::uint64_t</type><structfield>s_rawTimestamp</structfield></term>
+                           <listitem>
+                               <para>
+                                This field is only filled in if
+                                <methodname>enableRawTimestamp</methodname> is
+                                called with <literal>true</literal> prior to
+                                initializing the DPP-PHA readout format.
+                                It contains the digitizer timestamp in
+                                digitizer timing units.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><type>std::uint16_t</type><structfield>s_fineTimestamp</structfield></term>
+                           <listitem>
+                               <para>
+                                Only filled in if
+                                <methodname>enableFineTimestamp</methodname> is
+                                called with <literal>true</literal> prior to
+                                initializing the DPP-PHA readout format.
+                                This contains the fine timestamp from the fast filter
+                                zero crossing interpolation.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><type>std::uint16_t</type><structfield>s_energy</structfield></term>
+                           <listitem>
+                               <para>
+                                This field is always filled in.  It contains
+                                the energy reconstructed from the DPP-PHA
+                                algorithm.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><type>std::uint16_t</type><structfield>s_lowPriorityFlags</structfield></term>
+                           <listitem>
+                               <para>
+                                Filled in only if <methodname>enableFlags</methodname>
+                                is called with <literal>true</literal>.
+                                Contains the low priority status flags from the
+                                digitizer.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><type>std::uint16_t</type><structfield>s_highPriorityFlags</structfield></term>
+                           <listitem>
+                               <para>
+                                Filled in only if <methodname>enableFlags</methodname>
+                                is called with <literal>true</literal>.
+                                Contains the high priority status flags from the
+                                digitizer.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><type>std::uint8_t</type><structfield>s_timeDownSampling</structfield></term>
+                           <listitem>
+                               <para>
+                                Filled in only if <methodname>enableDownsampling</methodname>
+                                is called with <literal>true</literal> contains
+                                the code describing the digitizer downsampling.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><type>std::uint32_t*</type><structfield>s_pAnalogProbe1</structfield></term>
+                           <listitem>
+                               <para>
+                                This field is only not <literal>nullptr</literal>
+                                if analog probe 1 has been enabled by
+                                calling <methodname>enableAnalogProbes</methodname>.
+                                It points to a buffer for the data from the analog
+                                probe.  Each sample is a <type>std::uint32_t</type>.
+                               </para>
+                               <para>
+                                The pointer should <emphasis>never</emphasis>
+                                be modified.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><type>std::uint8_t</type><structfield>s_analogProbe1Type</structfield></term>
+                           <listitem>
+                               <para>
+                                This field is only filled in
+                                if analog probe 1 has been enabled by
+                                calling <methodname>enableAnalogProbes</methodname>.
+                               </para>
+                               <para>
+                                In that case it contains a code that describes
+                                which data analog probe 1 represents.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><type>std::uint32_t*</type><structfield>s_pAnalogProbe2</structfield></term>
+                           <listitem>
+                               <para>
+                                This field is only not <literal>nullptr</literal>
+                                if analog probe 2 has been enabled by
+                                calling <methodname>enableAnalogProbes</methodname>.
+                                It points to a buffer for the data from the analog
+                                probe.  Each sample is a <type>std::uint32_t</type>.
+                               </para>
+                               <para>
+                                The pointer should <emphasis>never</emphasis>
+                                be modified.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><type>std::uint8_t</type><structfield>s_analogProbe2Type</structfield></term>
+                           <listitem>
+                               <para>
+                                This field is only filled in
+                                if analog probe 2 has been enabled by
+                                calling <methodname>enableAnalogProbes</methodname>.
+                               </para>
+                               <para>
+                                In that case it contains a code that describes
+                                which data analog probe 2 represents.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><type>std::uint8_t*</type><structfield>s_pDigitalProbe1</structfield></term>
+                           <listitem>
+                               <para>
+                                Only not <literal>nullptr</literal> if
+                                <methodname>enableDigitalProbes</methodname> has been
+                                used to enable digital probe 1.  In that case,
+                                this is a pointer to where the digital probe 1
+                                samples will be stored.  Digital probes require
+                                one byte per sample an are either 0 or 1 for
+                                deasserted and asserted respectively.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><type>std::uint8_t</type><structfield>s_digitalProbe1Type</structfield></term>
+                           <listitem>
+                               <para>
+                                Only filled in if <methodname>enableDigitalProbes</methodname> has been
+                                used to enable digital probe 1.  In that case,
+                                this is a code that describes what digital probe
+                                1 represents.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><type>std::uint8_t*</type><structfield>s_pDigitalProbe2</structfield></term>
+                           <listitem>
+                               <para>
+                                Only not <literal>nullptr</literal> if
+                                <methodname>enableDigitalProbes</methodname> has been
+                                used to enable digital probe 2.  In that case,
+                                this is a pointer to where the digital probe 2
+                                samples will be stored.  Digital probes require
+                                one byte per sample an are either 0 or 1 for
+                                deasserted and asserted respectively.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><type>std::uint8_t</type><structfield>s_digitalProbe2Type</structfield></term>
+                           <listitem>
+                               <para>
+                                Only filled in if <methodname>enableDigitalProbes</methodname> has been
+                                used to enable digital probe 2.  In that case,
+                                this is a code that describes what digital probe
+                                2 represents.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><type>std::uint8_t*</type><structfield>s_pDigitalProbe3</structfield></term>
+                           <listitem>
+                               <para>
+                                Only not <literal>nullptr</literal> if
+                                <methodname>enableDigitalProbes</methodname> has been
+                                used to enable digital probe 3.  In that case,
+                                this is a pointer to where the digital probe 1
+                                samples will be stored.  Digital probes require
+                                one byte per sample an are either 0 or 1 for
+                                deasserted and asserted respectively.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><type>std::uint8_t</type><structfield>s_digitalProbe3Type</structfield></term>
+                           <listitem>
+                               <para>
+                                Only filled in if <methodname>enableDigitalProbes</methodname> has been
+                                used to enable digital probe 3.  In that case,
+                                this is a code that describes what digital probe
+                                3 represents.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><type>std::uint8_t*</type><structfield>s_pDigitalProbe4</structfield></term>
+                           <listitem>
+                               <para>
+                                Only not <literal>nullptr</literal> if
+                                <methodname>enableDigitalProbes</methodname> has been
+                                used to enable digital probe 4.  In that case,
+                                this is a pointer to where the digital probe 4
+                                samples will be stored.  Digital probes require
+                                one byte per sample an are either 0 or 1 for
+                                deasserted and asserted respectively.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><type>std::uint8_t</type><structfield>s_digitalProbe4Type</structfield></term>
+                           <listitem>
+                               <para>
+                                Only filled in if <methodname>enableDigitalProbes</methodname> has been
+                                used to enable digital probe 4.  In that case,
+                                this is a code that describes what digital probe
+                                4 represents.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><type>size_t</type><structfield>s_samples</structfield></term>
+                           <listitem>
+                               <para>
+                                Only filled in if <methodname>enableSampleSize</methodname>
+                                has enabled it.  In that case, this will hold the
+                                number of samples present in the analog and digital
+                                probes.  Otherwise, <methodname>initDecodedBuffer</methodname>
+                                will initialize this field to zero.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><type>size_t</type><structfield>s_eventSize</structfield></term>
+                           <listitem>
+                               <para>
+                                This is only filled in if <methodname>enableRawEventSize</methodname>
+                                is used to enable it.  In that case it will be filled
+                                in with the relatively useless size of the raw event.
+                                The size of the raw event is the number of bytes that
+                                would have been used to hold the event had it been
+                                read over the raw endpoint.
+                               </para>
+                            </listitem>
+                        </varlistentry>
                     </variablelist>
                 </refsect1>
                 <refsect1>
                     <title>EXPORTED DATA</title>
-                    <para></para>
+                    <para>
+                        The class exports several maps to allow string values
+                        to be mapped to enumerated values.  These are intended
+                        to be used by
+                        <classname>VX2750PHAConfiguration</classname> but
+                        can be used for other application software.  
+                    </para>
+                    <para>
+                        These data structures are all of types like
+                        <type>std::map&lt;std::string, some-enumerated-type&gt;</type>
+                        which allow you to look up an enumerated type which
+                        corresponds to a string value.
+                        These are also named things like
+                        <literal>stringToenumeraged-type</literal>.  For example
+                        <literal>stringToClockSource</literal> maps string names
+                        of clock sources to the <type>caen_nscldaq::VX2750Pha::ClockSource</type>
+                        enumerated types.
+                    </para>
+                    <para>
+                        If you must use these, see their initializations in the
+                        file <filename>VX2750Pha.cpp</filename>.
+                    </para>
                 </refsect1>
             </refentry>
         </section>
