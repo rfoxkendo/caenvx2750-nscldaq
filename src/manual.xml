@@ -9945,9 +9945,1692 @@ namespace caen_nscldaq {
                 <refsect1>
                     <title>CONFIGURATION PARAMETERS</title>
                     <para>
-                        
+                        Configuration parameters are divided into several categories.
+                        In the code, each of the categories has a private method
+                        that defines the parameters and their validations and a private
+                        method that configures the digitizer with those parameters.
                     </para>
-                    
+                    <para>
+                        A note about boolean parameters.  Several true and false
+                        values are supported. Legal boolean true values are:
+                        <itemizedlist>
+                            <listitem>
+                               <para>
+                                  <literal>true</literal> 
+                               </para>
+                            </listitem>
+                            <listitem>
+                               <para>
+                                  <literal>yes</literal> 
+                               </para>
+                            </listitem>
+                            <listitem>
+                               <para>
+                                  <literal>1</literal> 
+                               </para>
+                            </listitem>
+                            <listitem>
+                               <para>
+                                  <literal>on</literal>
+                               </para>
+                            </listitem>
+                            <listitem>
+                               <para>
+                                  <literal>enabled</literal> 
+                               </para>
+                            </listitem>
+                        </itemizedlist>
+                    </para>
+                    <para>
+                        Legal boolean false values are:
+                        <itemizedlist>
+                            <listitem>
+                               <para>
+                                  <literal>false</literal> 
+                               </para>
+                            </listitem>
+                            <listitem>
+                               <para>
+                                  <literal>no</literal> 
+                               </para>
+                            </listitem>
+                            <listitem>
+                               <para>
+                                  <literal>0</literal> 
+                               </para>
+                            </listitem>
+                            <listitem>
+                               <para>
+                                  <literal>off</literal> 
+                               </para>
+                            </listitem>
+                            <listitem>
+                               <para>
+                                  <literal>disabled</literal> 
+                               </para>
+                            </listitem>
+                        </itemizedlist>
+                    </para>
+                    <para>
+                        Choose the boolean value that maximizes the readability
+                        of your code.  
+                    </para>
+                    <para>
+                        The subsetions below will describe the parameters
+                        in each category.  Note that, with the exception
+                        of the readout options,
+                        each parameter maps directly
+                        to a parameter in the PHA digitizer parameter set.
+                    </para>
+                    <refsect2>
+                        <title>Readout Options</title>
+                        <para>
+                            These parameters determine how the module's
+                            DPP-PHA endpoint is set up for readout.  See the
+                            description of the corresponding methods in the
+                            <classname>VX270Pha</classname> class.  The
+                            default readout is as for that class.
+                        </para>
+                        <variablelist>
+                            <varlistentry>
+                               <term><literal>readrawtimes</literal> <replaceable>bool</replaceable></term>
+                               <listitem>
+                                   <para>
+                                    If this options is configured true, the
+                                    raw timestamp will be read in addition to the
+                                    timetsamp in nanoseconds.
+                                   </para>
+                                </listitem>
+                            </varlistentry>
+                            <varlistentry>
+                               <term><literal>readfinetimestamps</literal> <replaceable>bool</replaceable></term>
+                               <listitem>
+                                   <para>
+                                    If this optionis configured true, the
+                                    interpolated zero crossing
+                                    time of the fast trigger filter is returned.
+                                   </para>
+                                </listitem>
+                            </varlistentry>
+                            <varlistentry>
+                               <term><literal>readflags</literal> <replaceable>bool</replaceable></term>
+                               <listitem>
+                                   <para>
+                                    If configured true, the low and high priority
+                                    bitmask status flags are read.
+                                   </para>
+                                </listitem>
+                            </varlistentry>
+                            <varlistentry>
+                               <term><literal>readtimedownsampling</literal> <replaceable>bool</replaceable></term>
+                               <listitem>
+                                   <para>
+                                    If configured true, the time downsampling code
+                                    is included in events.
+                                   </para>
+                                </listitem>
+                            </varlistentry>
+                            <varlistentry>
+                               <term><literal>readanalogprobes</literal> <replaceable>bool*2</replaceable></term>
+                               <listitem>
+                                   <para>
+                                    The value of this configuration parameter is
+                                    a well formed Tcl list that contains two
+                                    booleans.  The first boolean, when true,
+                                    enables the inclusion of data from analog probe 1
+                                    in the event, the second, analog probe 2.
+                                   </para>
+                                </listitem>
+                            </varlistentry>
+                            <varlistentry>
+                               <term><literal>readdigitalprobes</literal> <replaceable>bool*4</replaceable></term>
+                               <listitem>
+                                   <para>
+                                    The value of this configuratin parameter is a
+                                    well formed list of four booleans.  Each controls
+                                    the inclusion of data from one of the digital probes
+                                    in data in the event.
+                                   </para>
+                                </listitem>
+                            </varlistentry>
+                            <varlistentry>
+                               <term><literal>readsamplecount</literal> <replaceable>bool</replaceable></term>
+                               <listitem>
+                                   <para>
+                                    If true, this configuration parameter enables
+                                    the number of samples acquired to be included
+                                    in the event.
+                                   </para>
+                                </listitem>
+                            </varlistentry>
+                            <varlistentry>
+                               <term><literal>readeventsize</literal> <replaceable>bool</replaceable></term>
+                               <listitem>
+                                   <para>
+                                    If true, this configuration parameter enables
+                                    the inclusion of the raw event size in the
+                                    DPP-PHA event.
+                                   </para>
+                                </listitem>
+                            </varlistentry>
+                        </variablelist>
+                    </refsect2>
+                    <refsect2>
+                        <title>Clock parameters</title>
+                        <para>
+                            The parameters in this section control the source 
+                            and disposition of the module clock.
+                        </para>
+                        <variablelist>
+                            <varlistentry>
+                               <term><literal>clocksource</literal> <replaceable>enum</replaceable></term>
+                               <listitem>
+                                   <para>
+                                    Configures the clock source for the module.
+                                    The enumerated configuration value can
+                                    be any of:
+                                   </para>
+                                   <itemizedlist>
+                                    <listitem>
+                                       <para>
+                                          Internal - the clock source is the module's
+                                          internal clock.
+                                       </para>
+                                    </listitem>
+                                    <listitem>
+                                       <para>
+                                          FPClkIn - the clock source is the
+                                          module's front panel CLKIN daisychain
+                                          input.
+                                       </para>
+                                    </listitem>
+                                   </itemizedlist>
+                                   <para>
+                                    There is a hint
+                                    in the parameter documentation that in the future, three other
+                                    parameters will be supported:
+                                    <literal>P0ClkIn</literal> (backplane P0
+                                    connector), <literal>Link</literal> (white rabbit?),
+                                    and <literal>DIPswitchSel</literal> (switch selectable).
+                                    These options are currently commented out in the
+                                    code as configuring them will result in
+                                    an error from the module.
+                                   </para>
+                                </listitem>
+                            </varlistentry>
+                            <varlistentry>
+                               <term><literal>outputfpclock</literal> <replaceable>bool</replaceable></term>
+                               <listitem>
+                                   <para>
+                                    If enabled, the clock selected from the module
+                                    will be echoed on the CLKOUT front panel
+                                    clock daisychain connector.
+                                   </para>
+                                   
+                                </listitem>
+                            </varlistentry>
+
+                        </variablelist>
+                        <para>
+                            An additional configuration parameter:
+                            <literal>outputp0clock</literal> that takes
+                             a boolean parameter is commented out as it is
+                             not (yet?) supported by the module and configuring
+                             it will cause the module to report an error.
+                        </para>
+                    </refsect2>
+                    <refsect2>
+                        <title>Trigger options</title>
+                        <para>
+                            Define the module and channel triggers.  Note that
+                            channel trigger options are aggregated into single
+                            options with 64 entry lists.
+                        </para>
+                        <variablelist>
+                            <varlistentry>
+                               <term><literal>startsource</literal> <replaceable>list-of-enums</replaceable></term>
+                               <listitem>
+                                   <para>
+                                    Determines, after the digitizer is armed what
+                                    can start acquisition.  The configuration value
+                                    is a list of things that can start acquisition.
+                                    The actual start is the first of the items in the
+                                    list to  occur.  For example if the list is
+                                    <literal>SINedge LVDS</literal>, then when
+                                    the digitizer is armed either an edge on the
+                                    SIN input or the LVDS inputs can start the digitizer.
+                                    Whichever occurs first in time will actually
+                                    cause the start.
+                                   </para>
+                                   <para>
+                                    Needless to say, if sychronized starts are required
+                                    (remember it's the start the clears the timestamp),
+                                    one or more of the hardware start options should be used.
+                                   </para>
+                                   <para>
+                                    The enumerations have the following value:
+                                   </para>
+                                   <itemizedlist>
+                                    <listitem>
+                                       <para>
+                                          <literal>EncodedClkIn</literal>,
+                                          the clock in on the clock daisy chain
+                                          starts the digitizer.
+                                       </para>
+                                    </listitem>
+                                    <listitem>
+                                       <para>
+                                          <literal>SINlevel</literal> the digitizer
+                                          run as long as the SIN input is asserted. Note that
+                                          this allows for multiple starts.
+                                       </para>
+                                    </listitem>
+                                    <listitem>
+                                       <para>
+                                          <literal>SINedge</literal>  the digitizer
+                                          starts on the first edge that asserts SIN.
+                                       </para>
+                                    </listitem>
+                                    <listitem>
+                                       <para>
+                                          <literal>SWcmd</literal> the digitizer
+                                          can be started witha software start.
+                                       </para>
+                                    </listitem>
+                                    <listitem>
+                                       <para>
+                                          <literal>LVDS</literal>  The digitizer
+                                          can be started by LVDS inputs if appropriately configured.
+                                       </para>
+                                    </listitem>
+                                    <listitem>
+                                       <para>
+                                          <literal>P0</literal>, while this can
+                                          be configured, it is not actually supported
+                                          (I think).  If configured, the digitizer
+                                          can be started by the start input on the P0
+                                          backplane connector.
+                                       </para>
+                                    </listitem>
+                                   </itemizedlist>
+                                </listitem>
+                            </varlistentry>
+                            <varlistentry>
+                               <term><literal>gbltriggersrc</literal> <replaceable>list-of-enums</replaceable></term>
+                               <listitem>
+                                   <para>
+                                    Describes the list of allowed global trigger sources.
+                                    The configuration parameter is a list of enumerated
+                                    values.  The list specifies the contributers
+                                    to the module global trigger.  THe final global
+                                    trigger is the or of the conditions specified.
+                                   </para>
+                                   <para>
+                                    The configuration value is a properly formed
+                                    list.  Items in that list must be one of:
+                                    </para>
+                                   <itemizedlist>
+                                    <listitem>
+                                       <para>
+                                          <literal>TrgIn</literal>  the TRGIN
+                                          front panel connector.
+                                       </para>
+                                    </listitem>
+                                    <listitem>
+                                       <para>
+                                          P0 (probably not supported) A trigger
+                                          input on the P0 backplane connector.
+                                       </para>
+                                    </listitem>
+                                    <listitem>
+                                       <para>
+                                          <literal>SwTrg</literal>  software
+                                          trigger command.
+                                       </para>
+                                    </listitem>
+                                    <listitem>
+                                       <para>
+                                          <literal>LVDS</literal>  LVDS input
+                                          properly configured.
+                                       </para>
+                                    </listitem>
+                                    <listitem>
+                                       <para>
+                                          <literal>ITLA</literal> the output
+                                          of the internal trigger logic block A
+                                       </para>
+                                    </listitem>
+                                    <listitem>
+                                       <para>
+                                          <literal>ITLB</literal>  output of
+                                          the inbternal logic trigger block B
+                                       </para>
+                                    </listitem>
+                                    <listitem>
+                                       <para>
+                                          <literal>ITLA_AND_ITLB</literal>
+                                          The boolean and of the two trigger logic
+                                          blocks.
+                                       </para>
+                                    </listitem>
+                                    <listitem>
+                                       <para>
+                                           <literal>ITLA_OR_ITLB</literal> the
+                                           boolean or of the two trigger logic
+                                           blocks.
+                                       </para>
+                                    </listitem>
+                                    <listitem>
+                                       <para>
+                                          <literal>EncodedClkIn</literal>
+                                          the CLKIN daisy chain signal.
+                                       </para>
+                                    </listitem>
+                                    <listitem>
+                                       <para>
+                                          <literal></literal>  the properly
+                                          configured GPIO front panel input.
+                                       </para>
+                                    </listitem>
+                                    <listitem>
+                                       <para>
+                                          <literal>TestPulse</literal>
+                                          the initiation of the test pulser.
+                                       </para>
+                                    </listitem>
+                                   </itemizedlist>
+                                </listitem>
+                            </varlistentry>
+                            <varlistentry>
+                               <term><literal>wavetriggersrc</literal> <replaceable>enumerated-list*64</replaceable></term>
+                               <listitem>
+                                   <para>
+                                    Determines when wave form acquisition is triggered.
+                                    The configuration parameter is a 64 element list
+                                    with one element per channel.  The list elements,
+                                    are themselves lists of enumerated values, the
+                                    OR of which defines the waveform trigger for
+                                    the associated channel.
+                                   </para>
+                                   <para>
+                                    Lists are in Tcl format and <literal>{}</literal>
+                                    can be used or 
+                                    <command>[list item1 item2...]</command> to
+                                    create the nested list as a Tcl interpreter is
+                                    created and used to process the list.
+                                   </para>
+                                   <para>
+                                    The inner list elements can have the following
+                                    values:
+                                   </para>
+                                   <itemizedlist>
+                                    <listitem>
+                                       <para>
+                                          <literal>ITLA</literal> logic block A
+                                       </para>
+                                    </listitem>
+                                    <listitem>
+                                       <para>
+                                          <literal>ITLB</literal>  logic block B
+                                       </para>
+                                    </listitem>
+                                    <listitem>
+                                       <para>
+                                          <literal>GlobalTriggerSource</literal>,
+                                          the global trigger source defined above.
+                                       </para>
+                                    </listitem>
+                                    <listitem>
+                                       <para>
+                                          <literal>TRGIN</literal>  the TRGIN
+                                          front panel input.
+                                       </para>
+                                    </listitem>
+                                    <listitem>
+                                       <para>
+                                          <literal>SWTrg</literal>  a software
+                                          trigger command.
+                                       </para>
+                                    </listitem>
+                                    <listitem>
+                                       <para>
+                                          <literal>ExternalInhibit</literal>
+                                          the front panel inhibit input.
+                                       </para>
+                                    </listitem>
+                                    <listitem>
+                                       <para>
+                                          <literal>ADCUnderSaturation</literal>
+                                          ADC input drops below the accepted
+                                          voltage ranage.
+                                       </para>
+                                    </listitem>
+                                    <listitem>
+                                       <para>
+                                          <literal>ADCOverSaturation</literal>
+                                          ADC input is above the accepted voltage
+                                          range.
+                                       </para>
+                                    </listitem>
+                                    <listitem>
+                                       <para>
+                                          <literal>ChSelfTrigger</literal>
+                                          the channels fast filter zero crossing.
+                                       </para>
+                                    </listitem>
+                                    <listitem>
+                                       <para>
+                                          <literal>Ch64Trigger</literal> any
+                                          of the channel self triggers described
+                                          by the value of that channel's
+                                          <literal>channeltriggermasks</literal>
+                                          mask.
+                                       </para>
+                                    </listitem>
+                                    <listitem>
+                                       <para>
+                                          <literal>Disabled</literal>  waveform
+                                          acquisition for the channel is disabled
+                                          in the sense that it cannot be triggered.
+                                       </para>
+                                    </listitem>
+                                   </itemizedlist>
+                                </listitem>
+                            </varlistentry>
+                            <varlistentry>
+                               <term><literal>eventtriggersrc</literal> <replaceable>enumerated-list*64</replaceable></term>
+                               <listitem>
+                                   <para>
+                                    As with <literal>wavetriggesrc</literal> but
+                                    specifies, for each channel the even trigger.
+                                    The values  in each channel trigger list
+                                    can be taken from the following list:
+                                   </para>
+                                   <itemizedlist>
+                                    <listitem>
+                                       <para>
+                                          <literal>ITLA</literal> logic block A
+                                       </para>
+                                    </listitem>
+                                    <listitem>
+                                       <para>
+                                          <literal>ITLB</literal>  logic block B
+                                       </para>
+                                    </listitem>
+                                    <listitem>
+                                       <para>
+                                          <literal>GlobalTriggerSource</literal>,
+                                          the global trigger source defined above.
+                                       </para>
+                                    </listitem>
+                                    <listitem>
+                                       <para>
+                                          <literal>TRGIN</literal>  the TRGIN
+                                          front panel input.
+                                       </para>
+                                    </listitem>
+                                    <listitem>
+                                       <para>
+                                          <literal>SWTrg</literal>  a software
+                                          trigger command.
+                                       </para>
+                                    </listitem>
+                                    <listitem>
+                                       <para>
+                                          <literal>ChSelfTrigger</literal>
+                                          the channels fast filter zero crossing.
+                                       </para>
+                                    </listitem>
+                                    <listitem>
+                                       <para>
+                                          <literal>Ch64Trigger</literal> any
+                                          of the channel self triggers described
+                                          by the value of that channel's
+                                          <literal>channeltriggermasks</literal>
+                                          mask.
+                                       </para>
+                                    </listitem>
+                                    <listitem>
+                                       <para>
+                                          <literal>Disabled</literal>  waveform
+                                          acquisition for the channel is disabled
+                                          in the sense that it cannot be triggered.
+                                       </para>
+                                    </listitem>
+                                   </itemizedlist>
+                                </listitem>
+                            </varlistentry>
+                            <varlistentry>
+                               <term><literal>channeltriggermasks</literal><replaceable> list-of-ints*64</replaceable></term>
+                               <listitem>
+                                   <para>
+                                    Provides a list of 64 bit trigger masks
+                                    for each channel.  When a channel trigger
+                                    (event or wave) is set to include
+                                    <literal>Ch64Trigger</literal>, the bits
+                                    in this mask determine which of those triggers
+                                    are actually able to trigger this channel.
+                                   </para>
+                                   <para>
+                                    Note that the mask values can be expresssed
+                                    as hex constants e.g.
+                                    <literal>0xa5a5a5a5a5a5a5a5</literal> which
+                                     allows every other channel to provide a trigger.
+                                   </para>
+                                </listitem>
+                            </varlistentry>
+                            <varlistentry>
+                               <term><literal>savetraces</literal> <replaceable>Always | OnRequest</replaceable></term>
+                               <listitem>
+                                   <para>
+                                    Determines when traces can be saved to the event.
+                                   </para>
+                                </listitem>
+                            </varlistentry>
+                            <varlistentry>
+                               <term><literal>triggeroutmode</literal> <replaceable>enum</replaceable></term>
+                               <listitem>
+                                   <para>
+                                    Determines which signal is output on the
+                                    TRGOUT front panel LEMO connector.
+                                    This can be one  of:
+                                    <itemizedlist>
+                                        <listitem>
+                                           <para>
+                                              <literal>TRGIN</literal>  The
+                                              <literal>TRGIN</literal> lemo input
+                                              signal is echoed oin <literal>TRGOUT</literal>
+                                           </para>
+                                        </listitem>
+                                        <listitem>
+                                           <para>
+                                              <literal>P0</literal>  unimplemented
+                                              The backplane P0 connector's
+                                              trigger in is echoed to
+                                              <literal>TRGOUT</literal>
+                                           </para>
+                                        </listitem>
+                                        <listitem>
+                                           <para>
+                                              <literal>SwTrigger</literal>
+                                              Pulses when a software trigger is given.
+                                           </para>
+                                        </listitem>
+                                        <listitem>
+                                           <para>
+                                               <literal>LVDS</literal> If LVDS
+                                               inputs are programmed to be triggers,
+                                               the LVDS trigger is reflected here.
+                                           </para>
+                                        </listitem>
+                                        <listitem>
+                                           <para>
+                                              <literal>ITLA</literal> reflects the
+                                              ouptput of the Internal A trigger
+                                              logic block.
+                                           </para>
+                                        </listitem>
+                                        <listitem>
+                                           <para>
+                                              <literal>ITLB</literal> reflects the
+                                              ouptput of the Internal B trigger
+                                              logic block.
+                                           </para>
+                                        </listitem>
+                                        <listitem>
+                                           <para>
+                                              <literal>ITLA_AND_ITLB</literal> The
+                                              boolean and of the ITLA and ITLB
+                                              ouptputs
+                                           </para>
+                                        </listitem>
+                                        <listitem>
+                                           <para>
+                                               <literal>ITLA_OR_ITLB</literal>
+                                               the boolean or of the ITLA and
+                                               ITLB outputs.
+                                           </para>
+                                        </listitem>
+                                        <listitem>
+                                           <para>
+                                               <literal>EncodedClkIn</literal>
+                                               CLKIN input.  This is not yet implemented
+                                               on the board.
+                                           </para>
+                                        </listitem>
+                                        <listitem>
+                                           <para>
+                                              <literal>Run</literal>  echoes the
+                                              board run state.
+                                           </para>
+                                        </listitem>
+                                        <listitem>
+                                           <para>
+                                              <literal>RefClk</literal> outputs
+                                              the onboard 62.5MHz reference
+                                              clock.
+                                           </para>
+                                        </listitem>
+                                        <listitem>
+                                           <para>
+                                              <literal>TestPulse</literal>
+                                              trigger of the test pulse pulser.
+                                           </para>
+                                        </listitem>
+                                        <listitem>
+                                           <para>
+                                              <literal>Busy</literal>  reflects the
+                                              board busy state.
+                                           </para>
+                                        </listitem>
+                                        <listitem>
+                                           <para>
+                                              <literal>Fixed0</literal> the output
+                                              is deasserted.
+                                           </para>
+                                        </listitem>
+                                        <listitem>
+                                           <para>
+                                              <literal>Fixed1</literal> the output
+                                              is asserted.
+                                           </para>
+                                        </listitem>
+                                        <listitem>
+                                           <para>
+                                              <literal>SyncIn</literal>  reflects
+                                              the SyncIn input.
+                                           </para>
+                                        </listitem>
+                                        <listitem>
+                                           <para>
+                                              <literal>SIN</literal>  reflects the
+                                              SIN input.
+                                           </para>
+                                        </listitem>
+                                        <listitem>
+                                           <para>
+                                              <literal>GPIO</literal>  reflects
+                                              the GPIO when programmed as an
+                                              input.
+                                           </para>
+                                        </listitem>
+                                        <listitem>
+                                           <para>
+                                              <literal>AcceptTrg</literal>
+                                              pulses when a trigger has been
+                                              validated and accepted.
+                                           </para>
+                                        </listitem>
+                                        <listitem>
+                                           <para>
+                                              <literal>TrgClk</literal>
+                                              echoes the internal trigger clock
+                                              train.
+                                           </para>
+                                        </listitem>
+                                    </itemizedlist>
+                                   </para>
+                                </listitem>
+                            </varlistentry>
+                            <varlistentry>
+                               <term><literal>gpiomode</literal> <replaceable>enum</replaceable></term>
+                               <listitem>
+                                   <para>
+                                    Defines the functionality and direction of the
+                                    GPIO LEMO connector.  This can be one of the
+                                    following values:
+                                    <itemizedlist>
+                                        <listitem>
+                                           <para>
+                                              <literal>Disabled</literal>  the
+                                              connector is unused.
+                                           </para>
+                                        </listitem>
+                                        <listitem>
+                                           <para>
+                                              <literal>TrgIn</literal>
+                                              The connector is an input and used
+                                              for the external trigger.
+                                           </para>
+                                        </listitem>
+                                        <listitem>
+                                           <para>
+                                              <literal>P0</literal> The connector
+                                              is an output and reflects the
+                                              P0 backplane trigger input.
+                                           </para>
+                                        </listitem>
+                                        <listitem>
+                                           <para>
+                                              <literal>SIN</literal> The connector
+                                              is an output and reflects the
+                                              SIN input
+                                           </para>
+                                        </listitem>
+                                        <listitem>
+                                           <para>
+                                              <literal>LVDS</literal>
+                                              The connector is an output. If an
+                                              LVDS quartet is programmed as a trigger
+                                              input, reflects this trigger.
+                                           </para>
+                                        </listitem>
+                                        <listitem>
+                                           <para>
+                                              <literal>ITLA</literal>  The connector
+                                              is an output and reflects the output
+                                              of the ITLA block.
+                                           </para>
+                                        </listitem>
+                                        <listitem>
+                                           <para>
+                                              <literal>ITLB</literal>  The connector
+                                              is an output and reflects the output
+                                              of the ITLB block.
+                                           </para>
+                                        </listitem>
+                                        <listitem>
+                                           <para>
+                                              <literal>ITLA_AND_ITLB</literal>  The connector
+                                              is an output and reflects the boolean
+                                              and of the two internal trigger logic
+                                              blocks.
+                                           </para>
+                                        </listitem>
+                                        <listitem>
+                                           <para>
+                                              <literal>ITLA_OR_ITLB</literal>  The connector
+                                              is an output and reflects the boolean OR
+                                              of the two internal logic trigger
+                                              blocks.
+                                           </para>
+                                        </listitem>
+                                        <listitem>
+                                           <para>
+                                               <literal>EncodedClkIn</literal>
+                                               CLKIN input.  This is not yet implemented
+                                               on the board.
+                                           </para>
+                                        </listitem>
+                                        <listitem>
+                                           <para>
+                                              <literal>Run</literal>  echoes the
+                                              board run state.
+                                           </para>
+                                        </listitem>
+                                        <listitem>
+                                           <para>
+                                              <literal>RefClk</literal> outputs
+                                              the onboard 62.5MHz reference
+                                              clock.
+                                           </para>
+                                        </listitem>
+                                        <listitem>
+                                           <para>
+                                              <literal>SwTrg</literal> The
+                                              connector is an output and
+                                              pulses when a software trigger
+                                              is given.
+                                           </para>
+                                        </listitem>
+                                        <listitem>
+                                           <para>
+                                              <literal>TestPulse</literal>
+                                              trigger of the test pulse pulser.
+                                           </para>
+                                        </listitem>
+                                        <listitem>
+                                           <para>
+                                              <literal>Busy</literal>  reflects the
+                                              board busy state.
+                                           </para>
+                                        </listitem>
+                                        <listitem>
+                                           <para>
+                                              <literal>Fixed0</literal> the output
+                                              is deasserted.
+                                           </para>
+                                        </listitem>
+                                        <listitem>
+                                           <para>
+                                              <literal>Fixed1</literal> the output
+                                              is asserted.
+                                           </para>
+                                        </listitem>
+                                    </itemizedlist>
+                                   </para>
+                                </listitem>
+                            </varlistentry>
+                            <varlistentry>
+                               <term><literal>busyinsrc</literal> <replaceable>enum</replaceable></term>
+                               <listitem>
+                                   <para>
+                                    Defines a source for a busy input.  When this
+                                    source is asserted, the board will not accept
+                                    triggers.  This allows conditions to be established
+                                    for a global busy.
+                                    The value can be one of
+                                    <itemizedlist>
+                                        <listitem>
+                                           <para>
+                                              <literal>Disabled</literal>
+                                              There is no buy input source.
+                                           </para>
+                                        </listitem>
+                                        <listitem>
+                                           <para>
+                                              <literal>SIN</literal> The SIN
+                                              LEMO provides the global busy.
+                                           </para>
+                                        </listitem>
+                                        <listitem>
+                                           <para>
+                                              <literal>GPIO</literal> The GPIO
+                                              when programmed as an input provides
+                                              the busy in.
+                                           </para>
+                                        </listitem>
+                                        <listitem>
+                                           <para>
+                                              <literal>LVDS</literal> any LVDS
+                                              quartet programmed as a TRGIN
+                                              provides the global busy.
+                                           </para>
+                                        </listitem>
+                                    </itemizedlist>
+                                   </para>
+                                </listitem>
+                            </varlistentry>
+                            <varlistentry>
+                               <term><literal>syncoutmode</literal><replaceable> enum</replaceable></term>
+                               <listitem>
+                                   <para>
+                                    Determines what it output on the SYNCOUT
+                                    front panel LEMO connector.   This can be
+                                    one of the following:
+                                    <itemizedlist>
+                                        <listitem>
+                                           <para>
+                                               <literal>Disabled</literal>
+                                               The ouptput is disabled.
+                                           </para>
+                                        </listitem>
+                                        <listitem>
+                                           <para>
+                                               <literal>SyncIn</literal>
+                                               The output echoes the
+                                               SyncIn input.
+                                           </para>
+                                        </listitem>
+                                        <listitem>
+                                           <para>
+                                              <literal>TestPulse</literal>
+                                              the output reflects the test pulser
+                                              trigger.
+                                           </para>
+                                        </listitem>
+                                        <listitem>
+                                           <para>
+                                              <literal>IntClk</literal>
+                                              The output reflects the board's
+                                              internal 62.5MHz clock.
+                                           </para>
+                                        </listitem>
+                                        <listitem>
+                                           <para>
+                                              <literal>Run</literal>
+                                              The output reflects the board's
+                                              run state.
+                                           </para>
+                                        </listitem>
+                                    </itemizedlist>
+                                   </para>
+                                </listitem>
+                            </varlistentry>
+                            <varlistentry>
+                               <term><literal>boardvetosrc</literal> <replaceable>enum</replaceable></term>
+                               <listitem>
+                                   <para>
+                                    Determines the signal that will start the
+                                    board's trigger veto.  See also
+                                    <literal>boardvetowidth</literal>.
+                                    The value of this parameter must be one of the
+                                    following:
+                                    <itemizedlist>
+                                        <listitem>
+                                           <para>
+                                              <literal>SIN</literal>
+                                              The SIN input is used as the veto.
+                                           </para>
+                                        </listitem>
+                                        <listitem>
+                                           <para>
+                                              <literal>LVDS</literal>
+                                              Any LVDS quartet programmed as a TRGIN
+                                              can be the veto.
+                                           </para>
+                                        </listitem>
+                                        <listitem>
+                                           <para>
+                                              <literal>GPIO</literal> the GPIO
+                                              when programmed as an input
+                                              can bet he veto.
+                                           </para>
+                                        </listitem>
+                                        <listitem>
+                                           <para>
+                                              <literal>P0</literal>  The backplane
+                                              P0 signal can a be a trigger
+                                              (documentation does not specify
+                                              which backplane signal. I don't
+                                              believe boads with a P0 connector
+                                              have been implemented yet in any event.
+                                           </para>
+                                        </listitem>
+                                        <listitem>
+                                           <para>
+                                              <literal>EncodedClkIn</literal>
+                                              The CLKIN is used note that this is
+                                              not yet implemented.
+                                           </para>
+                                        </listitem>
+                                        <listitem>
+                                           <para>
+                                              <literal>Disabled</literal> there is no
+                                              board veto source.
+                                           </para>
+                                        </listitem>
+                                    </itemizedlist>
+                                   </para>
+                                </listitem>
+                            </varlistentry>
+                            <varlistentry>
+                               <term><literal>boardvetowidth</literal> <replaceable>integer</replaceable></term>
+                               <listitem>
+                                   <para>
+                                    The veto width in nanoseconds.  See
+                                    <literal>boardvetosrc</literal> above as well.
+                                   </para>
+                                </listitem>
+                            </varlistentry>
+                            <varlistentry>
+                               <term><literal>boardvetopolarity</literal> <replaceable>ActiveHigh | ActiveLow</replaceable></term>
+                               <listitem>
+                                   <para>
+                                    Determines the interpretation of the board
+                                    veto.  If <literal>ActiveHigh</literal>
+                                    is used the veto is actually a veto.  If
+                                    <literal>ActiveLow</literal> is used, the
+                                    veto is actually a gate.
+                                   </para>
+                                </listitem>
+                            </varlistentry>
+                            <varlistentry>
+                               <term><literal>chanvetosources</literal> <replaceable>enum-list</replaceable></term>
+                               <listitem>
+                                   <para>
+                                    List of 64 channel veto sources.  The veto
+                                    for each channel can be independently chosen
+                                    from amongst:
+                                   </para>
+                                   <variablelist>
+                                    <varlistentry>
+                                       <term><literal>BoardVeto</literal></term>
+                                       <listitem>
+                                           <para>
+                                            The Board veto output is used.
+                                           </para>
+                                        </listitem>
+                                    </varlistentry>
+                                    <varlistentry>
+                                       <term><literal>ADCOverSaturation</literal></term>
+                                       <listitem>
+                                           <para>
+                                            Veto when the ADC has inputs above its
+                                            high limit
+                                           </para>
+                                        </listitem>
+                                    </varlistentry>
+                                    <varlistentry>
+                                       <term><literal>ADCUnderSaturation</literal></term>
+                                       <listitem>
+                                           <para>
+                                            Veto when the ADC has inputs below
+                                            its low limit.
+                                           </para>
+                                        </listitem>
+                                    </varlistentry>
+                                    <varlistentry>
+                                       <term><literal>Disabled</literal></term>
+                                       <listitem>
+                                           <para>
+                                            There is no per channel veto.
+                                           </para>
+                                        </listitem>
+                                    </varlistentry>
+                                   </variablelist>
+                                </listitem>
+                            </varlistentry>
+                            <varlistentry>
+                               <term><literal>chanvetowidth</literal><replaceable>int-list</replaceable></term>
+                               <listitem>
+                                   <para>
+                                    Each channel veto has a gate generator which
+                                    sets the width of the veto pulse. The width
+                                    is specified in nanoseconds and can be between
+                                    0 and 524280.   There is text in the manual that
+                                    may imply this only is used when the veto
+                                    source is one of the ADC saturation conditions.
+                                   </para>
+                                </listitem>
+                            </varlistentry>
+                            <varlistentry>
+                               <term><literal>rundelay</literal> <replaceable>int</replaceable></term>
+                               <listitem>
+                                   <para>
+                                    The run delay is used when the RUN signal is
+                                    electronic rather than software.  Since it is
+                                    the RUN start that actually clears the timestamp,
+                                    This can be used to compensate for different
+                                    delays in the start from board to board.
+                                    For example if the SIN-GPIO are used to create
+                                    a start daisy chain the last module in the
+                                    board would have a run delay of 0 while the
+                                    previous boards would have increasing delays
+                                    as you go towards the source of the daisy chain.
+                                   </para>
+                                   <para>
+                                    Units are nanoseconds and can be in the range of
+                                    0-524280
+                                    </para>
+                                </listitem>
+                            </varlistentry>
+                            <varlistentry>
+                               <term><literal>autodisarm</literal> <replaceable>bool</replaceable></term>
+                               <listitem>
+                                   <para>
+                                    When true, when the run stops, the module is
+                                    disarmed.  This prevents additional start
+                                    conditions from starting the module again
+                                    (and is the normal case).  An example of
+                                    when it might be useful to not automatically
+                                    disarm the module would be in a pulsed beam
+                                    environment when the module could be configured
+                                    only to run during the beam on condition but
+                                    by making the run condition the beam on
+                                    condition.
+                                   </para>
+                                </listitem>
+                            </varlistentry>
+                            <varlistentry>
+                               <term><literal>volclkoutdelay</literal> <replaceable>int</replaceable></term>
+                               <listitem>
+                                   <para>
+                                    Delays the clock output relative to the input.
+                                    The delay is specified in units of picoseconds
+                                    and is in the range -18888 to 18888.
+                                    This can be used to align the clocks seen
+                                    by all boards.  For example in a system where
+                                    clocks are distributed from a clock master module
+                                    along the CLKIN/CLIKOUT daisy chain, one would
+                                    set this value to 0 at the end module and have
+                                    increasing delays up the daisy chain towards the
+                                    master to compensate for the differences in
+                                    signal propagation delay along the daisy chain.
+                                   </para>
+                                   <para>
+                                    Note that the board has a volatile clock delay,
+                                    which is written directly to the registers
+                                    of the clock PLL.  The module also has
+                                    a <literal>permclkoutdelay</literal> that is
+                                    stored in non-volatile memory and
+                                    written to the PLL at power up.  Since this is
+                                    overwritten by the <literal>volclkoutdelay</literal>
+                                    parameter that parameter need not be set.
+                                   </para>
+                                </listitem>
+                            </varlistentry>
+                        </variablelist>
+                    </refsect2>
+                    <refsect2>
+                        <title>Inspection Options</title>
+                        <para>
+                            The module supports two analog and four digital
+                            probes.   These can be returned with the event.
+                            In addition to providing access to the raw waveforms,
+                            in case the user wants to do their own digital signal
+                            processing, several diagnostic probes can be selected
+                            to troubleshoot module setup.
+                        </para>
+                        <para>
+                            This section of parameters controls the selection
+                            of these probes.  Furthermore the source of data
+                            presented to the FADCs can be controlled for testing
+                            purposes.
+                        </para>
+                        <variablelist>
+                            <varlistentry>
+                               <term><literal>wavesource</literal> <replaceable>enum-list</replaceable></term>
+                               <listitem>
+                                   <para>
+                                    The source of data digitized by the flash
+                                    ADC can be selected independently for each channel.
+                                    Normally <literal>ADC-DATA</literal> will be
+                                    selected but for testing without a source of
+                                    input data other options are available.
+                                   </para>
+                                   <para>
+                                    Each element of thel ist determines the source
+                                    of data for that channel. Values can be taken
+                                    from the following list.
+                                   </para>
+                                   <variablelist>
+                                    <varlistentry>
+                                       <term><literal>ADC_DATA</literal></term>
+                                       <listitem>
+                                           <para>
+                                            The ADC input is digitized.
+                                           </para>
+                                        </listitem>
+                                    </varlistentry>
+                                    <varlistentry>
+                                       <term><literal>ADC_TEST_TOGGLE</literal></term>
+                                       <listitem>
+                                           <para>
+                                            The ADC toggles between full scale and
+                                            0.
+                                           </para>
+                                        </listitem>
+                                    </varlistentry>
+                                    <varlistentry>
+                                       <term><literal>ADC_TEST_RAMP</literal></term>
+                                       <listitem>
+                                           <para>
+                                            The ADC is givena ramp signal
+                                           </para>
+                                        </listitem>
+                                    </varlistentry>
+                                    <varlistentry>
+                                       <term><literal>ADC_TEST_SIN</literal></term>
+                                       <listitem>
+                                           <para>
+                                            The ADC is given a sinusoidal input.
+                                           </para>
+                                        </listitem>
+                                    </varlistentry>
+                                    <varlistentry>
+                                       <term><literal>IPE</literal></term>
+                                       <listitem>
+                                           <para>
+                                            Not implemented
+                                           </para>
+                                        </listitem>
+                                    </varlistentry>
+                                    <varlistentry>
+                                       <term><literal>Ramp</literal></term>
+                                       <listitem>
+                                           <para>
+                                            The ADC is given data from a ramp generator
+                                           </para>
+                                        </listitem>
+                                    </varlistentry>
+                                    <varlistentry>
+                                       <term><literal>SquareWave</literal></term>
+                                       <listitem>
+                                           <para>
+                                            The ADC is given an internal test pulser
+                                            square wave.
+                                           </para>
+                                        </listitem>
+                                    </varlistentry>
+                                    <varlistentry>
+                                       <term><literal>ADC_TEST_PRBS</literal></term>
+                                       <listitem>
+                                           <para>
+                                            Not documented in the manual.
+                                           </para>
+                                        </listitem>
+                                    </varlistentry>
+                                   </variablelist>
+                                </listitem>
+                            </varlistentry>
+                            <varlistentry>
+                               <term><literal>recordsamples</literal> <replaceable>int-list</replaceable></term>
+                               <listitem>
+                                   <para>
+                                    Number of samples each FADCs will record for each channel.
+                                   </para>
+                                </listitem>
+                            </varlistentry>
+                            <varlistentry>
+                               <term><literal>waveresolutions</literal> <replaceable>enum-list</replaceable></term>
+                               <listitem>
+                                   <para>
+                                    The wave-form resolution.  This determines
+                                    the signal decimation.   Each channel's
+                                    decimation can be set independently and the
+                                    resolution must be chose from the following
+                                    list:
+                                   </para>
+                                   <variablelist>
+                                    <varlistentry>
+                                       <term><literal>Res8</literal></term>
+                                       <listitem>
+                                           <para>
+                                            Decimation is such that each sample is
+                                            an 8ns bucket.
+                                           </para>
+                                        </listitem>
+                                    </varlistentry>
+                                    <varlistentry>
+                                       <term><literal>Res16</literal></term>
+                                       <listitem>
+                                           <para>
+                                            Decimation is such that each sample is
+                                            an 16ns bucket.
+                                           </para>
+                                        </listitem>
+                                    </varlistentry>
+                                    <varlistentry>
+                                       <term><literal>Res32</literal></term>
+                                       <listitem>
+                                           <para>
+                                            Decimation is such that each sample is
+                                            an 32ns bucket.
+                                           </para>
+                                        </listitem>
+                                    </varlistentry>
+                                    <varlistentry>
+                                       <term><literal>Res64</literal></term>
+                                       <listitem>
+                                           <para>
+                                            Decimation is such that each sample is
+                                            an 64ns bucket.
+                                           </para>
+                                        </listitem>
+                                    </varlistentry>
+                                   </variablelist>
+                                </listitem>
+                            </varlistentry>
+                            <varlistentry>
+                               <term><literal>analogprobe</literal>1|2 <replaceable>enum-list</replaceable></term>
+                               <listitem>
+                                   <para>
+                                    Each channel has two analog probes.  They can
+                                    be set with the <literal>analogprobe1</literal>
+                                    and <literal>analogprobe2</literal> configuration
+                                    paramters.  Thyese
+                                    configuration parameters take a 64 element list
+                                    of enums that define the analog probes for that
+                                    channel.
+                                   </para>
+                                   <para>
+                                    The values of each element of the list must
+                                    be one of:
+                                   </para>
+                                   <variablelist>
+                                    <varlistentry>
+                                       <term><literal>ADCInput</literal></term>
+                                       <listitem>
+                                           <para>
+                                            The raw input to the FADC for that
+                                            channel
+                                           </para>
+                                        </listitem>
+                                    </varlistentry>
+                                    <varlistentry>
+                                       <term>TimeFilter</term>
+                                       <listitem>
+                                           <para>
+                                            The input waveform after it has
+                                            passsed through the timing filter.
+                                           </para>
+                                        </listitem>
+                                    </varlistentry>
+                                    <varlistentry>
+                                       <term><literal>EnergyFilter</literal></term>
+                                       <listitem>
+                                           <para>
+                                            The input waveform after it has passed
+                                            through the energy (trapezoidal) filter.
+                                           </para>
+                                        </listitem>
+                                    </varlistentry>
+                                    <varlistentry>
+                                       <term><literal>EnergyFilterBaseline</literal></term>
+                                       <listitem>
+                                           <para>
+                                            The
+                                            running baseline computed by the energy filter.
+                                           </para>
+                                        </listitem>
+                                    </varlistentry>
+                                    <varlistentry>
+                                       <term><literal>EnergyFilterMinusBaseline</literal></term>
+                                       <listitem>
+                                           <para>
+                                            The baseline subtracted energy filtered
+                                            waveform.
+                                           </para>
+                                        </listitem>
+                                    </varlistentry>
+                                   </variablelist>
+                                </listitem>
+                            </varlistentry>
+                            <varlistentry>
+                               <term><literal>digitalprobe</literal>1-4 <replaceable>enum-list</replaceable></term>
+                               <listitem>
+                                   <para>
+                                    Each channel can have four digital probes
+                                    defined.  A digital probe produces "waveforms"
+                                    that have values 1 or 0 depending on the state
+                                    of some boolean condition in the digital
+                                    signal processing.  
+                                   </para>
+                                   <para>
+                                    The digital probes for each channel are
+                                    defined using the configuration paramters
+                                    <literal>digitalprobe1</literal>,
+                                    <literal>digitalprobe2</literal>,
+                                    <literal>digitalprobe3</literal>,
+                                    and <literal>digitalprobe4</literal>.
+                                    The values of these configuration parameters
+                                    are 64 element lists.  Each element of the list
+                                    selects the associated digital probe for that
+                                    channel.
+                                   </para>
+                                   <para>
+                                    The values must be selected from the following
+                                    list:
+                                   </para>
+                                   <variablelist>
+                                    <varlistentry>
+                                       <term><literal>Trigger</literal></term>
+                                       <listitem>
+                                           <para>
+                                            1 when triggers occur.
+                                           </para>
+                                        </listitem>
+                                    </varlistentry>
+                                    <varlistentry>
+                                       <term><literal>TimeFilterArmed</literal></term>
+                                       <listitem>
+                                           <para>
+                                            True when the timing filter is armed.
+                                           </para>
+                                        </listitem>
+                                    </varlistentry>
+                                    <varlistentry>
+                                       <term><literal>ReTriggerGuard</literal></term>
+                                       <listitem>
+                                           <para>
+                                            True when in the retrigger guard
+                                            interval.
+                                           </para>
+                                        </listitem>
+                                    </varlistentry>
+                                    <varlistentry>
+                                       <term><literal>EnergyFilterBaselineFreeze</literal></term>
+                                       <listitem>
+                                           <para>
+                                            True when the energy filter has frozen
+                                            the baseline due to a pulse.
+                                           </para>
+                                        </listitem>
+                                    </varlistentry>
+                                    <varlistentry>
+                                       <term><literal>EnergyFilterPeaking</literal></term>
+                                       <listitem>
+                                           <para>
+                                            Energy filter peaking probe.
+                                           </para>
+                                        </listitem>
+                                    </varlistentry>
+                                    <varlistentry>
+                                       <term><literal>EnergyFilterPeakReady</literal></term>
+                                       <listitem>
+                                           <para>
+                                            True when the energy filter has determined
+                                            a peak value.
+                                           </para>
+                                        </listitem>
+                                    </varlistentry>
+                                    <varlistentry>
+                                       <term><literal>EnergyFilterPileUpGuard</literal></term>
+                                       <listitem>
+                                           <para>
+                                            True when the energy filter pileup
+                                            guard is active.
+                                           </para>
+                                        </listitem>
+                                    </varlistentry>
+                                    <varlistentry>
+                                       <term><literal>EventPileup</literal></term>
+                                       <listitem>
+                                           <para>
+                                            True when an event pileup has been
+                                            detected.
+                                           </para>
+                                        </listitem>
+                                    </varlistentry>
+                                    <varlistentry>
+                                       <term><literal>ADCSaturation</literal></term>
+                                       <listitem>
+                                           <para>
+                                            True when the ADC is in saturation.
+                                           </para>
+                                        </listitem>
+                                    </varlistentry>
+                                    <varlistentry>
+                                       <term><literal>ADCSaturationProtection</literal></term>
+                                       <listitem>
+                                           <para>
+                                            True when the ADC is in saturation
+                                            detection mode.
+                                           </para>
+                                        </listitem>
+                                    </varlistentry>
+                                    <varlistentry>
+                                       <term><literal>pretriggersamples</literal> <replaceable>int-list</replaceable></term>
+                                       <listitem>
+                                           <para>
+                                            A list of 64 integers that determine
+                                            the number of samples acquired prior
+                                            to the trigger for each channel.
+                                            The valid range is 4-4000.
+                                           </para>
+                                        </listitem>
+                                    </varlistentry>
+                                   </variablelist>
+                                </listitem>
+                            </varlistentry>
+                        </variablelist>
+                    </refsect2>
+                    <refsect2>
+                        <title>Service Options</title>
+                        <para>
+                            Service options mostly set the characteristics
+                            of the test pulser, however a few miscellaneous
+                            options are lumped by CAEN into this catgory.
+                        </para>
+                        <variablelist>
+                            <varlistentry>
+                               <term><literal>testpulseperiod</literal> <replaceable>int</replaceable></term>
+                               <listitem>
+                                   <para>
+                                    Sets the period of the test pulser in nanoseconds
+                                    the valid range is 0-34359738360 granularity
+                                    is 8ns
+                                   </para>
+                                </listitem>
+                            </varlistentry>
+                            <varlistentry>
+                               <term><literal>testpulsewidth</literal> <replaceable>int</replaceable></term>
+                               <listitem>
+                                   <para>
+                                    Sets the width of the test pulser pulse in
+                                    ns.  The valid range is 0-34359738360 granularity
+                                    is 8ns.
+                                   </para>
+                                </listitem>
+                            </varlistentry>
+                            <varlistentry>
+                               <term><literal>testpulselowlevel</literal> <replaceable>int</replaceable></term>
+                               <listitem>
+                                   <para>
+                                    Sets the pulse low level in 16 bit DAC units.
+                                    Valid values are 0-65535
+                                   </para>
+                                </listitem>
+                            </varlistentry>
+                            <varlistentry>
+                               <term><literal>testpulsehighlevel</literal> <replaceable>int</replaceable></term>
+                               <listitem>
+                                   <para>
+                                    Sets the test pulser high level  in DAC units.
+                                    Valid values are 0-65535.
+                                   </para>
+                                </listitem>
+                            </varlistentry>
+                            <varlistentry>
+                               <term><literal>iolevel</literal> <replaceable>NIM|TTL</replaceable></term>
+                               <listitem>
+                                   <para>
+                                    Sets the signalling levels of the LEMO I/Os.
+                                   </para>
+                                </listitem>
+                            </varlistentry>
+                            <varlistentry>
+                               <term><literal>errorflagmask</literal> <replaceable>int</replaceable></term>
+                               <listitem>
+                                   <para>
+                                    Bitmask ored with the actual module error sources
+                                    to determine the state of the LEDS on the module
+                                    front panel.
+                                   </para>
+                                </listitem>
+                            </varlistentry>
+                            <varlistentry>
+                               <term><literal>errorflagdatamask</literal> <replaceable>int</replaceable></term>
+                               <listitem>
+                                   <para>
+                                    Bitmask ored with the actual module error sources
+                                    to determine the state of the error bits in the
+                                    data returned by the module.
+                                   </para>
+                                </listitem>
+                            </varlistentry>
+                            
+                        </variablelist>
+                    </refsect2>
+                    <refsect2>
+                        <title>Internal Trigger Logic blocks</title>
+                        <para>
+                            The module contains two independent trigger logic blocks
+                            called Internal Trigger Logic A and Internal Trigger
+                            Logic B (ITLA and ITLB).  These are highly configurable
+                            logic blocks.  See figure 1 of section 2.5 of the
+                            FELib PHA Parameters User Manual for a block diagram
+                            and detailed description
+                            of these two logic blocks.
+                        </para>
+                        <para>
+                            This section provides descriptions of the configuration
+                            parameters that define how ITLA and ITLB operator.
+                            Note that for each ITLA parameter there is a corresponding
+                            ITLB parameter.   Therfore the list below descibes
+                            configuration parameters as itlxwhatever and the
+                            <literal>x</literal> should be understood to be either
+                            <literal>a</literal> or <literal>b</literal>.
+                        </para>
+                        <para>
+                            For example the parameter <literal>itlxlogic</literal>
+                            describes both the <literal>itlalogic</literal>
+                            and <literal>itlblogic</literal> configuration
+                            parameters.
+                        </para>
+                        <variablelist>
+                            <varlistentry>
+                               <term><literal>itlxlogic</literal> <replaceable>enum</replaceable></term>
+                               <listitem>
+                                   <para>
+                                    Determines the basic nature of the ITLx logic.
+                                    This can be one of
+                                    <literal>OR</literal>, <literal>AND</literal>
+                                    or <literal>Majority</literal>.
+                                   </para>
+                                </listitem>
+                            </varlistentry>
+                            <varlistentry>
+                               <term><literal>itlxmajoritylevel</literal> <replaceable>int</replaceable></term>
+                               <listitem>
+                                   <para>
+                                    If <literal>Majority</literal> was selected for the
+                                    corresponding <literal>itlxlogic</literal>, this
+                                    specifies the majority level.  Legal values
+                                    are 1 through 63
+                                   </para>
+                                </listitem>
+                            </varlistentry>
+                            <varlistentry>
+                               <term><literal>itlxpairlogic</literal> <replaceable>enum</replaceable></term>
+                               <listitem>
+                                   <para>
+                                    The channel trigger inputs to the logic blocks
+                                    are paired (channel 0 with 1 and so on). A
+                                    logic function can be applied to the
+                                    pairs prior to their inputs being applied
+                                    to the logic block.
+                                   </para>
+                                   <para>
+                                    The pair logic operates such that if a logic
+                                    function is enabled, both channel inputs
+                                    look the same going into the trigger block and,
+                                    therefore, the majorigy level is a majority of
+                                    pairs.
+                                   </para>
+                                   <para>
+                                    Valid values for the pair logic are:
+                                    <literal>AND</literal>, <literal>OR</literal>
+                                    <literal>NONE</literal> where <literal>NONE</literal>
+                                    means that the channel trigger is fed directly
+                                    into the logic block rather than paired.
+                                   </para>
+                                </listitem>
+                            </varlistentry>
+                            <varlistentry>
+                               <term><literal>itlxpolarity</literal> <replaceable>Direct |Inverted</replaceable></term>
+                               <listitem>
+                                   <para>
+                                    Determines if the logic block output reflects
+                                     a true condition (<literal>Direct</literal>)
+                                     or a false condition (<literal>Inverted</literal>).
+                                   </para>
+                                </listitem>
+                            </varlistentry>
+                            <varlistentry>
+                               <term><literal>itlxmask</literal> <replaceable>int</replaceable></term>
+                               <listitem>
+                                   <para>
+                                    Ones in this bitmask determine which channels
+                                    participate in the logic block.
+                                   </para>
+                                </listitem>
+                            </varlistentry>
+                            <varlistentry>
+                               <term><literal>itlxgatewidth</literal> <replaceable>int</replaceable></term>
+                               <listitem>
+                                   <para>
+                                    Determines how long the logic block remains
+                                    assserterd in nanoseconds.  This can be
+                                    a value from 0 through 5248280.  Note that the
+                                    granularity is 8ns steps.
+                                   </para>
+                                </listitem>
+                            </varlistentry>
+                        </variablelist>
+                        
+                    </refsect2>
                 </refsect1>
             </refentry>
         </section>
