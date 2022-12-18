@@ -15,7 +15,8 @@ CPPUNIT_LDFLAGS=$(shell pkg-config cppunit --libs)
 FELIB_CPPFLAGS=
 FELIB_LDFLAGS=-lCAEN_FELib 
 
-TRACING=-DENABLE_TRACING
+#TRACING=-DENABLE_TRACING
+TRACING=
 
 DIG2_CPPFLAGS=
 DIG2_LDFLAGS= #  -lCAEN_Dig2 
@@ -129,7 +130,7 @@ TEST_MODULE_CONNECTION=15236
 
 tests:  fejackettests triggertests configtests
 	- .//fejackettests $(TEST_MODULE_CONNECTION) $(TEST_MODULE_ISUSB)
-	- ./triggertests $(TEST_MODULE_CONNECTION) $(TEST_MODULE_ISUSB)
+	- # ./triggertests $(TEST_MODULE_CONNECTION) $(TEST_MODULE_ISUSB)
 	- ./configtests $(TEST_MODULE_CONNECTION) $(TEST_MODULE_ISUSB)
 
 fejackettests: TestRunner.o devtests.o vx2750phatests.o \
