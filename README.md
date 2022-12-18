@@ -26,7 +26,7 @@ will be frozen and the code migrated into the mainline NSCLDAQ code base.
 ````
      make install PREFIX=/usr/opt/lbnl
 ````    
-6.  Read the documentation that was installed at $PREFIX/html e.g.
+6.  Read the documentation that was installed at $PREFIX/share/html e.g.
 ````
      firefox /usr/opt/lbnl/html/index.html
 ````    
