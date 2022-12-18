@@ -700,6 +700,7 @@ void set_tracing(bool onoff) {   // always legal but no-op if no tracing compile
     bool
     Dig2Device::hasData() const
     {
+        
         auto status =  CAEN_FELib_HasData(m_endpointHandle, 0);
 #ifdef ENABLE_TRACING
         if (enableTracing) {
@@ -713,7 +714,17 @@ void set_tracing(bool onoff) {   // always legal but no-op if no tracing compile
             daqlog::trace(logmsg);
         }
 #endif
-        return (status == CAEN_FELib_Success) || (status == CAEN_FELib_Stop);
+        if ((status == CAEN_FELib_Timeout) || (status == CAEN_FELib_Stop)) {
+            return false;
+        } else if (status == CAEN_FELib_Success) {
+            return true;
+        } else {
+            std::stringstream strMessage;
+            strMessage << "Check for data available failed: " << lastError();
+            std::string msg = strMessage.str();
+            throw std::runtime_error(msg);
+        }
+
     }
     ///////////////////////////////////////////////////////////////
     // Utlity methods.
