@@ -1424,10 +1424,10 @@ void cfgtest::filter_1()
     // Note peaking average is tested in the next test...
     
     for (int i = 0; i < 64; i++) {
-        EQ(std::uint32_t(128), m_pModule->getTimeFilterRiseTime(i));
-        EQ(std::uint32_t(8), m_pModule->getTimeFilterRetriggerGuardTime(i));
+        //EQ(std::uint32_t(128), m_pModule->getTimeFilterRiseSamples(i));
+        EQ(std::uint32_t(8), m_pModule->getTimeFilterRetriggerGuardSamples(i));
         
-        EQ(std::uint32_t(160), m_pModule->getEnergyFilterRiseTime(i));
+        EQ(std::uint32_t(160), m_pModule->getEnergyFilterRiseSamples(i));
         EQ(std::uint32_t(160), m_pModule->getEnergyFilterFlatTopTime(i));
         EQ(std::uint32_t(60), m_pModule->getEnergyFilterPeakingPosition(i));
         ASSERT(std::abs(90 -  (int)m_pModule->getEnergyFilterPoleZeroTime(i)) < 4);
@@ -1452,7 +1452,7 @@ void cfgtest::filter_2()
     // Ensure the relationship between flattoptime, peaking position and
     // averaging can be met:
     
-    m_pConfig->configure("efflattoptime", itemToList("3000"));
+    m_pConfig->configure("efflattoptime", itemToList("375"));
     m_pConfig->configure("efpeakingpos", itemToList("10"));
     
     for (int i = 0; i < stravgs.size(); i++) {

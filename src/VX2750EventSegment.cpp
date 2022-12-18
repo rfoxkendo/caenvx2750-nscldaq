@@ -19,7 +19,9 @@
 * @file     VX2750EventSegment.cpp
 * @brief    Implement an event segment for a VX27x0 module.
 * @author   Ron Fox
-*
+* @todo     Can we only initialize on the init command unless changes to the
+* configuration have beenmade?  That would speed up begin run tremendously esp.
+* for larger collections of digitizers.
 */
 
 #include "VX2750EventSegment.h"
