@@ -149,6 +149,7 @@ private:
 public:
     void setUp() {
         m_pModule = new VX2750Pha(connection.c_str(), isUsb);
+        m_pModule->Reset();
     }
     void tearDown() {
         delete m_pModule;
