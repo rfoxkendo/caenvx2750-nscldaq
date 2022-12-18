@@ -19,7 +19,7 @@
 * @file     VX2750Pha.cpp
 * @brief    Implements the PHA class layered on Dig2Device.cpp
 * @author   Ron Fox
-*
+* @todo     ITLConnect can support multiple connections.
 */
 #include "VX2750Pha.h"
 #include <stdexcept>
@@ -3906,7 +3906,7 @@ static const std::map<VX2750Pha::Endpoint, std::string> endpointToString = {
         return result;
     }
     /**
-     * oListToSTringList
+     * orListToSTringList
      *     Takes a string of pipe separated items and
      *     turns it into an array of those items.  It is assumed that whitespace
      *     is not significant.
