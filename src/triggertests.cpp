@@ -44,8 +44,10 @@ private:
     VX2750Pha* m_pModule;
 public:
     void setUp() {
-      caen_nscldaq::set_tracing(true);
+      caen_nscldaq::set_tracing(false);
         m_pModule = new VX2750Pha(connection.c_str(), isUsb);
+        m_pModule->Reset();
+
     }
     void tearDown() {
         delete m_pModule;
@@ -106,6 +108,7 @@ void triggertests::raw_1()
         bool hasdata;
         m_pModule->Clear();
         m_pModule->Arm();
+        m_pModule->Start();
         CPPUNIT_ASSERT_NO_THROW(m_pModule->Start());
         for (int i =0; i < TRIGGER_COUNT; i++) CPPUNIT_ASSERT_NO_THROW(m_pModule->Trigger());
         usleep(DELAY_US);
@@ -170,6 +173,7 @@ triggertests::cooked_1()
         m_pModule->Clear();
 	
         m_pModule->Arm();
+        m_pModule->Start();
 	
         CPPUNIT_ASSERT_NO_THROW(m_pModule->Start());
         for (int i =0; i < TRIGGER_COUNT; i++) CPPUNIT_ASSERT_NO_THROW(m_pModule->Trigger());
