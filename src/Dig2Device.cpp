@@ -684,8 +684,8 @@ void set_tracing(bool onoff) {   // always legal but no-op if no tracing compile
         // we'll get Stop.
         
 
-        if ((status == CAEN_FELib_Timeout ) ||  (status != CAEN_FELib_Stop)) return false;
-                if((status != CAEN_FELib_Success) ) {
+        if ((status == CAEN_FELib_Timeout ) ||  (status == CAEN_FELib_Stop)) return false;
+        if((status != CAEN_FELib_Success) ) {
             std::stringstream strMessage;
             strMessage << "ReadData failed: " << lastError();
             std::string msg = strMessage.str();
