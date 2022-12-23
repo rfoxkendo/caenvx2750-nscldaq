@@ -11631,6 +11631,357 @@ namespace caen_nscldaq {
                         </variablelist>
                         
                     </refsect2>
+                    <refsect2>
+                        <title>LVDS I/O options</title>
+                        <para>
+                            The module has 16 LVDS I/O pins on a ribbon connector
+                            at the bottom left of the module.  The function and
+                            directionality of these pins can be programmed in
+                            four pin sets called <firstterm>quartets</firstterm>.
+                            As such most configuration parameters for the LVDS
+                            configuration have values that are four element lists.
+                        </para>
+                        <variablelist>
+                            <varlistentry>
+                               <term><literal>lvdsmode</literal> <replaceable>4 element enum list</replaceable></term>
+                               <listitem>
+                                   <para>
+                                    Defines the function of each quartet of LVDS
+                                    I/O pins.  Elements of the list mst be one of
+                                   </para>
+                                   <variablelist>
+                                    <varlistentry>
+                                       <term><literal>SelfTriggers</literal></term>
+                                       <listitem>
+                                           <para>
+                                            The pins in the quartet must be programmed
+                                            as ouputs and the refelct the channel self triggers.
+                                            See, however <literal>lvdstrgmask</literal>.
+                                            
+                                           </para>
+                                        </listitem>
+                                    </varlistentry>
+                                    <varlistentry>
+                                       <term><literal>Sync</literal></term>
+                                       <listitem>
+                                           <para>
+                                            The pins of the quartet are
+                                            assigned to syncrhonization functions.
+                                            Pin0 of the quartet reflects the
+                                            <literal>Run</literal> state.
+                                            Pin1, the <literal>Trigger</literal>
+                                            Pin 2 the <literal>BUsy</literal>
+                                            and Pin 3 the<literal>Veto</literal>.
+                                           </para>
+                                        </listitem>
+                                    </varlistentry>
+                                    <varlistentry>
+                                       <term><literal>IORegister</literal></term>
+                                       <listitem>
+                                           <para>
+                                            The pins are an input or output register
+                                            depending on the direction seleced for
+                                            the quartet.   
+                                           </para>
+                                           <para>
+                                            The configuration has o way to set/get
+                                            the I/O register value, however
+                                            user code can make use of the configuration
+                                            to set quartet(s) to <literal>IORegister</literal>
+                                            and then, divorced from configuration,
+                                            read/write the configuration.
+                                           </para>
+                                        </listitem>
+                                    </varlistentry>
+                                   </variablelist>
+                                </listitem>
+                            </varlistentry>
+                            <varlistentry>
+                               <term><literal>lvdsdirection</literal> <replaceable>(Input | Output ) *4</replaceable></term>
+                               <listitem>
+                                   <para>
+                                    In modes, like e.g. <literal>IORegister</literal>, defines
+                                    whether the pins of a quartet are inputs or outputs.
+                                    Note that there are LEDS ont he front panel for each
+                                    quartet that reflect the selection.
+                                   </para>
+                                </listitem>
+                            </varlistentry>
+                            <varlistentry>
+                               <term><literal>lvdstrgmask</literal> <replaceable>list of 16 integers</replaceable></term>
+                               <listitem>
+                                   <para>
+                                    When the mode is
+                                    <literal>SelfTrigger</literal>, the triggers from the
+                                    64 channels are bitwise anded with a pin's associated
+                                    trigger mask before being presented to the pin.
+                                   </para>
+                                </listitem>
+                            </varlistentry>
+                        </variablelist>
+                    </refsect2>
+                    <refsect2>
+                        <title>DAC Configuration and Options</title>
+                        <para>
+                            The module has a LEMO connector labeled
+                            <literal>DAC Output</literal> on its front panel.
+                            As the label suggests this is connected to the output
+                            of a DAC.  The DAC Can be prorammed to have several
+                            functions:
+                        </para>
+                        <variablelist>
+                            <varlistentry>
+                               <term><literal>dacoutmode</literal> <replaceable>enum</replaceable></term>
+                               <listitem>
+                                   <para>
+                                    Defines where the input to the DAC comes from,
+                                    that is what the analog signal the DAC
+                                    presents on the front panel means.  Legal
+                                    values are:
+                                   </para>
+                                   <variablelist>
+                                    <varlistentry>
+                                       <term><literal>Static</literal></term>
+                                       <listitem>
+                                           <para>
+                                            The value is a static level determined
+                                            by the <literal>dacoutputlevel</literal>
+                                            configuration parameter.
+                                           </para>
+                                        </listitem>
+                                    </varlistentry>
+                                    <varlistentry>
+                                       <term><literal>IPE</literal></term>
+                                       <listitem>
+                                           <para>
+                                            Unimplemented at present.
+                                           </para>
+                                        </listitem>
+                                    </varlistentry>
+                                    <varlistentry>
+                                       <term><literal>ChInput</literal></term>
+                                       <listitem>
+                                           <para>
+                                            The input to the channel
+                                            defined by the <literal>dacoutchannel</literal>
+                                            configuration parameter.
+                                           </para>
+                                        </listitem>
+                                    </varlistentry>
+                                    <varlistentry>
+                                       <term><literal>MemOccupancy</literal></term>
+                                       <listitem>
+                                           <para>
+                                            Not yet implemented.  Intended to show
+                                            the amount of unread memory occupied
+                                            by data.
+                                           </para>
+                                        </listitem>
+                                    </varlistentry>
+                                    <varlistentry>
+                                       <term><literal>ChSum</literal></term>
+                                       <listitem>
+                                           <para>
+                                            The analog sum of all channel inputs.
+                                           </para>
+                                        </listitem>
+                                    </varlistentry>
+                                    <varlistentry>
+                                       <term><literal>OverThrSum</literal></term>
+                                       <listitem>
+                                           <para>
+                                            The DAC output is pproprotional to thee
+                                            number of channels that are currently above
+                                            their self trigger thresholds.
+                                           </para>
+                                        </listitem>
+                                    </varlistentry>
+                                    <varlistentry>
+                                       <term><literal>Ramp</literal></term>
+                                       <listitem>
+                                           <para>
+                                            DAC output is a sawtooth driven by a
+                                            14 bit counter.
+                                           </para>
+                                        </listitem>
+                                    </varlistentry>
+                                    <varlistentry>
+                                       <term><literal>Sin5MHz</literal></term>
+                                       <listitem>
+                                           <para>
+                                            Output is a 5MHz sine.
+                                           </para>
+                                        </listitem>
+                                    </varlistentry>
+                                    <varlistentry>
+                                       <term><literal>Square</literal></term>
+                                       <listitem>
+                                           <para>
+                                            Square wave output with a period
+                                            determined by the test pulse period
+                                            and width set by the test pulse width
+                                            with amplitude defined by the
+                                            test pulse low and high levels.
+                                           </para>
+                                        </listitem>
+                                    </varlistentry>
+                                   </variablelist>
+                                </listitem>
+                            </varlistentry>
+                            <varlistentry>
+                               <term><literal>dacoutputlevel</literal> <replaceable>int</replaceable></term>
+                               <listitem>
+                                   <para>
+                                    The value fed to the DAC when it is in
+                                    <literal>Static</literal> mode.
+                                   </para>
+                                </listitem>
+                            </varlistentry>
+                            <varlistentry>
+                               <term><literal>dacoutchannel</literal> <replaceable>int</replaceable></term>
+                               <listitem>
+                                   <para>
+                                    The channel who's input is reflected at the
+                                    DAC output if <literal>ChInput</literal>
+                                    mode is selected.
+                                   </para>
+                                </listitem>
+                            </varlistentry>
+                        </variablelist>
+                    </refsect2>
+                    <refsect2>
+                        <title>Input Signal Conditioning Parameters</title>
+                        <para>
+                            This section defines parameters that control how
+                            the input signals are handled.  These are parameters
+                            that are prior to digitization in the signal
+                            processing pipeline.
+                        </para>
+                        <variablelist>
+                            <varlistentry>
+                               <term><literal>vgagain</literal> <replaceable>integer list (4 elements)</replaceable></term>
+                               <listitem>
+                                   <para>
+                                    This parameter is only used if the module is
+                                    of the 2745 family.  Each set of 16 channels
+                                    in those modules has a variable gain amplifier in
+                                    common.   The values in the list set the gains
+                                    for each of the four VGAs.   Values can be
+                                    between 0 andf 40.
+                                   </para>
+                                </listitem>
+                            </varlistentry>
+                            <varlistentry>
+                               <term><literal>offsetcalibrationenable</literal> <replaceable>bool</replaceable></term>
+                               <listitem>
+                                   <para>
+                                    THe DC offset (see <literal>dcoffsets</literal>)
+                                    are not necessarily linear.  A calibration is
+                                    normally applied to linearize the settings.
+                                    This parameter can disable that calibration.
+                                    Normally this value should be
+                                    <literal>true</literal>, which is the default
+                                    and only set to <literal>false</literal>
+                                    if determining the calibration.
+                                   </para>
+                                </listitem>
+                            </varlistentry>
+                            <varlistentry>
+                               <term><literal>channelenables</literal> <replaceable>list of bools (64)</replaceable></term>
+                               <listitem>
+                                   <para>
+                                    A boolean for each channel determines if that channel
+                                    is enabled.  Note that the default is to enable
+                                    all channels.
+                                   </para>
+                                </listitem>
+                            </varlistentry>
+                            <varlistentry>
+                               <term><literal>dcoffsets</literal> <replaceable>list of floats (64)</replaceable></term>
+                               <listitem>
+                                   <para>
+                                    The DC offset for each channel.  This DC offset
+                                    is superimposed with the input singal prior
+                                    to digitization.  The values of the list are
+                                    floating point percentages of full scale.
+                                   </para>
+                                </listitem>
+                            </varlistentry>
+                            <varlistentry>
+                               <term><literal>triggerthresholds</literal> <replaceable>list of integers (64)</replaceable></term>
+                               <listitem>
+                                   <para>
+                                    For each channel the digital threshold
+                                    (13 bit number)  that determines the self trigger.
+                                    This trigger threshold is evaluated by the
+                                    time filter to determine a self-trigger and the
+                                    trigger time.
+                                   </para>
+                                </listitem>
+                            </varlistentry>
+                            <varlistentry>
+                               <term><literal>inputpolarities</literal> <replaceable>Positive|Negative list of 64</replaceable></term>
+                               <listitem>
+                                   <para>
+                                    List of input polarities, one per channel.  If
+                                    the value is <literal>Positive</literal>,
+                                    the pulse is assumed to peak upwards from
+                                    its baseline.  If <literal>Negative</literal>,
+                                    the puls peaks downward fromt he baseline.
+                                   </para>
+                                </listitem>
+                            </varlistentry>
+                            
+                        </variablelist>
+                    </refsect2>
+                    <refsect2>
+                        <title>Event Selection Options</title>
+                        <para>
+                            The module has an extensive set of event selection
+                            options:
+                        </para>
+                        <variablelist>
+                            <varlistentry>
+                               <term><literal>energyskimlow</literal> <replaceable>int list (64)</replaceable></term>
+                               <listitem>
+                                   <para>
+                                    The module provides for the ability to set a
+                                    low level cut on the value from the DPP-PHA
+                                    algorithm.  This sets the value of the cutoff
+                                    for each channel.
+                                   </para>
+                                   <para>
+                                    Energy cuts are referred to as
+                                    <firstterm>energy skims</firstterm>.
+                                   </para>
+                                </listitem>
+                            </varlistentry>
+                            <varlistentry>
+                               <term><literal>energyskimhigh</literal><replaceable>int list (64)</replaceable></term>
+                               <listitem>
+                                   <para>
+                                    Sets the high level cutoff from the energy
+                                    cut for each channel when it is used.
+                                   </para>
+                                </listitem>
+                            </varlistentry>
+                            <varlistentry>
+                               <term><literal>eventselector</literal> <replaceable>enum-list (64)</replaceable></term>
+                               <listitem>
+                                   <para>
+                                    Sets the event selection criteria.  If an
+                                    event fails this criterion it is not
+                                    transmitted by the board to the host.
+                                    This setting is channel by channel and can be
+                                    any of
+                                    <literal>All</literal>,
+                                    <literal>Pileup</literal> or
+                                    <literal>EnergySkim</literal>
+                                   </para>
+                                </listitem>
+                            </varlistentry>
+                        </variablelist>
+                    </refsect2>
                 </refsect1>
             </refentry>
         </section>
