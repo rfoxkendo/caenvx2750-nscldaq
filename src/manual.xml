@@ -335,6 +335,7 @@ cp $DAQROOT/skeletons/sbs/* .
 #include &lt;TclConfiguredReadout.h&gt;   <co id='rdo.classinc' />
 #include &lt;Dig2Device.h&gt;             <co id='rdo.tracinginc' />
 
+using namespace caen_nscldaq;
 ...
 
 void
@@ -9720,7 +9721,7 @@ public:
                 <refsynopsisdiv>
                     <programlisting>
 #include &lt;VX2750PHAModuleConfiguration.h&gt;
-
+namespace caen_nscldaq {
 class VX2750PHAModuleConfiguration : public ::XXUSB::CConfigurableObject
 {
 public:
@@ -9743,9 +9744,9 @@ public:
     void configure(std::string name, std::string value);
     
 };
-namespace caen_nscldaq {
 
-};
+
+}
 
                     </programlisting>
                 </refsynopsisdiv>
@@ -11980,8 +11981,2456 @@ namespace caen_nscldaq {
                                    </para>
                                 </listitem>
                             </varlistentry>
+                            <varlistentry>
+                               <term><literal>coincidencemask</literal> <replaceable>list of enums (64)</replaceable></term>
+                               <listitem>
+                                   <para>
+                                    Determines the coincidence condition that can
+                                    generate a trigger on each channel.  The
+                                    value of each element of the list must be
+                                    one of:
+                                   </para>
+                                   <variablelist>
+                                    <varlistentry>
+                                       <term><literal>Disabled</literal></term>
+                                       <listitem>
+                                           <para>
+                                            Coincidence trigering is disabled.
+                                           </para>
+                                        </listitem>
+                                    </varlistentry>
+                                    <varlistentry>
+                                       <term><literal>Ch64Trigger</literal></term>
+                                       <listitem>
+                                           <para>
+                                            Any of the other channel triggers can
+                                            generate a coincidence trigger.
+                                           </para>
+                                        </listitem>
+                                    </varlistentry>
+                                    <varlistentry>
+                                       <term><literal>TRGIN</literal></term>
+                                       <listitem>
+                                           <para>
+                                            The TRGIN front panel input can
+                                            generate a coincidence trigger.
+                                           </para>
+                                        </listitem>
+                                    </varlistentry>
+                                    <varlistentry>
+                                       <term><literal>GlobalTriggerSource</literal></term>
+                                       <listitem>
+                                           <para>
+                                            The selected global trigger can generate a
+                                            coincidence trigger.
+                                           </para>
+                                        </listitem>
+                                    </varlistentry>
+                                    <varlistentry>
+                                       <term><literal>ITLA</literal></term>
+                                       <listitem>
+                                           <para>
+                                            The ITLA logic block can generate a
+                                            coincidence trigger.
+                                           </para>
+                                        </listitem>
+                                    </varlistentry>
+                                    <varlistentry>
+                                       <term><literal>ITLB</literal></term>
+                                       <listitem>
+                                           <para>
+                                            The ITLB logic block can generate a
+                                            coincidence trigger.
+                                           </para>
+                                        </listitem>
+                                    </varlistentry>
+                                   </variablelist>
+                                </listitem>
+                            </varlistentry>
+                            <varlistentry>
+                               <term><literal>anticoincidencemask</literal> <replaceable>enum list (64)</replaceable></term>
+                               <listitem>
+                                   <para>
+                                    Defines the anti-concidence trigger for each
+                                    channel note that the values for each element of
+                                    the list come from the same values as for
+                                    <literal>coincidencemask</literal>.
+                                   </para>
+                                </listitem>
+                            </varlistentry>
+                            <varlistentry>
+                               <term><literal>coincidencelength</literal>> <replaceable>list of 64 ints</replaceable></term>
+                               <listitem>
+                                   <para>
+                                    Nanoseconds for which the coincidence/anti-coincidence
+                                    window is open.
+                                   </para>
+                                </listitem>
+                            </varlistentry>
                         </variablelist>
                     </refsect2>
+                    <refsect2>
+                        <title>DPP-PHA parameters</title>
+                        <para>
+                            Samples from the module's FADC chip are read by on-board
+                            FPGAs which apply two digital filters to them.
+                            The first fileter, the <firstterm>time filter</firstterm>
+                            is used to determine trigger timing.
+                            The second trigger, the <firstterm>energy filter</firstterm>
+                            is used to determine the peak height of the
+                            signal.
+                        </para>
+                        <para>
+                            The parameters described in this section configure
+                            these two filters on a channel-by-channel basis.
+                            In general, time filter parameters have names like
+                            <literal>tfxxxxx</literal> while energy filter
+                            parameters have names like <literal>efxxxxxx</literal>.
+                        </para>
+                        <para>
+                            While the API supports setting these parameters in both
+                            samples and nanoseconds, the configuration must choose
+                            one as the underlying software does not understand
+                            linked parameters.
+                        </para>
+                        <variablelist>
+                            <varlistentry>
+                               <term><literal>tfrisetime</literal> <replaceable>integer list (64)</replaceable></term>
+                               <listitem>
+                                   <para>
+                                    The timing filter rise time in samples for each
+                                    channel.
+                                   </para>
+                                </listitem>
+                            </varlistentry>
+                            <varlistentry>
+                               <term><literal>tfretriggerguard</literal> <replaceable>integer list (64)</replaceable></term>
+                               <listitem>
+                                   <para>
+                                    The retrigger guard time in samples for each
+                                    channel.  This is the time window in which
+                                    additional derivative zero-crossings will be
+                                    ignored.  It helps guard against fake pile-ups
+                                    from e.g. signal ringing on the trailing pulse
+                                    edge.
+                                   </para>
+                                </listitem>
+                            </varlistentry>
+                            <varlistentry>
+                               <term><literal>efrisetime</literal> <replaceable>integer list (64)</replaceable></term>
+                               <listitem>
+                                   <para>
+                                    The energy filter rise time in samples for
+                                    each channel.  If one thinks of the
+                                    trapezoidal filter as a digital shaping
+                                    amplifier, the rise time is
+                                    <literal>shaping-time*2/2.5</literal>.
+                                   </para>
+                                </listitem>
+                            </varlistentry>
+                            <varlistentry>
+                               <term><literal>efflattoptime</literal> <replaceable>integer list (64)</replaceable></term>
+                               <listitem>
+                                   <para>
+                                    For each channel, specifies the flat-top time
+                                    of the trapezoidal filter in samples.
+                                   </para>
+                                </listitem>
+                            </varlistentry>
+                            <varlistentry>
+                               <term><literal>efpeakingpos</literal> <replaceable>integer list (64)</replaceable></term>
+                               <listitem>
+                                   <para>
+                                    Specifies the peaking position i8n percentag of flat top
+                                    for each channel.
+                                   </para>
+                                </listitem>
+                            </varlistentry>
+                            <varlistentry>
+                               <term><literal>efpeakingavg</literal> <replaceable>enum list (64)</replaceable></term>
+                               <listitem>
+                                   <para>
+                                    For each channel specicifies the number
+                                     of samples averaged in the flattop to get the
+                                     energy value. Legal values are
+                                     <literal>1, 4, 16</literal> or <literal>64</literal>
+                                   </para>
+                                </listitem>
+                            </varlistentry>
+                            <varlistentry>
+                               <term><literal>efpoloe0</literal> <replaceable>integer list (64)</replaceable></term>
+                               <listitem>
+                                   <para>
+                                    The pole zero compensation value for each trigger
+                                     in units of samples.
+                                   </para>
+                                </listitem>
+                            </varlistentry>
+                            <varlistentry>
+                               <term><literal>effinegain</literal>  <replaceable>float list (64)</replaceable></term>
+                               <listitem>
+                                   <para>
+                                    For each channel sets the digital gain
+                                    of the energy.
+                                   </para>
+                                </listitem>
+                            </varlistentry>
+                            <varlistentry>
+                               <term><literal>eflflimitation</literal> <replaceable>bool list (64)</replaceable></term>
+                               <listitem>
+                                   <para>
+                                    For each channel allows the enable/disable
+                                    of a low frequency filter.
+                                   </para>
+                                </listitem>
+                            </varlistentry>
+                            <varlistentry>
+                               <term><literal>efbaselineavg</literal> <replaceable>enum list (64)</replaceable></term>
+                               <listitem>
+                                   <para>
+                                    For each channel sets the number of samples
+                                    over which the running average that produces
+                                    the baseline value is performed.
+                                    Legal values are:
+                                    <literal>0, 16, 64, 256, 1024, 4096,</literal>
+                                    or <literal>16384</literal>
+                                   </para>
+                                </listitem>
+                            </varlistentry>
+                            <varlistentry>
+                               <term><literal>efbaselineguardt</literal> <replaceable>integer list (64)</replaceable></term>
+                               <listitem>
+                                   <para>
+                                    For each channel sets and additional baseline
+                                    freeze time past the end of the trapezoid
+                                    in nanoseconds.
+                                   </para>
+                                </listitem>
+                            </varlistentry>
+                            <varlistentry>
+                               <term><literal>efpileupguard</literal> <replaceable>integer list (64)</replaceable></term>
+                               <listitem>
+                                   <para>
+                                    For each channel extends the pileup detection
+                                    by a number of nanoseconds beyond the end of
+                                    the trapezoid.
+                                   </para>
+                                </listitem>
+                            </varlistentry>
+                        </variablelist>
+                    </refsect2>
+                </refsect1>
+            </refentry>
+            <refentry>
+               <refmeta>
+                  <refentrytitle>VX2750TclConfig</refentrytitle>
+                  <manvolnum>3daq</manvolnum>
+               </refmeta>
+               <refnamediv>
+                  <refname>VX2750TclConfig</refname>
+                  <refpurpose>Tcl scripted configuration.</refpurpose>
+                </refnamediv>
+                <refsynopsisdiv>
+                    <programlisting>
+#include &lt;VX2750TclConfig.h&gt;
+namespace caen_nscldaq {
+class VX2750TclConfig : public ::CTCLObjectProcessor
+{
+public:
+    VX2750TclConfig(CTCLInterpreter&amp; interp, const char* pName);
+    
+    int operator()(CTCLInterpreter&amp; interp, std::vector&lt;CTCLObject&gt;&amp; objv);
+    VX2750PHAModuleConfiguration* getModule(const char* pName);
+    std::vector&lt;std::string&lt; listModules();
+  
+};
+}
+                    </programlisting>
+                </refsynopsisdiv>
+                <refsect1>
+                         <title>DESCRIPTION</title>
+                      <para>
+                        Provides a Tcl language extension for gathering named
+                        module configurations for CAEN Nextgen ADC's running
+                        the DPP-PHA firmware.
+                      </para>
+                      <para>
+                        The extension adds a single command which is a command
+                        ensemble.   In Tcl parlance, a command ensemble is a
+                        command whose operation depends on its first parameter,
+                        known as a subcommand, which is also called an
+                        ensemble command.
+                      </para>
+                      <para>
+                        The command ensemble's command name is determined
+                        at construction time.  Ensemble subcommands provide
+                        for the creation and deletion of named module configurations,
+                        the configuration and interrogation of existing named
+                        configurations and the ability to determine the
+                        configurations that have been defined.
+                      </para>
+                      <para>
+                        The programmatic interface provides for construction,
+                        which registers the command with the interpreter in such
+                        a way that the <methodname>operator()</methodname> method
+                        of the object is invoked properly when the base command
+                        is encountered in a script by the interpreter.
+                      </para>
+                      <para>
+                        Programs using this may also look up a configuration by its
+                        name and obtain a list of the names of configurations.
+                      </para>
+                      <para>
+                        For a normal use of this in context, see the
+                        <classname>TclConfiguredReadout</classname> class
+                        and documentation.
+                      </para>
+                </refsect1>
+                <refsect1>
+                    <title>METHODS</title>
+                    <variablelist>
+                        <varlistentry>
+                           <term><constructorsynopsis>
+                               <methodname>VX2750TclConfig</methodname>
+                            <methodparam>
+                                <type>CTCLInterpreter&amp;</type><parameter>interp</parameter>
+                            </methodparam>
+                            <methodparam>
+                                <type> const char* </type><parameter>pName</parameter>
+                            </methodparam>
+                           </constructorsynopsis></term>
+                           <listitem>
+                               <para>
+                                Constructs new object.  <parameter>interp</parameter>
+                                is a reference to an object wrapped Tcl interpreter
+                                on which the base command will be registered.
+                                <parameter>pName</parameter> provides the ensemble
+                                base command.
+                               </para>
+                               <para>
+                                By object wrapped we mean an <type>Tcl_Interp*</type>
+                                that's been wrapped in the Tcl++ C++ Tcl interface
+                                library.   See the documentation of
+                                Tcl++ for more.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>int </type>
+                              <methodname>operator()</methodname>
+                              <methodparam>
+                                  <type>CTCLInterpreter&amp;</type><parameter>interp</parameter>
+                              </methodparam>
+                              <methodparam>
+                                  <type>std::vector&lt;CTCLObject&gt;&amp; </type><parameter>objv</parameter>
+                              </methodparam>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                This method is automatically called by the
+                                Tcl interpreter <parameter>interp</parameter> when
+                                that interpreter has been asked to execute the
+                                command passedto the constructor.
+                                The command words (including the base command)
+                                are passed in the <parameter>objv</parameter>
+                                parameter.
+                               </para>
+                               <para>
+                                On success, the method will return
+                                <literal>TCL_OK</literal>, otherwise
+                                <literal>TCL_ERROR</literal>.  The interpreter result
+                                will generally be error information if
+                                <literal>TCL_ERRROR</literal> is returned
+                                and depends on the enemble command if
+                                <literal>TCL_OK</literal> is returned.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>VX2750PHAModuleConfiguration* </type>
+                              <methodname>getModule</methodname>
+                              <methodparam>
+                                  <type>const char* </type><parameter>pName</parameter>
+                              </methodparam>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Either returns a pointer to the configuration
+                                that is associated with <parameter>pName</parameter>
+                                or throws a string exception.  The
+                                command retains ownership of the object. However
+                                the configuration can subsequently be manipulated
+                                by the caller in any desired way.
+                               </para>
+                               <para>
+                                If <parameter>pName</parameter> does not refer
+                                to a configuration, a <classname>std::string</classname>
+                                exception is thrown.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>std::vector&lt;std::string&gt; </type>
+                              <methodname>listModules</methodname>
+                              <void />
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Returns a (possibly empty) vector of configuration
+                                names.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                    </variablelist>
+                </refsect1>
+                <refsect1>
+                    <title>ENSEMBLE COMMANDS</title>
+                    <para>
+                        Constructing provides a base command.
+                        In the documentation below the string
+                        <literal>xxxx</literal> is meant to be that base command.
+                        Subcommands
+                        determine what that base command does and are as follows:
+                    </para>
+                    <variablelist>
+                        <varlistentry>
+                           <term><cmdsynopsis>
+                              <command>
+ xxxx create <replaceable>name</replaceable>                         
+                              </command>
+                           </cmdsynopsis></term>
+                           <listitem>
+                               <para>
+                                Creates a new configuration; <parameter>name</parameter>.
+                                If <parameter>name</parameter> already is assigned
+                                to a configuration, <literal>TCL_ERROR</literal>
+                                is returned with the result set to
+                                <literal>Duplicate configuration name</literal>
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><cmdsynopsis>
+                              <command>
+xxxx config <replaceable>name parname value ...</replaceable>
+                              </command>
+                           </cmdsynopsis></term>
+                           <listitem>
+                               <para>
+                                Changes the configuration for
+                                <parameter>name</parameter>.  The pairs that follow
+                                are configuration option names and their new
+                                proposed values.
+                               </para>
+                               <para>
+                                If <parameter>name</parameter> does not represent
+                                a configuration <literal>TCL_ERROR</literal> is
+                                returned are are any errors from the
+                                underlying configuration attempt
+                                (e.g. no such configuration parameter or value
+                                validation failure).
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><cmdsynopsis>
+                              <command>
+xxxx cget <replaceable>name paramname ...</replaceable>
+                              </command>
+                           </cmdsynopsis></term>
+                           <listitem>
+                               <para>
+                                Retrieves the textual representation of the parameter
+                                names from the configuration named
+                                <parameter>name</parameter>.  For each parameter
+                                name  specified a two elemenbt list is added to the
+                                result.  
+                               </para>
+                               <para>
+                                The parameter names and values are documented in the
+                                manpage for <classname>VX2750PhaConfiguration</classname>
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><cmdsynopsis>
+                              <command>
+xxxx delete <replaceable>name</replaceable>
+                              </command>
+                           </cmdsynopsis></term>
+                           <listitem>
+                               <para>
+                                Deletes the configuration  named
+                                <parameter>name</parameter>.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><cmdsynopsis>
+                              <command>
+xxxx list 
+                              </command>
+                           </cmdsynopsis></term>
+                           <listitem>
+                               <para>
+                                Returns the list of existing module
+                                configuration names as the result.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                    </variablelist>
+                </refsect1>
+            </refentry>
+            <refentry>
+               <refmeta>
+                  <refentrytitle>TclConfiguredReadout</refentrytitle>
+                  <manvolnum>3daq</manvolnum>
+               </refmeta>
+               <refnamediv>
+                  <refname>TclConfiguredReadout</refname>
+                  <refpurpose>Event Segment configured with Tcl</refpurpose>
+                </refnamediv>
+                <refsynopsisdiv>
+                    <programlisting>
+#include &lt;TCLConfiguredReadout.h&gt;
+namespace caen_nscldaq {
+class TclConfiguredReadout : public CEventSegment {
+public:
+    TclConfiguredReadout(const char* configFile, CExperiment* pExperiment);
+    void addModule(
+         const char* name, const char* connectionString, std::uint32_t sid,
+         bool isUsb = false
+    );
+    CEventTrigger* getTrigger();
+    
+    // Event segment interface:
+    
+    virtual void onBegin();
+    virtual void initialize();
+    virtual void disable();
+    virtual void onPause();
+    virtual void onResume();
+    virtual size_t read(void *pBuffer, size_t maxwords);
+};
+}
+                    </programlisting>
+                </refsynopsisdiv>
+                <refsect1>
+                         <title>DESCRIPTION</title>
+                      <para>
+                        NSCLDAQ has several frameworks for reading events.  The
+                        oldest, SBSReadout might be better named programmatic
+                        trigger responder, but that's a bit awkward.  SBSReadout
+                        was originally used to read data from VME crates that were
+                        interfaced to the host via a memory mapped fiber optic bus
+                        bridge.  
+                      </para>
+                      <para>
+                        In fact, however, SBSReadout has a very generalized concept
+                        of a trigger and actually makes no assumptions that the
+                        SBS bus bridge is actually used to interface it to the hardware
+                        it's reading.   
+                      </para>
+                      <para>
+                        SBSReadout organizes the readout itself around objects
+                        that are instances of classes derived from the
+                        <classname>EventSegment</classname> abstract base class.
+                        The base class provides a standard interface to the Readout
+                        which is implemented by each concrete class.
+                      </para>
+                      <para>
+                        <classname>TclConfiguredReadout</classname> is a class that
+                        can read a collection of nextgen CAEN digitizers running
+                        DPP-PHA  firmware.  The configuration of these digitizers
+                        is maintained externally in a Tcl configuration file that,
+                        at the beginning of each run is processed by a <classname>VX2750TclConfig</classname>
+                        instance.
+                      </para>
+                      <para>
+                        The SBS readout also requires a <firstterm>trigger object</firstterm>.
+                        The trigger object, derived from the <classname>CEventTrigger</classname>
+                        base class is polled in the readout thread and determines
+                        when an event must be read.  As modules are added to
+                        <classname>TclConfiguredReadout</classname>, a trigger object is
+                        generated that can determine which modules, if any, have
+                        data to read.
+                      </para>
+                </refsect1>
+                <refsect1>
+                    <title>METHODS</title>
+                    <variablelist>
+                       <varlistentry>
+                          <term><constructorsynopsis>
+                              <methodname>TclConfiguredReadout</methodname>
+                            <methodparam>
+                                <modifier>const</modifier><type>char*</type><parameter>configFile</parameter>
+                            </methodparam>
+                            <methodparam>
+                                <type>CExperiment*</type><parameter>pExperiment</parameter>
+                            </methodparam>
+                          </constructorsynopsis></term>
+                          <listitem>
+                              <para>
+                                Construction requires the name of the Tcl configuration
+                                file and a pointer to the SBSReadout experiment object.
+                                This latter object,
+                                <parameter>pExperiment</parameter>is available in the skeleton in the
+                                method that defines the readout and trigger to the
+                                framework.
+                           </para>
+                           <para>
+                            <parameter>configFile</parameter> is a path to a Tcl
+                            script that will be processsed by a Tcl interpreter
+                            at the beginning of reach run.  This interpreter has
+                            been extended by <classname>VX2750TclConfig</classname>
+                            instantiated with the base command
+                            <command>vx27xxpha</command>.
+                           </para>
+                        </listitem>
+                       </varlistentry>
+                       <varlistentry>
+                          <term><methodsynopsis>
+                             <type>void </type>
+                             <methodname>addModule</methodname>
+                             <methodparam>
+                                 <type>const char* </type><parameter>name</parameter>
+                             </methodparam>
+                             <methodparam>
+                                 <type>const char* </type><parameter>connectionString</parameter>
+                             </methodparam>
+                             <methodparam>
+                                 <type>std::uint32_t</type><parameter> sid</parameter>
+                             </methodparam>
+                             <methodparam>
+                                 <type>bool </type><parameter>isUsb</parameter>
+                                 <initializer>false</initializer>
+                             </methodparam>
+                          </methodsynopsis></term>
+                          <listitem>
+                            <para>
+                                Adds a new module to the readout segemnt.
+                                A trigger component is generated for the module.
+                                The <parameter>name</parameter> must match the
+                                name of a configuration that's crated in the
+                                configuration file via the
+                                <command>v27xxpha create</command> command.
+                            </para>
+                            <para>
+                                <parameter>connectionString</parameter> is the
+                                connection string that is passed to the CAEN API
+                                that specifies the module's host or NDIS identifier
+                                if the module is connected via USB>
+                            </para>
+                            <para>
+                                <parameter>sid</parameter> is the source id
+                                events hits from this module are tagged with for
+                                purposes of event buiding.
+                            </para>
+                            <para>
+                                <parameter>isUsb</parameter>, is an optional parameter
+                                that defaults to <literal>false</literal>.  If
+                                <literal>true</literal>, the module is connected
+                                to the host via a USB connection.  IF <literal>false</literal>,
+                                the module connection is via ETHERNET.
+                            </para>
+                        </listitem>
+                       </varlistentry>
+                       <varlistentry>
+                          <term><methodsynopsis>
+                             <type>CEventTrigger*</type>
+                             <methodname>getTrigger</methodname>
+                             <void />
+                          </methodsynopsis></term>
+                          <listitem>
+                            <para>
+                                As modules are added to the object, a trigger object
+                                is computed that includes all modules known to
+                                the object.  This method returns that trigger so that
+                                it can be registered as the experiment trigger.
+                                Note that this clearly should be called after
+                                all modules have been added.
+                                Note that the <classname>TclConfiguredReadout</classname>
+                                object retains ownerhship of the trigger object
+                                and therefore the caller must not attempt to
+                                destroy it.
+                            </para>
+                        </listitem>
+                       </varlistentry>
+                    </variablelist>
+                    <para>
+                        The remaining public methods implement the interface
+                        between the framework and <classname>CEventSegment</classname>.
+                        They should not be called by user code and will not be
+                        documented, in the interests of brevity.  See the
+                        NSCLDAQ documentation of <classname>CEventSegment</classname>
+                        if you are interested in these methods.
+                    </para>
+                </refsect1>
+            </refentry>
+            <refentry>
+               <refmeta>
+                  <refentrytitle>VX2750EventSegment</refentrytitle>
+                  <manvolnum>3daq</manvolnum>
+               </refmeta>
+               <refnamediv>
+                  <refname>VX2750EventSegment</refname>
+                  <refpurpose>Event segment for single VX2750 DPP-PHA module</refpurpose>
+                </refnamediv>
+                <refsynopsisdiv>
+                    <programlisting>
+#include &lt;VX2750EventSegment.h&gt;
+
+namespace caen_nscldaq {
+
+class VX2750EventSegment : public ::CEventSegment
+{
+
+public:
+    VX2750EventSegment(
+        CExperiment *pExperiment, uint32_t sourceId,
+        const char* pModuleName, VX2750TclConfig* pConfig,
+        const char* pHostOrPid, bool fIsUsb = false
+    );
+    
+    VX2750Pha* getModule() {return m_pModule;}
+    
+
+    // Event segment interface
+    
+    virtual void initialize();                  // at begin run.
+    virtual void disable();                     // at end run.
+    virtual void onPause();                     //  Just will disable.
+    virtual void onResume();                    // just will initilialize.
+    
+    
+    virtual size_t read(void* pBuffer, size_t maxwords);  // At trigger.
+    
+};
+
+}               
+                    </programlisting>
+                </refsynopsisdiv>
+                <refsect1>
+                         <title>DESCRIPTION</title>
+                      <para>
+                        We have seen that the <classname>TclConfiguredReadout</classname>
+                        manages a set of modules. Techinically, it is what
+                        the SBS readout framework calls a
+                        <firstterm>compound event segment</firstterm>.
+                        Compound event segments are containers for other
+                        event segments. Their event segment interface methods
+                        simply visit all of the event segments they contain
+                        invoking the corresponding method for the contained
+                        segments.
+                      </para>
+                      <para>
+                        The <classname>TclConfiguredReadout</classname> class
+                        is special purpose in that it only contains event segments
+                        of type <classname>VX2750EventSegment</classname>.
+                        These event segments are responsible for reading a single
+                        nextgen CAEN digitizer running DPP-PHA firmward.
+                      </para>
+                </refsect1>
+                <refsect1>
+                    <title>METHODS</title>
+                    <para>
+                        Once more the event segment interface methods are omitted
+                        for brevity.
+                    </para>
+                    <variablelist>
+                        <varlistentry>
+                           <term><constructorsynopsis>
+                               <methodname>VX2750EventSegment</methodname>
+                                <methodparam>
+                                    <type>CExperiment*</type><parameter>pExperiment</parameter>
+                                </methodparam>
+                                <methodparam>
+                                    <type>uint32_t </type><parameter>sourceId</parameter>
+                                </methodparam>
+                                <methodparam>
+                                    <type>const char* </type><parameter>pModuleName</parameter>
+                                </methodparam>
+                                <methodparam>
+                                    <type>VX2750TclConfig* </type><parameter>pConfig</parameter>
+                                </methodparam>
+                                <methodparam>
+                                    <type>const char* </type><parameter>pHostOrPid</parameter>
+                                </methodparam>
+                                <methodparam>
+                                    <type>bool </type><parameter>fIsUsb </parameter>
+                                    <initializer>false</initializer>
+                                </methodparam>
+                           </constructorsynopsis></term>
+                           <listitem>
+                               <para>
+                                Constructor for an instance of the class.
+                                <parameter>pExperiment</parameter> is a pointer
+                                to the SBS readout framework's
+                                <classname>CExperiment</classname> singleton instance.
+                                That object controls the overall flow of acquisition
+                                and provides services to other components of the framework.
+                               </para>
+                               <para>
+                                <parameter>sourceId</parameter> is a unique
+                                integer that will tag the event identifying the
+                                source to the event builder. The source id will
+                                carry through the fragment of the built event
+                                all the way down the event acquisition pipeline.
+                               </para>
+                               <para>
+                                <parameter>pConfig</parameter> is a Tcl drive configuration
+                                object that includes the configuration of, at least
+                                this module.  The configuration for this module is
+                                identified by <parameter>pModuleName</parameter>
+                                within the configurations held by
+                                <parameter>pConfig</parameter>.  If, by the time
+                                the module needs to be initialized there is no
+                                configuration for <parameter>pModuleName</parameter>,
+                                initialization (and hence the start of a run) will
+                                terminate in failure.
+                               </para>
+                               <para>
+                                <parameter>pHostOrPid</parameter> is the connection
+                                paramter.  Either a host IP address or the module
+                                PID depending on how it is connected to the host.
+                                <parameter>fIsUsb</parameter> identifies the
+                                connection type.  This parameter is optional and
+                                defaults to <literal>false</literal> meaning
+                                ETHERNET is used to connect the module
+                                (<parameter>pHostOrPid</parameter> is an IP address),
+                                if provided and <literal>true</literal>,
+                                the module is connected via USB and
+                                <parameter>pHostOrPid</parameter> must be the module's
+                                PID.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>VX2750Pha*</type>
+                              <methodname>getModule()</methodname>
+                              <void />
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                When the <classname>VX2750EventSegment</classname>
+                                is constructed it also constructs a
+                                <classname>VX2750Pha</classname> object which
+                                is used to communicate with the physical module.
+                                This object has a lifetime that is the same as
+                                the lifetime of the <classname>VX2750EventSegment</classname>
+                                that created it.  This method allows client software
+                                to obtain a pointer to the module for e.g.
+                                special applications.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                    </variablelist>
+                </refsect1>
+                
+            </refentry>
+            <refentry>
+               <refmeta>
+                  <refentrytitle>VX2750MultiTrigger</refentrytitle>
+                  <manvolnum>3daq</manvolnum>
+               </refmeta>
+               <refnamediv>
+                  <refname>VX2750MultiTrigger</refname>
+                  <refpurpose>Manage readout triggers.</refpurpose>
+                </refnamediv>
+                <refsynopsisdiv>
+                    <programlisting>
+#include &lt;VX2750MultiTrigger.h&gt;
+
+namespace caen_nscldaq {
+  
+    class VX2750MultiTrigger : public CEventTrigger
+    {
+        
+    public:
+        VX2750MultiTrigger();
+        
+        void addTrigger(CAENVX2750PhaTrigger* pTrigger);
+        void removeTrigger(CAENVX2750PhaTrigger* pTrigger);
+        std::vector&lt;CAENVX2750PhaTrigger*&gt; getTriggers() const;
+        std::vector&lt;VX2750EventSegment*&gt; getModules() const;
+        std::vector&lt;VX2750EventSegment*&gt;&amp; getTriggeredModules();
+        
+        // Trigger interface.
+        
+        virtual bool operator()();
+    };
+}                                             
+
+                    </programlisting>
+                </refsynopsisdiv>
+                <refsect1>
+                         <title>DESCRIPTION</title>
+                      <para>
+                        The SBS framework requires that the user code register
+                        a
+                        <firstterm>trigger</firstterm>.   A trigger is just
+                        an instance of a class that is derived from
+                        the abstract base class
+                        <classname>CEventTrigger</classname>.  
+                      </para>
+                      <para>
+                        All concrete derivications of
+                        <classname>CEventTrigger</classname> must implement the
+                        function call operator (<methodname>operator()</methodname>).
+                        When invoked, this method returns <literal>true</literal>
+                        if the event segments of the experiment should be visited
+                        to provide data from an event.
+                      </para>
+                      <para>
+                         <classname>VX2750MultiTrigger</classname> is a compound
+                         trigger. On each call to <methodname>operator()</methodname>,
+                         it checks all triggers it owns for data and can then
+                         be queried for those that have data.   The
+                         multimodule event segment maintains this trigger and uses
+                         it to determine which of its owned event segments to read.
+                      </para>
+                      <para>
+                        The <classname>VX2750MultiTrigger</classname> is a
+                        special purpose compound trigger in that it can only
+                        contain <classname>CAENVX2750PhaTrigger</classname>
+                        objects.  As we will see these are triggers that are
+                        bundled together with their corresponding
+                        <classname>VX2750EventSegment</classname> objects.
+                      </para>
+                </refsect1>
+                <refsect1>
+                    <title>Methods</title>
+                    <para>
+                        In <literal>DESCRIPTION</literal>, we've already
+                        descdribed <methodname>operator()</methodname> so that
+                        method won't be described in this section.
+                    </para>
+                    <variablelist>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>void </type>
+                              <methodname>addTrigger</methodname>
+                              <methodparam>
+                                  <type>CAENVX2750PhaTrigger* </type><parameter>pTrigger</parameter>
+                              </methodparam>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Adds a new trigger
+                                <parameter>pTrigger</parameter>
+                                to the triggers polled by
+                                the object.    The object
+                                pointed to by <parameter>pTrigger</parameter>
+                                remains owned by the caller.
+                               </para>
+                               <para>
+                                Recall that a <classname>CAENVX2750PhaTrigger</classname>
+                                is bundled together with the
+                                <classname>VX2750EventSegment</classname> that should
+                                be readout when its trigger is satisfied.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type> void </type>
+                              <methodname>removeTrigger</methodname>
+                              <methodparam>
+                                  <type>CAENVX2750PhaTrigger* </type><parameter>pTrigger</parameter>
+                              </methodparam>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                If <parameter>pTrigger</parameter> is currently
+                                one of the triggers that has been added to this
+                                trigger, it is removed.   If not, this method
+                                does nothing, silently.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>std::vector&lt;CAENVX2750PhaTrigger*&gt; </type>
+                              <methodname>getTriggers</methodname>
+                              <void  /> <modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Returns a vector containing pointers to the
+                                triggers owned by this objects.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type> std::vector&lt;VX2750EventSegment*&gt; </type>
+                              <methodname>getModules</methodname>
+                              <void /><modifier>const</modifier>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Returns pointer to all of the modules whose
+                                triggers this object will poll.  This is done
+                                by asking all of the triggers to return the modules
+                                that are bundled into them.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>std::vector&lt;VX2750EventSegment*&gt;&amp; </type>
+                              <methodname>getTriggeredModules</methodname>
+                              <void />
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Returns all of the modules the most recent call
+                                to <methodname>operator()</methodname> determined
+                                had data.  
+                               </para>
+                               <para>This is normally used by the event segment;
+                                the trigger loop polls <methodname>operator()</methodname>.
+                                When a <literal>true</literal> is returned, the
+                                <methodname>read</methodname> method of the
+                                event segment is called.  That method  retrieves
+                                the vector of triggered modules and reads each
+                                of them out into a single event fragment ring item.
+                               </para>
+                               <para>
+                                Once all triggered modules have been read, the
+                                event segment returns control to the trigger poll loop
+                                and the trigger/read process begins all over again.
+                                </para>
+                            </listitem>
+                        </varlistentry>
+                    </variablelist>
+                </refsect1>
+            </refentry>
+        </section>
+        <section>
+            <title>SpecTcl Support</title>
+            <para>
+                Before diving into the SpecTcl support classes a bit of an orientation
+                on how SpecTcl operates might be useful.
+            </para>
+            <para>
+                SpecTcl reads blocks of data from an <firstterm>event source</firstterm>.
+                Event sources can be files or pipes with a program running on the
+                other end of the pipe.  When analyzing online data, the NSCLDAQ
+                system provides a program, <command>ringselector</command> that
+                selects appropriate data from ring buffers and outputs those
+                ring items to stdout.  SpecTcl's NSCLDAQ GUI finds and runs that
+                program.  In this way, SpecTcl can run on systems without
+                NSCLDAQ and can, and has, be interfaced to systems other than
+                NSCLDAQ.
+            </para>
+            <para>
+                Once a block of data has been read from the event source a
+                selectable software component called a <firstterm>BufferDecoder</firstterm>
+                is given that data and is responsible for selecting items from
+                that buffers.  In this way SpecTcl can, and has been, be adapted to non NSCLDAQ
+                data formats as well.   From here we'll just follow the path of
+                event data through the software.
+            </para>
+            <para>
+                The buffer decoder, picks out events from the buffers it's read
+                and repeatedly invokes element of an
+                <firstterm>event processing pipeline</firstterm>.  The event
+                processing pipeline is normally made up entirely of user written
+                code.  It must extract parameters from each event it has been
+                given.
+            </para>
+            <para>
+                Each element of the event processing pipeline is an instance of
+                a class derived from <classname>CEventProcessor</classname>.
+                These objects are called <firstterm>event processors</firstterm>
+                See the SpecTcl programming reference for the interface this
+                abstract base class provides.   Event processors, when operating
+                on an event, have access to both the raw event and the parameters
+                that have been unpacked by previous event processors.
+            </para>
+            <para>
+                You can imagine, therefore that as control passes along the
+                event processors in the pipeline, the event data might be initially
+                unpacked into raw parameter after which successively more refined
+                parameters are produced from those raw parametesr and, perhaps from
+                intermediate parameters until the paramters represent physically
+                meaningful information.   Since parameters are stored in a manner
+                independent of the raw event data as you move down the pipeline,
+                code can be increasingly divorced from the structure of raw events.
+            </para>
+            <para>
+                Once the event processing pipeline has been completed, the extracted
+                parameters are passed to the histogrammer which, as needed evaluates
+                conditions set on histograms and increments histograms in accordance
+                with the parameter values extracted from the event.   The histogrammer
+                operates only on the parameters and therefore need not be aware of
+                the structure of raw event data.  It therefore does not require
+                user written code.
+            </para>
+            <para>
+                When we speak of SpecTcl parameters it's important to note that
+                parameters have several programmatic interfaces.  There are
+                interfaces which are convenient to event processors, interfaces
+                convenient to the histogrammer and interfaces that are optimized
+                for some of the otherwise O(n) operations that might be
+                performed on sparse parameter sets.
+            </para>
+            <para>
+                The most commonly used API to paramters is the <classname>CTreeParmaeter</classname>
+                and <classname>CTreeParameterArray</classname>.  These are classes that
+                associate paramter names with the slots in a parameter pseudo-array
+                that the histogrammer uses.  As their names imply, a
+                <classname>CTreeParameter</classname> binds a named object to
+                a single parameter, while a <classname>CTreeParameterArray</classname>
+                binds a set of array like names to an indexed array-like object.
+                Internally a <classname>CTreeParameterArray</classname> is just
+                a <classname>std::vector&lt;CTreeParameter&gt;</classname> and
+                we won't discuss it any further.
+            </para>
+            <para>
+                <classname>CTreeParameter</classname> instances have the
+                following useful properties:
+            </para>
+            <itemizedlist>
+                <listitem>
+                   <para>
+                      They mimic double precision real numbers for computation
+                      and storage.
+                   </para>
+                </listitem>
+                <listitem>
+                   <para>
+                      They know if they've been given values during an event
+                      and, if used in a RHS like expression that requires
+                      them to provide a value before they have been assigned one,
+                      throw an exception.   This catches coding defects which
+                      use values that have not yet been set.
+                   </para>
+                </listitem>
+                <listitem>
+                   <para>
+                      All tree parameters with the same name bind to the same
+                      underlying parameter.  This allows each event processor
+                      to choose data structures that contain tree parameters
+                      that are appropriate to its needs.
+                   </para>
+                </listitem>
+            </itemizedlist>
+            <para>
+                Tree parameter invalidiation (well actually event paramter
+                invalidiation on which it is based) is O(1) which is
+                computationally efficient when initializing the tree parameters
+                for a new event.  This is important for large parameter sets.
+            </para>
+            <para>
+                Parameter setting maintains a scoreboard of the parameters that
+                have been set and this allows the histogramming stage to
+                drive its operation on the parameters that have been
+                set rather than iterating over all defined parameters.
+                This is important for systems with a large number of defined
+                histograms but sparse events (e.g. large detetor arrays).
+            </para>
+            <para>
+                By now you should probably imagine that:
+            </para>
+            <itemizedlist>
+                <listitem>
+                   <para>
+                      Providing SpecTcl support was a matter of writing
+                      an appropriate set of event processors.
+                   </para>
+                </listitem>
+                <listitem>
+                   <para>
+                      While the event processors can unpack raw information
+                      such as times and energies, they must preserve
+                      other information for subsequent, user written
+                      event processors (e.g. waveform data) to extract
+                      from them.
+                   </para>
+                </listitem>
+            </itemizedlist>
+            <para>
+                A bit less obvious is that, since the data will have passed
+                through the event builder, a convenient way to provide the
+                first element of the event processing pipeline is to build on
+                <classname>CEventBuilderEventProcessor</classname> which
+                supports the association of event processors with source ids
+                and does the work of picking out fragments of the event built
+                data passing the bodies of each fragment to the event processor
+                associated with that fragment.
+            </para>
+            <para>
+                In our case, event fragments are single hits from a module
+                and the source id identifies the module from which those hits
+                came.  Thuse we have a structure in which we built:
+            </para>
+            <itemizedlist>
+                <listitem>
+                   <para>
+                       <classname>caen_spectcl::VX2750ModuleUnpacker</classname>
+                       which knows how to unpack data from a specific module
+                       into both parameters that can be extracted from the
+                       data and other internal storage which can be fetched
+                       further down the pipeline.
+                   </para>
+                </listitem>
+                <listitem>
+                   <para>
+                       <classname>caen_spectcl::VX2750EventProcessor</classname>
+                       which adapts the module unpacker to the event processor
+                       interface.  This object encapsulates a
+                       <classname>caen_spectcl::VX2750ModuleUnpacker</classname>.
+                   </para>
+                   <para>
+                    It also understands that it might be called several times in
+                    an event and provides a method for invalidating the non
+                    paramater data held by the unpacker at the end of event processing.
+                   </para>
+                </listitem>
+                <listitem>
+                   <para>
+                      <classname>caen_spectcl::VX2750EventBuiltEventProcessor</classname>
+                      is derived from CEventBuilderEventProcessor.  Its interfaces
+                      understand how to associate event processors with
+                      source ids that are <classname>caen_spectcl::VX2750EventProcessor</classname>
+                      as well as providing a convenience method wrapping a
+                      <classname>caen_spectcl::VX2750ModuleUnpacker</classname>
+                      in an event processor and binding that to a source id.
+                   </para>
+                   <para>
+                    The bulk of the event decoding work is done by the base class;
+                    <classname>CEventBuilderEventProcessor</classname>, however
+                    the <methodname>operator()</methodname> of this class
+                    is responsible for telling each event processor bound to
+                    a source id a new event is being processed allowing them
+                    to invalidate data from the previous event (note that
+                    <classname>CTreeParameter</classname> data are invalidated
+                    by SpecTcl automatically, I'm speaking here of additional data
+                    that more complex, downstream event processors might use to
+                    generate parameters).
+                   </para>
+                </listitem>
+            </itemizedlist>
+            <para>
+                With this preliminary discussion of the structure of SpecTcl
+                and the classes written to support unpacking nextgen DPP-PHA
+                data here is reference information for those classes.  Note that
+                all classes described are in the <literal>caen_spectcl</literal>
+                namespace.
+            </para>
+            <refentry>
+               <refmeta>
+                  <refentrytitle>VX2750ModuleUnpacker</refentrytitle>
+                  <manvolnum>3spectcl</manvolnum>
+               </refmeta>
+               <refnamediv>
+                  <refname>VX2750ModuleUnpacker</refname>
+                  <refpurpose>Unpack event from a single module</refpurpose>
+                </refnamediv>
+                <refsynopsisdiv>
+                    <programlisting>
+#include &lt;VX2750ModuleUnpacker.h&gt;
+
+namespace caen_spectcl {
+class VX2750ModuleUnpacker {
+
+
+public:
+    VX2750ModuleUnpacker(const char* moduleName, const char* paramBaseName);
+    
+    void reset();                   // Data reset method.
+    const void* unpackHit(const void* pData);
+    
+    std::uint64_t getChannelMask() const;
+    std::set&lt;unsigned>&gt; getChannelSet() const;
+    std::uint16_t getLowPriorityFlags(unsigned channel) const;
+    std::uint16_t getHighPriorityFlags(unsigned channel) const;
+    std::uint16_t getDownSampleSelection(unsigned channel) const;
+    std::uint16_t  getFailFlags(unsigned channel) const;
+    
+    std::uint16_t getAnalogProbe1Type(unsigned channel) const;
+    const std::vector&lt;std::uint32_t&gt;&amp; getAnalogProbe1Samples(unsigned channel) const;
+    std::uint16_t getAnalogProbe2Type(unsigned channel) const;
+    const std::vector&lt;std::uint32_t&gt;&amp; getAnalogProbe2Samples(unsigned channel) const;
+    
+    std::uint16_t getDigitalProbe1Type(unsigned channel) const;
+    const std::vector&lt;std::uint8_t&gt;&amp;  getDigitalProbe1Samples(unsigned channel) const;
+    std::uint16_t getDigitalProbe2Type(unsigned channel) const;
+    const std::vector&lt;std::uint8_t&gt;&amp; getDigitalProbe2Samples(unsigned channel) const;
+    std::uint16_t getDigitalProbe3Type(unsigned channel) const;
+    const std::vector&lt;std::uint8_t&gt;&amp; getDigitalProbe3Samples(unsigned channel) const;
+    std::uint16_t getDigitalProbe4Type(unsigned channel) const;
+    const std::vector&lt;std::uint8_t&gt;&amp;  getDigitalProbe4Samples(unsigned channel) const;
+    
+};
+}
+                    </programlisting>
+                </refsynopsisdiv>
+                <refsect1>
+                         <title>DESCRPIPTION</title>
+                      <para>
+                        This class is used to unpack a single hit from a module
+                        into tree parameters and additional data that can be
+                        fetched by event processors for further processing.
+                      </para>
+                      <para>
+                        The normal usage is to invoke
+                        <methodname>reset</methodname> prior to analyzing an
+                        event (which may have several hits).  When hits in the
+                        event are detected from this module, a pointer to the
+                        payload of the hit should be constructed and
+                        <methodname>unpackHit</methodname> invoked.  Once all
+                        hits in an event have been unpacked, additional methods
+                        can be called to fetch non parameter data and, e.g. compute
+                        parameters from those data.
+                      </para>
+                      <para>
+                        Note that <methodname>getChannelMask</methodname> and
+                        <methodname>getChannelSet</methodname> can be called to
+                        determine the set of channels that have been unpacked
+                        since the last call to <methodname>reset</methodname>.
+                        If code attempts to get data from a channel that is not
+                        present in the event, or is invalid,
+                        <classname>st::invalid_argument</classname>
+                        is thrown.
+                      </para>
+                      <para>
+                        Construction provides a <firstterm>basename</firstterm>
+                        which, in turn is used to construct the base name
+                        of 64 element tree parameter arrays (indices <literal>.00</literal>
+                        through <literal>.63</literal>). Where the index is
+                        a channel number.  These array base names
+                        will be:
+                      </para>
+                      <variablelist>
+                        <varlistentry>
+                           <term><replaceable>basename</replaceable><literal>.ns.</literal><replaceable>nn</replaceable></term>
+                           <listitem>
+                               <para>
+                                Elements of this tree parameter array will be
+                                filled in with the timestamp in nanoseconds of
+                                hits from that channel.  Suppose, for example,
+                                the basename is <literal>module1</literal>; the
+                                timestamp in nanoseconds for channel 5 will be
+                                the tree parameter named:
+                                <literal>module1.ns.05</literal>.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><replaceable>basename</replaceable><literal>.rawTime.</literal><replaceable>nn</replaceable></term>
+                           <listitem>
+                               <para>
+                                The raw timestamp will be stored, if read for
+                                each channel in elements of this tree parameter
+                                array.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><replaceable>basename</replaceable><literal>.fineTime.</literal><replaceable>nn</replaceable></term>
+                           <listitem>
+                               <para>
+                                The fine time from the fast/timing filter.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><replaceable>basename</replaceable><literal>.energy.</literal><replaceable>nn</replaceable></term>
+                           <listitem>
+                               <para>
+                                The energy extracted from the energy (slow) filter.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                      </variablelist>
+                      <para>
+                        With the exception of the nanosecond timestamp, these parameters
+                        all have units of <literal>arb</literal>.  The nanosecond
+                        timestamp has units of <literal>ns</literal>.
+                      </para>
+                </refsect1>
+                <refsect1>
+                    <title>METHODS</title>
+                    <variablelist>
+                       <varlistentry>
+                          <term><constructorsynopsis>
+                              <methodname>VX2750ModuleUnpacker</methodname>
+                              <methodparam>
+                                  <type>const char*</type><parameter>moduleName</parameter>
+                              </methodparam>
+                              <methodparam>
+                                  <type>const char*</type><parameter>paramBaseName</parameter>
+                              </methodparam>
+                          </constructorsynopsis></term>
+                          <listitem>
+                              <para>
+                                The constructor creates the tree parameters using
+                                <parameter>baseName</parameter> as given to
+                                construct full names.  See the <literal>DESCRIPTION</literal>
+                                section of this manpage for the actual set of tree
+                                parameters that are constructed.
+                           </para>
+                            <para>
+                                Hits from modules are tagged with the module name.
+                                The <parameter>moduleName</parameter> parameter
+                                must match the module name in the hit as a check on
+                                the sanity of the unpacking configuration.  If not,
+                                <classname>std::logic_error</classname> is thrown
+                                when attempting to unpack a hit.
+                            </para>
+                        </listitem>
+                       </varlistentry>
+                       <varlistentry>
+                          <term><methodsynopsis>
+                             <type>void</type>
+                             <methodname>reset</methodname>
+                             <void />
+                          </methodsynopsis></term>
+                          <listitem>
+                              <para>
+                                This should be called prior to unpacking the
+                                data from each event.  It resets the channel hit
+                                information as well all intarnal vectors to emtpy.
+                           </para>
+                        </listitem>
+                       </varlistentry>
+                       <varlistentry>
+                          <term><methodsynopsis>
+                             <type>const void* </type>
+                             <methodname>unpackHit</methodname>
+                             <methodparam>
+                                 <type>const void* </type><parameter>pData</parameter>
+                             </methodparam>
+                          </methodsynopsis></term>
+                          <listitem>
+                              <para>
+                                Unpacks a hit from the module that is represented
+                                by this object.  <parameter>pData</parameter>
+                                points to the hit.  The return value is a pointer
+                                to the next byte after the hit.
+                           </para>
+                        </listitem>
+                       </varlistentry>
+                       <varlistentry>
+                          <term><methodsynopsis>
+                             <type>std::uint64_t </type>
+                             <methodname>getChannelMask</methodname>
+                             <void /><modifier>const</modifier>
+                          </methodsynopsis></term>
+                          <listitem>
+                              <para>
+                                Returns a mask of the channels that have been
+                                unpacked since the last call to
+                                <methodname>reset</methodname>.  This can be used
+                                to determine which channels a caller can request
+                                auxiliary data from.
+                           </para>
+                        </listitem>
+                       </varlistentry>
+                       <varlistentry>
+                          <term><methodsynopsis>
+                             <type>std::set&lt;unsigned&gt; </type>
+                             <methodname>getChannelSet</methodname>
+                             <void /><modifier>const</modifier>
+                          </methodsynopsis></term>
+                          <listitem>
+                              <para>
+                                Same as <methodname>getChannelMask</methodname>,
+                                however the relevant information is returned a
+                                set which has as members the  channels that have been
+                                unpacked.
+                           </para>
+                        </listitem>
+                       </varlistentry>
+                       <varlistentry>
+                          <term><methodsynopsis>
+                             <type>std::uint16_t </type>
+                             <methodname>getLowPriorityFlags</methodname>
+                             <methodparam>
+                                 <type>unsigned </type><parameter>channel</parameter>
+                             </methodparam><modifier>const</modifier>
+                          </methodsynopsis></term>
+                          <listitem>
+                              <para>
+                                Returns the high priority flags for
+                                <parameter>channel</parameter>. This will
+                                throw <classname>std::invalid_argument</classname>
+                                if the channel has not been unpacked for this event
+                                or <parameter>channel</parameter> is out of range.
+                           </para>
+                              <para>
+                                Note that the return value is only meaningful if
+                                the flags have been selected for readout in the event.
+                                Otherwise, the result will not have meaningful bits.
+                              </para>
+                        </listitem>
+                       </varlistentry>
+                       <varlistentry>
+                          <term><methodsynopsis>
+                             <type>std::uint16_t </type>
+                             <methodname>getHighPriorityFlags</methodname>
+                             <methodparam>
+                                 <type>unsigned </type><parameter>channel</parameter>
+                             </methodparam>
+                          </methodsynopsis></term>
+                          <listitem>
+                              <para>
+                                Get the high priority flags for <parameter>channel</parameter>.
+                                If <parameter>channel</parameter> is out of range or
+                                has not yet been seen since the last
+                                <methodname>reset</methodname> call,
+                                a <classname>std::invalid_argument</classname>
+                                exception is thrown.
+                           </para>
+                           <para>
+                            The bits in the return value are meaningless if
+                            the flags have not been selected for inclusion in the
+                            event.
+                           </para>
+                        </listitem>
+                       </varlistentry>
+                       <varlistentry>
+                          <term><methodsynopsis>
+                             <type>std::uint16_t </type>
+                             <methodname>getDownSampleSelection</methodname>
+                             <methodparam>
+                                 <type>unsigned </type><parameter>channel</parameter>
+                             </methodparam><modifier>const</modifier>
+                          </methodsynopsis></term>
+                          <listitem>
+                              <para>
+                                Return the downsampling selection code for
+                                <parameter>channel</parameter>.
+                                If <parameter>channel</parameter> is out of range or
+                                has not yet been seen since the last
+                                <methodname>reset</methodname> call,
+                                a <classname>std::invalid_argument</classname>
+                                exception is thrown.
+                           </para>
+                            <para>
+                                These codes are not documented in the manuals but
+                                the value is meaningless if this has not been
+                                selected for readout.
+                            </para>
+                        </listitem>
+                       </varlistentry>
+                       <varlistentry>
+                          <term><methodsynopsis>
+                             <type>std::uint16_t  </type>
+                             <methodname>getFailFlags</methodname>
+                             <methodparam>
+                                 <type>unsigned </type><parameter>channel</parameter>
+                             </methodparam><modifier>const</modifier>
+                          </methodsynopsis></term>
+                          <listitem>
+                              <para>
+                                Returns the fail flags for <parameter>channel</parameter>.
+                                If <parameter>channel</parameter> is out of range or
+                                has not yet been seen since the last
+                                <methodname>reset</methodname> call,
+                                a <classname>std::invalid_argument</classname>
+                                exception is thrown.
+                           </para>
+                            <para>
+                                The value is meaningless if this has not been
+                                selected for readout.
+                           </para>
+                        </listitem>
+                       </varlistentry>
+                       <varlistentry>
+                          <term><methodsynopsis>
+                             <type>std::uint16_t </type>
+                             <methodname>getAnalogProbe1Type</methodname>
+                             <methodparam>
+                                 <type>unsigned </type><parameter>channel</parameter>
+                             </methodparam><modifier>const</modifier>
+                          </methodsynopsis></term>
+                          <listitem>
+                              <para>
+                                Return the code which identifies the analog probe
+                                type for probe 1 on <parameter>channel</parameter>.  T
+                                These code are, to my knowledge,
+                                not documented.
+                                 If <parameter>channel</parameter> is out of range or
+                                has not yet been seen since the last
+                                <methodname>reset</methodname> call,
+                                a <classname>std::invalid_argument</classname>
+                                exception is thrown.
+                           </para>
+                            <para>
+                                The value is meaningless if this has not been
+                                selected for readout.
+                           </para>
+                        </listitem>
+                       </varlistentry>
+                       <varlistentry>
+                          <term><methodsynopsis>
+                             <type>const std::vector&lt;std::uint32_t&gt;&amp;</type>
+                             <methodname> getAnalogProbe1Samples</methodname>
+                             <methodparam>
+                                 <type>unsigned </type><parameter>channel</parameter>
+                             </methodparam><modifier>const</modifier>
+                          </methodsynopsis></term>
+                          <listitem>
+                              <para>
+                                Returns the analog probe samples for probe 1
+                                in <parameter>channel</parameter>.
+                                If <parameter>channel</parameter> is out of range or
+                                has not yet been seen since the last
+                                <methodname>reset</methodname> call,
+                                a <classname>std::invalid_argument</classname>
+                                exception is thrown.
+                           </para>
+                              <para>
+                                If analog probe1 has not been selected for
+                                readout, the vector referenced will be empty.
+                              </para>
+                        </listitem>
+                       </varlistentry>
+                       <varlistentry>
+                          <term><methodsynopsis>
+                             <type>std::uint16_t </type>
+                             <methodname>getAnalogProbe2Type</methodname>
+                             <methodparam>
+                                 <type>unsigned </type><parameter>channel</parameter>
+                             </methodparam><modifier>const</modifier>
+                          </methodsynopsis></term>
+                          <listitem>
+                              <para>
+                                Return the code which identifies the analog probe
+                                type for probe 2 on <parameter>channel</parameter>.  T
+                                These code are, to my knowledge,
+                                not documented.
+                                 If <parameter>channel</parameter> is out of range or
+                                has not yet been seen since the last
+                                <methodname>reset</methodname> call,
+                                a <classname>std::invalid_argument</classname>
+                                exception is thrown.
+                           </para>
+                            <para>
+                                The value is meaningless if this has not been
+                                selected for readout.
+                           </para>
+                        </listitem>
+                       </varlistentry>
+                       <varlistentry>
+                          <term><methodsynopsis>
+                             <type>const std::vector&lt;std::uint32_t&gt;&amp;</type>
+                             <methodname> getAnalogProbe2Samples</methodname>
+                             <methodparam>
+                                 <type>unsigned </type><parameter>channel</parameter>
+                             </methodparam><modifier>const</modifier>
+                          </methodsynopsis></term>
+                          <listitem>
+                              <para>
+                                Returns the analog probe samples for probe 2
+                                in <parameter>channel</parameter>.
+                                If <parameter>channel</parameter> is out of range or
+                                has not yet been seen since the last
+                                <methodname>reset</methodname> call,
+                                a <classname>std::invalid_argument</classname>
+                                exception is thrown.
+                           </para>
+                              <para>
+                                If analog probe1 has not been selected for
+                                readout, the vector referenced will be empty.
+                              </para>
+                        </listitem>
+                       </varlistentry>
+                       <varlistentry>
+                          <term><methodsynopsis>
+                             <type>std::uint16_t </type>
+                             <methodname>getDigitalProbe1Type</methodname>
+                             <methodparam>
+                                 <type>unsigned </type><parameter>channel</parameter>
+                             </methodparam><modifier>const</modifier>
+                          </methodsynopsis></term>
+                          <listitem>
+                              <para>
+                                Returns the probe type selected for digital
+                                probel 1.
+                                To my knowledge, the values for this type are not
+                                documented.
+                                 If <parameter>channel</parameter> is out of range or
+                                has not yet been seen since the last
+                                <methodname>reset</methodname> call,
+                                a <classname>std::invalid_argument</classname>
+                                exception is thrown.
+                           </para>
+                              <para>
+                                The value returned is meaningless if digital probe 1
+                                is not selected for readout.
+                              </para>
+                        </listitem>
+                       </varlistentry>
+                       <varlistentry>
+                          <term><methodsynopsis>
+                             <type>const std::vector&lt;std::uint8_t&gt;&amp;</type>
+                             <methodname>  getDigitalProbe1Samples</methodname>
+                             <methodparam>
+                                 <type>unsigned</type><parameter> channel</parameter>
+                             </methodparam>
+                          </methodsynopsis></term>
+                          <listitem>
+                              <para>
+                                Returns the samples for digital probe 1.
+                                If <parameter>channel</parameter> is out of range or
+                                has not yet been seen since the last
+                                <methodname>reset</methodname> call,
+                                a <classname>std::invalid_argument</classname>
+                                exception is thrown.
+                           </para>
+                            <para>
+                                If Digital probe 1 is not selected for readout,
+                                the vector returned will be empty.
+                            </para>
+                        </listitem>
+                       </varlistentry>
+                       <varlistentry>
+                          <term><methodsynopsis>
+                             <type>std::uint16_t </type>
+                             <methodname>getDigitalProbe2Type</methodname>
+                             <methodparam>
+                                 <type>unsigned </type><parameter>channel</parameter>
+                             </methodparam><modifier>const</modifier>
+                          </methodsynopsis></term>
+                          <listitem>
+                              <para>
+                                Returns the probe type selected for digital
+                                probel 2.
+                                To my knowledge, the values for this type are not
+                                documented.
+                                 If <parameter>channel</parameter> is out of range or
+                                has not yet been seen since the last
+                                <methodname>reset</methodname> call,
+                                a <classname>std::invalid_argument</classname>
+                                exception is thrown.
+                           </para>
+                              <para>
+                                The value returned is meaningless if digital probe 2
+                                is not selected for readout.
+                              </para>
+                        </listitem>
+                       </varlistentry>
+                       <varlistentry>
+                          <term><methodsynopsis>
+                             <type>const std::vector&lt;std::uint8_t&gt;&amp;</type>
+                             <methodname>  getDigitalProbe2Samples</methodname>
+                             <methodparam>
+                                 <type>unsigned</type><parameter> channel</parameter>
+                             </methodparam>
+                          </methodsynopsis></term>
+                          <listitem>
+                              <para>
+                                Returns the samples for digital probe 2.
+                                If <parameter>channel</parameter> is out of range or
+                                has not yet been seen since the last
+                                <methodname>reset</methodname> call,
+                                a <classname>std::invalid_argument</classname>
+                                exception is thrown.
+                           </para>
+                            <para>
+                                If Digital probe 2 is not selected for readout,
+                                the vector returned will be empty.
+                            </para>
+                        </listitem>
+                       </varlistentry>
+                       <varlistentry>
+                          <term><methodsynopsis>
+                             <type>std::uint16_t </type>
+                             <methodname>getDigitalProbe3Type</methodname>
+                             <methodparam>
+                                 <type>unsigned </type><parameter>channel</parameter>
+                             </methodparam><modifier>const</modifier>
+                          </methodsynopsis></term>
+                          <listitem>
+                              <para>
+                                Returns the probe type selected for digital
+                                probel 3.
+                                To my knowledge, the values for this type are not
+                                documented.
+                                 If <parameter>channel</parameter> is out of range or
+                                has not yet been seen since the last
+                                <methodname>reset</methodname> call,
+                                a <classname>std::invalid_argument</classname>
+                                exception is thrown.
+                           </para>
+                              <para>
+                                The value returned is meaningless if digital probe 1
+                                is not selected for readout.
+                              </para>
+                        </listitem>
+                       </varlistentry>
+                       <varlistentry>
+                          <term><methodsynopsis>
+                             <type>const std::vector&lt;std::uint8_t&gt;&amp;</type>
+                             <methodname>  getDigitalProbe3Samples</methodname>
+                             <methodparam>
+                                 <type>unsigned</type><parameter> channel</parameter>
+                             </methodparam>
+                          </methodsynopsis></term>
+                          <listitem>
+                              <para>
+                                Returns the samples for digital probe 3.
+                                If <parameter>channel</parameter> is out of range or
+                                has not yet been seen since the last
+                                <methodname>reset</methodname> call,
+                                a <classname>std::invalid_argument</classname>
+                                exception is thrown.
+                           </para>
+                            <para>
+                                If Digital probe 3 is not selected for readout,
+                                the vector returned will be empty.
+                            </para>
+                        </listitem>
+                       </varlistentry>
+                       <varlistentry>
+                          <term><methodsynopsis>
+                             <type>std::uint16_t </type>
+                             <methodname>getDigitalProbe4Type</methodname>
+                             <methodparam>
+                                 <type>unsigned </type><parameter>channel</parameter>
+                             </methodparam><modifier>const</modifier>
+                          </methodsynopsis></term>
+                          <listitem>
+                              <para>
+                                Returns the probe type selected for digital
+                                probel 4.
+                                To my knowledge, the values for this type are not
+                                documented.
+                                 If <parameter>channel</parameter> is out of range or
+                                has not yet been seen since the last
+                                <methodname>reset</methodname> call,
+                                a <classname>std::invalid_argument</classname>
+                                exception is thrown.
+                           </para>
+                              <para>
+                                The value returned is meaningless if digital probe 4
+                                is not selected for readout.
+                              </para>
+                        </listitem>
+                       </varlistentry>
+                       <varlistentry>
+                          <term><methodsynopsis>
+                             <type>const std::vector&lt;std::uint8_t&gt;&amp;</type>
+                             <methodname>  getDigitalProbe4Samples</methodname>
+                             <methodparam>
+                                 <type>unsigned</type><parameter> channel</parameter>
+                             </methodparam>
+                          </methodsynopsis></term>
+                          <listitem>
+                              <para>
+                                Returns the samples for digital probe 4.
+                                If <parameter>channel</parameter> is out of range or
+                                has not yet been seen since the last
+                                <methodname>reset</methodname> call,
+                                a <classname>std::invalid_argument</classname>
+                                exception is thrown.
+                           </para>
+                            <para>
+                                If Digital probe 4 is not selected for readout,
+                                the vector returned will be empty.
+                            </para>
+                        </listitem>
+                       </varlistentry>
+                       
+                    </variablelist>
+                </refsect1>
+                <refsect1>
+                    <title>Hit Data Format</title>
+                    <para>
+                        The following describes the format of event data unpacked
+                        by this module.  It is the same as the event data
+                        format read by <classname>caen_nscldaq::VX2750EventSegment</classname>:
+                    </para>
+                    <example>
+                        <title>Module data format:</title>
+                        <programlisting>
+       +------------------------------------+
+       | Module name (cz string)            |  padded to unt16_t
+       +------------------------------------+
+       | uin16_t channel number             |
+       +------------------------------------+
+       | uint64_t timestamp in ns           |
+       +------------------------------------+
+       | uint64_t rawTimestamp              |
+       +------------------------------------+
+       | uint16_t fineTimestamp             |
+       +------------------------------------+
+       |  uint16_t energy                   |
+       +------------------------------------+
+       |  uint16_t low priority flags       |
+       +------------------------------------+
+       |  uint16_t high priority flags      |
+       +------------------------------------+
+       | uint16_t t downsample selection    |
+       +------------------------------------+
+       | uint16_t fail  flag                 |
+       +------------------------------------+
+       | uint16_t analog probe type 1       |
+       +------------------------------------+
+       | uint32_t aprobe1 nSamples          |  - 0 if no data.
+       +------------------------------------+
+       | int32_t probe data (probe1)        | - # of words in nsamples
+                    ...                          Could be no data.
+       +------------------------------------+
+       | uint16_t analog probe type 2       |
+       +------------------------------------+
+       | uint32_t aprobe1 nSamples          |  - 0 if no data.
+       +------------------------------------+
+       | int32_t probe data (probe 2)       | - # of words in nsamples
+                    ...                          Could be no data.
+       +------------------------------------+
+       |  Digital probe type 1              | uint16_t
+       +------------------------------------|
+       | digital probe bytes                | 0 if no data (e.g. disabled) uint32_t
+       +------------------------------------+
+       |  Digital probe data(1)             | 1 bit per sample
+                ...                           could be no data
+       +------------------------------------+
+       |  Digital probe type 2              |
+       +------------------------------------|
+       | digital probe bytes                | 0 if no data (e.g. disabled)
+       +------------------------------------+
+       |  Digital probe data(2)             | 1 bit per sample
+                ...                           could be no data
+       +------------------------------------+
+       |  Digital probe type 3              |
+       +------------------------------------|
+       | digital probe bytes                | 0 if no data (e.g. disabled)
+       +------------------------------------+
+       |  Digital probe data(3)             | 1 bit per sample
+                ...                           could be no data
+       +------------------------------------+
+       |  Digital probe type 4              |
+       +------------------------------------|
+       | digital probe bytes                | 0 if no data (e.g. disabled)
+       +------------------------------------+
+       |  Digital probe data(4)             | 1 bit per sample
+                ...                           could be no data
+       +------------------------------------+
+                        </programlisting>
+                    </example>
+                </refsect1>
+            </refentry>
+            <refentry>
+               <refmeta>
+                  <refentrytitle>VX2750EventProcessor</refentrytitle>
+                  <manvolnum>3spectcl</manvolnum>
+               </refmeta>
+               <refnamediv>
+                  <refname>VX2750EventProcessor</refname>
+                  <refpurpose>Event processor for CAEN Nextgen ADC data</refpurpose>
+                </refnamediv>
+                <refsynopsisdiv>
+                    <programlisting>
+#include &lt;VX2750EventProcessor&gt;
+    
+namespace caen_nsclspectcl {
+    class VX2750EventProcessor : public CEventProcessor {
+    public:
+        
+        VX2750EventProcessor(VX2750ModuleUnpacker* pUnpacker);
+        VX2750ModuleUnpacker* getUnpacker();
+        void                  resetUnpacker();
+        virtual Bool_t operator()(
+            const Address_t pEvent, CEvent&amp; rEvent, CAnalyzer&amp; rAnalyzer,
+            CBufferDecoder&amp; rDecoder
+        );
+        
+    };
+
+}
+                    </programlisting>
+                </refsynopsisdiv>
+                <refsect1>
+                         <title>DESCRIPTION</title>
+                      <para>
+                        This class is used to adapt the <classname>VX2750ModuleUnpacker</classname>
+                        class to the event processor interface required of elements
+                        of SpecTcl's event processing pipeline.  It will contain a
+                        <emphasis>dynamically constructed</emphasis>
+                        <classname>VX2750EventProcessor</classname> instance.
+                        That object is owned by the <classname>VX2750EventProcessor</classname>
+                        to which it was passed.
+                      </para>
+                      <para>
+                        When the object's <methodname>operator()</methodname> is
+                        called, it is assumed that the <parameter>pEvent</parameter>
+                        pointer is pointing at the payload of a ring item whose
+                        body contains a hit that it suitable for unpacking by the
+                        contained <classname>VX2750ModuleUnpacker</classname>
+                      </para>
+                      <para>
+                        The class also exposes a wrapper method for its
+                        <classname>VX2750ModuleUnpacker</classname>'s
+                        <methodname>reset</methodname> method.
+                        In normal use, these event processors will be bound to
+                        source ids in a <classname>VX2750EventBuiltEventProcessor</classname>
+                        which, prior to processing an event built event
+                        will invoke the <methodname>resetUnpacker</methodname>
+                        method for all of its registered event processors.
+                      </para>
+                </refsect1>
+                <refsect1>
+                    <title>METHODS</title>
+                    <variablelist>
+                        <varlistentry>
+                           <term><constructorsynopsis>
+                               <methodname>VX2750EventProcessor</methodname>
+                                <methodparam>
+                                    <type>VX2750ModuleUnpacker* </type><parameter>pUnpacker</parameter>
+                                </methodparam>
+                           </constructorsynopsis></term>
+                           <listitem>
+                               <para>
+                                The constructor accepts a pointer to a
+                                <classname>VX2750ModuleUnpacker</classname> instnace.
+                                <parameter>pUnpacker</parameter> must have been
+                                created with the C++ <literal>new</literal> operator.
+                                Ownership of <parameter>pUnpacker</parameter>
+                                is transferred to the <classname>VX2750EventProcessor</classname>
+                                that's being constructed.  The destructor of that
+                                object will <literal>delete</literal> <parameter>pUnpacker</parameter>.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>VX2750ModuleUnpacker* </type>
+                              <methodname>getUnpacker</methodname>
+                              <void />
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Returns a pointer to the module unpacker that
+                                was passed in at construction time.  The
+                                caller can do anything it wants with that
+                                pointer <emphasis>except</emphasis>
+                                <literal>delete</literal> it.  Ownership is
+                                retained by the <classname>VX2750EventProcessor</classname>.
+                               </para>
+                               <para>
+                                A use case for this method is to get access to no
+                                parameter data in the unpacker after an event has
+                                been unpacked so that additional parameters can
+                                be computed (e.g. by analyzing the analog probes).
+                                </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>void  </type>
+                              <methodname>resetUnpacker</methodname>
+                              <void />
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Invokes the encapsulated <classname>VX2750ModuleUnpacker</classname>'s
+                                <methodname>reset</methodname> method.
+                                In normal use, this object will be bound to a
+                                source id in a <classname>VX2750EventBuiltEventProcessor</classname>
+                                which, prior to processing an event built event
+                                will invoke the <methodname>resetUnpacker</methodname>
+                                method for all of its registered event processors
+                                to prepare them to unpack the hits of a new event.
+                               </para>
+                               <para>
+                                Subsequent event processing pipeline stages could
+                                then retrieve the pointers to the unpackers and
+                                use them to access non parameter data.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>virtual Bool_t </type>
+                              <methodname>operator()</methodname>
+                              <methodparam>
+                                  <type>const Address_t </type><parameter>pEvent</parameter>
+                              </methodparam>
+                              <methodparam>
+                                  <type>CEvent&amp; </type><parameter>rEvent</parameter>
+                              </methodparam>
+                              <methodparam>
+                                  <type>CAnalyzer&amp;</type><parameter>rAnalyzer</parameter>
+                              </methodparam>
+                              <methodparam>
+                                  <type>CBufferDecoder&amp; </type><parameter>rDecoder</parameter>
+                              </methodparam>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                This method is called to process a hit that is a
+                                ring item payload.  It wraps the call to
+                                its unpacker's <methodname>unpackHit</methodname>
+                                method.  <parameter>pEvent</parameter> as assumed
+                                to point to the ring item payload.  The remaining
+                                parameters are not needed and not referenced by the
+                                method body, but are needed to match the signature of
+                                the base class's virtual method.
+                               </para>
+                               <para>
+                                The wrapping of <methodname>unpackHit</methodname>
+                                performs a bit of sanity checking and error handling:
+                               </para>
+                               <itemizedlist>
+                                <listitem>
+                                   <para>
+                                      Exceptions from <methodname>unpackHit</methodname>
+                                      are caught and converted to an error message
+                                      output to <literal>stderr</literal> and
+                                      a return value of <literal>kfFALSE</literal>.
+                                      When an event processor return s
+                                      <literal>kfFALSE</literal>, the event processing
+                                      pipeline for the event is aborted and the
+                                      parameters unpacked to that point are
+                                      <emphasis>not</emphasis> histogrammed.
+                                   </para>
+                                </listitem>
+                                <listitem>
+                                   <para>
+                                      Tbe pointer returned  from the module
+                                      unpacker's <methodname>unpackHit</methodname>
+                                      is checked against the expected pointer based
+                                      on the payload size.   In case there's a
+                                      mismatch, an error message is reported to
+                                      <literal>stderr</literal> and, again,
+                                    <literal>kfFALSE</literal> is returned by the
+                                    method.
+                                   </para>
+                                </listitem>
+                               </itemizedlist>
+                               <para>
+                                On successful completion of the unpack,
+                                <literal>kfTRUE</literal> is returned which
+                                allows the event processing pipeline to continue to
+                                execute.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                    </variablelist>
+                </refsect1>
+            </refentry>
+            <refentry>
+               <refmeta>
+                  <refentrytitle>VX2750EventBuiltEventProcessor</refentrytitle>
+                  <manvolnum>3spectcl</manvolnum>
+               </refmeta>
+               <refnamediv>
+                  <refname>VX2750EventBuiltEventProcessor</refname>
+                  <refpurpose>Unwrap event built data dispatching to CAEN nextgen digitizer Event processors</refpurpose>
+                </refnamediv>
+                <refsynopsisdiv>
+                    <programlisting>
+#include &lt;VX2750EventBuiltEventProcessor.h&gt;
+
+namespace caen_spectcl {
+class VX2750EventBuiltEventProcessor : public CEventBuilderEventProcessor {
+    
+public:
+    VX2750EventBuiltEventProcessor(std::string baseName);
+    
+    void addEventProcessor(unsigned sourceId, VX2750EventProcessor&amp; processor);
+    void addEventProcessor(unsigned sourceId, VX2750ModuleUnpacker&amp; unpacker);
+    void addEventProcessor(
+        unsigned sourceId,
+        const std::string&amp; moduleName, const std::string paramBasename
+    );
+    
+    virtual Bool_t operator()(const Address_t pEvent,
+                          CEvent&amp; rEvent,
+                          CAnalyzer&amp; rAnalyzer,
+                          CBufferDecoder&amp; rDecoder);
+    
+};
+}
+                    </programlisting>
+                </refsynopsisdiv>
+                <refsect1>
+                         <title>DESCRIPTION</title>
+                      <para>
+                        This is the event processor that typically is registered
+                        in <filename>MySpecTclApp</filename>'s
+                        <methodname>CreateAnalysisPipeline</methodname> method.
+                        It allows for an event processor to be registered to process
+                        specific source ids in the event built data. 
+                      </para>
+                      <para>
+                        A rich set of methods to register event processors is
+                        exported to clients of this class.  It is an, at present,
+                        uncaught error to attempt to register more than one
+                        event processor on the same source id.  In that
+                        case, only the most recently registered event processor
+                        is used.
+                      </para>
+                      <para>
+                        Module unpackers and event processors passed into the
+                        registration methods must by dynamically created with
+                        <literal>new</literal> and ownership of those objects
+                        is transferred to the
+                        <classname>VX2750EventBuiltEventProcessor</classname>.
+                        On destruction of that object all such unpackers and
+                        event processors are deallocated with <literal>delete</literal>.
+                      </para>
+                      <para>
+                        The <methodname>operator()</methodname> delegates
+                        to the base class after visiting each event registered
+                        event processor and invoking
+                        <methodname>restUnpacker</methodname>.  Thus prepared for
+                        a new event, the base class method is invoked which
+                        visits each top level fragment in the event built data
+                        invoking any registered event processora for the source id
+                        associated with those fragments.
+                      </para>
+                      <para>
+                        The  base class also produces several diagnostic parameters
+                        that support monitoring event building.  While these are
+                        strictly managed by the base class, these will be described
+                        in the <literal>Diagnostics</literal> section and suggestions
+                        for appropriate diagnostic spectra will be described as well.
+                      </para>
+                </refsect1>
+                <refsect1>
+                    <title>METHODS</title>
+                    <variablelist>
+                        <varlistentry>
+                           <term><constructorsynopsis>
+                               <methodname>VX2750EventBuiltEventProcessor</methodname>
+                                <methodparam>
+                                    <type>std::string </type><parameter>baseName</parameter>
+                                </methodparam>
+                           </constructorsynopsis></term>
+                           <listitem>
+                               <para>
+                                Construction of <classname>VX2750EventBuiltEventProcessor</classname>
+                                requires a <parameter>baseName</parameter>
+                                for the diagnostic parameters
+                                maintained by the base class.  Those parameters
+                                will be given names like
+                                <literal>basename.</literal><replaceable>xxxx</replaceable>
+                                where <literal>basename</literal> is the textual
+                                value of <parameter>baseName</parameter> and
+                                <replaceable>xxxx</replaceable> indicates the
+                                name of a diagnostic parameter.
+                               </para>
+                               <para>
+                                Since the nanosecond timestamps are used to tag
+                                fragment timestamps the event timestamps are
+                                in units of nanoseconds as well. Thus the base-class
+                                is constructed with a 1000MHz clock frequency.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type> void </type>
+                              <methodname>addEventProcessor</methodname>
+                              <methodparam>
+                                  <type>unsigned </type><parameter>sourceId</parameter>
+                              </methodparam>
+                              <methodparam>
+                                  <type>VX2750EventProcessor&amp;</type><parameter>processor</parameter>
+                              </methodparam>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Connects <parameter>processor</parameter> as the
+                                event processor for fragments with source id
+                                <parameter>sourceId</parameter>.  Ownership of
+                                both <parameter>processor</parameter> and
+                                its associated module unpacker are transferred to
+                                the
+                                <classname>VX2750EventBuiltEventProcessor</classname>
+                                object which deletes both of them on destruction.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>void </type>
+                              <methodname>addEventProcessor</methodname>
+                              <methodparam>
+                                  <type>unsigned </type><parameter>sourceId</parameter>
+                              </methodparam>
+                              <methodparam>
+                                  <type> VX2750ModuleUnpacker&amp;</type><parameter>unpacker</parameter>
+                              </methodparam>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Wraps <parameter>unpacker</parameter> in a
+                                <classname>VX2750EventProcessor</classname>
+                                instance and regsiters that instance to handle
+                                fragments with the source id: <parameter>sourceId</parameter>.
+                               </para>
+                               <para>
+                                Ownership of <parameter>unpacker</parameter>, which must
+                                have been created with <literal>new</literal> is
+                                transferred to the
+                                <classname>VX2750EventBuiltEventProcessor</classname>
+                                which will delete both it and the event processor
+                                it creates.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>void </type>
+                              <methodname>addEventProcessor</methodname>
+                              <methodparam>
+                                  <type>unsigned </type><parameter>sourceId</parameter>
+                              </methodparam>
+                              <methodparam>
+                                  <type>const std::string&amp; </type><parameter>moduleName</parameter>
+                              </methodparam>
+                              <methodparam>
+                                  <type> const std::string </type><parameter>paramBasename</parameter>
+                              </methodparam>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Constructs a new module unpacker using the
+                                <parameter>moduleName</parameter> and
+                                <parameter>paramBasename</parameter> parameters.
+                                THe unpacker is then wrapped in an
+                                <classname>VX2750EventProcessor</classname>
+                                which is registered with the base class
+                                to process fragments with the source id
+                                <parameter>sourceId</parameter>
+                               </para>
+                               <para>
+                                Both the module unpacker and event processor are
+                                deleted when the object is destroed.
+                                </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><methodsynopsis>
+                              <type>virtual Bool_t </type>
+                              <methodname>operator</methodname>
+                              <methodparam>
+                                  <type>const Address_t </type><parameter>pEvent</parameter>
+                              </methodparam>
+                              <methodparam>
+                                  <type>CEvent&amp;</type><parameter>rEvent</parameter>
+                              </methodparam>
+                                <methodparam>
+                                    <type>CAnalyzer&amp;</type><parameter>rAnalyzer</parameter>
+                                </methodparam>
+                                <methodparam>
+                                    <type>CBufferDecoder&amp; </type><parameter>rDecoder</parameter>
+                                </methodparam>
+                           </methodsynopsis></term>
+                           <listitem>
+                               <para>
+                                Visits all of the event processors that have been
+                                registered and invokes their
+                                <methodname>resetUnpacker</methodname> method.
+                                Having prepared all of the event unpackers for
+                                a new event, the base class
+                                <methodname>operator()</methodname> is invoked
+                                and that analyzes the event built event calling
+                                registered event processors for each fragment.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                    </variablelist>
+                </refsect1>
+                <refsect1>
+                    <title>Diagnostics</title>
+                    <para>
+                        The base class <classname>CEventBuilderEventProcessor </classname>
+                        maintains several diagnostic parameters.  The names of these
+                        parameters are generated by appending a period (<literal>.</literal>)
+                        and the parameter name to the base name provided at construction
+                        time.
+                    </para>
+                    <para>
+                        Among other things, the diagnostic parameters can be used
+                        to generate useful histograms.   Here are the diagnostic
+                        parmeters created:
+                    </para>
+                    <variablelist>
+                        <varlistentry>
+                           <term><literal>sources</literal></term>
+                           <listitem>
+                               <para>
+                                The number of fragments present in the event.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><literal>unrecognized_source</literal></term>
+                           <listitem>
+                               <para>
+                                Number of fragments with event source ids for which
+                                no event processor is registered.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><literal>event_no</literal></term>
+                           <listitem>
+                               <para>
+                                The event number within the run.  This is
+                                reset at the beginning of the run.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><literal>run_time</literal></term>
+                           <listitem>
+                               <para>
+                                The number of seconds into the run corresponding
+                                to the first fragment timestamp in the event
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><literal>nn_present</literal></term>
+                           <listitem>
+                               <para>
+                                Where nn is a source id.  This parameter is
+                                <literal>1</literal> when source
+                                nn is present else it is zero.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                           <term><literal>tdiffs.n-m</literal></term>
+                           <listitem>
+                               <para>
+                                For every pair of event sources in the event,
+                                This is the difference between the timestamp
+                                of event source n and event source m.
+                                For example: <literal>tdiffs.1-2</literal>
+                                is the timestamp difference between
+                                event source 1 and event source 2.
+                               </para>
+                            </listitem>
+                        </varlistentry>
+                    </variablelist>
+                    <para>
+                        Histograms that are worth creating are:
+                        1-d histograms of all the time differnce parameters.
+                        These should be tight peaks that don't drift in time.
+                    </para>
+                    <para>
+                        2d spectra with <literal>run_time</literal> on the
+                        X axis and a tdiff on the Y.  This shoulid be a
+                        horizontal, line with possibly a bit of jitter but it
+                        should not move systematically down or up as that
+                        indicates a drift in one of the timestamps relative
+                        to the other.
+                    </para>
                 </refsect1>
             </refentry>
         </section>
