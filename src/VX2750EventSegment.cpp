@@ -202,7 +202,7 @@ void VX2750EventSegment::onResume()
   *Event format:
   *\verbatim
   *    +------------------------------------+
-  *    | Module name (cz string)            |  oadded to unt16_5
+  *    | Module name (cz string)            |  padded to unt16_t
   *    +------------------------------------+
   *    | uin16_t channel number             |
   *    +------------------------------------+
@@ -240,28 +240,28 @@ void VX2750EventSegment::onResume()
   *    +------------------------------------|
   *    | digital probe bytes                | 0 if no data (e.g. disabled) uint32_t
   *    +------------------------------------+
-  *    |  Digital probe data(1)             | 1 bit per sample
+  *    |  Digital probe data(1)             | 1 byte per sample
   *             ...                           could be no data
   *    +------------------------------------+
   *    |  Digital probe type 2 (*)          |
   *    +------------------------------------|
   *    | digital probe bytes                | 0 if no data (e.g. disabled)
   *    +------------------------------------+
-  *    |  Digital probe data(2)             | 1 bit per sample
+  *    |  Digital probe data(2)             | 1 byte per sample
   *             ...                           could be no data
   *    +------------------------------------+
   *    |  Digital probe type 3 (*)          |
   *    +------------------------------------|
   *    | digital probe bytes                | 0 if no data (e.g. disabled)
   *    +------------------------------------+
-  *    |  Digital probe data(3)             | 1 bit per sample
+  *    |  Digital probe data(3)             | 1 byte per sample
   *             ...                           could be no data
   *    +------------------------------------+
   *    |  Digital probe type 4 (*)          |
   *    +------------------------------------|
   *    | digital probe bytes                | 0 if no data (e.g. disabled)
   *    +------------------------------------+
-  *    |  Digital probe data(4)             | 1 bit per sample
+  *    |  Digital probe data(4)             | 1 byteper sample
   *             ...                           could be no data
   *    +------------------------------------+
   *    
