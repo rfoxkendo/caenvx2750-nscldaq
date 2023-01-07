@@ -113,7 +113,7 @@ VX2750EventSegment::initialize()
     try {
         auto pConfig = m_pConfiguration->getModule(m_moduleName.c_str());
         m_pModule = new VX2750Pha(m_hostOrPid.c_str(), m_isUsb);
-        pConfig->configureModule(*m_pModule);
+        
         
         // We need to ask the configuration what to expect from the module:
         //    Trace lengths.
