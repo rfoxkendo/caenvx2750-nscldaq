@@ -467,54 +467,79 @@ Skeleton::SetupReadout(CExperiment* pExperiment)
                     The CAEN digitizer support software (NSCLDAQ and base).  The
                     SBS skeleton readout Makefile must be edited to ensure that
                     appropriate include directories are searched when compiling
-                    and libraries pulled in when linked:
+                    and libraries pulled in when linked.  The example below shows
+                    the bits of the Makefile that are needed to arrive at proper
+                    definitions of
+                    <literal>USERCCFLAGS</literal> and
+                    <literal>USERLDFLAGS</literal>, the additional
+                    options given at compile and link time.
                 </para>
-                <itemizedlist>
-                    <listitem>
-                       <para>
-                          <literal>-lCAEN_FELib</literal>  must be added
-                          to the definition of <varname>USERLDFLAGS</varname>
-                          This links in the base CAEN library that provides
-                          support for communicating with the digitizer.
-                       </para>
-                    </listitem>
-                    <listitem>
-                       <para>
-                          JavaScript Object Notation (JSON) is used to specify readout formats and a JSON
-                          support library (JSONCPP) is used to format those requests.
-                          This is a package that's installed in the containers
-                          we distribute or, if you are running native, is a
-                          debian package: <literal>libjsoncpp-dev</literal>
-                          Due to headers that are included by other headers,
-                          <literal>$(shell pkg-config jsoncpp --cflags)(</literal>
-                          must be added to <varname>USERCCFLAGS</varname>
-                          and <literal> $(shell pkg-config jsoncpp  --libs)</literal>
-                          added to <varname>USERLDFLAGS</varname>
-                       </para>
-                    </listitem>
-                    <listitem>
-                       <para>
-                          Tracing FE library calls is done via the boost logging
-                          package so
-                          <literal>-lboost_log -lboost_log_setup  -lboost_thread -lboost_syste</literal>
-                          must be added to <varname>USERLDFLAGS</varname>.
-                       </para>
-                    </listitem>
-                    <listitem>
-                       <para>
-                           Finally we need to pull in the NSCLDAQ support
-                           library.  Suppose the headers are all installed in
-                           <literal>$(CAEN_NSCLDAQ)/include</literal> and
-                           libraries in <literal>$(CAEN_NSCLDAQ)/lib</literal>.
-                           <literal>-I$(CAEN_NSCLDAQ)/include</literal>
-                           must be added to <varname>USERCCFAGS</varname> and
-                           <literal>-L$(CAEN_NSCLDAQ)/lib -lCaenVx2750</literal>
-                           to <varname>USERLDFLAGS</varname>
-                       </para>
-                    </listitem>
-                </itemizedlist>
+                <example>
+                    <title>Front part of Makefile for Readout</title>
+                    <programlisting>
+INSTDIR=/usr/opt/daq/12.0-pre3
+
+include $(INSTDIR)/etc/SBSRdoMakeIncludes
+
+FELIB_CPPFLAGS=
+FELIB_LDFLAGS=-lCAEN_FELib
+
+
+
+JSON_CPPFLAGS = $(shell pkg-config jsoncpp --cflags)
+JSON_LDFLAGS  = $(shell pkg-config jsoncpp  --libs)
+
+#Where the support softare was installed.
+
+NSCL_SUPPORT_PREFIX=/usr/opt/lbnl
+
+#
+#  The following allow you to add flags to all the default C and C++ compilation
+#  rules.  In most cases C and C++ share the same set of compilation flags so:
+#
+#
+
+USERCCFLAGS= -I$(NSCL_SUPPORT_PREFIX)/include $(JSON_CPPFLAGS) $(FELIB_CPPFLAGS)
+USERCXXFLAGS=$(USERCCFLAGS)
+
+#  If you have additional load flags (e.g. library dirs and libs):
+
+USERLDFLAGS=-L$(NSCL_SUPPORT_PREFIX)/lib -lCaenVx2750 \
+        $(JSON_LDFLAGS) $(FELIB_LDFLAGS) \
+        -lboost_log -lboost_log_setup  -lboost_thread -lboost_system -lcrypto
+
+
+                    </programlisting>
+                </example>
                 <para>
-                    Once this has been done, the Readout program can be built
+                    Note that the <literal>INSTDIR</literal> definition should
+                    point to the version of NSCLDAQ being used and
+                    <literal>NSCL_SUPPORT</literal> should point to where the
+                    CAEN nextgen digitizer support librariers are installed.
+                    The boost libraries are used to support logging digitizer
+                    requests if enabled for debugging while the crypto library
+                    pulls in code to compute MD5 digests
+                </para>
+                <para>
+                    An important note about MD5 digests.  The digitizer is
+                    only fully initialized on the first begin run after Readout
+                    starts or when the MD5 digest of the configuration files
+                    changes (implying the configuration file itself changed).
+                    This is done because a complete initialization of a module
+                    takes a significant amount of time.
+                </para>
+                <para>
+                    The use of MD5 digests, improves run start time as the configuration
+                    of the digitizers becomes stable and the configuration file
+                    is no longer being routinely edited. <emphasis>However</emphasis>,
+                    if the digitizers are powered off between runs, this is not
+                    detectable by the system and initialization will
+                    <emphasis>not</emphasis> be performed unless either
+                    the configuration file is edited (e.g. adding a comment),
+                    or the Readout program restarted.
+                </para>
+                <para>
+                    Once the Makefile has been appropriately edited, the Readout program can be built
                     via <command>make</command>
                 </para>
             </section>
