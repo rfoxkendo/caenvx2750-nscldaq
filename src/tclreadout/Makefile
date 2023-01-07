@@ -32,7 +32,7 @@ USERCXXFLAGS=$(USERCCFLAGS)
 
 USERLDFLAGS=-L$(NSCL_SUPPORT_PREFIX)/lib -lCaenVx2750 \
 	$(JSON_LDFLAGS) $(FELIB_LDFLAGS) \
-	-lboost_log -lboost_log_setup  -lboost_thread -lboost_system
+	-lboost_log -lboost_log_setup  -lboost_thread -lboost_system -lcrypto
 
 #
 #  This is a list of the objects that go into making the application
