@@ -38,7 +38,8 @@ namespace caen_nscldaq {
      */
     VX2750MultiModuleEventSegment::VX2750MultiModuleEventSegment(
         CExperiment* pExperiment, VX2750MultiTrigger* pTrigger
-    ) : m_pExperiment(pExperiment), m_pTrigger(pTrigger)
+    ) : m_pExperiment(pExperiment), m_pTrigger(pTrigger),
+        m_configChanged(false)
     {}
     
     /**
@@ -47,6 +48,15 @@ namespace caen_nscldaq {
      */
     VX2750MultiModuleEventSegment::~VX2750MultiModuleEventSegment()
     {}
+    /**
+     * setConfigChanged
+     *    Sets the config changed flag true indicating the modules must be
+     *    hardware initialized.
+     */
+    void
+    VX2750MultiModuleEventSegment::setConfigChanged() {
+        m_configChanged = true;
+    }
     
     /**
      * initialize
@@ -60,8 +70,12 @@ namespace caen_nscldaq {
     {
         auto modules = m_pTrigger->getModules();
         for (auto p : modules) {
+            if (m_configChanged) {
+                p->hwInit();
+            }
             p->initialize();
         }
+        m_configChanged = false;
     }
     /**
      * disable

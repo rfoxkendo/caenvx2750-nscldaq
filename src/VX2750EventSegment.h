@@ -74,6 +74,7 @@ public:
     
     VX2750Pha* getModule() {return m_pModule;}
     
+    void hwInit();                            // Addition for faster init.
     // Preparing and dropping modules:
     
     virtual void initialize();                  // at begin run.

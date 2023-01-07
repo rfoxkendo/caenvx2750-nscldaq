@@ -37,6 +37,11 @@
 #include <stdexcept>
 #include <iostream>
 #include <set>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <string.h>
 
 using namespace caen_nscldaq;
 
@@ -55,7 +60,9 @@ TclConfiguredReadout::TclConfiguredReadout(
     m_pCurrentConfiguration(nullptr),
     m_pCurrentEventSegment(nullptr),
     m_configFile(configFile)
-{}
+{
+    memset(m_priorDigest, 0, sizeof(m_priorDigest));    // Force initial configuration.        
+}
 
 /**
  * destructor
@@ -163,6 +170,9 @@ TclConfiguredReadout::initialize() {
     m_pCurrentEventSegment = new VX2750MultiModuleEventSegment(m_pExperiment, m_pCurrentTrigger);
     
     if (m_pCurrentEventSegment) {
+        if (configChanged()) {
+            m_pCurrentEventSegment->setConfigChanged();
+        }
         m_pCurrentEventSegment->initialize();
     }
  
@@ -360,4 +370,64 @@ TclConfiguredReadout::getTclTraceback(CTCLInterpreter& interp) {
     if (pTrace) result = pTrace;
     
     return result;
+}
+/**
+ * configChanged
+ * 
+ * @return bool true - if the md5 sum of the configuration file does not match
+ *                     m_priorDigest indicating the file was edited.
+ * @note m_priorDigest is updated with the current MD5 hash  of the configuration file.
+ */
+bool
+TclConfiguredReadout::configChanged()
+{
+    std::uint8_t currentDigest[MD5_DIGEST_LENGTH];
+    computeConfigDigest(currentDigest);
+    bool result = 
+      memcmp(m_priorDigest,currentDigest, sizeof(m_priorDigest)) != 0;
+    memcpy(m_priorDigest, currentDigest, sizeof(m_priorDigest));
+    
+    return result;
+}
+/**
+ * computeConfigDigest
+ *    Compute the md5 hash of the configuration file with thanks to
+ *    https://stackoverflow.com/questions/3395690/md5sum-of-file-in-linux-c
+ *
+ * @param[out] pResult - pointer to a buffer of MD5_DIGEST_LENGTH bytes
+ *     into which the hash is computed.
+ *  m_configFile is the name of the file whose hash is computed.
+ *
+ * @throw std::invalid_argument - if the config file can't be opened for read.
+ * @throw std::runtime_error - if the config file read fails.
+ */
+void
+TclConfiguredReadout::computeConfigDigest(std::uint8_t* pResult) {
+    MD5_CTX c;                    // Hash context.
+    ssize_t bytes;                // bytes read per gulp.
+    const int readSize = 512;     // Gulp size for file read.
+    std::uint8_t buffer[readSize];  // File read buffer.
+    
+    int fd = open(m_configFile.c_str(), O_RDONLY);
+    if (fd < 0) {
+        throw std::invalid_argument("Config file could not be opened.");
+    }
+    
+    bytes = ::read(fd, buffer, readSize);
+    if (bytes < 0) {
+        throw std::runtime_error("Config file read failed during MD5 computation");
+    }
+    MD5_Init(&c);
+    while (bytes > 0) {
+        MD5_Update(&c, buffer, bytes);
+        bytes = ::read(fd, buffer, readSize);
+        if (bytes < 0) {
+            throw std::runtime_error("Config file read failed during MD5 computation");
+        }
+    }
+    // End file encountered.
+    
+    MD5_Final(pResult, &c);
+    
+    
 }

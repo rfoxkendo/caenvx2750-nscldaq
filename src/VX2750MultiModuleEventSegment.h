@@ -46,9 +46,12 @@ namespace caen_nscldaq {
     private:
         CExperiment*        m_pExperiment;
         VX2750MultiTrigger* m_pTrigger;
+        bool                m_configChanged;
     public:
         VX2750MultiModuleEventSegment(CExperiment* pExperiment, VX2750MultiTrigger* pTrigger);
         virtual ~VX2750MultiModuleEventSegment();
+        
+        void setConfigChanged();
         
         void initialize();
         void disable();

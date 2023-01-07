@@ -28,6 +28,7 @@
 #include <string>
 #include <vector>
 #include <cstdint>
+#include <openssl/md5.h>
 // Forward definitions:
 
 class DynamicMultiTrigger;
@@ -85,6 +86,7 @@ private:
    caen_nscldaq::VX2750TclConfig*               m_pCurrentConfiguration;
    caen_nscldaq::VX2750MultiModuleEventSegment* m_pCurrentEventSegment;
    std::string                                  m_configFile;
+   std::uint8_t                                 m_priorDigest[MD5_DIGEST_LENGTH];
 public:
     TclConfiguredReadout(const char* configFile, CExperiment* pExperiment);
     virtual ~TclConfiguredReadout();
@@ -109,6 +111,9 @@ private:
    void checkModuleConfiguration();
    void createTrigger();
    std::string getTclTraceback(CTCLInterpreter& interp);
+   bool configChanged();
+   void computeConfigDigest(std::uint8_t* pResult);
+   
 };
 
 

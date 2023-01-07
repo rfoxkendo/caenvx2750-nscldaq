@@ -35,6 +35,7 @@
 #include <CExperiment.h>
 #include <unistd.h>
 #include <iostream>
+#include <memory>
 
 namespace caen_nscldaq {
 /**
@@ -74,7 +75,27 @@ VX2750EventSegment::~VX2750EventSegment()
     delete m_pModule;                // no-op if it's a nullptr.
     delete m_traceSizes;
 }
-
+/**
+ * hwInit
+ *   Hardware initialize the module from the configuration.
+ *   This is separated from the initialize method to support
+ *   faster run starts once the module is actually initialized.
+ */
+void
+VX2750EventSegment::hwInit()
+{
+    try {
+        auto pConfig = m_pConfiguration->getModule(m_moduleName.c_str());
+        std::unique_ptr<VX2750Pha> pModule(new VX2750Pha(m_hostOrPid.c_str(), m_isUsb));
+        pConfig->configureModule(*(pModule.get()));
+    }
+    catch (std::exception& e) {
+        throw e.what();
+    }
+    catch (CException& e) {
+        throw e.ReasonText();
+    }
+}
 /**
  * initialize
  *    - locate our configuration in the Tcl configuration.  If we can't find it
@@ -88,6 +109,7 @@ VX2750EventSegment::~VX2750EventSegment()
 void
 VX2750EventSegment::initialize()
 {
+    
     try {
         auto pConfig = m_pConfiguration->getModule(m_moduleName.c_str());
         m_pModule = new VX2750Pha(m_hostOrPid.c_str(), m_isUsb);
