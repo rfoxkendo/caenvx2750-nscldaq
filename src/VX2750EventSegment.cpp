@@ -86,8 +86,9 @@ VX2750EventSegment::hwInit()
 {
     try {
         auto pConfig = m_pConfiguration->getModule(m_moduleName.c_str());
-        std::unique_ptr<VX2750Pha> pModule(new VX2750Pha(m_hostOrPid.c_str(), m_isUsb));
-        pConfig->configureModule(*(pModule.get()));
+	if (m_pModule) delete m_pModule;
+        m_pModule = new VX2750Pha(m_hostOrPid.c_str(), m_isUsb);
+        pConfig->configureModule(*m_pModule);
     }
     catch (std::exception& e) {
         throw e.what();
@@ -111,10 +112,11 @@ VX2750EventSegment::initialize()
 {
     
     try {
+      if (!m_pModule) {
+	throw std::logic_error("The module object should have been created but was not yet");
+      }
         auto pConfig = m_pConfiguration->getModule(m_moduleName.c_str());
-        m_pModule = new VX2750Pha(m_hostOrPid.c_str(), m_isUsb);
-        
-        
+               
         // We need to ask the configuration what to expect from the module:
         //    Trace lengths.
         
