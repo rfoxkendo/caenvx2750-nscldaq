@@ -86,7 +86,10 @@ VX2750EventSegment::hwInit()
 {
     try {
         auto pConfig = m_pConfiguration->getModule(m_moduleName.c_str());
-	if (m_pModule) delete m_pModule;
+	if (m_pModule) {
+	  delete m_pModule;
+	  m_pModule = nullptr;   // in case new throws this time.
+	}
         m_pModule = new VX2750Pha(m_hostOrPid.c_str(), m_isUsb);
         pConfig->configureModule(*m_pModule);
     }
