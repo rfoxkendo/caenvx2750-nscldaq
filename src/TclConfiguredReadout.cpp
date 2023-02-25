@@ -156,6 +156,7 @@ void
 TclConfiguredReadout::initialize() {
     // Kill off the previous readout stuff.
     
+  if (configChanged()) {
     m_pTrigger->clear();
     delete m_pCurrentConfiguration;
     m_pCurrentConfiguration = nullptr;
@@ -168,15 +169,13 @@ TclConfiguredReadout::initialize() {
     createTrigger();             // also create the modules in the trigger.
     
     m_pCurrentEventSegment = new VX2750MultiModuleEventSegment(m_pExperiment, m_pCurrentTrigger);
-    
-    if (m_pCurrentEventSegment) {
-        if (configChanged()) {
-            m_pCurrentEventSegment->setConfigChanged();
-        }
-        m_pCurrentEventSegment->initialize();
-    }
- 
     m_pTrigger->addTrigger(m_pCurrentTrigger);
+    
+    
+    m_pCurrentEventSegment->setConfigChanged();
+  }
+    m_pCurrentEventSegment->initialize();
+    
 }
 /**
  * disable
