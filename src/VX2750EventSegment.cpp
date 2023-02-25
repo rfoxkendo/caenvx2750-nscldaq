@@ -189,8 +189,8 @@ VX2750EventSegment::disable()
         m_pModule->freeDecodedBuffer(m_Event);
         m_pModule->Stop();
         m_pModule->Disarm();
-        delete m_pModule;
-        m_pModule = nullptr;          // This disconnects.
+        //delete m_pModule;
+        //m_pModule = nullptr;          // This disconnects.
     }
 }
 /**
